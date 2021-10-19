@@ -1,0 +1,18 @@
+/run/initialize
+#/control/execute macros/vis.mac
+
+/gps/verbose 0
+/gps/particle e-
+/gps/direction 0 0 1
+
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/rot1 1 0 0 
+/gps/pos/rot2 0 1 0
+/gps/pos/radius 0.1 mm
+/gps/pos/centre 0 0 0 m
+/gps/pos/halfz 3.5 m
+
+/gps/ene/mono 5 GeV
+/histo/fileName 5GeV.root
+/run/beamOn 10000
