@@ -33,17 +33,17 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 60 30
+/vis/viewer/set/viewpointThetaPhi 90 180 
 #
-/vis/viewer/pan 4 -1
+#/vis/viewer/pan 4 -1
 # Specify zoom value:
-/vis/viewer/zoom 2
+/vis/viewer/zoom 4
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
 #
 # Draw coordinate axes:
-/vis/scene/add/axes 0 0 0 20 m
+#/vis/scene/add/axes 0 0 0 20 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -59,6 +59,9 @@
 # To draw only gammas:
 /vis/filtering/trajectories/create/particleFilter
 /vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/add nu_tau
+#/vis/filtering/trajectories/particleFilter-0/add anti_nu_mu
+#/vis/filtering/trajectories/particleFilter-0/add neutron
 #
 # To invert the above, drawing all particles except gammas,
 # keep the above two lines but also add:
@@ -87,17 +90,17 @@
 #/tracking/stepMax 0.25 cm
 
 /gps/verbose 1
-/gps/particle e-
-/gps/ene/mono 5 GeV
+/gps/particle tau-
+/gps/ene/mono 1000 GeV
 /gps/direction 0 0 1
 
-/gps/pos/type Volume
-/gps/pos/shape Cylinder
-/gps/pos/rot1 1 0 0 
-/gps/pos/rot2 0 1 0
-/gps/pos/radius 0.1 mm
-/gps/pos/centre 0 0 0 m
-/gps/pos/halfz 3.5 m
+#/gps/pos/type Volume
+#/gps/pos/shape Cylinder
+#/gps/pos/rot1 1 0 0 
+#/gps/pos/rot2 0 1 0
+#/gps/pos/radius 0.1 mm
+#/gps/pos/centre 0 0 0 m
+#/gps/pos/halfz 3.5 m
 
 #/gps/pos/type Plane
 #/gps/pos/rot1 1 0 0 
@@ -106,5 +109,5 @@
 #/gps/pos/centre 0. 0. -25. m
 #/gps/pos/radius 1. cm
 
-#/gps/pos/type Point
-#/gps/pos/centre 0. 0. -3.5 m
+/gps/pos/type Point
+/gps/pos/centre 0. 0. -2.5 m

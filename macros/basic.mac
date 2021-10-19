@@ -2,7 +2,6 @@
 #/control/execute macros/vis.mac
 
 /gps/verbose 0
-/gps/particle e-
 /gps/direction 0 0 1
 
 /gps/pos/type Volume
@@ -13,6 +12,8 @@
 /gps/pos/centre 0 0 0 m
 /gps/pos/halfz 3.5 m
 
-/gps/ene/mono 5 GeV
-/histo/fileName 5GeV.root
-/run/beamOn 10000
+# variables
+/gps/particle tau-
+/gps/ene/mono 1000 GeV
+/histo/fileName 1000GeV.root
+/run/beamOn 5000
