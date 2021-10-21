@@ -8,6 +8,7 @@
 #include <G4String.hh>
 #include "ActionInitialization.hh"
 #include "LArBoxDetectorConstruction.hh"
+//#include "FLArEDetectorConstructionMessenger.hh"
 #include "QGSP_BERT.hh"
 #include "AnalysisManager.hh"
 #include "G4PhysListFactory.hh"

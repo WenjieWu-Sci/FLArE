@@ -7,6 +7,8 @@
 /control/verbose 2
 /run/verbose 2
 #
+/det/material LAr
+#
 /run/initialize
 #
 # Use this open statement to create an OpenGL view:
@@ -38,6 +40,8 @@
 #/vis/viewer/pan 4 -1
 # Specify zoom value:
 /vis/viewer/zoom 4
+/vis/viewer/scale 1 2 1
+/vis/viewer/set/background white
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe

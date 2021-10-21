@@ -1,3 +1,6 @@
+# define detector material before run initialization
+/det/material LAr
+
 /run/initialize
 #/control/execute macros/vis.mac
 
