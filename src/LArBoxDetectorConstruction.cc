@@ -19,6 +19,7 @@
 #include <G4PhysicalVolumeStore.hh>
 #include <G4LogicalVolumeStore.hh>
 #include <G4SolidStore.hh>
+#include "G4GDMLParser.hh"
 
 using namespace std;
 
@@ -107,6 +108,9 @@ G4VPhysicalVolume* LArBoxDetectorConstruction::Construct()
                                                     fCheckOverlap);
 
   //G4cout<<*(G4Material::GetMaterialTable())<<G4endl;
+
+  G4GDMLParser fParser;
+  fParser.Write("LArBoxDetGeo.gdml", worldPhys);
 
   return worldPhys;
 }
