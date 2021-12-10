@@ -3,8 +3,16 @@
 
 #include <G4VUserPrimaryGeneratorAction.hh>
 
+#include <TFile.h>
+#include <TTree.h>
+#include "Framework/Ntuple/NtpMCTreeHeader.h"
+#include "Framework/Ntuple/NtpMCEventRecord.h"
+
 class G4ParticleGun;
 class G4GeneralParticleSource;
+//class NtpMCEventRecord;
+
+using namespace genie;
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   public:
@@ -15,6 +23,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   private:
     G4ParticleGun* fGun;
     G4GeneralParticleSource* fGPS;
+
+    TFile* ghep_file;
+    TTree* ghep_tree;
+    NtpMCTreeHeader* thdr;
+    NtpMCEventRecord* mcrec;
 };
 
 #endif
