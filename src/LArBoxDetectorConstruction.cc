@@ -28,6 +28,7 @@ LArBoxDetectorConstruction::LArBoxDetectorConstruction()
 {
   DefineMaterial();
   messenger = new FLArEDetectorConstructionMessenger(this);
+  m_saveGdml = false;
 }
 
 LArBoxDetectorConstruction::~LArBoxDetectorConstruction() 
@@ -109,8 +110,10 @@ G4VPhysicalVolume* LArBoxDetectorConstruction::Construct()
 
   //G4cout<<*(G4Material::GetMaterialTable())<<G4endl;
 
-  G4GDMLParser fParser;
-  fParser.Write("LArBoxDetGeo.gdml", worldPhys);
+  if (m_saveGdml) {
+    G4GDMLParser fParser;
+    fParser.Write("LArBoxDetGeo.gdml", worldPhys);
+  }
 
   return worldPhys;
 }

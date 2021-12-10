@@ -10,6 +10,7 @@ class LArBoxDetectorConstruction;
 class G4UIdirectory;
 class G4UIcommand;
 class G4UIcmdWithAString;
+class G4UIcmdWithABool;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -24,6 +25,7 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     LArBoxDetectorConstruction* det;
     G4UIdirectory* detDir;
     G4UIcmdWithAString* detMatCmd;
+    G4UIcmdWithABool* detGeomCmd;
 //    G4UIcommand* updateCmd;
 };
 

@@ -8,6 +8,7 @@
 /run/verbose 2
 #
 /det/material LAr
+/det/saveGdml false
 #
 /run/initialize
 #

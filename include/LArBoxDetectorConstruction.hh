@@ -25,6 +25,7 @@ class LArBoxDetectorConstruction : public G4VUserDetectorConstruction {
 
     void ConstructSDandField() override;
     void SetDetMaterial(G4String detMaterial);
+    void saveGDML(G4bool i) { m_saveGdml = i; };
     void UpdateGeometry();
 
   private:
@@ -33,6 +34,7 @@ class LArBoxDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* worldLog;
     G4LogicalVolume* lArBoxLog;
     G4String fDetMaterialName;
+    G4bool m_saveGdml;
 
     DetectorConstructionMaterial* LArBoxMaterials;
     FLArEDetectorConstructionMessenger* messenger;
