@@ -9,12 +9,13 @@ Simulation code for R&D of the FLArE detector
 * Finally `make`
 
 Things get complicated with importing GENIE results to the Geant4 Application. What we're doing now is to link to GENIE libraries so we can have a dictionary for the ROOT file format, read in the TTree record and then loop over the particles in the event record and for those with status code == 1 (those particles coming out of the nucleus) and call Geant4's PrimaryVertex. Not only GENIE libraries, there are a bunch of another packages needed in order to link GENIE libraries. 
-* Geant4, ROOT
-* GENIE
-* log4cpp
-* gsl
-* libxml2
-* pythia6
+* Geant4 v4_10_6_p01c
+* ROOT v6_22_06a
+* GENIE v3_00_06k
+* log4cpp v1_1_3c
+* gsl v2_6a
+* libxml2 v2_9_10a
+* pythia6 v6_4_28r
 
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.
