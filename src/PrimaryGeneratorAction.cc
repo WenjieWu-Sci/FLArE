@@ -29,7 +29,7 @@ using namespace genie;
 PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS = new G4GeneralParticleSource();
 
-  ghep_file = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/genie/nutau_ar40_999GeV.ghep.root", "read");
+  ghep_file = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/genie/nutau_ar40_10GeV.ghep.root", "read");
   ghep_tree = (TTree*)ghep_file->Get("gtree");
   if (!ghep_tree) {
     std::cout<<"No GHEP event tree in input file: "<<std::endl;
@@ -53,12 +53,13 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   int evtID = anEvent->GetEventID();
-  std::cout<<"oooOOOooo Event # "<<evtID<<" oooOOOooo"<<std::endl;
+  std::cout<<"oooOOOooo GENIE Event # "<<evtID<<" oooOOOooo"<<std::endl;
   mcrec->Clear();               // don't leak previously fetched info
-  ghep_tree->GetEntry(evtID);   // fetch a single entry from GENIE input file
+  ghep_tree->GetEntry(evtID+4);   // fetch a single entry from GENIE input file
+  //ghep_tree->GetEntry(evtID+6);   // fetch a single entry from GENIE input file
+  //ghep_tree->GetEntry(evtID+0);   // fetch a single entry from GENIE input file
   // retrieve GHEP event record abd print it out.
   EventRecord* event = mcrec->event;
-  std::cout<<event->GetEntries()<<std::endl;
   for (int ipar=0; ipar<event->GetEntries(); ++ipar) {
     GHepParticle* p = event->Particle(ipar);
     if (p->Status()==1) {
@@ -70,7 +71,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
       fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(p->Energy() * GeV);
       fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(p->Px(), p->Py(), p->Pz()));
       fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
-      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm));
+      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm - 3.0 * m));
       fGPS->GeneratePrimaryVertex(anEvent);
     }
   }

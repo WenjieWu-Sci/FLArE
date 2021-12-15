@@ -6,6 +6,7 @@
 #include <G4Event.hh>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH2D.h>
 #include "AnalysisManagerMessenger.hh"
 
 class AnalysisManager {
@@ -49,6 +50,13 @@ class AnalysisManager {
     G4int    secondaryTrackPDG[2000000];
 
     G4bool m_saveSecondary;
+
+    TH2D* hEdepX;
+    TH2D* hEdepY;
+    TH2D* hEdepZ;
+    TH2D* hEdepXY;
+    TH2D* hEdepZX;
+    TH2D* hEdepZY;
 
   private:
     G4int flArBoxSDId { -1 };

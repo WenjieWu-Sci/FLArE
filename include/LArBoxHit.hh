@@ -29,6 +29,7 @@ class LArBoxHit : public G4VHit {
     void SetProcessName(G4String processname) { fProcessName = processname; }
     void SetStepLength(G4double steplength) { fStepLength = steplength; }
     void SetEdep(G4double edep) { fEdep = edep; }
+    void SetEdepPosition(G4ThreeVector& edepPos) { fEdepPosition = edepPos; }
     void SetVolume(G4String volumeName) { fVolumeName = volumeName; }
     void SetStepStatus(G4int stepstatus) { fStepStatus = stepstatus; }
 
@@ -47,6 +48,7 @@ class LArBoxHit : public G4VHit {
     G4String GetProcessName() const { return fProcessName; }
     G4double GetStepLength() const { return fStepLength; }
     G4double GetEdep() const { return fEdep; }
+    G4ThreeVector GetEdepPosition() const { return fEdepPosition; }
     G4String GetVolume() const { return fVolumeName; }
     G4int GetStepStatus() const { return fStepStatus; }
 
@@ -65,6 +67,7 @@ class LArBoxHit : public G4VHit {
     G4String fProcessName;
     G4double fStepLength;
     G4double fEdep;
+    G4ThreeVector fEdepPosition;
     G4String fVolumeName;
     G4int fStepStatus;
 };

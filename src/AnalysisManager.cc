@@ -4,8 +4,10 @@
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
+#include <G4SystemOfUnits.hh>
 #include <TFile.h>
 #include <TTree.h>
+#include <TH2D.h>
 #include <vector>
 
 AnalysisManager* AnalysisManager::instance = 0;
@@ -56,10 +58,23 @@ void AnalysisManager::BeginOfRun() {
   }
   thefile = new TFile(m_filename, "RECREATE");
   bookEvtTree();
+
+  hEdepX = new TH2D("EdepX", "EdepX", 100, -500, 500, 100, 0, 100);
+  hEdepY = new TH2D("EdepY", "EdepY", 100, -500, 500, 100, 0, 100);
+  hEdepZ = new TH2D("EdepZ", "EdepZ", 100, 0, 7000, 100, 0, 100);
+  hEdepXY = new TH2D("EdepXY", "EdepXY", 200, -500, 500, 200, -500, 500);
+  hEdepZX = new TH2D("EdepZX", "EdepZX", 1400, 0, 7000, 200, -500, 500);
+  hEdepZY = new TH2D("EdepZY", "EdepZY", 1400, 0, 7000, 200, -500, 500);
 }
 
 void AnalysisManager::EndOfRun() {
   evt->Write();
+  hEdepX->Write();
+  hEdepY->Write();
+  hEdepZ->Write();
+  hEdepXY->Write();
+  hEdepZX->Write();
+  hEdepZY->Write();
   thefile->Close();
 }
 
@@ -110,6 +125,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
             vtxX = hit->GetTrackVertex().getX();
             vtxY = hit->GetTrackVertex().getY();
             vtxZ = hit->GetTrackVertex().getZ();
+            std::cout<<vtxX<<" "<<vtxY<<" "<<vtxZ<<std::endl;
           }
         }
         if (hit->GetStepNo()==1 && hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
@@ -131,6 +147,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           if (nSecondaryTracks<=2000000) 
             secondaryTrackPDG[nSecondaryTracks-1] = hit->GetParticle();
         }
+        hEdepX->Fill(hit->GetEdepPosition().x()*mm, hit->GetEdep()*GeV);
+        hEdepY->Fill(hit->GetEdepPosition().y()*mm, hit->GetEdep()*GeV);
+        hEdepZ->Fill(hit->GetEdepPosition().z()*mm + 3500*mm, hit->GetEdep()*GeV);
+        hEdepXY->Fill(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdep());
+        hEdepZX->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().x(), hit->GetEdep());
+        hEdepZY->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().y(), hit->GetEdep());
       }
       std::cout<<"Primary Track Length : "<<primaryTrackLength<<" mm"<<std::endl;
     }

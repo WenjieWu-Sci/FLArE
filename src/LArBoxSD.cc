@@ -38,11 +38,13 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   G4ThreeVector InitMomentum    = PreStep->GetMomentum();
   G4double InitKinEne           = PreStep->GetKineticEnergy();
   G4StepPoint* PostStep         = aStep->GetPostStepPoint();
+  G4ThreeVector PostStepPosition= PostStep->GetPosition();
   G4String ProcessName          = PostStep->GetProcessDefinedStep()->GetProcessName();
   G4double StepLength           = aStep->GetStepLength();
 
   // extra info
   G4double edep      = aStep->GetTotalEnergyDeposit();
+  G4ThreeVector pos  = 0.5*(PreStepPosition + PostStepPosition);
   G4String PosVolume = PostStep->GetPhysicalVolume()->GetName();
   G4int StepStatus   = PostStep->GetStepStatus();
 
@@ -61,9 +63,12 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   hit->SetCreatorProcess(CreatorProcess);
   hit->SetProcessName(ProcessName);
   hit->SetStepLength(StepLength);
-  hit->SetEdep(edep);
   hit->SetVolume(PosVolume);
   hit->SetStepStatus(StepStatus);
+
+  hit->SetEdep(edep);
+  hit->SetEdepPosition(pos);
+
   fHitsCollection->insert(hit);
 
   return true;
