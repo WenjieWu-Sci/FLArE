@@ -12,21 +12,13 @@
 #
 /run/initialize
 #
+/genie/genieInput genie/nutau_ar40_10GeV.ghep.root
+/genie/genieIStart 0
+/genie/genieIStop 1
+#
 # Use this open statement to create an OpenGL view:
 /vis/open OGL 1000x800-0+0
-/vis/ogl/set/displayListLimit 500000
-#
-# Use this open statement to create a .prim file suitable for
-# viewing in DAWN:
-#/vis/open DAWNFILE
-#
-# Use this open statement to create a .heprep file suitable for
-# viewing in HepRApp:
-#/vis/open HepRepFile
-#
-# Use this open statement to create a .wrl file suitable for
-# viewing in a VRML viewer:
-#/vis/open VRML2FILE
+/vis/ogl/set/displayListLimit 5000000
 #
 # Disable auto refresh and quieten vis messages whilst scene and
 # trajectories are established:
@@ -62,27 +54,23 @@
 # Draw hits at end of event:
 #/vis/scene/add/hits
 #
-# To draw only gammas:
+# to select colour by particle ID:
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/modeling/trajectories/drawByParticleID-0/set e+ blue
+/vis/modeling/trajectories/drawByParticleID-0/set proton cyan
+/vis/modeling/trajectories/drawByParticleID-0/set gamma green
+/vis/modeling/trajectories/drawByParticleID-0/set neutron yellow
+/vis/modeling/trajectories/drawByParticleID-0/set pi- red
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ blue
+/vis/modeling/trajectories/drawByParticleID-0/set pi0 magenta 
+
 #/vis/filtering/trajectories/create/particleFilter
 #/vis/filtering/trajectories/particleFilter-0/add gamma
-#/vis/filtering/trajectories/particleFilter-0/add nu_tau
-#/vis/filtering/trajectories/particleFilter-0/add anti_nu_mu
-#/vis/filtering/trajectories/particleFilter-0/add neutron
-#
-# To invert the above, drawing all particles except gammas,
-# keep the above two lines but also add:
 #/vis/filtering/trajectories/particleFilter-0/invert true
-#
-# Many other options are available with /vis/modeling and /vis/filtering.
-# For example, to select colour by particle ID:
-/vis/modeling/trajectories/create/drawByParticleID
-#/vis/modeling/trajectories/drawByParticleID-0/set e- blue
-/vis/filtering/trajectories/create/particleFilter
-/vis/filtering/trajectories/particleFilter-0/add gamma
-/vis/filtering/trajectories/particleFilter-0/invert true
-/vis/filtering/trajectories/create/attributeFilter
-/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
-/vis/filtering/trajectories/attributeFilter-0/addInterval 1 GeV 1000 GeV
+#/vis/filtering/trajectories/create/attributeFilter
+#/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
+#/vis/filtering/trajectories/attributeFilter-0/addInterval 1 GeV 1000 GeV
 #
 # To superimpose all of the events from a given run:
 /vis/scene/endOfEventAction accumulate

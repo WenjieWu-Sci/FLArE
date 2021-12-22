@@ -10,7 +10,8 @@
 #include "LArBoxDetectorConstruction.hh"
 //#include "FLArEDetectorConstructionMessenger.hh"
 #include "QGSP_BERT.hh"
-#include "AnalysisManager.hh"
+//#include "AnalysisManager.hh"
+//#include "PrimaryGeneratorAction.hh"
 #include "G4PhysListFactory.hh"
 
 using namespace std;
@@ -24,7 +25,7 @@ int main(int argc, char** argv) {
   G4long myseed = 345354;
   CLHEP::HepRandom::setTheSeed(myseed);
 
-  AnalysisManager* analysis = AnalysisManager::GetInstance();
+//  AnalysisManager* analysis = AnalysisManager::GetInstance();
 
   // Create the run manager (MT or non-MT) and make it a bit verbose.
   auto runManager = new G4RunManager();

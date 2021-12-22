@@ -14,6 +14,7 @@ AnalysisManager* AnalysisManager::instance = 0;
 
 AnalysisManager* AnalysisManager::GetInstance() {
   if (!instance) {
+    std::cout<<"AnalysisManager: Re-initialization"<<std::endl;
     instance = new AnalysisManager();
   }
   return instance;
@@ -68,6 +69,7 @@ void AnalysisManager::BeginOfRun() {
 }
 
 void AnalysisManager::EndOfRun() {
+  thefile->cd();
   evt->Write();
   hEdepX->Write();
   hEdepY->Write();

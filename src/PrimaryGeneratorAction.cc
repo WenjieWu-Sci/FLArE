@@ -1,6 +1,7 @@
 #include <ostream>
 
 #include "PrimaryGeneratorAction.hh"
+#include "PrimaryGeneratorMessenger.hh"
 #include <G4ParticleTable.hh>
 #include <G4Event.hh>
 #include <G4SystemOfUnits.hh>
@@ -26,13 +27,66 @@
 
 using namespace genie;
 
+//PrimaryGeneratorAction* PrimaryGeneratorAction::GeneratorInstance = 0;
+//
+//PrimaryGeneratorAction* PrimaryGeneratorAction::GetInstance() {
+//  if (!GeneratorInstance) {
+//    std::cout<<"PrimaryGeneratorAction: Re-initialization"<<std::endl;
+//    GeneratorInstance = new PrimaryGeneratorAction();
+//  }
+//  return GeneratorInstance;
+//}
+
 PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS = new G4GeneralParticleSource();
 
-  ghep_file = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/genie/nutau_ar40_10GeV.ghep.root", "read");
+  // create a messenger for this class
+  genMessenger = new PrimaryGeneratorMessenger(this);
+
+//  ghepFileName = "genie/nutau_ar40_100GeV.ghep.root";
+//  std::cout<<"PrimaryGeneratorAction constructor : "<<ghepFileName<<" "<<ghepEvtStartIdx<<" "<<ghepEvtStopIdx<<std::endl;
+
+  //std::cout<<"loading GHEP file : "<<ghepFileName<<std::endl;
+  //ghep_file = new TFile(ghepFileName, "read");
+  //ghep_tree = (TTree*)ghep_file->Get("gtree");
+  //if (!ghep_tree) {
+  //  std::cout<<"No GHEP event tree in input file: "<<ghepFileName<<std::endl;
+  //  exit(1);
+  //}
+  //int nev = ghep_tree->GetEntries();
+  //std::cout<<"Input GHEP tree has "<<nev<<((nev==1)? " entry." : " entries.")<<std::endl;
+  //thdr = (NtpMCTreeHeader*)ghep_file->Get("header");
+  //std::cout<<*thdr;
+
+  //mcrec = new NtpMCEventRecord(); 
+  //// main event record branch, always present
+  //ghep_tree->SetBranchAddress("gmcrec", &mcrec);
+}
+
+PrimaryGeneratorAction::~PrimaryGeneratorAction() {
+  //ghep_file->Close();
+
+//  delete ghep_file;
+//  delete mcrec;
+  delete fGPS;
+  delete genMessenger;
+}
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
+  int evtID = anEvent->GetEventID();
+  G4cout<<"GeneratePrimaries from file "<<ghepFileName
+    <<", evtID range from "<<ghepEvtStartIdx
+    <<" to "<<ghepEvtStopIdx
+    <<", now at "<<ghepEvtStartIdx+evtID<<G4endl;
+
+  ghep_file = new TFile(ghepFileName, "read");
+  if (!ghep_file->IsOpen()) {
+    std::cout<<"Cannot open ghep file : "<<ghepFileName<<std::endl;
+    exit(1);
+  }
   ghep_tree = (TTree*)ghep_file->Get("gtree");
   if (!ghep_tree) {
-    std::cout<<"No GHEP event tree in input file: "<<std::endl;
+    std::cout<<"No GHEP event tree in input file : "<<ghepFileName<<std::endl;
     exit(1);
   }
   int nev = ghep_tree->GetEntries();
@@ -44,28 +98,19 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
   // main event record branch, always present
   ghep_tree->SetBranchAddress("gmcrec", &mcrec);
 
-}
-
-PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-  ghep_file->Close();
-  delete fGPS;
-}
-
-void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
-  int evtID = anEvent->GetEventID();
-  std::cout<<"oooOOOooo GENIE Event # "<<evtID<<" oooOOOooo"<<std::endl;
+  std::cout<<"oooOOOooo Event # "<<evtID<<" oooOOOooo"<<std::endl;
   mcrec->Clear();               // don't leak previously fetched info
-  ghep_tree->GetEntry(evtID+4);   // fetch a single entry from GENIE input file
-  //ghep_tree->GetEntry(evtID+6);   // fetch a single entry from GENIE input file
-  //ghep_tree->GetEntry(evtID+0);   // fetch a single entry from GENIE input file
+  if (ghepEvtStartIdx + evtID > ghepEvtStopIdx || ghepEvtStartIdx + evtID >= nev) {
+    std::cout<<"** event index beyond range !! **"<<std::endl;
+  }
+  ghep_tree->GetEntry(ghepEvtStartIdx + evtID);   // fetch a single entry from GENIE input file
   // retrieve GHEP event record abd print it out.
   EventRecord* event = mcrec->event;
   for (int ipar=0; ipar<event->GetEntries(); ++ipar) {
     GHepParticle* p = event->Particle(ipar);
     if (p->Status()==1) {
-      std::cout<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
-        <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
-      //std::cout<<p->Name()<<" "<<p->X4()<<" "<<p->P4()<<std::endl;
+      //std::cout<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
+      //  <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
 
       fGPS->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle(p->Pdg()));
       fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(p->Energy() * GeV);
@@ -79,6 +124,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   LOG("gevdump", pNOTICE) 
      << " ** Event: " << rec_header.ievent 
      << *event;
+
+  mcrec->Clear();               // don't leak previously fetched info
+  ghep_file->Close();
 
 //  G4ParticleDefinition* myParticle;
 //  myParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
