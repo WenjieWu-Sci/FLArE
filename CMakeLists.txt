@@ -86,16 +86,16 @@ include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${PROJECT_SOURCE_D
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
+file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 
 # Enable macros for out-of-source build
-foreach(_file ${macros})
+foreach(_file ${macros} ${genie})
   configure_file(
     ${_file}
     ${PROJECT_BINARY_DIR}/${_file}
     COPYONLY
     )
 endforeach()
-
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
