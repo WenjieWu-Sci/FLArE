@@ -12,9 +12,9 @@
 #
 /run/initialize
 #
+/genie/useGenie true
 /genie/genieInput genie/nutau_ar40_10GeV.ghep.root
-/genie/genieIStart 0
-/genie/genieIStop 1
+/genie/genieIStart 2
 #
 /histo/fileName nutau_10GeV.root
 /histo/saveEvd false
@@ -64,9 +64,10 @@
 /vis/modeling/trajectories/drawByParticleID-0/set proton cyan
 /vis/modeling/trajectories/drawByParticleID-0/set gamma green
 /vis/modeling/trajectories/drawByParticleID-0/set neutron yellow
-/vis/modeling/trajectories/drawByParticleID-0/set pi- red
-/vis/modeling/trajectories/drawByParticleID-0/set pi+ blue
-/vis/modeling/trajectories/drawByParticleID-0/set pi0 magenta 
+/vis/modeling/trajectories/drawByParticleID-0/set pi- violet
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ orange
+/vis/modeling/trajectories/drawByParticleID-0/set pi0 brown 
+/vis/modeling/trajectories/drawByParticleID-0/set mu- red
 
 #/vis/filtering/trajectories/create/particleFilter
 #/vis/filtering/trajectories/particleFilter-0/add gamma

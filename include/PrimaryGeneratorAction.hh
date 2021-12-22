@@ -4,17 +4,11 @@
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
 
-#include <TFile.h>
-#include <TTree.h>
-#include "Framework/Ntuple/NtpMCTreeHeader.h"
-#include "Framework/Ntuple/NtpMCEventRecord.h"
-
 class G4ParticleGun;
 class G4GeneralParticleSource;
 class PrimaryGeneratorMessenger;
-//class NtpMCEventRecord;
+class GENIEPrimaryGeneratorAction;
 
-using namespace genie;
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   public:
@@ -25,12 +19,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 //    void EndOfRun();
     void GeneratePrimaries(G4Event* anEvent) override;
 
-    void setGenieInputFile(G4String val) { 
-      ghepFileName = val; 
-      std::cout<<"PrimaryGeneratorAction.hh "<<ghepFileName<<std::endl;
-    }
+    void setUseGenie(G4bool val) { useGenie = val; }
+    void setGenieInputFile(G4String val) { ghepFileName = val; }
     void setGenieStartEvt(G4int val) { ghepEvtStartIdx = val; }
-    void setGenieStopEvt(G4int val) { ghepEvtStopIdx = val; }
 
   private:
 //    static PrimaryGeneratorAction* GeneratorInstance;
@@ -39,13 +30,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4ParticleGun* fGun;
     G4GeneralParticleSource* fGPS;
 
+    GENIEPrimaryGeneratorAction* fActionGenie;
+
+    G4bool useGenie;
     G4String ghepFileName;
     G4int ghepEvtStartIdx;
-    G4int ghepEvtStopIdx;
-    TFile* ghep_file;
-    TTree* ghep_tree;
-    NtpMCTreeHeader* thdr;
-    NtpMCEventRecord* mcrec;
 };
 
 #endif
