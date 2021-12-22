@@ -74,6 +74,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   int evtID = anEvent->GetEventID();
+  std::cout<<"oooOOOooo Event # "<<evtID<<" oooOOOooo"<<std::endl;
   G4cout<<"GeneratePrimaries from file "<<ghepFileName
     <<", evtID range from "<<ghepEvtStartIdx
     <<" to "<<ghepEvtStopIdx
@@ -91,15 +92,14 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   }
   int nev = ghep_tree->GetEntries();
   std::cout<<"Input GHEP tree has "<<nev<<((nev==1)? " entry." : " entries.")<<std::endl;
-  thdr = (NtpMCTreeHeader*)ghep_file->Get("header");
-  std::cout<<*thdr;
+  //thdr = (NtpMCTreeHeader*)ghep_file->Get("header");
+  //std::cout<<*thdr;
 
   mcrec = new NtpMCEventRecord(); 
   // main event record branch, always present
   ghep_tree->SetBranchAddress("gmcrec", &mcrec);
-
-  std::cout<<"oooOOOooo Event # "<<evtID<<" oooOOOooo"<<std::endl;
   mcrec->Clear();               // don't leak previously fetched info
+
   if (ghepEvtStartIdx + evtID > ghepEvtStopIdx || ghepEvtStartIdx + evtID >= nev) {
     std::cout<<"** event index beyond range !! **"<<std::endl;
   }

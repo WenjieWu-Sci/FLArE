@@ -21,8 +21,9 @@ class AnalysisManager {
     void EndOfEvent(const G4Event* event);
 
   public:
-    void setFileName(G4String i) { m_filename = i; }
-    void saveSecondary(G4bool i) { m_saveSecondary = i; }
+    void setFileName(G4String val) { m_filename = val; }
+    void saveSecondary(G4bool val) { m_saveSecondary = val; }
+    void saveEvd(G4bool val) { m_saveEvd = val; }
 
   private:
     static AnalysisManager* instance;
@@ -50,10 +51,8 @@ class AnalysisManager {
     G4int    secondaryTrackPDG[2000000];
 
     G4bool m_saveSecondary;
+    G4bool m_saveEvd;
 
-    TH2D* hEdepX;
-    TH2D* hEdepY;
-    TH2D* hEdepZ;
     TH2D* hEdepXY;
     TH2D* hEdepZX;
     TH2D* hEdepZY;

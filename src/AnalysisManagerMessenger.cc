@@ -54,6 +54,11 @@
   saveSecCmd->SetParameterName("saveSecondary", true);
   saveSecCmd->SetDefaultValue(false);
 
+  saveEvdCmd = new G4UIcmdWithABool("/histo/saveEvd", this);
+  saveEvdCmd->SetGuidance("whether save event display");
+  saveEvdCmd->SetParameterName("saveEvd", true);
+  saveEvdCmd->SetDefaultValue(false);
+
   //  histoCmd = new G4UIcmdWithAnInteger("/histo/setSeed",this);
   //  histoCmd->SetGuidance("Set random seed :");
   //  histoCmd->SetDefaultValue(1);
@@ -63,9 +68,9 @@
 
 AnalysisManagerMessenger::~AnalysisManagerMessenger()
 {
-  //  delete histoCmd;
   delete factoryCmd;
   delete saveSecCmd;
+  delete saveEvdCmd;
   delete histoDir;
 }
 
@@ -75,6 +80,7 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
 {
   if (command == factoryCmd) histo->setFileName(newValues);
   if (command == saveSecCmd) histo->saveSecondary(saveSecCmd->GetNewBoolValue(newValues));
+  if (command == saveEvdCmd) histo->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
 
   //  if(command == histoCmd) histo->setSeed(newValues);
 }
