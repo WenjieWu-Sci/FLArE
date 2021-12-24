@@ -3,6 +3,7 @@
 #include "PrimaryGeneratorMessenger.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "GENIEPrimaryGeneratorAction.hh"
+#include "PrimaryParticleInformation.hh"
 
 #include <G4ParticleTable.hh>
 #include <G4Event.hh>
@@ -23,6 +24,21 @@
 
 PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS = new G4GeneralParticleSource();
+  
+  // default setting of primary particle.
+  // can be override in GeneratePrimaries or in macros.
+  G4ParticleDefinition* myParticle;
+  myParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
+  fGPS->SetParticleDefinition(myParticle);
+  fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(5*GeV);  // kinetic energy
+  fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
+  G4double x0 = 0. * m;
+  G4double y0 = 0. * m;
+  G4double z0 = 0. * m;
+  G4double dz = 7. * m;
+  z0 += dz*(G4UniformRand()-0.5);
+  fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
+  fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
 
   fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
 
@@ -39,24 +55,28 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   if (useGenie) {
-    std::cout<<"===OOO=== Event Generator : GENIE ===OOO==="<<std::endl;
+    std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===OOO==="<<std::endl;
     fActionGenie->GeneratePrimaries(anEvent, ghepFileName, ghepEvtStartIdx);
   } else {
-    std::cout<<"===OOO=== Event Generator : General Particle Source ===OOO==="<<std::endl;
-    G4ParticleDefinition* myParticle;
-    myParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
-    fGPS->SetParticleDefinition(myParticle);
-    fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(5*GeV);
-    fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
-
-    G4double x0 = 0. * m;
-    G4double y0 = 0. * m;
-    G4double z0 = 0. * m;
-    G4double dz = 7. * m;
-    z0 += dz*(G4UniformRand()-0.5);
-    fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
-    fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
-
+    std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===OOO==="<<std::endl;
     fGPS->GeneratePrimaryVertex(anEvent);
+  }
+
+  // loop over the vertices, and then over primary particles,
+  // and for each primary particle create an info object, in 
+  // which to store MC truth information
+  G4int count_particles = 0;
+  for (G4int ivtx = 0; ivtx < anEvent->GetNumberOfPrimaryVertex(); ++ivtx) {
+    for (G4int ipp = 0; ipp < anEvent->GetPrimaryVertex(ivtx)->GetNumberOfParticle(); ++ipp) {
+      G4PrimaryParticle* primary_particle = 
+        anEvent->GetPrimaryVertex(ivtx)->GetPrimary(ipp);
+      if (primary_particle) {
+        primary_particle->SetUserInformation(new PrimaryParticleInformation(
+              count_particles, primary_particle->GetPDGcode(),
+              primary_particle->GetMomentum(),                     
+              anEvent->GetPrimaryVertex(ivtx)->GetPosition()));
+        count_particles++;
+      }
+    }
   }
 }

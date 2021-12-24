@@ -33,12 +33,10 @@ class AnalysisManager {
     TString  m_filename;
     TTree*   evt;
     G4int    evtID;
+    G4int    nPrimaryVertex;
     G4double vtxX;
     G4double vtxY;
     G4double vtxZ;
-    //G4double vtxX2;
-    //G4double vtxY2;
-    //G4double vtxZ2;
     G4double edepInLAr;
     G4double primaryTrackLength;
     G4int    nFSParticles;

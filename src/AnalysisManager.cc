@@ -1,6 +1,7 @@
 #include "AnalysisManager.hh"
 #include "LArBoxSD.hh"
 #include "LArBoxHit.hh"
+#include "PrimaryParticleInformation.hh"
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
@@ -32,7 +33,8 @@ AnalysisManager::~AnalysisManager() {;}
 
 void AnalysisManager::bookEvtTree() {
   evt = new TTree("evt", "evtTreeInfo");
-  evt->Branch("evtID"    , &evtID    , "evtID/I");
+  evt->Branch("evtID"         , &evtID         , "evtID/I");
+  evt->Branch("nPrimaryVertex", &nPrimaryVertex, "nPrimaryVertex/I");
   evt->Branch("vtxX"     , &vtxX     , "vtxX/D");
   evt->Branch("vtxY"     , &vtxY     , "vtxY/D");
   evt->Branch("vtxZ"     , &vtxZ     , "vtxZ/D");
@@ -83,9 +85,6 @@ void AnalysisManager::BeginOfEvent() {
   vtxX = -999;
   vtxY = -999;
   vtxZ = -999;
-  //vtxX2 = -999;
-  //vtxY2 = -999;
-  //vtxZ2 = -999;
   edepInLAr = 0;
   primaryTrackLength = 0;
   nFSParticles = 0;
@@ -101,8 +100,26 @@ void AnalysisManager::BeginOfEvent() {
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
-  // Branch: evtID
+  /// Branch: evtID
   evtID = event->GetEventID();
+
+  G4int count_particles = 0;
+  /// loop over the vertices, and then over primary particles,
+  /// primary particle MC truth info from event generator.
+  for (G4int ivtx = 0; ivtx < event->GetNumberOfPrimaryVertex(); ++ivtx) {
+    for (G4int ipp = 0; ipp < event->GetPrimaryVertex(ivtx)->GetNumberOfParticle(); ++ipp) {
+      G4PrimaryParticle* primary_particle = 
+        event->GetPrimaryVertex(ivtx)->GetPrimary(ipp);
+      if (primary_particle) {
+        PrimaryParticleInformation* primary_particle_info = 
+          dynamic_cast<PrimaryParticleInformation*>(primary_particle->GetUserInformation());
+        primary_particle_info->Print();
+        count_particles++;
+      }
+    }
+  }
+  nPrimaryVertex = event->GetNumberOfPrimaryVertex();
+  std::cout<<"number of primary particles : "<<count_particles<<" "<<nPrimaryVertex<<std::endl;
 
   G4SDManager* sdm = G4SDManager::GetSDMpointer();
   // Get the hit collections
