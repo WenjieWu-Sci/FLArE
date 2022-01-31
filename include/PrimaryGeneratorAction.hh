@@ -1,6 +1,7 @@
 #ifndef PRIMARY_GENERATOR_ACTION_HH
 #define PRIMARY_GENERATOR_ACTION_HH
 
+#include <TLorentzVector.h>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
 #include "Framework/Interaction/InteractionType.h"
@@ -34,6 +35,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     GENIEPrimaryGeneratorAction* fActionGenie;
     G4int int_type        { -1 };
     G4int scattering_type { -1 };
+    G4int fslpdg;
+    TLorentzVector fslp4;
+    TLorentzVector fslx4;
 
     G4bool useGenie;
     G4String ghepFileName;

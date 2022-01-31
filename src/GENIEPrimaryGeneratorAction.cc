@@ -84,6 +84,11 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   std::cout<<_int_type.AsString(int_type)<<" "
            <<_scattering_type.AsString(scattering_type)<<std::endl;
 
+  GHepParticle* fsl = event->FinalStatePrimaryLepton();
+  fslPDG = fsl->Pdg();
+  fslP4  = *(fsl->P4());
+  fslX4  = *(fsl->X4());
+
   for (int ipar=0; ipar<event->GetEntries(); ++ipar) {
     GHepParticle* p = event->Particle(ipar);
 

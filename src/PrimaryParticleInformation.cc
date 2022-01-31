@@ -2,10 +2,12 @@
 
 PrimaryParticleInformation::PrimaryParticleInformation(G4int aID, G4int aPDG, G4double aMass,
     G4ThreeVector aMomentum, G4ThreeVector aVertex, 
-    G4int aInttype, G4int aScatteringtype) :
+    G4int aInttype, G4int aScatteringtype,
+    G4int afslPDG, TLorentzVector afslP4, TLorentzVector afslX4) :
   fPartID(aID), fPDG(aPDG), fMass(aMass),
   fMomentumMC(aMomentum), fVertexMC(aVertex), 
-  fInteractionType(aInttype), fScatteringType(aScatteringtype)
+  fInteractionType(aInttype), fScatteringType(aScatteringtype),
+  fFSLPDG(afslPDG), fFSLP4(afslP4), fFSLX4(afslX4)
 {
 }
 
@@ -21,7 +23,9 @@ void PrimaryParticleInformation::Print() const {
     <<"MC vertex : "<<fVertexMC<<G4endl;
   if (fInteractionType!=-1 && fScatteringType!=-1) {
     G4cout<<"NeutrinoInteractionInformation : "
-          <<fInteractionType<<" "<<fScatteringType<<G4endl;
+          <<fInteractionType<<" "<<fScatteringType;
+    G4cout<<", FSL : "<<fFSLPDG<<" (" <<fFSLP4.X()<<", "
+      <<fFSLP4.Y()<<", "<<fFSLP4.Z()<<", "<<fFSLP4.T() <<")"<<G4endl;
   }
 }
 

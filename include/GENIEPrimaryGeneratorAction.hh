@@ -3,6 +3,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TLorentzVector.h>
 #include "globals.hh"
 #include "Framework/Ntuple/NtpMCTreeHeader.h"
 #include "Framework/Ntuple/NtpMCEventRecord.h"
@@ -23,6 +24,9 @@ class GENIEPrimaryGeneratorAction {
     void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx);
     InteractionType_t InteractionTypeId() { return int_type; };
     ScatteringType_t  ScatteringTypeId()  { return scattering_type; };
+    G4int             FSLPDG() { return fslPDG; };
+    TLorentzVector    FSLP4()  { return fslP4; };
+    TLorentzVector    FSLX4()  { return fslX4; };
     
   private:
     G4GeneralParticleSource* fGPS;
@@ -38,6 +42,9 @@ class GENIEPrimaryGeneratorAction {
     // https://internal.dunescience.org/doxygen/ScatteringType_8h_source.html
     InteractionType_t int_type;
     ScatteringType_t  scattering_type;
+    G4int fslPDG;
+    TLorentzVector fslP4;
+    TLorentzVector fslX4;
 };
 
 #endif

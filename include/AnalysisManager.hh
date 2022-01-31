@@ -38,6 +38,11 @@ class AnalysisManager {
 
     G4int    nuIntType;
     G4int    nuScatteringType;
+    G4int    nuFSLPDG;
+    G4double nuFSLPx;
+    G4double nuFSLPy;
+    G4double nuFSLPz;
+    G4double nuFSLE;
 
     G4int    nPrimaryParticle;
     G4int    PDG[2000000];

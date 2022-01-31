@@ -1,6 +1,7 @@
 #ifndef PrimaryParticleInformation_HH
 #define PrimaryParticleInformation_HH
 
+#include <TLorentzVector.h>
 #include "G4VUserPrimaryParticleInformation.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
@@ -17,9 +18,13 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     /// @param aVertex An initial particle vertex.
     /// @param interaction type of the neutrino interaction if it is from GENIE
     /// @param scattering type of the neutrino interaction if it is from GENIE
+    /// @param fsl PDG of the neutrino interaction if it is from GENIE
+    /// @param fsl P4 of the neutrino interaction if it is from GENIE
+    /// @param fsl X4 of the neutrino interaction if it is from GENIE
     PrimaryParticleInformation(G4int aID, G4int aPDG, G4double aMass,
         G4ThreeVector aMomentum, G4ThreeVector aVertex,
-        G4int aInttype, G4int aScatteringtype);
+        G4int aInttype, G4int aScatteringtype, 
+        G4int afslPDG, TLorentzVector afslP4, TLorentzVector afslX4);
 
     virtual ~PrimaryParticleInformation();
 
@@ -41,6 +46,9 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     /// Get the truth information of the neutrino interaction if it's from GENIE
     inline G4int GetInteractionTypeId() const  { return fInteractionType; };
     inline G4int GetScatteringTypeId()  const  { return fScatteringType;  };
+    inline G4int GetFSLPDG() const { return fFSLPDG; };
+    inline TLorentzVector GetFSLP4() const { return fFSLP4; };
+    inline TLorentzVector GetFSLX4() const { return fFSLX4; };
 
     /// Prints the information about the particle.
     virtual void Print() const;
@@ -67,6 +75,15 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
 
     /// Scattering type of the neutrino interaction if it is from GENIE
     G4int fScatteringType;
+
+    /// fsl PDG of the neutrino interaction if it is from GENIE
+    G4int fFSLPDG;
+
+    /// fsl P4 of the neutrino interaction if it is from GENIE
+    TLorentzVector fFSLP4;
+
+    /// fsl X4 of the neutrino interaction if it is from GENIE
+    TLorentzVector fFSLX4;
 };
 
 #endif

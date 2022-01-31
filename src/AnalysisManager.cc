@@ -37,6 +37,11 @@ void AnalysisManager::bookEvtTree() {
 
   evt->Branch("nuIntType"              , &nuIntType         , "nuIntType/I");
   evt->Branch("nuScatteringType"       , &nuScatteringType  , "nuScatteringType/I");
+  evt->Branch("nuFSLPDG"               , &nuFSLPDG          , "nuFSLPDG/I");
+  evt->Branch("nuFSLPx"                , &nuFSLPx           , "nuFSLPx/D");
+  evt->Branch("nuFSLPy"                , &nuFSLPy           , "nuFSLPy/D");
+  evt->Branch("nuFSLPz"                , &nuFSLPz           , "nuFSLPz/D");
+  evt->Branch("nuFSLE"                 , &nuFSLE            , "nuFSLE/D");
 
   evt->Branch("edepInLAr"              , &edepInLAr         , "edepInLAr/D");
   evt->Branch("edepInHadCalX"          , &edepInHadCalX     , "edepInHadCalX/D");
@@ -94,6 +99,11 @@ void AnalysisManager::EndOfRun() {
 void AnalysisManager::BeginOfEvent() {
   nuIntType          = -1;
   nuScatteringType   = -1;
+  nuFSLPDG           = 0;
+  nuFSLPx            = -999;
+  nuFSLPy            = -999;
+  nuFSLPz            = -999;
+  nuFSLE             = -999;
   edepInLAr          = 0;
   edepInHadCalX      = 0;
   edepInHadCalY      = 0;
@@ -137,6 +147,11 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
         if (primary_particle_info->GetPartID()==0) {
           nuIntType        = primary_particle_info->GetInteractionTypeId();
           nuScatteringType = primary_particle_info->GetScatteringTypeId();
+          nuFSLPDG         = primary_particle_info->GetFSLPDG();
+          nuFSLPx          = primary_particle_info->GetFSLP4().X();
+          nuFSLPy          = primary_particle_info->GetFSLP4().Y();
+          nuFSLPz          = primary_particle_info->GetFSLP4().Z();
+          nuFSLE           = primary_particle_info->GetFSLP4().T();
         }
         PDG[count_particles]   = primary_particle_info->GetPDG();
         vtxX[count_particles]  = primary_particle_info->GetVertexMC().getX();

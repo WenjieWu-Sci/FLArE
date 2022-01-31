@@ -59,6 +59,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     fActionGenie->GeneratePrimaries(anEvent, ghepFileName, ghepEvtStartIdx);
     int_type = fActionGenie->InteractionTypeId();
     scattering_type = fActionGenie->ScatteringTypeId();
+    fslpdg = fActionGenie->FSLPDG();
+    fslp4  = fActionGenie->FSLP4();
+    fslx4  = fActionGenie->FSLX4();
   } else {
     std::cout<<std::endl;
     std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===OOO==="<<std::endl;
@@ -77,7 +80,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
         primary_particle->SetUserInformation(new PrimaryParticleInformation(
               count_particles, primary_particle->GetPDGcode(), primary_particle->GetMass(),
               primary_particle->GetMomentum(), anEvent->GetPrimaryVertex(ivtx)->GetPosition(),
-              int_type, scattering_type));
+              int_type, scattering_type,
+              fslpdg, fslp4, fslx4));
         count_particles++;
       }
     }
