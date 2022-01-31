@@ -125,7 +125,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double HadCatcherLength  = fNbOfAbsor*thicknessOneLayer;
 
   auto hadCatcherSolid
-    = new G4Box("HadCatcherBox", 1.0*m/2, 1.0*m/2, HadCatcherLength/2);
+    = new G4Box("HadCatcherBox", lArSizeX/2, lArSizeY/2, HadCatcherLength/2);
   auto hadCatcherLogical
     = new G4LogicalVolume(hadCatcherSolid, LArBoxMaterials->Material("Air"), "HadCatcherLogical");
   new G4PVPlacement(nullptr,
@@ -145,29 +145,29 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   // X-Plane
   auto HadCalXLayersSolid
-    = new G4Box("HadCalXLayersBox", 1.0*m/2, 1.0*m/2, 1.0*cm/2);
+    = new G4Box("HadCalXLayersBox", lArSizeX/2, lArSizeY/2, thicknessCaloX/2);
   auto HadCalXLayersLogical
     = new G4LogicalVolume(HadCalXLayersSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalXLayersLogical");
 
   auto HadCalXCellSolid
-    = new G4Box("HadCalXCellBox", 1.0*cm/2, 1.0*m/2, 1.0*cm/2);
+    = new G4Box("HadCalXCellBox", thicknessCaloX/2, lArSizeY/2, thicknessCaloX/2);
   HadCalXCellLogical
     = new G4LogicalVolume(HadCalXCellSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalXCellLogical");
   new G4PVReplica("HadCalXCellPhysical", HadCalXCellLogical,
-                  HadCalXLayersLogical, kXAxis, 100, 1.0*cm);
+                  HadCalXLayersLogical, kXAxis, lArSizeX/thicknessCaloX, thicknessCaloX);
 
   // Y-Plane
   auto HadCalYLayersSolid
-    = new G4Box("HadCalYLayersBox", 1.0*m/2, 1.0*m/2, 1.0*cm/2);
+    = new G4Box("HadCalYLayersBox", lArSizeX/2, lArSizeY/2, thicknessCaloY/2);
   auto HadCalYLayersLogical
     = new G4LogicalVolume(HadCalYLayersSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalYLayersLogical");
 
   auto HadCalYCellSolid
-    = new G4Box("HadCalYCellBox", 1.0*m/2, 1.0*cm/2, 1.0*cm/2);
+    = new G4Box("HadCalYCellBox", lArSizeX/2, thicknessCaloY/2, thicknessCaloY/2);
   HadCalYCellLogical
     = new G4LogicalVolume(HadCalYCellSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalYCellLogical");
   new G4PVReplica("HadCalYCellPhysical", HadCalYCellLogical,
-                  HadCalYLayersLogical, kYAxis, 100, 1.0*cm);
+                  HadCalYLayersLogical, kYAxis, lArSizeY/thicknessCaloY, thicknessCaloY);
 
   auto HadAbsorAssembly = new G4AssemblyVolume();
   G4RotationMatrix Ra(0, 0, 0);
@@ -201,87 +201,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
 //  hadCatcherLogical->SetVisAttributes(lArBoxVis);
 
-    /*
-  //
-  // Absorber
-  //
-  auto hadAbsorPlaneSolid
-    = new G4Box("HadAbsorPlaneBox", 1.0*m/2, 1.0*m/2, 112.0*cm/2);
-  auto hadAbsorPlaneLogical
-    = new G4LogicalVolume(hadAbsorPlaneSolid, LArBoxMaterials->Material("Air"), "HadAbsorPlaneLogical");
-  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, lArSizeZ/2+56*cm-1.0*cm+GapToHadCatcher), hadAbsorPlaneLogical,
-                    "HadAbsorPlanePhysical", worldLog, false, 0, fCheckOverlap);
-
-  auto HadAbsorLayersSolid
-    = new G4Box("HadAbsorLayersBox", 1.0*m/2, 1.0*m/2, 5.0*cm/2);
-  auto HadAbsorLayersLogical
-    = new G4LogicalVolume(HadAbsorLayersSolid, LArBoxMaterials->Material("Iron"), "HadAbsorLayersLogical");
-  new G4ReplicatedSlice("HadAbsorLayersPhysical", HadAbsorLayersLogical,
-                   hadAbsorPlaneLogical, kZAxis, 16, 7.0*cm, 1.0*cm, 0*cm);
-
-  G4VisAttributes* absorVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
-  absorVis->SetVisibility(true);
-  absorVis->SetForceWireframe(true);
-  //absorVis->SetForceSolid(true);
-  absorVis->SetForceAuxEdgeVisible(true);
-  HadAbsorLayersLogical->SetVisAttributes(absorVis);
-
-  //
-  // Calorimeters
-  //
-  // X-Plane
-  auto hadCalXPlaneSolid
-    = new G4Box("HadCalXPlaneBox", 1.0*m/2, 1.0*m/2, 112.0*cm/2);
-  auto hadCalXPlaneLogical
-    = new G4LogicalVolume(hadCalXPlaneSolid, LArBoxMaterials->Material("Air"), "HadCalXPlaneLogical");
-  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, lArSizeZ/2+56*cm+2*cm+GapToHadCatcher), hadCalXPlaneLogical,
-                    "HadCalXPlanePhysical", worldLog, false, 0, fCheckOverlap);
-
-  auto HadCalXLayersSolid
-    = new G4Box("HadCalXLayersBox", 1.0*m/2, 1.0*m/2, 1.0*cm/2);
-  auto HadCalXLayersLogical
-    = new G4LogicalVolume(HadCalXLayersSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalXLayersLogical");
-  new G4ReplicatedSlice("HadCalXLayersPhysical", HadCalXLayersLogical,
-                   hadCalXPlaneLogical, kZAxis, 16, 7.0*cm, 3.0*cm, 0*cm);
-
-  auto HadCalXCellSolid
-    = new G4Box("HadCalXCellBox", 1.0*cm/2, 1.0*m/2, 1.0*cm/2);
-  HadCalXCellLogical
-    = new G4LogicalVolume(HadCalXCellSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalXCellLogical");
-  new G4PVReplica("HadCalXCellPhysical", HadCalXCellLogical,
-                  HadCalXLayersLogical, kXAxis, 100, 1.0*cm);
-
-  // Y-Plane
-  auto hadCalYPlaneSolid
-    = new G4Box("HadCalYPlaneBox", 1.0*m/2, 1.0*m/2, 112.0*cm/2);
-  auto hadCalYPlaneLogical
-    = new G4LogicalVolume(hadCalYPlaneSolid, LArBoxMaterials->Material("Air"), "HadCalYPlaneLogical");
-  new G4PVPlacement(nullptr, G4ThreeVector(0, 0, lArSizeZ/2+56*cm+3*cm+GapToHadCatcher), hadCalYPlaneLogical,
-                    "HadCalYPlanePhysical", worldLog, false, 0, fCheckOverlap);
-
-  auto HadCalYLayersSolid
-    = new G4Box("HadCalYLayersBox", 1.0*m/2, 1.0*m/2, 1.0*cm/2);
-  auto HadCalYLayersLogical
-    = new G4LogicalVolume(HadCalYLayersSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalYLayersLogical");
-  new G4ReplicatedSlice("HadCalYLayersPhysical", HadCalYLayersLogical,
-                   hadCalYPlaneLogical, kZAxis, 16, 7.0*cm, 3.0*cm, 0*cm);
-
-  auto HadCalYCellSolid
-    = new G4Box("HadCalYCellBox", 1.0*m/2, 1.0*cm/2, 1.0*cm/2);
-  HadCalYCellLogical
-    = new G4LogicalVolume(HadCalYCellSolid, LArBoxMaterials->Material("Polystyrene"), "HadCalYCellLogical");
-  new G4PVReplica("HadCalYCellPhysical", HadCalYCellLogical,
-                  HadCalYLayersLogical, kYAxis, 100, 1.0*cm);
-
-  G4VisAttributes* hadCalVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255));
-  hadCalVis->SetVisibility(true);
-  hadCalVis->SetForceWireframe(true);
-  hadCalVis->SetForceAuxEdgeVisible(true);
-  //HadCalXLayersLogical->SetVisAttributes(hadCalVis);
-  //HadCalYLayersLogical->SetVisAttributes(hadCalVis);
-  HadCalXCellLogical->SetVisAttributes(hadCalVis);
-  HadCalYCellLogical->SetVisAttributes(hadCalVis);
-
+  /*
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
   hadAbsorPlaneLogical->SetVisAttributes(nullVis);
