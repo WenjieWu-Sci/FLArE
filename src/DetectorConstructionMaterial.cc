@@ -144,6 +144,15 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   LS->AddElement(elO, 0.00034);
   LS->AddElement(elN, 0.00027);
   LS->AddElement(elS, 0.00005);
+
+  // Source: 
+  // Plastic scintillator tiles (used both in CMS hadron calorimeter
+  // and ATLAS hadron barrel calorimeter): 
+  //     X0 = 42.4 cm  and  lambda_I = 79.360 cm.  
+  density = 1.032*g/cm3;
+  polystyrene = new G4Material("Polystyrene", density, nel=2);
+  polystyrene->AddElement(elC, natoms=19);
+  polystyrene->AddElement(elH, natoms=21);
 }
 
 DetectorConstructionMaterial* DetectorConstructionMaterial::GetInstance() {
@@ -168,6 +177,7 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "StainlessSteel")     material = StainlessSteel;
   if(what == "Nickel")             material = Nickel;
   if(what == "LiquidScintillator") material = LS;
+  if(what == "Polystyrene")        material = polystyrene;
 
   return material;
 }

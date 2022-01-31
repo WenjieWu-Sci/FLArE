@@ -44,7 +44,6 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
 
   // create a messenger for this class
   genMessenger = new PrimaryGeneratorMessenger(this);
-
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction() {
@@ -55,9 +54,13 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   if (useGenie) {
+    std::cout<<std::endl;
     std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===OOO==="<<std::endl;
     fActionGenie->GeneratePrimaries(anEvent, ghepFileName, ghepEvtStartIdx);
+    int_type = fActionGenie->InteractionTypeId();
+    scattering_type = fActionGenie->ScatteringTypeId();
   } else {
+    std::cout<<std::endl;
     std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===OOO==="<<std::endl;
     fGPS->GeneratePrimaryVertex(anEvent);
   }
@@ -72,9 +75,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
         anEvent->GetPrimaryVertex(ivtx)->GetPrimary(ipp);
       if (primary_particle) {
         primary_particle->SetUserInformation(new PrimaryParticleInformation(
-              count_particles, primary_particle->GetPDGcode(),
-              primary_particle->GetMomentum(),                     
-              anEvent->GetPrimaryVertex(ivtx)->GetPosition()));
+              count_particles, primary_particle->GetPDGcode(), primary_particle->GetMass(),
+              primary_particle->GetMomentum(), anEvent->GetPrimaryVertex(ivtx)->GetPosition(),
+              int_type, scattering_type));
         count_particles++;
       }
     }

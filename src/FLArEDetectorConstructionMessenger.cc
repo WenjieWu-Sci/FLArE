@@ -1,5 +1,5 @@
 #include "FLArEDetectorConstructionMessenger.hh"
-#include "LArBoxDetectorConstruction.hh"
+#include "FLArEDetectorConstruction.hh"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
@@ -8,7 +8,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(LArBoxDetectorConstruction* manager) 
+FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDetectorConstruction* manager) 
   : det(manager) {
     detDir = new G4UIdirectory("/det/");
     detDir->SetGuidance("detector control");

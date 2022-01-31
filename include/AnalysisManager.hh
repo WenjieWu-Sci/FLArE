@@ -29,16 +29,31 @@ class AnalysisManager {
     static AnalysisManager* instance;
     AnalysisManagerMessenger* messenger;
 
+    G4int    nPrimaryVertex;
+
     TFile*   thefile;
     TString  m_filename;
     TTree*   evt;
     G4int    evtID;
-    G4int    nPrimaryVertex;
-    G4double vtxX;
-    G4double vtxY;
-    G4double vtxZ;
+
+    G4int    nuIntType;
+    G4int    nuScatteringType;
+
+    G4int    nPrimaryParticle;
+    G4int    PDG[2000000];
+    G4double vtxX[2000000];
+    G4double vtxY[2000000];
+    G4double vtxZ[2000000];
+    G4double Px[2000000];
+    G4double Py[2000000];
+    G4double Pz[2000000];
+    G4double Pmass[2000000];
+
     G4double edepInLAr;
+    G4double edepInHadCalX;
+    G4double edepInHadCalY;
     G4double primaryTrackLength;
+
     G4int    nFSParticles;
     G4int    fsParticlePDG[2000000];
     G4double fsParticleKinE[2000000];
@@ -56,7 +71,9 @@ class AnalysisManager {
     TH2D* hEdepZY;
 
   private:
-    G4int flArBoxSDId { -1 };
+    G4int flArBoxSDId  { -1 };
+    G4int fHadCalXSDId { -1 };
+    G4int fHadCalYSDId { -1 };
 //    std::set<G4int> allTrackID;
 };
 

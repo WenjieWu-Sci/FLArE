@@ -6,7 +6,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class LArBoxDetectorConstruction;
+class FLArEDetectorConstruction;
 class G4UIdirectory;
 class G4UIcommand;
 class G4UIcmdWithAString;
@@ -16,13 +16,13 @@ class G4UIcmdWithABool;
 
 class FLArEDetectorConstructionMessenger: public G4UImessenger {
   public:
-    FLArEDetectorConstructionMessenger(LArBoxDetectorConstruction*);
+    FLArEDetectorConstructionMessenger(FLArEDetectorConstruction*);
     ~FLArEDetectorConstructionMessenger();
 
     void SetNewValue(G4UIcommand*, G4String);
 
   private:
-    LArBoxDetectorConstruction* det;
+    FLArEDetectorConstruction* det;
     G4UIdirectory* detDir;
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithABool* detGeomCmd;

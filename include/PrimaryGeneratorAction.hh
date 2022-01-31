@@ -3,12 +3,13 @@
 
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
+#include "Framework/Interaction/InteractionType.h"
+#include "Framework/Interaction/ScatteringType.h"
 
 class G4ParticleGun;
 class G4GeneralParticleSource;
 class PrimaryGeneratorMessenger;
 class GENIEPrimaryGeneratorAction;
-
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   public:
@@ -31,6 +32,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4GeneralParticleSource* fGPS;
 
     GENIEPrimaryGeneratorAction* fActionGenie;
+    G4int int_type        { -1 };
+    G4int scattering_type { -1 };
 
     G4bool useGenie;
     G4String ghepFileName;

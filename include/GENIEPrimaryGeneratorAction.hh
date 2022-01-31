@@ -6,6 +6,8 @@
 #include "globals.hh"
 #include "Framework/Ntuple/NtpMCTreeHeader.h"
 #include "Framework/Ntuple/NtpMCEventRecord.h"
+#include "Framework/Interaction/InteractionType.h"
+#include "Framework/Interaction/ScatteringType.h"
 
 class G4GeneralParticleSource;
 class G4Event;
@@ -19,6 +21,8 @@ class GENIEPrimaryGeneratorAction {
 
   public:
     void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx);
+    InteractionType_t InteractionTypeId() { return int_type; };
+    ScatteringType_t  ScatteringTypeId()  { return scattering_type; };
     
   private:
     G4GeneralParticleSource* fGPS;
@@ -29,6 +33,11 @@ class GENIEPrimaryGeneratorAction {
     TTree* ghep_tree;
     NtpMCTreeHeader* thdr;
     NtpMCEventRecord* mcrec;
+
+    // https://internal.dunescience.org/doxygen/Generator_2src_2Framework_2Interaction_2InteractionType_8h_source.html#l00033
+    // https://internal.dunescience.org/doxygen/ScatteringType_8h_source.html
+    InteractionType_t int_type;
+    ScatteringType_t  scattering_type;
 };
 
 #endif

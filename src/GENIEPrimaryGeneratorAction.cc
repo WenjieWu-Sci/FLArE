@@ -3,6 +3,7 @@
 
 #include <G4GeneralParticleSource.hh>
 #include <G4ParticleTable.hh>
+#include <G4IonTable.hh>
 //#include <G4Event.hh>
 #include <G4SystemOfUnits.hh>
 //#include <G4ParticleGun.hh>
@@ -24,6 +25,7 @@
 #include "Framework/ParticleData/PDGLibrary.h"
 #include "Framework/Utils/CmdLnArgParser.h"
 #include "Framework/Utils/RunOpt.h"
+#include "Framework/Interaction/ProcessInfo.h"
 
 using namespace genie;
 
@@ -73,14 +75,49 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   ghep_tree->GetEntry(ghepEvtStartIdx + evtID);   // fetch a single entry from GENIE input file
   // retrieve GHEP event record abd print it out.
   EventRecord* event = mcrec->event;
+
+  const ProcessInfo procInfo = event->Summary()->ProcInfo();
+  int_type        = procInfo.InteractionTypeId();
+  scattering_type = procInfo.ScatteringTypeId();
+  InteractionType _int_type;
+  ScatteringType _scattering_type;
+  std::cout<<_int_type.AsString(int_type)<<" "
+           <<_scattering_type.AsString(scattering_type)<<std::endl;
+
   for (int ipar=0; ipar<event->GetEntries(); ++ipar) {
     GHepParticle* p = event->Particle(ipar);
-    if (p->Status()==1) {
-      //std::cout<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
-      //  <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
 
-      fGPS->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle(p->Pdg()));
-      fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(p->Energy() * GeV);
+    // ref: https://internal.dunescience.org/doxygen/ConvertMCTruthToG4_8cxx_source.html
+    // unknown pgd codes in GENIE
+    // This has been a known issue with GENIE
+    const int genieLo = 2000000001;
+    const int genieHi = 2000000202;
+    if (p->Pdg() >= genieLo && p->Pdg() <= genieHi) {
+      std::cout<<"This unknown PDG code ["<<p->Name()<<" ("<<p->Pdg()<<")] was present in the GENIE input, "
+               <<"but not processed by Geant4."
+               <<std::endl;
+      continue;
+    }
+    //std::cout<<p->Status()<<" "<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
+    //  <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
+    if (p->Status()==1) {
+      G4ParticleDefinition* particleDefinition;
+      if (p->Pdg() == 0) {
+        particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle("opticalphoton");
+      } else {
+        particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(p->Pdg());
+      }
+      if (p->Pdg() > 1000000000) { // If the particle is a nucleus
+        // If the particle table doesn't have a definition yet, ask the ion
+        // table for one. This will create a new ion definition as needed.
+        if (!particleDefinition) {
+          int Z = (p->Pdg() % 10000000) / 10000; // atomic number
+          int A = (p->Pdg() % 10000) / 10; // mass number
+          particleDefinition = G4ParticleTable::GetParticleTable()->GetIonTable()->GetIon(Z, A, 0.);
+        }
+      }
+      fGPS->SetParticleDefinition(particleDefinition);
+      fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy((p->Energy() - p->Mass()) * GeV);  // kinetic energy
       fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(p->Px(), p->Py(), p->Pz()));
       fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
       fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm - 3.0 * m));

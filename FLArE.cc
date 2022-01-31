@@ -7,7 +7,7 @@
 
 #include <G4String.hh>
 #include "ActionInitialization.hh"
-#include "LArBoxDetectorConstruction.hh"
+#include "FLArEDetectorConstruction.hh"
 //#include "FLArEDetectorConstructionMessenger.hh"
 #include "QGSP_BERT.hh"
 #include "AnalysisManager.hh"
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
   auto runManager = new G4RunManager();
   runManager->SetVerboseLevel(1);
 
-  runManager->SetUserInitialization(new LArBoxDetectorConstruction());
+  runManager->SetUserInitialization(new FLArEDetectorConstruction());
   //runManager->SetUserInitialization(new QGSP_BERT());
   G4PhysListFactory factory;
   runManager->SetUserInitialization(factory.ReferencePhysList());

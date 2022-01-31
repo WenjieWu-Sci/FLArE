@@ -10,7 +10,7 @@ SteppingAction::SteppingAction(RunAction* runAction)
 }
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep) {
-  G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchable()->GetVolume();
+  //G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchable()->GetVolume();
   //if (volume != nullptr) {
   //  G4cout<<volume->GetName()<<G4endl;
   //}

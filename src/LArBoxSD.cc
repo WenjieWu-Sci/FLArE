@@ -11,11 +11,6 @@ LArBoxSD::LArBoxSD(G4String name) : G4VSensitiveDetector(name) {
 }
 
 G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
-  /*************************
-   * Records:
-   * Particle type, Parent ID, track ID, Step No,
-   * Create process, Process name
-   * ***********************/
   G4Track* aTrack = aStep->GetTrack();
   G4int TrackStatus = aTrack->GetTrackStatus();
   //G4cout<<"debug (track status): "<<TrackStatus<<G4endl;
@@ -32,15 +27,27 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   } else {
     CreatorProcess = "PrimaryParticle";
   }
-  //G4cout<<"debug (create process): "<<CreatorProcess<<G4endl;
   G4StepPoint* PreStep          = aStep->GetPreStepPoint();
   G4ThreeVector PreStepPosition = PreStep->GetPosition();
   G4ThreeVector InitMomentum    = PreStep->GetMomentum();
   G4double InitKinEne           = PreStep->GetKineticEnergy();
   G4StepPoint* PostStep         = aStep->GetPostStepPoint();
   G4ThreeVector PostStepPosition= PostStep->GetPosition();
-  G4String ProcessName          = PostStep->GetProcessDefinedStep()->GetProcessName();
   G4double StepLength           = aStep->GetStepLength();
+  G4String ProcessName;
+  if (PostStep->GetProcessDefinedStep()) {
+    ProcessName = PostStep->GetProcessDefinedStep()->GetProcessName();
+  } else {
+    // https://apc.u-paris.fr/~franco/g4doxy/html/G4StepPoint_8icc-source.html#l00181
+    // If the pointer is 0, this means the Step is defined
+    // by the user defined limit in the current volume.
+    ProcessName = "UserDefinedLimit";
+  }
+
+//  if (CreatorProcess=="PrimaryParticle") {
+//    G4cout<<"debug (create process): "<<CreatorProcess<<G4endl;
+//    G4cout<<ParticleName<<" "<<PID<<" "<<TID<<" "<<Stepno<<G4endl;
+//  }
 
   // extra info
   G4double edep      = aStep->GetTotalEnergyDeposit();

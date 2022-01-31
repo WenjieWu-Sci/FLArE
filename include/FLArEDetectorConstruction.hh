@@ -1,10 +1,8 @@
-#ifndef LARBOXDETECTORCONSTRUCTION_HH
-#define LARBOXDETECTORCONSTRUCTION_HH
+#ifndef FLAREDETECTORCONSTRUCTION_HH
+#define FLAREDETECTORCONSTRUCTION_HH
 
 #include <G4VUserDetectorConstruction.hh>
 #include <G4String.hh>
-
-//#include "DetectorConstructionMessenger.hh"
 
 class G4LogicalVolume;
 class FLArEDetectorConstructionMessenger;
@@ -16,11 +14,11 @@ class DetectorConstructionMaterial;
  *
  */
 
-class LArBoxDetectorConstruction : public G4VUserDetectorConstruction {
+class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
   public:
     // Main method that has to be override in all detectors
-    LArBoxDetectorConstruction();
-    ~LArBoxDetectorConstruction();
+    FLArEDetectorConstruction();
+    ~FLArEDetectorConstruction();
     G4VPhysicalVolume* Construct() override;
 
     void ConstructSDandField() override;
@@ -33,6 +31,9 @@ class LArBoxDetectorConstruction : public G4VUserDetectorConstruction {
 
     G4LogicalVolume* worldLog;
     G4LogicalVolume* lArBoxLog;
+    G4LogicalVolume* HadCalXCellLogical;
+    G4LogicalVolume* HadCalYCellLogical;
+//    G4LogicalVolume* fLogicAbsor[16];
     G4String fDetMaterialName;
     G4bool m_saveGdml;
 

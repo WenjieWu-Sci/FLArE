@@ -22,7 +22,7 @@ class DetectorConstructionMaterial {
 
     G4Material *Aluminium, *Iron, *Copper, *Tungsten, *Lead;
     G4Material *Air, *Vacuum, *ArgonGas, *StainlessSteel, *Nickel; 
-    G4Material *LiquidArgon, *LiquidKrypton, *LS;
+    G4Material *LiquidArgon, *LiquidKrypton, *LS, *polystyrene;
 };
 
 #endif
