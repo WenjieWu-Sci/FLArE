@@ -33,38 +33,41 @@ AnalysisManager::~AnalysisManager() {;}
 
 void AnalysisManager::bookEvtTree() {
   evt = new TTree("evt", "evtTreeInfo");
-  evt->Branch("evtID"                  , &evtID             , "evtID/I");
-
-  evt->Branch("nuIntType"              , &nuIntType         , "nuIntType/I");
-  evt->Branch("nuScatteringType"       , &nuScatteringType  , "nuScatteringType/I");
-  evt->Branch("nuFSLPDG"               , &nuFSLPDG          , "nuFSLPDG/I");
-  evt->Branch("nuFSLPx"                , &nuFSLPx           , "nuFSLPx/D");
-  evt->Branch("nuFSLPy"                , &nuFSLPy           , "nuFSLPy/D");
-  evt->Branch("nuFSLPz"                , &nuFSLPz           , "nuFSLPz/D");
-  evt->Branch("nuFSLE"                 , &nuFSLE            , "nuFSLE/D");
+  evt->Branch("evtID"                                    , &evtID                  , "evtID/I");
+  evt->Branch("nuIntType"                                , &nuIntType              , "nuIntType/I");
+  evt->Branch("nuScatteringType"                         , &nuScatteringType       , "nuScatteringType/I");
+  evt->Branch("nuFSLPDG"                                 , &nuFSLPDG               , "nuFSLPDG/I");
+  evt->Branch("nuFSLPx"                                  , &nuFSLPx                , "nuFSLPx/D");
+  evt->Branch("nuFSLPy"                                  , &nuFSLPy                , "nuFSLPy/D");
+  evt->Branch("nuFSLPz"                                  , &nuFSLPz                , "nuFSLPz/D");
+  evt->Branch("nuFSLE"                                   , &nuFSLE                 , "nuFSLE/D");
+  evt->Branch("nPrimaryParticle"                         , &nPrimaryParticle       , "nPrimaryParticle/I");
+  evt->Branch("PDG[nPrimaryParticle]"                    , PDG                     , "PDG[nPrimaryParticle]/I");
+  evt->Branch("vtxX[nPrimaryParticle]"                   , vtxX                    , "vtxX[nPrimaryParticle]/D");
+  evt->Branch("vtxY[nPrimaryParticle]"                   , vtxY                    , "vtxY[nPrimaryParticle]/D");
+  evt->Branch("vtxZ[nPrimaryParticle]"                   , vtxZ                    , "vtxZ[nPrimaryParticle]/D");
+  evt->Branch("Px[nPrimaryParticle]"                     , Px                      , "Px[nPrimaryParticle]/D");
+  evt->Branch("Py[nPrimaryParticle]"                     , Py                      , "Py[nPrimaryParticle]/D");
+  evt->Branch("Pz[nPrimaryParticle]"                     , Pz                      , "Pz[nPrimaryParticle]/D");
+  evt->Branch("Pmass[nPrimaryParticle]"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
+  evt->Branch("primaryTrackID[nPrimaryParticle]"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackPDG[nPrimaryParticle]"        , primaryTrackPDG         , "primaryTrackPDG[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackLength[nPrimaryParticle]"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
+  evt->Branch("primaryTrackLengthInTPC[nPrimaryParticle]", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
 
   evt->Branch("edepInLAr"              , &edepInLAr         , "edepInLAr/D");
   evt->Branch("edepInHadCalX"          , &edepInHadCalX     , "edepInHadCalX/D");
   evt->Branch("edepInHadCalY"          , &edepInHadCalY     , "edepInHadCalY/D");
 
-  evt->Branch("nPrimaryParticle"       , &nPrimaryParticle  , "nPrimaryParticle/I");
-  evt->Branch("PDG[nPrimaryParticle]"  , PDG                , "PDG[nPrimaryParticle]/I");
-  evt->Branch("vtxX[nPrimaryParticle]" , vtxX               , "vtxX[nPrimaryParticle]/D");
-  evt->Branch("vtxY[nPrimaryParticle]" , vtxY               , "vtxY[nPrimaryParticle]/D");
-  evt->Branch("vtxZ[nPrimaryParticle]" , vtxZ               , "vtxZ[nPrimaryParticle]/D");
-  evt->Branch("Px[nPrimaryParticle]"   , Px                 , "Px[nPrimaryParticle]/D");
-  evt->Branch("Py[nPrimaryParticle]"   , Py                 , "Py[nPrimaryParticle]/D");
-  evt->Branch("Pz[nPrimaryParticle]"   , Pz                 , "Pz[nPrimaryParticle]/D");
-  evt->Branch("Pmass[nPrimaryParticle]", Pmass               , "Pmass[nPrimaryParticle]/D");
-
-  evt->Branch("primaryTrackLength"     , &primaryTrackLength, "primaryTrackLength/D");
-  evt->Branch("nFSParticles"           , &nFSParticles      , "nFSParticles/I");
-  evt->Branch("fsParticlePDG"          , fsParticlePDG      , "fsParticlePDG[nFSParticles]/I");
-  evt->Branch("fsParticleKinE"         , fsParticleKinE     , "fsParticleKinE[nFSParticles]/D");
-  evt->Branch("fsParticlePx"           , fsParticlePx       , "fsParticlePx[nFSParticles]/D");
-  evt->Branch("fsParticlePy"           , fsParticlePy       , "fsParticlePy[nFSParticles]/D");
-  evt->Branch("fsParticlePz"           , fsParticlePz       , "fsParticlePz[nFSParticles]/D");
-  evt->Branch("nSecondaryTracks"       , &nSecondaryTracks  , "nSecondaryTracks/I");
+  evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
+  evt->Branch("fromFSLParticlePDG"     , fromFSLParticlePDG      , "fromFSLParticlePDG[nFromFSLParticles]/I");
+  evt->Branch("fromFSLParticleKinE"    , fromFSLParticleKinE     , "fromFSLParticleKinE[nFromFSLParticles]/D");
+  evt->Branch("fromFSLParticlePx"      , fromFSLParticlePx       , "fromFSLParticlePx[nFromFSLParticles]/D");
+  evt->Branch("fromFSLParticlePy"      , fromFSLParticlePy       , "fromFSLParticlePy[nFromFSLParticles]/D");
+  evt->Branch("fromFSLParticlePz"      , fromFSLParticlePz       , "fromFSLParticlePz[nFromFSLParticles]/D");
+  evt->Branch("fromFSLTrackLength"     , fromFSLTrackLength      , "fromFSLTrackLength[nFromFSLParticles]/D");
+  evt->Branch("fromFSLTrackLengthInTPC", fromFSLTrackLengthInTPC , "fromFSLTrackLengthInTPC[nFromFSLParticles]/D");
+  evt->Branch("nSecondaryTracks"       , &nSecondaryTracks       , "nSecondaryTracks/I");
   if (m_saveSecondary) {
     evt->Branch("secondaryTrackPDG", secondaryTrackPDG, "secondaryTrackPDG[nSecondaryTracks]/I");
   }
@@ -108,8 +111,7 @@ void AnalysisManager::BeginOfEvent() {
   edepInHadCalX      = 0;
   edepInHadCalY      = 0;
   nPrimaryParticle   = 0;
-  nFSParticles       = 0;
-  primaryTrackLength = 0;
+  nFromFSLParticles  = 0;
   nSecondaryTracks   = 0;
   for (G4int i= 0; i< 2000000; ++i) {
     PDG[i]   = 0;
@@ -120,12 +122,18 @@ void AnalysisManager::BeginOfEvent() {
     Py[i]    = -999;
     Pz[i]    = -999;
     Pmass[i] = -999;
-    fsParticlePDG[i]     = 0;
-    fsParticleKinE[i]    = -999;
-    fsParticlePx[i]      = 0;
-    fsParticlePy[i]      = 0;
-    fsParticlePz[i]      = 0;
-    secondaryTrackPDG[i] = 0;
+    primaryTrackID[i]          = -1;
+    primaryTrackPDG[i]         = 0;
+    primaryTrackLength[i]      = 0;
+    primaryTrackLengthInTPC[i] = 0;
+    fromFSLParticlePDG[i]      = 0;
+    fromFSLParticleKinE[i]     = -999;
+    fromFSLParticlePx[i]       = 0;
+    fromFSLParticlePy[i]       = 0;
+    fromFSLParticlePz[i]       = 0;
+    fromFSLTrackLength[i]      = 0;
+    fromFSLTrackLengthInTPC[i] = 0;
+    secondaryTrackPDG[i]       = 0;
   }
 }
 
@@ -176,6 +184,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // If there is no hit collection, there is nothing to be done
   if (!hcofEvent) return;
 
+  // Main detector
   if (flArBoxSDId< 0) {
     flArBoxSDId = sdm->GetCollectionID("lArBoxSD/lar_box");
     G4cout<<"AnalysisManager: LArBox SD ID: "<<flArBoxSDId<<G4endl;
@@ -186,23 +195,36 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     if (hitCollection) {
       for (auto hit: *hitCollection->GetVector()) {
         edepInLAr += hit->GetEdep();
-        if (hit->GetCreatorProcess()=="PrimaryParticle") {
-          primaryTrackLength += hit->GetStepLength();
+        // stable final state particles in GENIE, primary particles in Geant4
+        if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
+          if (hit->GetStepNo()==1) {
+            primaryTrackID[hit->GetTID()-1] = hit->GetTID();
+            primaryTrackPDG[hit->GetTID()-1] = hit->GetParticle();
+          }
+          primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
+          primaryTrackLengthInTPC[hit->GetTID()-1] += hit->GetStepLength();
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
-          std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
-            <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
-            <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
-          nFSParticles++;
-          if (nFSParticles<=2000000) {
-            fsParticlePDG[nFSParticles-1] = hit->GetParticle();
-            fsParticleKinE[nFSParticles-1] = hit->GetInitKinEnergy();
-            fsParticlePx[nFSParticles-1] = hit->GetInitMomentum().getX();
-            fsParticlePy[nFSParticles-1] = hit->GetInitMomentum().getY();
-            fsParticlePz[nFSParticles-1] = hit->GetInitMomentum().getZ();
+        // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
+        if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+          if (hit->GetStepNo()==1) {
+            std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
+              <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
+              <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
+            nFromFSLParticles++;
+            if (nFromFSLParticles<=2000000) {
+              fromFSLParticlePDG[nFromFSLParticles-1]  = hit->GetParticle();
+              fromFSLParticleKinE[nFromFSLParticles-1] = hit->GetInitKinEnergy();
+              fromFSLParticlePx[nFromFSLParticles-1]   = hit->GetInitMomentum().getX();
+              fromFSLParticlePy[nFromFSLParticles-1]   = hit->GetInitMomentum().getY();
+              fromFSLParticlePz[nFromFSLParticles-1]   = hit->GetInitMomentum().getZ();
+            }
+          }
+          if (nFromFSLParticles>0) {
+            fromFSLTrackLength[nFromFSLParticles-1] += hit->GetStepLength();
+            fromFSLTrackLengthInTPC[nFromFSLParticles-1] += hit->GetStepLength();
           }
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()!=0 && hit->GetParticle()!=22) {
+        if (hit->GetStepNo()==1 && hit->GetPID()>nPrimaryParticle && hit->GetParticle()!=22) {
           // record secondary particles, but exclude gamma
           nSecondaryTracks++;
           if (nSecondaryTracks<=2000000) 
@@ -228,23 +250,34 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     if (hitCollection) {
       for (auto hit: *hitCollection->GetVector()) {
         edepInHadCalX += hit->GetEdep();
-        if (hit->GetCreatorProcess()=="PrimaryParticle") {
-          primaryTrackLength += hit->GetStepLength();
+        // stable final state particles in GENIE, primary particles in Geant4
+        if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
+          if (hit->GetStepNo()==1) {
+            primaryTrackID[hit->GetTID()-1] = hit->GetTID();
+            primaryTrackPDG[hit->GetTID()-1] = hit->GetParticle();
+          }
+          primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
-          std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
-            <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
-            <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
-          nFSParticles++;
-          if (nFSParticles<=2000000) {
-            fsParticlePDG[nFSParticles-1] = hit->GetParticle();
-            fsParticleKinE[nFSParticles-1] = hit->GetInitKinEnergy();
-            fsParticlePx[nFSParticles-1] = hit->GetInitMomentum().getX();
-            fsParticlePy[nFSParticles-1] = hit->GetInitMomentum().getY();
-            fsParticlePz[nFSParticles-1] = hit->GetInitMomentum().getZ();
+        // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
+        if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+          if (hit->GetStepNo()==1) {
+            std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
+              <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
+              <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
+            nFromFSLParticles++;
+            if (nFromFSLParticles<=2000000) {
+              fromFSLParticlePDG[nFromFSLParticles-1]  = hit->GetParticle();
+              fromFSLParticleKinE[nFromFSLParticles-1] = hit->GetInitKinEnergy();
+              fromFSLParticlePx[nFromFSLParticles-1]   = hit->GetInitMomentum().getX();
+              fromFSLParticlePy[nFromFSLParticles-1]   = hit->GetInitMomentum().getY();
+              fromFSLParticlePz[nFromFSLParticles-1]   = hit->GetInitMomentum().getZ();
+            }
+          }
+          if (nFromFSLParticles>0) {
+            fromFSLTrackLength[nFromFSLParticles-1] += hit->GetStepLength();
           }
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()!=0 && hit->GetParticle()!=22) {
+        if (hit->GetStepNo()==1 && hit->GetPID()>nPrimaryParticle && hit->GetParticle()!=22) {
           // record secondary particles, but exclude gamma
           nSecondaryTracks++;
           if (nSecondaryTracks<=2000000) 
@@ -270,23 +303,34 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     if (hitCollection) {
       for (auto hit: *hitCollection->GetVector()) {
         edepInHadCalY += hit->GetEdep();
-        if (hit->GetCreatorProcess()=="PrimaryParticle") {
-          primaryTrackLength += hit->GetStepLength();
+        // stable final state particles in GENIE, primary particles in Geant4
+        if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
+          if (hit->GetStepNo()==1) {
+            primaryTrackID[hit->GetTID()-1] = hit->GetTID();
+            primaryTrackPDG[hit->GetTID()-1] = hit->GetParticle();
+          }
+          primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
-          std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
-            <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
-            <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
-          nFSParticles++;
-          if (nFSParticles<=2000000) {
-            fsParticlePDG[nFSParticles-1] = hit->GetParticle();
-            fsParticleKinE[nFSParticles-1] = hit->GetInitKinEnergy();
-            fsParticlePx[nFSParticles-1] = hit->GetInitMomentum().getX();
-            fsParticlePy[nFSParticles-1] = hit->GetInitMomentum().getY();
-            fsParticlePz[nFSParticles-1] = hit->GetInitMomentum().getZ();
+        // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
+        if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+          if (hit->GetStepNo()==1) {
+            std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
+              <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
+              <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
+            nFromFSLParticles++;
+            if (nFromFSLParticles<=2000000) {
+              fromFSLParticlePDG[nFromFSLParticles-1]  = hit->GetParticle();
+              fromFSLParticleKinE[nFromFSLParticles-1] = hit->GetInitKinEnergy();
+              fromFSLParticlePx[nFromFSLParticles-1]   = hit->GetInitMomentum().getX();
+              fromFSLParticlePy[nFromFSLParticles-1]   = hit->GetInitMomentum().getY();
+              fromFSLParticlePz[nFromFSLParticles-1]   = hit->GetInitMomentum().getZ();
+            }
+          }
+          if (nFromFSLParticles>0) {
+            fromFSLTrackLength[nFromFSLParticles-1] += hit->GetStepLength();
           }
         }
-        if (hit->GetStepNo()==1 && hit->GetPID()!=0 && hit->GetParticle()!=22) {
+        if (hit->GetStepNo()==1 && hit->GetPID()>nPrimaryParticle && hit->GetParticle()!=22) {
           // record secondary particles, but exclude gamma
           nSecondaryTracks++;
           if (nSecondaryTracks<=2000000) 
@@ -300,8 +344,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       }
     }
   }
-
-  std::cout<<"Primary Track Length : "<<primaryTrackLength<<" mm"<<std::endl;
 
   evt->Fill();
 }

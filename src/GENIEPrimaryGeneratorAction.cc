@@ -125,7 +125,8 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
       fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy((p->Energy() - p->Mass()) * GeV);  // kinetic energy
       fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(p->Px(), p->Py(), p->Pz()));
       fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
-      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm - 3.0 * m));
+      //fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm - 3.0 * m));
+      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm));
       fGPS->GeneratePrimaryVertex(anEvent);
     }
   }
