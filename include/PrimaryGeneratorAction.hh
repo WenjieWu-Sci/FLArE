@@ -33,6 +33,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4GeneralParticleSource* fGPS;
 
     GENIEPrimaryGeneratorAction* fActionGenie;
+    G4int neupdg;
+    TLorentzVector neup4;
+    TLorentzVector neux4;
     G4int int_type        { -1 };
     G4int scattering_type { -1 };
     G4int fslpdg;

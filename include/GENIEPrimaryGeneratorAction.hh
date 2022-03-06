@@ -21,7 +21,10 @@ class GENIEPrimaryGeneratorAction {
     ~GENIEPrimaryGeneratorAction();
 
   public:
-    void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx);
+    void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx, G4int nuVtxOpt);
+    G4int             NeuPDG() { return neuPDG; };
+    TLorentzVector    NeuP4()  { return neuP4; };
+    TLorentzVector    NeuX4()  { return neuX4; };
     InteractionType_t InteractionTypeId() { return int_type; };
     ScatteringType_t  ScatteringTypeId()  { return scattering_type; };
     G4int             FSLPDG() { return fslPDG; };
@@ -38,6 +41,9 @@ class GENIEPrimaryGeneratorAction {
     NtpMCTreeHeader* thdr;
     NtpMCEventRecord* mcrec;
 
+    G4int neuPDG;
+    TLorentzVector neuP4;
+    TLorentzVector neuX4;
     // https://internal.dunescience.org/doxygen/Generator_2src_2Framework_2Interaction_2InteractionType_8h_source.html#l00033
     // https://internal.dunescience.org/doxygen/ScatteringType_8h_source.html
     InteractionType_t int_type;

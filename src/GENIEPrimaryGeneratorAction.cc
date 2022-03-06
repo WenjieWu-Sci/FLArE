@@ -7,7 +7,7 @@
 //#include <G4Event.hh>
 #include <G4SystemOfUnits.hh>
 //#include <G4ParticleGun.hh>
-//#include <Randomize.hh>
+#include <Randomize.hh>
 //#include <G4GeneralParticleSource.hh>
 
 #include <TMath.h>
@@ -39,7 +39,7 @@ GENIEPrimaryGeneratorAction::~GENIEPrimaryGeneratorAction()
 }
 
 void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
-    G4String filename, G4int startIdx) {
+    G4String filename, G4int startIdx, G4int nuVtxOpt) {
   ghepFileName    = filename;
   ghepEvtStartIdx = startIdx;
 
@@ -61,8 +61,10 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   }
   int nev = ghep_tree->GetEntries();
   std::cout<<"Input GHEP tree has "<<nev<<((nev==1)? " entry." : " entries.")<<std::endl;
-  //thdr = (NtpMCTreeHeader*)ghep_file->Get("header");
-  //std::cout<<*thdr;
+  /****
+  thdr = (NtpMCTreeHeader*)ghep_file->Get("header");
+  std::cout<<*thdr;
+  ****/
 
   mcrec = new NtpMCEventRecord(); 
   // main event record branch, always present
@@ -79,10 +81,24 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   const ProcessInfo procInfo = event->Summary()->ProcInfo();
   int_type        = procInfo.InteractionTypeId();
   scattering_type = procInfo.ScatteringTypeId();
+  /****
   InteractionType _int_type;
   ScatteringType _scattering_type;
   std::cout<<_int_type.AsString(int_type)<<" "
            <<_scattering_type.AsString(scattering_type)<<std::endl;
+  ****/
+
+  GHepParticle* neu = event->Probe();
+  neuPDG = neu->Pdg();
+  neuP4  = *(neu->P4());
+  switch(nuVtxOpt) {
+    case 0:
+      neuX4.SetXYZT(0 * m, 0 * m, -3.0 * m, 0);
+      break;
+    case 1:
+      neuX4.SetXYZT((G4UniformRand()-0.5)*m, (G4UniformRand()-0.5)*m, G4UniformRand()*7.0*m-3.5*m, 0);
+      break;
+  }
 
   GHepParticle* fsl = event->FinalStatePrimaryLepton();
   fslPDG = fsl->Pdg();
@@ -103,8 +119,10 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
                <<std::endl;
       continue;
     }
-    //std::cout<<p->Status()<<" "<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
-    //  <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
+    /****
+    std::cout<<p->Status()<<" "<<p->Name()<<" "<<p->Pdg()<<" ("<<p->Vx()<<", "<<p->Vy()<<", "<<p->Vz()<<") ("
+      <<p->Px()<<", "<<p->Py()<<", "<<p->Pz()<<")"<<std::endl;
+    ****/
     if (p->Status()==1) {
       G4ParticleDefinition* particleDefinition;
       if (p->Pdg() == 0) {
@@ -117,7 +135,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
         // table for one. This will create a new ion definition as needed.
         if (!particleDefinition) {
           int Z = (p->Pdg() % 10000000) / 10000; // atomic number
-          int A = (p->Pdg() % 10000) / 10; // mass number
+          int A = (p->Pdg() % 10000) / 10;       // mass number
           particleDefinition = G4ParticleTable::GetParticleTable()->GetIonTable()->GetIon(Z, A, 0.);
         }
       }
@@ -125,8 +143,10 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
       fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy((p->Energy() - p->Mass()) * GeV);  // kinetic energy
       fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(p->Px(), p->Py(), p->Pz()));
       fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
-      //fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm - 3.0 * m));
-      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(p->Vx() * mm, p->Vy() * mm, p->Vz() * mm));
+      fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(  // GHepParticle::fX4 has x,y,z in fm 
+                                                G4ThreeVector(p->Vx() * fermi + neuX4.X(), 
+                                                              p->Vy() * fermi + neuX4.Y(), 
+                                                              p->Vz() * fermi + neuX4.Z()));
       fGPS->GeneratePrimaryVertex(anEvent);
     }
   }

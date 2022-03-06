@@ -61,12 +61,9 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double worldSizeY = 20 * m;
   G4double worldSizeZ = 20 * m;
   // LAr volume: +z being beam direction
-  G4double lArSizeX = 1.0 * m;
-  G4double lArSizeY = 1.0 * m;
+  G4double lArSizeX = 3.0 * m;
+  G4double lArSizeY = 3.0 * m;
   G4double lArSizeZ = 7.0 * m;
-  //G4double lArSizeX = 1.5 * m;
-  //G4double lArSizeY = 1.5 * m;
-  //G4double lArSizeZ = 7.0 * m;
 
   // Experimental hall
   G4VSolid* worldBox = new G4Box("world", worldSizeX / 2, worldSizeY / 2, worldSizeZ / 2);
@@ -110,16 +107,28 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
                                                     0,                      // Copy No
                                                     fCheckOverlap);
 
-  //G4cout<<*(G4Material::GetMaterialTable())<<G4endl;
+
+  G4double GapToHadCatcher   = 25 * cm;
+
+  // Aluminum cryostat: 1/2 density
+  auto crygapSolid = new G4Box("CryGapBox", lArSizeX/2, lArSizeY/2, GapToHadCatcher/2);
+  auto crygapLogical = new G4LogicalVolume(crygapSolid, LArBoxMaterials->Material("FakeAluminium"), "CryGapLogical");
+  new G4PVPlacement(nullptr,
+                    G4ThreeVector(0, 0, lArSizeZ/2+GapToHadCatcher/2),
+                    crygapLogical,
+                    "CryGapPhysical",
+                    worldLog,
+                    false,
+                    0,
+                    fCheckOverlap);
 
   //
   // Hadron Calorimeter
   // 
-  G4double GapToHadCatcher   = 15 * cm;
   G4double thicknessAbsorber = 5 * cm;
   G4double thicknessCaloX    = 1 * cm;
   G4double thicknessCaloY    = 1 * cm;
-  G4int fNbOfAbsor = 16;
+  G4int fNbOfAbsor = 15;
 
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
   G4double HadCatcherLength  = fNbOfAbsor*thicknessOneLayer;
@@ -184,11 +193,90 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
     HadAbsorAssembly->MakeImprint(hadCatcherLogical, Tm, &Rm);
   }
 
+  //
+  // Muon Finder
+  // 
+  thicknessAbsorber = 16 * cm;
+  thicknessCaloX    = 1 * cm;
+  thicknessCaloY    = 1 * cm;
+  fNbOfAbsor = 2;
+  thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
+  G4double MuonFinderLength  = fNbOfAbsor*thicknessOneLayer;
+
+  auto muonFinderSolid
+    = new G4Box("MuonFinderBox", lArSizeX/2, lArSizeY/2, MuonFinderLength/2);
+  auto muonFinderLogical
+    = new G4LogicalVolume(muonFinderSolid, LArBoxMaterials->Material("Air"), "MuonFinderLogical");
+  new G4PVPlacement(nullptr,
+                    G4ThreeVector(0, 0, lArSizeZ/2+MuonFinderLength/2+GapToHadCatcher+HadCatcherLength),
+                    muonFinderLogical,
+                    "MuonFinderPhysical",
+                    worldLog,
+                    false,
+                    0,
+                    fCheckOverlap);
+
+  // Absorber
+  auto MuonFinderAbsorLayersSolid
+    = new G4Box("MuonFinderAbsorLayersBox", lArSizeX/2, lArSizeY/2, thicknessAbsorber/2);
+  auto MuonFinderAbsorLayersLogical
+    = new G4LogicalVolume(MuonFinderAbsorLayersSolid, LArBoxMaterials->Material("Iron"), "MuonFinderAbsorLayersLogical");
+
+  // X-Plane
+  auto MuonFinderXLayersSolid
+    = new G4Box("MuonFinderXLayersBox", lArSizeX/2, lArSizeY/2, thicknessCaloX/2);
+  auto MuonFinderXLayersLogical
+    = new G4LogicalVolume(MuonFinderXLayersSolid, LArBoxMaterials->Material("Polystyrene"), "MuonFinderXLayersLogical");
+
+  auto MuonFinderXCellSolid
+    = new G4Box("MuonFinderXCellBox", thicknessCaloX/2, lArSizeY/2, thicknessCaloX/2);
+  MuonFinderXCellLogical
+    = new G4LogicalVolume(MuonFinderXCellSolid, LArBoxMaterials->Material("Polystyrene"), "MuonFinderXCellLogical");
+  new G4PVReplica("MuonFinderXCellPhysical", MuonFinderXCellLogical,
+                  MuonFinderXLayersLogical, kXAxis, lArSizeX/thicknessCaloX, thicknessCaloX);
+
+  // Y-Plane
+  auto MuonFinderYLayersSolid
+    = new G4Box("MuonFinderYLayersBox", lArSizeX/2, lArSizeY/2, thicknessCaloY/2);
+  auto MuonFinderYLayersLogical
+    = new G4LogicalVolume(MuonFinderYLayersSolid, LArBoxMaterials->Material("Polystyrene"), "MuonFinderYLayersLogical");
+
+  auto MuonFinderYCellSolid
+    = new G4Box("MuonFinderYCellBox", lArSizeX/2, thicknessCaloY/2, thicknessCaloY/2);
+  MuonFinderYCellLogical
+    = new G4LogicalVolume(MuonFinderYCellSolid, LArBoxMaterials->Material("Polystyrene"), "MuonFinderYCellLogical");
+  new G4PVReplica("MuonFinderYCellPhysical", MuonFinderYCellLogical,
+                  MuonFinderYLayersLogical, kYAxis, lArSizeY/thicknessCaloY, thicknessCaloY);
+
+  auto MuonFinderAbsorAssembly = new G4AssemblyVolume();
+  G4RotationMatrix Ra_muonFinder(0, 0, 0);
+  G4ThreeVector Ta_muonFinder(0, 0, thicknessAbsorber/2);
+  MuonFinderAbsorAssembly->AddPlacedVolume(MuonFinderAbsorLayersLogical, Ta_muonFinder, &Ra_muonFinder);
+  Ta_muonFinder.setZ(thicknessAbsorber+thicknessCaloX/2);
+  MuonFinderAbsorAssembly->AddPlacedVolume(MuonFinderXLayersLogical, Ta_muonFinder, &Ra_muonFinder);
+  Ta_muonFinder.setZ(thicknessAbsorber+thicknessCaloX+thicknessCaloY/2);
+  MuonFinderAbsorAssembly->AddPlacedVolume(MuonFinderYLayersLogical, Ta_muonFinder, &Ra_muonFinder);
+
+  for (int i= 0; i< fNbOfAbsor; ++i) {
+    G4RotationMatrix Rm(0, 0, 0);
+    G4ThreeVector Tm(0, 0, thicknessOneLayer*i - MuonFinderLength/2);
+    MuonFinderAbsorAssembly->MakeImprint(muonFinderLogical, Tm, &Rm);
+  }
+
+  // visualization
+  G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));
+  crygapVis->SetVisibility(true);
+  crygapVis->SetForceSolid(true);
+  //crygapVis->SetForceWireframe(true);
+  //crygapVis->SetForceAuxEdgeVisible(true);
+  crygapLogical->SetVisAttributes(crygapVis);
+
   G4VisAttributes* absorVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
   absorVis->SetVisibility(true);
   absorVis->SetForceWireframe(true);
   absorVis->SetForceAuxEdgeVisible(true);
   HadAbsorLayersLogical->SetVisAttributes(absorVis);
+  MuonFinderAbsorLayersLogical->SetVisAttributes(absorVis);
 
   G4VisAttributes* hadCalVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255));
   hadCalVis->SetVisibility(true);
@@ -198,6 +286,8 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   //HadCalYLayersLogical->SetVisAttributes(hadCalVis);
   HadCalXCellLogical->SetVisAttributes(hadCalVis);
   HadCalYCellLogical->SetVisAttributes(hadCalVis);
+  MuonFinderXCellLogical->SetVisAttributes(hadCalVis);
+  MuonFinderYCellLogical->SetVisAttributes(hadCalVis);
 
 //  hadCatcherLogical->SetVisAttributes(lArBoxVis);
 
@@ -232,6 +322,14 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* HadCalYSD = new LArBoxSD("HadCalYSD");
   HadCalYCellLogical->SetSensitiveDetector(HadCalYSD);
   sdManager->AddNewDetector(HadCalYSD);
+
+  LArBoxSD* MuonFinderXSD = new LArBoxSD("MuonFinderXSD");
+  MuonFinderXCellLogical->SetSensitiveDetector(MuonFinderXSD);
+  sdManager->AddNewDetector(MuonFinderXSD);
+
+  LArBoxSD* MuonFinderYSD = new LArBoxSD("MuonFinderYSD");
+  MuonFinderYCellLogical->SetSensitiveDetector(MuonFinderYSD);
+  sdManager->AddNewDetector(MuonFinderYSD);
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {

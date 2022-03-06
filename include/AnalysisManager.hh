@@ -37,6 +37,11 @@ class AnalysisManager {
     G4int    evtID;
 
     // Truth information from genie
+    G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)
+    G4double nuE;               ///<- neutrino energy
+    G4double nuX;               ///<- neutrino vertex X
+    G4double nuY;               ///<- neutrino vertex Y
+    G4double nuZ;               ///<- neutrino vertex Z
     G4int    nuIntType;         ///<- interaction type: CC, NC, et.al.
     G4int    nuScatteringType;  ///<- scattering type: QE, DIS, RES, MEC, et. al.
     G4int    nuFSLPDG;          ///<- Final state lepton PDG code (for genie neutrino interaction)
@@ -62,6 +67,8 @@ class AnalysisManager {
     G4double edepInLAr;
     G4double edepInHadCalX;
     G4double edepInHadCalY;
+    G4double edepInMuonFinderX;
+    G4double edepInMuonFinderY;
 
     G4int    nFromFSLParticles;
     G4int    fromFSLParticlePDG[2000000];
@@ -75,6 +82,20 @@ class AnalysisManager {
     G4int    nSecondaryTracks;
     G4int    secondaryTrackPDG[2000000];
 
+    // refined tracks record
+    G4int nStepsIn25cm;
+    G4int StepPIDIn25cm[2000000];
+    G4int StepTIDIn25cm[2000000];
+    G4int StepPDGCodeIn25cm[2000000];
+    G4int StepnoIn25cm[2000000];
+    G4double StepPrePosIn25cmX[2000000];
+    G4double StepPrePosIn25cmY[2000000];
+    G4double StepPrePosIn25cmZ[2000000];
+    G4double StepPostPosIn25cmX[2000000];
+    G4double StepPostPosIn25cmY[2000000];
+    G4double StepPostPosIn25cmZ[2000000];
+    G4double StepEdepIn25cm[2000000];
+
     G4bool m_saveSecondary;
     G4bool m_saveEvd;
 
@@ -83,9 +104,14 @@ class AnalysisManager {
     TH2D* hEdepZY;
 
   private:
-    G4int flArBoxSDId  { -1 };
-    G4int fHadCalXSDId { -1 };
-    G4int fHadCalYSDId { -1 };
+    void FillTree(G4int sdId, std::string sdName);
+
+    G4HCofThisEvent* hcofEvent;
+    G4int flArBoxSDId      { -1 };
+    G4int fHadCalXSDId     { -1 };
+    G4int fHadCalYSDId     { -1 };
+    G4int fMuonFinderXSDId { -1 };
+    G4int fMuonFinderYSDId { -1 };
 //    std::set<G4int> allTrackID;
 };
 

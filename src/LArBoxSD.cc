@@ -65,6 +65,7 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   hit->SetTID(TID);
   hit->SetStepNo(Stepno);
   hit->SetPreStepPosition(PreStepPosition);
+  hit->SetPostStepPosition(PostStepPosition);
   hit->SetInitMomentum(InitMomentum);
   hit->SetInitKinEnergy(InitKinEne);
   hit->SetCreatorProcess(CreatorProcess);

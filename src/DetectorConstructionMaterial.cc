@@ -80,6 +80,7 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   density = 2.7*g/cm3;
   a = 26.98*g/mole;
   Aluminium = new G4Material(name="Aluminium",z=13.,a,density);
+  FakeAluminium = new G4Material(name="FakeAluminium",z=13.,a,density/2);
   
   density = 7.87*g/cm3;
   a = 55.85*g/mole;
@@ -169,6 +170,7 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "LiquidArgon")        material = LiquidArgon;
   if(what == "LiquidKrypton")      material = LiquidKrypton;
   if(what == "Aluminium")          material = Aluminium;
+  if(what == "FakeAluminium")      material = FakeAluminium;
   if(what == "Iron")               material = Iron;
   if(what == "Copper")             material = Copper;
   if(what == "Tungsten")           material = Tungsten;

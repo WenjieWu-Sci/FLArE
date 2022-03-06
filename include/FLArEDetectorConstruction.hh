@@ -33,6 +33,8 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* lArBoxLog;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
+    G4LogicalVolume* MuonFinderXCellLogical;
+    G4LogicalVolume* MuonFinderYCellLogical;
 //    G4LogicalVolume* fLogicAbsor[16];
     G4String fDetMaterialName;
     G4bool m_saveGdml;

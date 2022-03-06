@@ -20,7 +20,7 @@ class DetectorConstructionMaterial {
     G4Element *elNe, *elAl, *elFe, *elCu, *elW, *elPb, *elU, *elO;
     G4Element *elCa, *elNa, *elSi, *elS;
 
-    G4Material *Aluminium, *Iron, *Copper, *Tungsten, *Lead;
+    G4Material *Aluminium, *FakeAluminium, *Iron, *Copper, *Tungsten, *Lead;
     G4Material *Air, *Vacuum, *ArgonGas, *StainlessSteel, *Nickel; 
     G4Material *LiquidArgon, *LiquidKrypton, *LS, *polystyrene;
 };

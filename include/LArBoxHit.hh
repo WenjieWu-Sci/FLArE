@@ -23,6 +23,7 @@ class LArBoxHit : public G4VHit {
     void SetTID(G4int tid) { fTID = tid; }
     void SetStepNo(G4int stepno) { fStepno = stepno; }
     void SetPreStepPosition(G4ThreeVector& PreStepPosition) { fPreStepPosition = PreStepPosition; }
+    void SetPostStepPosition(G4ThreeVector& PostStepPosition) { fPostStepPosition = PostStepPosition; }
     void SetInitMomentum(G4ThreeVector& InitMomentum) { fInitMomentum = InitMomentum; }
     void SetInitKinEnergy(G4double InitKinEne) { fInitKinEne = InitKinEne; }
     void SetCreatorProcess(G4String processname) { fCreatorProcess = processname; }
@@ -42,6 +43,7 @@ class LArBoxHit : public G4VHit {
     G4int GetTID() const { return fTID; }
     G4int GetStepNo() const { return fStepno; }
     G4ThreeVector GetPreStepPosition() const { return fPreStepPosition; }
+    G4ThreeVector GetPostStepPosition() const { return fPostStepPosition; }
     G4ThreeVector GetInitMomentum()    const { return fInitMomentum; }
     G4double GetInitKinEnergy() const { return fInitKinEne; }
     G4String GetCreatorProcess() const { return fCreatorProcess; }
@@ -61,6 +63,7 @@ class LArBoxHit : public G4VHit {
     G4int fTID;
     G4int fStepno;
     G4ThreeVector fPreStepPosition;
+    G4ThreeVector fPostStepPosition;
     G4ThreeVector fInitMomentum;
     G4double fInitKinEne;
     G4String fCreatorProcess;
