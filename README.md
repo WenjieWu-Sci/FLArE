@@ -17,6 +17,15 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 * libxml2 v2_9_10a
 * pythia6 v6_4_28r
 
+## Macro command
+* `/det/material`, option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`
+* `/det/saveGdml`, option for saving detector geometry in a GDML file, `false` as default, run before `/run/initialize`
+* `/genie/useGenie`, option for PrimaryGeneratorMessenger, set `true` to read neutrino interactions from GENIE
+* `/genie/genieInput`, if `useGenie is true`, give which `.ghep.root` file to read GENIE events
+* `/genie/genieIStart`, if `useGenie is true`, give the start position of the file to read GENIE events
+* `/histo/fileName`, option for AnalysisManagerMessenger, set name of the file saving all analysis variables
+* `/histo/saveEvd`, if `true` save spatial distribution of energy deposition, `false` in default to save space
+
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.
 As denoted by the name, they're used to simulate e-/mu-/tau- leptons in a LAr or LKr detector. To run a simulation, just do `./FLArE macros/LAr_e-.mac`.
