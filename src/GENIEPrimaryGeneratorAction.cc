@@ -91,6 +91,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   GHepParticle* neu = event->Probe();
   neuPDG = neu->Pdg();
   neuP4  = *(neu->P4());
+  G4Random::setTheSeed(ghepEvtStartIdx+evtID+1);
   switch(nuVtxOpt) {
     case 0:
       neuX4.SetXYZT(0 * m, 0 * m, -3.0 * m, 0);
