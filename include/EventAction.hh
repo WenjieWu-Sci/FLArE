@@ -12,10 +12,12 @@ class EventAction : public G4UserEventAction {
     void BeginOfEventAction(const G4Event* event) override;
     void EndOfEventAction(const G4Event* event) override;
 
+    void AddPrimaryTrack();
     void AddSecondaryTrack();
     void AddSecondaryTrackNotGamma();
 
   private:
+    G4Accumulable<G4int> fNPrimaryTrack;
     G4Accumulable<G4int> fNSecondaryTrack;
     G4Accumulable<G4int> fNSecondaryTrackNotGamma;
 };

@@ -10,6 +10,14 @@ SteppingAction::SteppingAction(RunAction* runAction)
 }
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep) {
+  //G4Track* aTrack = aStep->GetTrack();
+  //if (aTrack->GetTrackID()==1) {
+  //  G4cout<<aTrack->GetParticleDefinition()->GetPDGEncoding()<<G4endl;
+  //  const G4TrackVector* nextTracks = aStep->GetSecondary();
+  //  for (auto nextTrack: *nextTracks) {
+  //    G4cout<<nextTrack->GetParticleDefinition()->GetPDGEncoding()<<G4endl;
+  //  }
+  //}
   //G4VPhysicalVolume* volume = aStep->GetPreStepPoint()->GetTouchable()->GetVolume();
   //if (volume != nullptr) {
   //  G4cout<<volume->GetName()<<G4endl;

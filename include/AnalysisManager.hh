@@ -52,9 +52,6 @@ class AnalysisManager {
     G4int    nPrimaryParticle;  ///<- number of primary particle 
                                 ///   (in case of genie neutrino interaction, number of stable particle in the final state)
     G4int    PDG[2000000];      ///<- PDG code of primary particles
-    G4double vtxX[2000000];     ///<- vertex X of primary particles
-    G4double vtxY[2000000];     ///<- vertex Y of primary particles
-    G4double vtxZ[2000000];     ///<- vertex Z of primary particles
     G4double Px[2000000];       ///<- Px of primary particles
     G4double Py[2000000];       ///<- Py of primary particles
     G4double Pz[2000000];       ///<- Pz of primary particles
@@ -65,10 +62,15 @@ class AnalysisManager {
     G4double primaryTrackLength[2000000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[2000000]; ///<- track length of primary particles in TPC region
     G4double edepInLAr;
+    G4double edepInLArXY2000mm;
+    G4double edepInLArXY2500mm;
     G4double edepInHadCalX;
     G4double edepInHadCalY;
     G4double edepInMuonFinderX;
     G4double edepInMuonFinderY;
+    G4double edepInHadAborb;
+    G4double edepInMuonFinderAbsorb;
+    G4double edepInCryGap;
 
     G4int    nFromFSLParticles;
     G4int    fromFSLParticlePDG[2000000];
@@ -102,17 +104,19 @@ class AnalysisManager {
     TH2D* hEdepXY;
     TH2D* hEdepZX;
     TH2D* hEdepZY;
+    TH2D* hEdepXYFSL;
+    TH2D* hEdepZXFSL;
+    TH2D* hEdepZYFSL;
 
   private:
     void FillTree(G4int sdId, std::string sdName);
+    void FillTrueEdep(G4int sdId, std::string sdName);
 
     G4HCofThisEvent* hcofEvent;
-    G4int flArBoxSDId      { -1 };
-    G4int fHadCalXSDId     { -1 };
-    G4int fHadCalYSDId     { -1 };
-    G4int fMuonFinderXSDId { -1 };
-    G4int fMuonFinderYSDId { -1 };
-//    std::set<G4int> allTrackID;
+
+    std::set<std::pair<int, int> > allTracksPTPair;
+    std::set<int> tracksFromFSL;
+    std::set<int> tracksFromFSLSecondary;
 };
 
 #endif

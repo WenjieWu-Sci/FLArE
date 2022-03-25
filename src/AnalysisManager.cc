@@ -53,9 +53,6 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("nuFSLE"                                   , &nuFSLE                 , "nuFSLE/D");
   evt->Branch("nPrimaryParticle"                         , &nPrimaryParticle       , "nPrimaryParticle/I");
   evt->Branch("PDG[nPrimaryParticle]"                    , PDG                     , "PDG[nPrimaryParticle]/I");
-  evt->Branch("vtxX[nPrimaryParticle]"                   , vtxX                    , "vtxX[nPrimaryParticle]/D");
-  evt->Branch("vtxY[nPrimaryParticle]"                   , vtxY                    , "vtxY[nPrimaryParticle]/D");
-  evt->Branch("vtxZ[nPrimaryParticle]"                   , vtxZ                    , "vtxZ[nPrimaryParticle]/D");
   evt->Branch("Px[nPrimaryParticle]"                     , Px                      , "Px[nPrimaryParticle]/D");
   evt->Branch("Py[nPrimaryParticle]"                     , Py                      , "Py[nPrimaryParticle]/D");
   evt->Branch("Pz[nPrimaryParticle]"                     , Pz                      , "Pz[nPrimaryParticle]/D");
@@ -65,11 +62,16 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("primaryTrackLength[nPrimaryParticle]"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
   evt->Branch("primaryTrackLengthInTPC[nPrimaryParticle]", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
 
-  evt->Branch("edepInLAr"              , &edepInLAr         , "edepInLAr/D");
-  evt->Branch("edepInHadCalX"          , &edepInHadCalX     , "edepInHadCalX/D");
-  evt->Branch("edepInHadCalY"          , &edepInHadCalY     , "edepInHadCalY/D");
-  evt->Branch("edepInMuonFinderX"      , &edepInMuonFinderX , "edepInMuonFinderX/D");
-  evt->Branch("edepInMuonFinderY"      , &edepInMuonFinderY , "edepInMuonFinderY/D");
+  evt->Branch("edepInLAr"              , &edepInLAr             , "edepInLAr/D");
+  evt->Branch("edepInLArXY2000mm"      , &edepInLArXY2000mm     , "edepInLArXY2000mm/D");
+  evt->Branch("edepInLArXY2500mm"      , &edepInLArXY2500mm     , "edepInLArXY2500mm/D");
+  evt->Branch("edepInHadCalX"          , &edepInHadCalX         , "edepInHadCalX/D");
+  evt->Branch("edepInHadCalY"          , &edepInHadCalY         , "edepInHadCalY/D");
+  evt->Branch("edepInMuonFinderX"      , &edepInMuonFinderX     , "edepInMuonFinderX/D");
+  evt->Branch("edepInMuonFinderY"      , &edepInMuonFinderY     , "edepInMuonFinderY/D");
+  evt->Branch("edepInHadAborb"         , &edepInHadAborb        , "edepInHadAborb/D");
+  evt->Branch("edepInMuonFinderAbsorb" , &edepInMuonFinderAbsorb, "edepInMuonFinderAbsorb/D");
+  evt->Branch("edepInCryGap"           , &edepInCryGap          , "edepInCryGap/D");
 
   evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
   evt->Branch("fromFSLParticlePDG"     , fromFSLParticlePDG      , "fromFSLParticlePDG[nFromFSLParticles]/I");
@@ -116,32 +118,34 @@ void AnalysisManager::EndOfRun() {
 }
 
 void AnalysisManager::BeginOfEvent() {
-  nuPDG              = 0;
-  nuE                = -999;
-  nuX                = -999;
-  nuY                = -999;
-  nuZ                = -999;
-  nuIntType          = -1;
-  nuScatteringType   = -1;
-  nuFSLPDG           = 0;
-  nuFSLPx            = -999;
-  nuFSLPy            = -999;
-  nuFSLPz            = -999;
-  nuFSLE             = -999;
-  edepInLAr          = 0;
-  edepInHadCalX      = 0;
-  edepInHadCalY      = 0;
-  edepInMuonFinderX  = 0;
-  edepInMuonFinderY  = 0;
-  nPrimaryParticle   = 0;
-  nFromFSLParticles  = 0;
-  nSecondaryTracks   = 0;
-  nStepsIn25cm       = 0;
+  nuPDG                  = 0;
+  nuE                    = -999;
+  nuX                    = -999;
+  nuY                    = -999;
+  nuZ                    = -999;
+  nuIntType              = -1;
+  nuScatteringType       = -1;
+  nuFSLPDG               = 0;
+  nuFSLPx                = -999;
+  nuFSLPy                = -999;
+  nuFSLPz                = -999;
+  nuFSLE                 = -999;
+  edepInLAr              = 0;
+  edepInLArXY2000mm      = 0;
+  edepInLArXY2500mm      = 0;
+  edepInHadCalX          = 0;
+  edepInHadCalY          = 0;
+  edepInMuonFinderX      = 0;
+  edepInMuonFinderY      = 0;
+  edepInHadAborb         = 0;
+  edepInMuonFinderAbsorb = 0;
+  edepInCryGap           = 0;
+  nPrimaryParticle       = 0;
+  nFromFSLParticles      = 0;
+  nSecondaryTracks       = 0;
+  nStepsIn25cm           = 0;
   for (G4int i= 0; i< 2000000; ++i) {
     PDG[i]   = 0;
-    vtxX[i]  = -999;
-    vtxY[i]  = -999;
-    vtxZ[i]  = -999;
     Px[i]    = -999;
     Py[i]    = -999;
     Pz[i]    = -999;
@@ -170,18 +174,39 @@ void AnalysisManager::BeginOfEvent() {
     StepEdepIn25cm[i]          = 0;
     secondaryTrackPDG[i]       = 0;
   }
+  allTracksPTPair.clear();
+  tracksFromFSL.clear();
+  tracksFromFSLSecondary.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
   /// Branch: evtID
   evtID = event->GetEventID();
   if (m_saveEvd) {
-    std::string histname = "evt"+std::to_string(evtID)+"_EdepXY";
+    std::string histname = "evt_"+std::to_string(evtID)+"_EdepXY";
     hEdepXY = new TH2D(histname.c_str(), histname.c_str(), 600, -1500, 1500, 600, -1500, 1500);
-    histname = "evt"+std::to_string(evtID)+"_EdepZX";
+    hEdepXY->GetXaxis()->SetTitle("X [mm]");
+    hEdepXY->GetYaxis()->SetTitle("Y [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_EdepZX";
     hEdepZX = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
-    histname = "evt"+std::to_string(evtID)+"_EdepZY";
+    hEdepZX->GetXaxis()->SetTitle("Z [mm]");
+    hEdepZX->GetYaxis()->SetTitle("X [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_EdepZY";
     hEdepZY = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZY->GetXaxis()->SetTitle("Z [mm]");
+    hEdepZY->GetYaxis()->SetTitle("Y [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_EdepXY_FSL";
+    hEdepXYFSL = new TH2D(histname.c_str(), histname.c_str(), 600, -1500, 1500, 600, -1500, 1500);
+    hEdepXYFSL->GetXaxis()->SetTitle("X [mm]");
+    hEdepXYFSL->GetYaxis()->SetTitle("Y [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_EdepZX_FSL";
+    hEdepZXFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, -0, 8700, 600, -1500, 1500);
+    hEdepZXFSL->GetXaxis()->SetTitle("Z [mm]");
+    hEdepZXFSL->GetYaxis()->SetTitle("X [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_EdepZY_FSL";
+    hEdepZYFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZYFSL->GetXaxis()->SetTitle("Z [mm]");
+    hEdepZYFSL->GetYaxis()->SetTitle("Y [mm]");
   }
 
   G4int count_particles = 0;
@@ -210,9 +235,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuZ              = primary_particle_info->GetNeuX4().Z();
         }
         PDG[count_particles]   = primary_particle_info->GetPDG();
-        vtxX[count_particles]  = primary_particle_info->GetVertexMC().getX();
-        vtxY[count_particles]  = primary_particle_info->GetVertexMC().getY();
-        vtxZ[count_particles]  = primary_particle_info->GetVertexMC().getZ();
         Px[count_particles]    = primary_particle_info->GetMomentumMC().getX();
         Py[count_particles]    = primary_particle_info->GetMomentumMC().getY();
         Pz[count_particles]    = primary_particle_info->GetMomentumMC().getZ();
@@ -232,49 +254,43 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // If there is no hit collection, there is nothing to be done
   if (!hcofEvent) return;
 
-  // Main detector
-  if (flArBoxSDId< 0) {
-    flArBoxSDId = sdm->GetCollectionID("lArBoxSD/lar_box");
-    G4cout<<"AnalysisManager: LArBox SD ID: "<<flArBoxSDId<<G4endl;
-  }
-  if (flArBoxSDId >= 0) {
-    FillTree(flArBoxSDId, "LArTPC");
-  }
-
-  // HadCalXSD
-  if (fHadCalXSDId< 0) {
-    fHadCalXSDId = sdm->GetCollectionID("HadCalXSD/lar_box");
-    G4cout<<"AnalysisManager: HadCalX SD ID: "<<fHadCalXSDId<<G4endl;
-  }
-  if (fHadCalXSDId>= 0) {
-    FillTree(fHadCalXSDId, "HadCalX");
-  }
-
-  // HadCalYSD
-  if (fHadCalYSDId< 0) {
-    fHadCalYSDId = sdm->GetCollectionID("HadCalYSD/lar_box");
-    G4cout<<"AnalysisManager: HadCalY SD ID: "<<fHadCalYSDId<<G4endl;
-  }
-  if (fHadCalYSDId>= 0) {
-    FillTree(fHadCalYSDId, "HadCalY");
+  // loop over all sensitive detectors
+  const G4int nsds = 8;
+  G4int sdids[nsds] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  std::string sds[nsds] = {"lArBoxSD/lar_box",
+                           "HadCalXSD/lar_box",
+                           "HadCalYSD/lar_box",
+                           "MuonFinderXSD/lar_box",
+                           "MuonFinderYSD/lar_box",
+                           "HadAbsorbSD/lar_box",
+                           "MuonFinderAbsorbSD/lar_box",
+                           "CryGapSD/lar_box"};
+  for (int i= 0; i< nsds; ++i) {
+    if (sdids[i]<0) {
+      sdids[i] = sdm->GetCollectionID(sds[i]);
+      G4cout<<"AnalysisManager : "<<sds[i]<<" (ID="<<sdids[i]<<")"<<G4endl;
+    }
+    if (sdids[i]>=0) {
+      FillTree(sdids[i], sds[i]);
+    }
   }
 
-  // MuonFinderXSD
-  if (fMuonFinderXSDId< 0) {
-    fMuonFinderXSDId = sdm->GetCollectionID("MuonFinderXSD/lar_box");
-    G4cout<<"AnalysisManager: MuonFinderX SD ID: "<<fMuonFinderXSDId<<G4endl;
+  // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
+  tracksFromFSL.insert(1);
+  for (auto x : allTracksPTPair) {
+    if (tracksFromFSL.find(x.first) != tracksFromFSL.end()) {
+      tracksFromFSL.insert(x.second);
+    }
   }
-  if (fMuonFinderXSDId>= 0) {
-    FillTree(fMuonFinderXSDId, "MuonFinderX");
-  }
+  std::cout<<"Recorded tracks       : "<<allTracksPTPair.size()<<std::endl;
+  std::cout<<"Tracks from FSL       : "<<tracksFromFSL.size()<<std::endl;
+  std::cout<<"Tracks from FSL (2nd) : "<<tracksFromFSLSecondary.size()<<std::endl;
 
-  // MuonFinderYSD
-  if (fMuonFinderYSDId< 0) {
-    fMuonFinderYSDId = sdm->GetCollectionID("MuonFinderYSD/lar_box");
-    G4cout<<"AnalysisManager: MuonFinderY SD ID: "<<fMuonFinderYSDId<<G4endl;
-  }
-  if (fMuonFinderYSDId>= 0) {
-    FillTree(fMuonFinderYSDId, "MuonFinderY");
+  // must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  for (int i= 0; i< nsds; ++i) {
+    if (sdids[i]>=0) {
+      FillTrueEdep(sdids[i], sds[i]);
+    }
   }
 
   evt->Fill();
@@ -284,28 +300,68 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     hEdepXY->Write();
     hEdepZX->Write();
     hEdepZY->Write();
+    hEdepXYFSL->Write();
+    hEdepZXFSL->Write();
+    hEdepZYFSL->Write();
   }
-  std::cout<<"nStepsIn25cm : "<<nStepsIn25cm<<std::endl;
 }
 
 void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
   int detID = 0;
   const std::unordered_map<std::string,std::function<void()>> detIDs{
-          {"LArTPC",      [&](){ detID = 1; }},
-          {"HadCalX",     [&](){ detID = 2; }},
-          {"HadCalY",     [&](){ detID = 3; }},
-          {"MuonFinderX", [&](){ detID = 4; }},
-          {"MuonFinderY", [&](){ detID = 5; }},
+          {"lArBoxSD/lar_box",           [&](){ detID = 1; }},
+          {"HadCalXSD/lar_box",          [&](){ detID = 2; }},
+          {"HadCalYSD/lar_box",          [&](){ detID = 3; }},
+          {"MuonFinderXSD/lar_box",      [&](){ detID = 4; }},
+          {"MuonFinderYSD/lar_box",      [&](){ detID = 5; }},
+          {"HadAbsorbSD/lar_box",        [&](){ detID = 6; }},
+          {"MuonFinderAbsorbSD/lar_box", [&](){ detID = 7; }},
+          {"CryGapSD/lar_box",           [&](){ detID = 8; }},
   };
   detIDs.find(sdName)->second();
+
   // Get and cast hit collection with LArBoxHits
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
+      double pre_x  = hit->GetPreStepPosition().x();
+      double pre_y  = hit->GetPreStepPosition().y();
+      double pre_z  = hit->GetPreStepPosition().z();
+      double post_x = hit->GetPostStepPosition().x();
+      double post_y = hit->GetPostStepPosition().y();
+      double post_z = hit->GetPostStepPosition().z();
+
+      // energy deposition in different volumes of the detector
       switch(detID) {
-        case 1:
+        case 1: {
+          double thre1 = 1250; // mm
+          double thre2 = 1000; // mm
           edepInLAr += hit->GetEdep();
-          break;
+          if ((abs(pre_x)<=thre1) & (abs(pre_y)<=thre1) & (abs(post_x)<=thre1) & (abs(post_y)<=thre1)) {
+            edepInLArXY2500mm += hit->GetEdep();
+          } else if ((abs(pre_x)<=thre1) & (abs(pre_y)<=thre1) & ((abs(post_x)>thre1) | (abs(post_y)>thre1))) {
+            //double d = TMath::Sqrt(TMath::Power(pre_x-post_x,2)+TMath::Power(pre_y-post_y,2));
+            if (abs(post_x)>abs(post_y)) {
+              double w = (thre1 - abs(pre_x))/abs(post_x-pre_x);
+              edepInLArXY2500mm += hit->GetEdep()*w;
+            } else {
+              double w = (thre1 - abs(pre_y))/abs(post_y-pre_y);
+              edepInLArXY2500mm += hit->GetEdep()*w;
+            }
+          }
+          if ((abs(pre_x)<=thre2) & (abs(pre_y)<=thre2) & (abs(post_x)<=thre2) & (abs(post_y)<=thre2)) {
+            edepInLArXY2000mm += hit->GetEdep();
+          } else if ((abs(pre_x)<=thre2) & (abs(pre_y)<=thre2) & ((abs(post_x)>thre2) | (abs(post_y)>thre2))) {
+            //double d = TMath::Sqrt(TMath::Power(pre_x-post_x,2)+TMath::Power(pre_y-post_y,2));
+            if (abs(post_x)>abs(post_y)) {
+              double w = (thre2 - abs(pre_x))/abs(post_x-pre_x);
+              edepInLArXY2000mm += hit->GetEdep()*w;
+            } else {
+              double w = (thre2 - abs(pre_y))/abs(post_y-pre_y);
+              edepInLArXY2000mm += hit->GetEdep()*w;
+            }
+          }
+          break; }
         case 2:
           edepInHadCalX += hit->GetEdep();
           break;
@@ -318,6 +374,15 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
         case 5:
           edepInMuonFinderY += hit->GetEdep();
           break;
+        case 6:
+          edepInHadAborb += hit->GetEdep();
+          break;
+        case 7:
+          edepInMuonFinderAbsorb += hit->GetEdep();
+          break;
+        case 8:
+          edepInCryGap += hit->GetEdep();
+          break;
       }
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
@@ -325,48 +390,20 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
           primaryTrackID[hit->GetTID()-1] = hit->GetTID();
           primaryTrackPDG[hit->GetTID()-1] = hit->GetParticle();
         }
+        primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
         if (detID==1) {
-          primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
           primaryTrackLengthInTPC[hit->GetTID()-1] += hit->GetStepLength();
-        } else {
-          primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
-        }
+        } 
       }
-      // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
-      if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
-        if (hit->GetStepNo()==1) {
-          std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
-            <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
-            <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
-          nFromFSLParticles++;
-          if (nFromFSLParticles<=2000000) {
-            fromFSLParticlePDG[nFromFSLParticles-1]  = hit->GetParticle();
-            fromFSLParticleKinE[nFromFSLParticles-1] = hit->GetInitKinEnergy();
-            fromFSLParticlePx[nFromFSLParticles-1]   = hit->GetInitMomentum().getX();
-            fromFSLParticlePy[nFromFSLParticles-1]   = hit->GetInitMomentum().getY();
-            fromFSLParticlePz[nFromFSLParticles-1]   = hit->GetInitMomentum().getZ();
-          }
-        }
-        if (nFromFSLParticles>0) {
-          if (detID==1) {
-            fromFSLTrackLength[nFromFSLParticles-1] += hit->GetStepLength();
-            fromFSLTrackLengthInTPC[nFromFSLParticles-1] += hit->GetStepLength();
-          } else {
-            fromFSLTrackLength[nFromFSLParticles-1] += hit->GetStepLength();
-          }
-        }
-      }
+
       if (hit->GetStepNo()==1 && hit->GetPID()>nPrimaryParticle && hit->GetParticle()!=22) {
         // record secondary particles, but exclude gamma
         nSecondaryTracks++;
         if (nSecondaryTracks<=2000000) 
           secondaryTrackPDG[nSecondaryTracks-1] = hit->GetParticle();
       }
-      if (m_saveEvd) {
-        hEdepXY->Fill(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdep());
-        hEdepZX->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().x(), hit->GetEdep());
-        hEdepZY->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().y(), hit->GetEdep());
-      }
+
+      // save step information around the vertex to study vertex activities
       if (abs(hit->GetPreStepPosition().x() - nuX) < 12.5 * cm &&
           abs(hit->GetPreStepPosition().y() - nuY) < 12.5 * cm &&
           hit->GetPreStepPosition().z() - nuZ < 20.0 * cm &&
@@ -384,6 +421,69 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
         StepPostPosIn25cmZ[nStepsIn25cm-1]  = hit->GetPostStepPosition().z();
         StepEdepIn25cm[nStepsIn25cm-1]      = hit->GetEdep();
       }
-    }
+
+      allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
+      if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+        tracksFromFSLSecondary.insert(hit->GetTID());
+      }
+    } // end of hit loop
+  }
+}
+
+void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
+  int detID = 0;
+  const std::unordered_map<std::string,std::function<void()>> detIDs{
+          {"lArBoxSD/lar_box",           [&](){ detID = 1; }},
+          {"HadCalXSD/lar_box",          [&](){ detID = 2; }},
+          {"HadCalYSD/lar_box",          [&](){ detID = 3; }},
+          {"MuonFinderXSD/lar_box",      [&](){ detID = 4; }},
+          {"MuonFinderYSD/lar_box",      [&](){ detID = 5; }},
+          {"HadAbsorbSD/lar_box",        [&](){ detID = 6; }},
+          {"MuonFinderAbsorbSD/lar_box", [&](){ detID = 7; }},
+          {"CryGapSD/lar_box",           [&](){ detID = 8; }},
+  };
+  detIDs.find(sdName)->second();
+
+  nFromFSLParticles = tracksFromFSLSecondary.size();
+  std::map<int, int> map_tracksFromFSLSecondary;
+  int _idx = 0;
+  for (auto _tid : tracksFromFSLSecondary) {
+    map_tracksFromFSLSecondary[_tid] = _idx;
+    _idx++;
+  }
+
+  LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
+  if (hitCollection) {
+    for (auto hit: *hitCollection->GetVector()) {
+      // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
+      if (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) {
+        int whichTrackFromFSL = map_tracksFromFSLSecondary[hit->GetTID()];
+        if (hit->GetStepNo()==1) {
+          std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
+            <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
+            <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
+          fromFSLParticlePDG[whichTrackFromFSL]  = hit->GetParticle();
+          fromFSLParticleKinE[whichTrackFromFSL] = hit->GetInitKinEnergy();
+          fromFSLParticlePx[whichTrackFromFSL]   = hit->GetInitMomentum().getX();
+          fromFSLParticlePy[whichTrackFromFSL]   = hit->GetInitMomentum().getY();
+          fromFSLParticlePz[whichTrackFromFSL]   = hit->GetInitMomentum().getZ();
+        }
+        fromFSLTrackLength[whichTrackFromFSL] += hit->GetStepLength();
+        if (detID==1) {
+          fromFSLTrackLengthInTPC[whichTrackFromFSL] += hit->GetStepLength();
+        }
+      }
+
+      if (m_saveEvd) {
+        hEdepXY->Fill(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdep());
+        hEdepZX->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().x(), hit->GetEdep());
+        hEdepZY->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().y(), hit->GetEdep());
+        if (tracksFromFSL.find(hit->GetTID()) != tracksFromFSL.end()) {
+          hEdepXYFSL->Fill(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdep());
+          hEdepZXFSL->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().x(), hit->GetEdep());
+          hEdepZYFSL->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().y(), hit->GetEdep());
+        }
+      }
+    } // end of hit loop
   }
 }

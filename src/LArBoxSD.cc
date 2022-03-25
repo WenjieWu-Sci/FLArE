@@ -1,5 +1,6 @@
+#include <algorithm>
+#include <vector>
 #include "LArBoxSD.hh"
-
 #include <G4SDManager.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4VProcess.hh>
@@ -18,9 +19,9 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   G4double TrackLength      = aTrack->GetTrackLength();
 
   G4int ParticleName = aTrack->GetParticleDefinition()->GetPDGEncoding();
-  G4int PID = aTrack->GetParentID();
-  G4int TID = aTrack->GetTrackID();
-  G4int Stepno = aTrack->GetCurrentStepNumber();
+  G4int PID          = aTrack->GetParentID();
+  G4int TID          = aTrack->GetTrackID();
+  G4int Stepno       = aTrack->GetCurrentStepNumber();
   G4String CreatorProcess;
   if (PID> 0) {
     CreatorProcess = aTrack->GetCreatorProcess()->GetProcessName();

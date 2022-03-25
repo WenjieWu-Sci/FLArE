@@ -1,0 +1,14 @@
+/det/material LAr
+/det/saveGdml false
+
+/run/initialize
+
+/random/setSeeds 42
+/genie/useGenie true
+/genie/genieInput /dune/data/users/wenjiewu/genie/production/nutau_bai_ar40/nutau_bai_ar40_e2000.ghep.root
+/genie/genieIStart 0
+
+/histo/fileName /dune/data/users/wenjiewu/FLArE_Data/nutau_bai_ar40_evt1000_evd.root
+/histo/saveEvd true
+
+/run/beamOn 1000

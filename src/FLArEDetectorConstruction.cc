@@ -112,7 +112,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   // Aluminum cryostat: 1/2 density
   auto crygapSolid = new G4Box("CryGapBox", lArSizeX/2, lArSizeY/2, GapToHadCatcher/2);
-  auto crygapLogical = new G4LogicalVolume(crygapSolid, LArBoxMaterials->Material("FakeAluminium"), "CryGapLogical");
+  crygapLogical = new G4LogicalVolume(crygapSolid, LArBoxMaterials->Material("FakeAluminium"), "CryGapLogical");
   new G4PVPlacement(nullptr,
                     G4ThreeVector(0, 0, lArSizeZ/2+GapToHadCatcher/2),
                     crygapLogical,
@@ -149,7 +149,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // Absorber
   auto HadAbsorLayersSolid
     = new G4Box("HadAbsorLayersBox", lArSizeX/2, lArSizeY/2, thicknessAbsorber/2);
-  auto HadAbsorLayersLogical
+  HadAbsorLayersLogical
     = new G4LogicalVolume(HadAbsorLayersSolid, LArBoxMaterials->Material("Iron"), "HadAbsorLayersLogical");
 
   // X-Plane
@@ -219,7 +219,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // Absorber
   auto MuonFinderAbsorLayersSolid
     = new G4Box("MuonFinderAbsorLayersBox", lArSizeX/2, lArSizeY/2, thicknessAbsorber/2);
-  auto MuonFinderAbsorLayersLogical
+  MuonFinderAbsorLayersLogical
     = new G4LogicalVolume(MuonFinderAbsorLayersSolid, LArBoxMaterials->Material("Iron"), "MuonFinderAbsorLayersLogical");
 
   // X-Plane
@@ -330,6 +330,18 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderYSD = new LArBoxSD("MuonFinderYSD");
   MuonFinderYCellLogical->SetSensitiveDetector(MuonFinderYSD);
   sdManager->AddNewDetector(MuonFinderYSD);
+
+  LArBoxSD* HadAbsorbSD = new LArBoxSD("HadAbsorbSD");
+  HadAbsorLayersLogical->SetSensitiveDetector(HadAbsorbSD);
+  sdManager->AddNewDetector(HadAbsorbSD);
+
+  LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
+  MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
+  sdManager->AddNewDetector(MuonFinderAbsorbSD);
+
+  LArBoxSD* CryGapSD = new LArBoxSD("CryGapSD");
+  crygapLogical->SetSensitiveDetector(CryGapSD);
+  sdManager->AddNewDetector(CryGapSD);
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {

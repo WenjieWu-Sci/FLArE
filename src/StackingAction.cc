@@ -1,5 +1,6 @@
 #include "StackingAction.hh"
 #include "G4TrackStatus.hh"
+#include "G4VProcess.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
 
@@ -8,6 +9,11 @@ StackingAction::StackingAction(RunAction* aRunAction, EventAction* aEventAction)
 {;}
 
 G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack (const G4Track* aTrack) {
+  // Register primary tracks
+  if (aTrack->GetParentID()==0) {
+    fEventAction->AddPrimaryTrack();
+  }
+
   // Register only secondaries, i.e. tracks having ParentID > 0
   if (aTrack->GetParentID()) {
     fEventAction->AddSecondaryTrack();
@@ -15,6 +21,7 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack (const G4Track* aTra
       fEventAction->AddSecondaryTrackNotGamma();
     }
   }
+
 
   // Do not affect track classification. Just return what would have
   // been returned by the base class
