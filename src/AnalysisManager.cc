@@ -39,6 +39,7 @@ AnalysisManager::~AnalysisManager() {;}
 void AnalysisManager::bookEvtTree() {
   evt = new TTree("evt", "evtTreeInfo");
   evt->Branch("evtID"                                    , &evtID                  , "evtID/I");
+  evt->Branch("nuIdx"                                    , &nuIdx                  , "nuIdx/I");
   evt->Branch("nuPDG"                                    , &nuPDG                  , "nuPDG/I");
   evt->Branch("nuE"                                      , &nuE                    , "nuE/D");
   evt->Branch("nuX"                                      , &nuX                    , "nuX/D");
@@ -118,6 +119,7 @@ void AnalysisManager::EndOfRun() {
 }
 
 void AnalysisManager::BeginOfEvent() {
+  nuIdx                  = -1;
   nuPDG                  = 0;
   nuE                    = -999;
   nuX                    = -999;
@@ -228,6 +230,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuFSLPy          = primary_particle_info->GetFSLP4().Y();
           nuFSLPz          = primary_particle_info->GetFSLP4().Z();
           nuFSLE           = primary_particle_info->GetFSLP4().T();
+          nuIdx            = primary_particle_info->GetNeuIdx();
           nuPDG            = primary_particle_info->GetNeuPDG();
           nuE              = primary_particle_info->GetNeuP4().T();
           nuX              = primary_particle_info->GetNeuX4().X();

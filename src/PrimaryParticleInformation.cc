@@ -2,12 +2,12 @@
 
 PrimaryParticleInformation::PrimaryParticleInformation(G4int aID, G4int aPDG, G4double aMass,
     G4ThreeVector aMomentum, G4ThreeVector aVertex, 
-    G4int aneuPDG, TLorentzVector aneuP4, TLorentzVector aneuX4,
+    G4int aneuIdx, G4int aneuPDG, TLorentzVector aneuP4, TLorentzVector aneuX4,
     G4int aInttype, G4int aScatteringtype,
     G4int afslPDG, TLorentzVector afslP4, TLorentzVector afslX4) :
   fPartID(aID), fPDG(aPDG), fMass(aMass),
   fMomentumMC(aMomentum), fVertexMC(aVertex), 
-  fNeuPDG(aneuPDG), fNeuP4(aneuP4), fNeuX4(aneuX4),
+  fNeuIdx(aneuIdx), fNeuPDG(aneuPDG), fNeuP4(aneuP4), fNeuX4(aneuX4),
   fInteractionType(aInttype), fScatteringType(aScatteringtype),
   fFSLPDG(afslPDG), fFSLP4(afslP4), fFSLX4(afslX4)
 {

@@ -33,6 +33,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4GeneralParticleSource* fGPS;
 
     GENIEPrimaryGeneratorAction* fActionGenie;
+    G4int neuidx;
     G4int neupdg;
     TLorentzVector neup4;
     TLorentzVector neux4;

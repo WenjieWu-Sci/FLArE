@@ -37,6 +37,7 @@ class AnalysisManager {
     G4int    evtID;
 
     // Truth information from genie
+    G4int    nuIdx;             ///<- neutrino index (for genie neutrino interaction)
     G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)
     G4double nuE;               ///<- neutrino energy
     G4double nuX;               ///<- neutrino vertex X

@@ -22,6 +22,7 @@ class GENIEPrimaryGeneratorAction {
 
   public:
     void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx, G4int nuVtxOpt);
+    G4int             NeuIdx() { return neuIdx; };
     G4int             NeuPDG() { return neuPDG; };
     TLorentzVector    NeuP4()  { return neuP4; };
     TLorentzVector    NeuX4()  { return neuX4; };
@@ -41,6 +42,7 @@ class GENIEPrimaryGeneratorAction {
     NtpMCTreeHeader* thdr;
     NtpMCEventRecord* mcrec;
 
+    G4int neuIdx;
     G4int neuPDG;
     TLorentzVector neuP4;
     TLorentzVector neuX4;

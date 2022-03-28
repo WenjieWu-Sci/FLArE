@@ -89,6 +89,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   ****/
 
   GHepParticle* neu = event->Probe();
+  neuIdx = ghepEvtStartIdx + evtID;
   neuPDG = neu->Pdg();
   neuP4  = *(neu->P4());
   G4Random::setTheSeed(ghepEvtStartIdx+evtID+1);

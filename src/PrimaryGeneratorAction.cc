@@ -57,6 +57,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     std::cout<<std::endl;
     std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===OOO==="<<std::endl;
     fActionGenie->GeneratePrimaries(anEvent, ghepFileName, ghepEvtStartIdx, 1);
+    neuidx          = fActionGenie->NeuIdx();
     neupdg          = fActionGenie->NeuPDG();
     neup4           = fActionGenie->NeuP4();
     neux4           = fActionGenie->NeuX4();
@@ -83,7 +84,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
         primary_particle->SetUserInformation(new PrimaryParticleInformation(
               count_particles, primary_particle->GetPDGcode(), primary_particle->GetMass(),
               primary_particle->GetMomentum(), anEvent->GetPrimaryVertex(ivtx)->GetPosition(),
-              neupdg, neup4, neux4, int_type, scattering_type,
+              neuidx, neupdg, neup4, neux4, int_type, scattering_type,
               fslpdg, fslp4, fslx4));
         count_particles++;
       }
