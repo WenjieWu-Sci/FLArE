@@ -64,8 +64,10 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("primaryTrackLengthInTPC[nPrimaryParticle]", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
 
   evt->Branch("edepInLAr"              , &edepInLAr             , "edepInLAr/D");
-  evt->Branch("edepInLArXY2000mm"      , &edepInLArXY2000mm     , "edepInLArXY2000mm/D");
   evt->Branch("edepInLArXY2500mm"      , &edepInLArXY2500mm     , "edepInLArXY2500mm/D");
+  evt->Branch("edepInLArXY2000mm"      , &edepInLArXY2000mm     , "edepInLArXY2000mm/D");
+  evt->Branch("edepInLArXY1500mm"      , &edepInLArXY1500mm     , "edepInLArXY1500mm/D");
+  evt->Branch("edepInLArXY1000mm"      , &edepInLArXY1000mm     , "edepInLArXY1000mm/D");
   evt->Branch("edepInHadCalX"          , &edepInHadCalX         , "edepInHadCalX/D");
   evt->Branch("edepInHadCalY"          , &edepInHadCalY         , "edepInHadCalY/D");
   evt->Branch("edepInMuonFinderX"      , &edepInMuonFinderX     , "edepInMuonFinderX/D");
@@ -133,8 +135,10 @@ void AnalysisManager::BeginOfEvent() {
   nuFSLPz                = -999;
   nuFSLE                 = -999;
   edepInLAr              = 0;
-  edepInLArXY2000mm      = 0;
   edepInLArXY2500mm      = 0;
+  edepInLArXY2000mm      = 0;
+  edepInLArXY1500mm      = 0;
+  edepInLArXY1000mm      = 0;
   edepInHadCalX          = 0;
   edepInHadCalY          = 0;
   edepInMuonFinderX      = 0;
@@ -202,7 +206,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     hEdepXYFSL->GetXaxis()->SetTitle("X [mm]");
     hEdepXYFSL->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZX_FSL";
-    hEdepZXFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, -0, 8700, 600, -1500, 1500);
+    hEdepZXFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
     hEdepZXFSL->GetXaxis()->SetTitle("Z [mm]");
     hEdepZXFSL->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZY_FSL";
@@ -329,21 +333,22 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
     for (auto hit: *hitCollection->GetVector()) {
       double pre_x  = hit->GetPreStepPosition().x();
       double pre_y  = hit->GetPreStepPosition().y();
-      double pre_z  = hit->GetPreStepPosition().z();
+      //double pre_z  = hit->GetPreStepPosition().z();
       double post_x = hit->GetPostStepPosition().x();
       double post_y = hit->GetPostStepPosition().y();
-      double post_z = hit->GetPostStepPosition().z();
+      //double post_z = hit->GetPostStepPosition().z();
 
       // energy deposition in different volumes of the detector
       switch(detID) {
         case 1: {
           double thre1 = 1250; // mm
           double thre2 = 1000; // mm
+          double thre3 = 750; // mm
+          double thre4 = 500; // mm
           edepInLAr += hit->GetEdep();
           if ((abs(pre_x)<=thre1) & (abs(pre_y)<=thre1) & (abs(post_x)<=thre1) & (abs(post_y)<=thre1)) {
             edepInLArXY2500mm += hit->GetEdep();
           } else if ((abs(pre_x)<=thre1) & (abs(pre_y)<=thre1) & ((abs(post_x)>thre1) | (abs(post_y)>thre1))) {
-            //double d = TMath::Sqrt(TMath::Power(pre_x-post_x,2)+TMath::Power(pre_y-post_y,2));
             if (abs(post_x)>abs(post_y)) {
               double w = (thre1 - abs(pre_x))/abs(post_x-pre_x);
               edepInLArXY2500mm += hit->GetEdep()*w;
@@ -355,13 +360,34 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
           if ((abs(pre_x)<=thre2) & (abs(pre_y)<=thre2) & (abs(post_x)<=thre2) & (abs(post_y)<=thre2)) {
             edepInLArXY2000mm += hit->GetEdep();
           } else if ((abs(pre_x)<=thre2) & (abs(pre_y)<=thre2) & ((abs(post_x)>thre2) | (abs(post_y)>thre2))) {
-            //double d = TMath::Sqrt(TMath::Power(pre_x-post_x,2)+TMath::Power(pre_y-post_y,2));
             if (abs(post_x)>abs(post_y)) {
               double w = (thre2 - abs(pre_x))/abs(post_x-pre_x);
               edepInLArXY2000mm += hit->GetEdep()*w;
             } else {
               double w = (thre2 - abs(pre_y))/abs(post_y-pre_y);
               edepInLArXY2000mm += hit->GetEdep()*w;
+            }
+          }
+          if ((abs(pre_x)<=thre3) & (abs(pre_y)<=thre3) & (abs(post_x)<=thre3) & (abs(post_y)<=thre3)) {
+            edepInLArXY1500mm += hit->GetEdep();
+          } else if ((abs(pre_x)<=thre3) & (abs(pre_y)<=thre3) & ((abs(post_x)>thre3) | (abs(post_y)>thre3))) {
+            if (abs(post_x)>abs(post_y)) {
+              double w = (thre3 - abs(pre_x))/abs(post_x-pre_x);
+              edepInLArXY1500mm += hit->GetEdep()*w;
+            } else {
+              double w = (thre3 - abs(pre_y))/abs(post_y-pre_y);
+              edepInLArXY1500mm += hit->GetEdep()*w;
+            }
+          }
+          if ((abs(pre_x)<=thre4) & (abs(pre_y)<=thre4) & (abs(post_x)<=thre4) & (abs(post_y)<=thre4)) {
+            edepInLArXY1000mm += hit->GetEdep();
+          } else if ((abs(pre_x)<=thre4) & (abs(pre_y)<=thre4) & ((abs(post_x)>thre4) | (abs(post_y)>thre4))) {
+            if (abs(post_x)>abs(post_y)) {
+              double w = (thre4 - abs(pre_x))/abs(post_x-pre_x);
+              edepInLArXY1000mm += hit->GetEdep()*w;
+            } else {
+              double w = (thre4 - abs(pre_y))/abs(post_y-pre_y);
+              edepInLArXY1000mm += hit->GetEdep()*w;
             }
           }
           break; }

@@ -63,8 +63,10 @@ class AnalysisManager {
     G4double primaryTrackLength[2000000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[2000000]; ///<- track length of primary particles in TPC region
     G4double edepInLAr;
-    G4double edepInLArXY2000mm;
     G4double edepInLArXY2500mm;
+    G4double edepInLArXY2000mm;
+    G4double edepInLArXY1500mm;
+    G4double edepInLArXY1000mm;
     G4double edepInHadCalX;
     G4double edepInHadCalY;
     G4double edepInMuonFinderX;
