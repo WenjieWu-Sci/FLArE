@@ -19,6 +19,7 @@ class LArBoxHit : public G4VHit {
     void SetTrackVertex(G4ThreeVector& TrackVertex) { fTrackVertex = TrackVertex; }
     void SetTrackLength(G4double TrackLength)       { fTrackLength = TrackLength; }
     void SetParticle(G4int particle) { fParticle = particle; }
+    void SetParticleMass(G4double mass) { fParticleMass = mass; }
     void SetPID(G4int pid) { fPID = pid; }
     void SetTID(G4int tid) { fTID = tid; }
     void SetStepNo(G4int stepno) { fStepno = stepno; }
@@ -40,6 +41,7 @@ class LArBoxHit : public G4VHit {
     G4ThreeVector GetTrackVertex() const { return fTrackVertex; }
     G4double GetTrackLength() const { return fTrackLength; }
     G4int GetParticle() const { return fParticle; }
+    G4double GetParticleMass() const { return fParticleMass; }
     G4int GetPID() const { return fPID; }
     G4int GetTID() const { return fTID; }
     G4int GetStepNo() const { return fStepno; }
@@ -61,6 +63,7 @@ class LArBoxHit : public G4VHit {
     G4ThreeVector fTrackVertex;
     G4double fTrackLength;
     G4int fParticle;
+    G4double fParticleMass;
     G4int fPID;
     G4int fTID;
     G4int fStepno;

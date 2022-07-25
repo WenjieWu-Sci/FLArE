@@ -22,7 +22,7 @@ class AnalysisManager {
 
   public:
     void setFileName(G4String val) { m_filename = val; }
-    void saveSecondary(G4bool val) { m_saveSecondary = val; }
+    void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
 
   private:
@@ -50,18 +50,31 @@ class AnalysisManager {
     G4double nuFSLPy;           ///<- Final state lepton Py
     G4double nuFSLPz;           ///<- Final state lepton Pz
     G4double nuFSLE;            ///<- Final state lepton total energy (GeV)
+
+    G4int    countPrimaryParticle;
     G4int    nPrimaryParticle;  ///<- number of primary particle 
                                 ///   (in case of genie neutrino interaction, number of stable particle in the final state)
-    G4int    PDG[2000000];      ///<- PDG code of primary particles
     G4double Px[2000000];       ///<- Px of primary particles
     G4double Py[2000000];       ///<- Py of primary particles
     G4double Pz[2000000];       ///<- Pz of primary particles
     G4double Pmass[2000000];    ///<- mass of primary particles
     // Geant4 truth
+    G4int    primaryParentID[2000000];         ///<- parent ID of primary particles
     G4int    primaryTrackID[2000000];          ///<- track ID of primary particles
     G4int    primaryTrackPDG[2000000];         ///<- PDG of primary particles, for G4 use
     G4double primaryTrackLength[2000000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[2000000]; ///<- track length of primary particles in TPC region
+    G4int    prongType[2000000];
+    // fake reco
+    G4double EInLAr[2000000];
+    G4double EInHadCal[2000000];
+    G4double EInMuonFinder[2000000];
+    G4double AngleToBeamDir[2000000];
+    G4double ShowerLength[2000000];
+    G4double ShowerLengthInLAr[2000000];
+    G4double dEdx[2000000];
+    G4double dEdxInLAr[2000000];
+
     G4double edepInLAr;
     G4double edepInLArXY2500mm;
     G4double edepInLArXY2000mm;
@@ -74,8 +87,10 @@ class AnalysisManager {
     G4double edepInHadAborb;
     G4double edepInMuonFinderAbsorb;
     G4double edepInCryGap;
+    G4double missCountedEnergy;
 
     G4int    nFromFSLParticles;
+    G4int    fromFSLParticleTID[2000000];
     G4int    fromFSLParticlePDG[2000000];
     G4double fromFSLParticleKinE[2000000];
     G4double fromFSLParticlePx[2000000];
@@ -84,24 +99,20 @@ class AnalysisManager {
     G4double fromFSLTrackLength[2000000];
     G4double fromFSLTrackLengthInTPC[2000000];
 
-    G4int    nSecondaryTracks;
-    G4int    secondaryTrackPDG[2000000];
+    G4int    nHits;
+    G4int    HitTID[40000000];
+    G4int    HitPID[40000000];
+    G4int    HitPDG[40000000];
+    G4int    HitTrackStatus[40000000];
+    G4double HitPrePositionX[40000000];
+    G4double HitPrePositionY[40000000];
+    G4double HitPrePositionZ[40000000];
+    G4double HitPosPositionX[40000000];
+    G4double HitPosPositionY[40000000];
+    G4double HitPosPositionZ[40000000];
+    G4double HitEdep[40000000];
 
-    // refined tracks record
-    G4int nStepsIn25cm;
-    G4int StepPIDIn25cm[2000000];
-    G4int StepTIDIn25cm[2000000];
-    G4int StepPDGCodeIn25cm[2000000];
-    G4int StepnoIn25cm[2000000];
-    G4double StepPrePosIn25cmX[2000000];
-    G4double StepPrePosIn25cmY[2000000];
-    G4double StepPrePosIn25cmZ[2000000];
-    G4double StepPostPosIn25cmX[2000000];
-    G4double StepPostPosIn25cmY[2000000];
-    G4double StepPostPosIn25cmZ[2000000];
-    G4double StepEdepIn25cm[2000000];
-
-    G4bool m_saveSecondary;
+    G4bool m_saveHit;
     G4bool m_saveEvd;
 
     TH2D* hEdepXY;
@@ -111,6 +122,7 @@ class AnalysisManager {
     TH2D* hEdepZXFSL;
     TH2D* hEdepZYFSL;
 
+
   private:
     void FillTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
@@ -118,8 +130,10 @@ class AnalysisManager {
     G4HCofThisEvent* hcofEvent;
 
     std::set<std::pair<int, int> > allTracksPTPair;
+    std::vector<std::set<int> > trackClusters;
     std::set<int> tracksFromFSL;
     std::set<int> tracksFromFSLSecondary;
+    std::vector<double> ShowerP;
 };
 
 #endif

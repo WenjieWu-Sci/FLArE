@@ -30,7 +30,7 @@ AnalysisManager::AnalysisManager() {
   evt = 0;
   messenger = new AnalysisManagerMessenger(this);
   m_filename = "test.root";
-  m_saveSecondary = false;
+  m_saveHit = false;
   m_saveEvd = false;
 }
 
@@ -38,30 +38,54 @@ AnalysisManager::~AnalysisManager() {;}
 
 void AnalysisManager::bookEvtTree() {
   evt = new TTree("evt", "evtTreeInfo");
-  evt->Branch("evtID"                                    , &evtID                  , "evtID/I");
-  evt->Branch("nuIdx"                                    , &nuIdx                  , "nuIdx/I");
-  evt->Branch("nuPDG"                                    , &nuPDG                  , "nuPDG/I");
-  evt->Branch("nuE"                                      , &nuE                    , "nuE/D");
-  evt->Branch("nuX"                                      , &nuX                    , "nuX/D");
-  evt->Branch("nuY"                                      , &nuY                    , "nuY/D");
-  evt->Branch("nuZ"                                      , &nuZ                    , "nuZ/D");
-  evt->Branch("nuIntType"                                , &nuIntType              , "nuIntType/I");
-  evt->Branch("nuScatteringType"                         , &nuScatteringType       , "nuScatteringType/I");
-  evt->Branch("nuFSLPDG"                                 , &nuFSLPDG               , "nuFSLPDG/I");
-  evt->Branch("nuFSLPx"                                  , &nuFSLPx                , "nuFSLPx/D");
-  evt->Branch("nuFSLPy"                                  , &nuFSLPy                , "nuFSLPy/D");
-  evt->Branch("nuFSLPz"                                  , &nuFSLPz                , "nuFSLPz/D");
-  evt->Branch("nuFSLE"                                   , &nuFSLE                 , "nuFSLE/D");
-  evt->Branch("nPrimaryParticle"                         , &nPrimaryParticle       , "nPrimaryParticle/I");
-  evt->Branch("PDG[nPrimaryParticle]"                    , PDG                     , "PDG[nPrimaryParticle]/I");
-  evt->Branch("Px[nPrimaryParticle]"                     , Px                      , "Px[nPrimaryParticle]/D");
-  evt->Branch("Py[nPrimaryParticle]"                     , Py                      , "Py[nPrimaryParticle]/D");
-  evt->Branch("Pz[nPrimaryParticle]"                     , Pz                      , "Pz[nPrimaryParticle]/D");
-  evt->Branch("Pmass[nPrimaryParticle]"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
-  evt->Branch("primaryTrackID[nPrimaryParticle]"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
-  evt->Branch("primaryTrackPDG[nPrimaryParticle]"        , primaryTrackPDG         , "primaryTrackPDG[nPrimaryParticle]/I");
-  evt->Branch("primaryTrackLength[nPrimaryParticle]"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
-  evt->Branch("primaryTrackLengthInTPC[nPrimaryParticle]", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
+  evt->Branch("evtID"                  , &evtID                  , "evtID/I");
+  evt->Branch("nuIdx"                  , &nuIdx                  , "nuIdx/I");
+  evt->Branch("nuPDG"                  , &nuPDG                  , "nuPDG/I");
+  evt->Branch("nuE"                    , &nuE                    , "nuE/D");
+  evt->Branch("nuX"                    , &nuX                    , "nuX/D");
+  evt->Branch("nuY"                    , &nuY                    , "nuY/D");
+  evt->Branch("nuZ"                    , &nuZ                    , "nuZ/D");
+  evt->Branch("nuIntType"              , &nuIntType              , "nuIntType/I");
+  evt->Branch("nuScatteringType"       , &nuScatteringType       , "nuScatteringType/I");
+  evt->Branch("nuFSLPDG"               , &nuFSLPDG               , "nuFSLPDG/I");
+  evt->Branch("nuFSLPx"                , &nuFSLPx                , "nuFSLPx/D");
+  evt->Branch("nuFSLPy"                , &nuFSLPy                , "nuFSLPy/D");
+  evt->Branch("nuFSLPz"                , &nuFSLPz                , "nuFSLPz/D");
+  evt->Branch("nuFSLE"                 , &nuFSLE                 , "nuFSLE/D");
+  evt->Branch("nPrimaryParticle"       , &nPrimaryParticle       , "nPrimaryParticle/I");
+  evt->Branch("Px"                     , Px                      , "Px[nPrimaryParticle]/D");
+  evt->Branch("Py"                     , Py                      , "Py[nPrimaryParticle]/D");
+  evt->Branch("Pz"                     , Pz                      , "Pz[nPrimaryParticle]/D");
+  evt->Branch("Pmass"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
+  evt->Branch("primaryParentID"        , primaryParentID         , "primaryParentID[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackID"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackPDG"        , primaryTrackPDG         , "primaryTrackPDG[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackLength"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
+  evt->Branch("primaryTrackLengthInTPC", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
+  evt->Branch("prongType"              , prongType               , "prongType[nPrimaryParticle]/I");
+  evt->Branch("EInLAr"                 , EInLAr                  , "EInLAr[nPrimaryParticle]/D");
+  evt->Branch("EInHadCal"              , EInHadCal               , "EInHadCal[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinder"          , EInMuonFinder           , "EInMuonFinder[nPrimaryParticle]/D");
+  evt->Branch("AngleToBeamDir"         , AngleToBeamDir          , "AngleToBeamDir[nPrimaryParticle]/D");
+  evt->Branch("ShowerLength"           , ShowerLength            , "ShowerLength[nPrimaryParticle]/D");
+  evt->Branch("ShowerLengthInLAr"      , ShowerLengthInLAr       , "ShowerLengthInLAr[nPrimaryParticle]/D");
+  evt->Branch("dEdx"                   , dEdx                    , "dEdx[nPrimaryParticle]/D");
+  evt->Branch("dEdxInLAr"              , dEdxInLAr               , "dEdxInLAr[nPrimaryParticle]/D");
+
+  evt->Branch("nHits"                  , &nHits                 , "nHits/I");
+  if (m_saveHit) {
+    evt->Branch("HitTID"               , HitTID                 , "HitTID[nHits]/I");
+    evt->Branch("HitPID"               , HitPID                 , "HitPID[nHits]/I");
+    evt->Branch("HitPDG"               , HitPDG                 , "HitPDG[nHits]/I");
+    evt->Branch("HitTrackStatus"       , HitTrackStatus         , "HitTrackStatus[nHits]/I");
+    evt->Branch("HitPrePositionX"      , HitPrePositionX        , "HitPrePositionX[nHits]/D");
+    evt->Branch("HitPrePositionY"      , HitPrePositionY        , "HitPrePositionY[nHits]/D");
+    evt->Branch("HitPrePositionZ"      , HitPrePositionZ        , "HitPrePositionZ[nHits]/D");
+    evt->Branch("HitPosPositionX"      , HitPosPositionX        , "HitPosPositionX[nHits]/D");
+    evt->Branch("HitPosPositionY"      , HitPosPositionY        , "HitPosPositionY[nHits]/D");
+    evt->Branch("HitPosPositionZ"      , HitPosPositionZ        , "HitPosPositionZ[nHits]/D");
+    evt->Branch("HitEdep"              , HitEdep                , "HitEdep[nHits]/D");
+  }
 
   evt->Branch("edepInLAr"              , &edepInLAr             , "edepInLAr/D");
   evt->Branch("edepInLArXY2500mm"      , &edepInLArXY2500mm     , "edepInLArXY2500mm/D");
@@ -75,8 +99,10 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("edepInHadAborb"         , &edepInHadAborb        , "edepInHadAborb/D");
   evt->Branch("edepInMuonFinderAbsorb" , &edepInMuonFinderAbsorb, "edepInMuonFinderAbsorb/D");
   evt->Branch("edepInCryGap"           , &edepInCryGap          , "edepInCryGap/D");
+  evt->Branch("missCountedEnergy"      , &missCountedEnergy     , "missCountedEnergy/D");
 
   evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
+  evt->Branch("fromFSLParticleTID"     , fromFSLParticleTID      , "fromFSLParticleTID[nFromFSLParticles]/I");
   evt->Branch("fromFSLParticlePDG"     , fromFSLParticlePDG      , "fromFSLParticlePDG[nFromFSLParticles]/I");
   evt->Branch("fromFSLParticleKinE"    , fromFSLParticleKinE     , "fromFSLParticleKinE[nFromFSLParticles]/D");
   evt->Branch("fromFSLParticlePx"      , fromFSLParticlePx       , "fromFSLParticlePx[nFromFSLParticles]/D");
@@ -84,24 +110,6 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("fromFSLParticlePz"      , fromFSLParticlePz       , "fromFSLParticlePz[nFromFSLParticles]/D");
   evt->Branch("fromFSLTrackLength"     , fromFSLTrackLength      , "fromFSLTrackLength[nFromFSLParticles]/D");
   evt->Branch("fromFSLTrackLengthInTPC", fromFSLTrackLengthInTPC , "fromFSLTrackLengthInTPC[nFromFSLParticles]/D");
-
-  evt->Branch("nStepsIn25cm"      , &nStepsIn25cm     , "nStepsIn25cm/I");
-  evt->Branch("StepPIDIn25cm"     , StepPIDIn25cm     , "StepPIDIn25cm[nStepsIn25cm]/I");
-  evt->Branch("StepTIDIn25cm"     , StepTIDIn25cm     , "StepTIDIn25cm[nStepsIn25cm]/I");
-  evt->Branch("StepPDGCodeIn25cm" , StepPDGCodeIn25cm , "StepPDGCodeIn25cm[nStepsIn25cm]/I");
-  evt->Branch("StepnoIn25cm"      , StepnoIn25cm      , "StepnoIn25cm[nStepsIn25cm]/I");
-  evt->Branch("StepPrePosIn25cmX" , StepPrePosIn25cmX , "StepPrePosIn25cmX[nStepsIn25cm]/D");
-  evt->Branch("StepPrePosIn25cmY" , StepPrePosIn25cmY , "StepPrePosIn25cmY[nStepsIn25cm]/D");
-  evt->Branch("StepPrePosIn25cmZ" , StepPrePosIn25cmZ , "StepPrePosIn25cmZ[nStepsIn25cm]/D");
-  evt->Branch("StepPostPosIn25cmX", StepPostPosIn25cmX, "StepPostPosIn25cmX[nStepsIn25cm]/D");
-  evt->Branch("StepPostPosIn25cmY", StepPostPosIn25cmY, "StepPostPosIn25cmY[nStepsIn25cm]/D");
-  evt->Branch("StepPostPosIn25cmZ", StepPostPosIn25cmZ, "StepPostPosIn25cmZ[nStepsIn25cm]/D");
-  evt->Branch("StepEdepIn25cm"    , StepEdepIn25cm    , "StepEdepIn25cm[nStepsIn25cm]/D");
-
-  evt->Branch("nSecondaryTracks"       , &nSecondaryTracks       , "nSecondaryTracks/I");
-  if (m_saveSecondary) {
-    evt->Branch("secondaryTrackPDG", secondaryTrackPDG, "secondaryTrackPDG[nSecondaryTracks]/I");
-  }
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -134,6 +142,7 @@ void AnalysisManager::BeginOfEvent() {
   nuFSLPy                = -999;
   nuFSLPz                = -999;
   nuFSLE                 = -999;
+  nHits                  = 0;
   edepInLAr              = 0;
   edepInLArXY2500mm      = 0;
   edepInLArXY2000mm      = 0;
@@ -146,20 +155,32 @@ void AnalysisManager::BeginOfEvent() {
   edepInHadAborb         = 0;
   edepInMuonFinderAbsorb = 0;
   edepInCryGap           = 0;
+  missCountedEnergy      = 0;
   nPrimaryParticle       = 0;
   nFromFSLParticles      = 0;
-  nSecondaryTracks       = 0;
-  nStepsIn25cm           = 0;
+  countPrimaryParticle   = 0;
+  //nSecondaryTracks       = 0;
+  //nStepsIn25cm           = 0;
   for (G4int i= 0; i< 2000000; ++i) {
-    PDG[i]   = 0;
     Px[i]    = -999;
     Py[i]    = -999;
     Pz[i]    = -999;
     Pmass[i] = -999;
+    primaryParentID[i]         = -1;
     primaryTrackID[i]          = -1;
     primaryTrackPDG[i]         = 0;
+    prongType[i]               = -1;
     primaryTrackLength[i]      = 0;
     primaryTrackLengthInTPC[i] = 0;
+    EInLAr[i]                  = 0;
+    EInHadCal[i]               = 0;
+    EInMuonFinder[i]           = 0;
+    AngleToBeamDir[i]          = -1;
+    ShowerLength[i]            = -1;
+    ShowerLengthInLAr[i]       = -1;
+    dEdx[i]                    = -1;
+    dEdxInLAr[i]               = -1;
+    fromFSLParticleTID[i]      = -1;
     fromFSLParticlePDG[i]      = 0;
     fromFSLParticleKinE[i]     = -999;
     fromFSLParticlePx[i]       = 0;
@@ -167,50 +188,61 @@ void AnalysisManager::BeginOfEvent() {
     fromFSLParticlePz[i]       = 0;
     fromFSLTrackLength[i]      = 0;
     fromFSLTrackLengthInTPC[i] = 0;
-    StepPIDIn25cm[i]           = -1;
-    StepTIDIn25cm[i]           = -1;
-    StepPDGCodeIn25cm[i]       = 0;
-    StepnoIn25cm[i]            = 0;
-    StepPrePosIn25cmX[i]       = -999;
-    StepPrePosIn25cmY[i]       = -999;
-    StepPrePosIn25cmZ[i]       = -999;
-    StepPostPosIn25cmX[i]      = -999;
-    StepPostPosIn25cmY[i]      = -999;
-    StepPostPosIn25cmZ[i]      = -999;
-    StepEdepIn25cm[i]          = 0;
-    secondaryTrackPDG[i]       = 0;
   }
+  if (m_saveHit) {
+    for (G4int i= 0; i< 40000000; ++i) {
+      HitTID[i] = -1;
+      HitPID[i] = -1;
+      HitPDG[i] = 0;
+      HitTrackStatus[i]  = -1;
+      HitPrePositionX[i] = -999;
+      HitPrePositionY[i] = -999;
+      HitPrePositionZ[i] = -999;
+      HitPosPositionX[i] = -999;
+      HitPosPositionY[i] = -999;
+      HitPosPositionZ[i] = -999;
+      HitEdep[i]         = 0;
+    }
+  }
+
   allTracksPTPair.clear();
+  trackClusters.clear();
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
+  ShowerP.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
   /// Branch: evtID
   evtID = event->GetEventID();
   if (m_saveEvd) {
+    int res = 5;
+    int len_x = 1800;
+    int len_y = 1800;
+    //int len_z = 8700; // 16cm steel for muon finder
+    int len_z = 9400;   // 50cm steel for muon finder
     std::string histname = "evt_"+std::to_string(evtID)+"_EdepXY";
-    hEdepXY = new TH2D(histname.c_str(), histname.c_str(), 600, -1500, 1500, 600, -1500, 1500);
+    hEdepXY = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
     hEdepXY->GetXaxis()->SetTitle("X [mm]");
     hEdepXY->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZX";
-    hEdepZX = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZX = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_x/res, -len_x/2, len_x/2);
     hEdepZX->GetXaxis()->SetTitle("Z [mm]");
     hEdepZX->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZY";
-    hEdepZY = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZY = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_y/res, -len_y/2, len_y/2);
     hEdepZY->GetXaxis()->SetTitle("Z [mm]");
     hEdepZY->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepXY_FSL";
-    hEdepXYFSL = new TH2D(histname.c_str(), histname.c_str(), 600, -1500, 1500, 600, -1500, 1500);
+    hEdepXYFSL = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
     hEdepXYFSL->GetXaxis()->SetTitle("X [mm]");
     hEdepXYFSL->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZX_FSL";
-    hEdepZXFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZXFSL = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_x/res, -len_x/2, len_x/2);
     hEdepZXFSL->GetXaxis()->SetTitle("Z [mm]");
     hEdepZXFSL->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_EdepZY_FSL";
-    hEdepZYFSL = new TH2D(histname.c_str(), histname.c_str(), 1740, 0, 8700, 600, -1500, 1500);
+    hEdepZYFSL = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_y/res, -len_y/2, len_y/2);
     hEdepZYFSL->GetXaxis()->SetTitle("Z [mm]");
     hEdepZYFSL->GetYaxis()->SetTitle("Y [mm]");
   }
@@ -227,6 +259,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           dynamic_cast<PrimaryParticleInformation*>(primary_particle->GetUserInformation());
         primary_particle_info->Print();
         if (primary_particle_info->GetPartID()==0) {
+          nuIdx            = primary_particle_info->GetNeuIdx();
+          nuPDG            = primary_particle_info->GetNeuPDG();
+          nuE              = primary_particle_info->GetNeuP4().T();
+          nuX              = primary_particle_info->GetNeuX4().X();
+          nuY              = primary_particle_info->GetNeuX4().Y();
+          nuZ              = primary_particle_info->GetNeuX4().Z();
           nuIntType        = primary_particle_info->GetInteractionTypeId();
           nuScatteringType = primary_particle_info->GetScatteringTypeId();
           nuFSLPDG         = primary_particle_info->GetFSLPDG();
@@ -234,18 +272,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuFSLPy          = primary_particle_info->GetFSLP4().Y();
           nuFSLPz          = primary_particle_info->GetFSLP4().Z();
           nuFSLE           = primary_particle_info->GetFSLP4().T();
-          nuIdx            = primary_particle_info->GetNeuIdx();
-          nuPDG            = primary_particle_info->GetNeuPDG();
-          nuE              = primary_particle_info->GetNeuP4().T();
-          nuX              = primary_particle_info->GetNeuX4().X();
-          nuY              = primary_particle_info->GetNeuX4().Y();
-          nuZ              = primary_particle_info->GetNeuX4().Z();
         }
-        PDG[count_particles]   = primary_particle_info->GetPDG();
-        Px[count_particles]    = primary_particle_info->GetMomentumMC().getX();
-        Py[count_particles]    = primary_particle_info->GetMomentumMC().getY();
-        Pz[count_particles]    = primary_particle_info->GetMomentumMC().getZ();
-        Pmass[count_particles] = primary_particle_info->GetMass();
+//        PDG[count_particles]   = primary_particle_info->GetPDG();
+//        Px[count_particles]    = primary_particle_info->GetMomentumMC().getX();
+//        Py[count_particles]    = primary_particle_info->GetMomentumMC().getY();
+//        Pz[count_particles]    = primary_particle_info->GetMomentumMC().getZ();
+//        Pmass[count_particles] = primary_particle_info->GetMass();
         count_particles++;
       }
     }
@@ -253,7 +285,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   nPrimaryVertex   = event->GetNumberOfPrimaryVertex();
   nPrimaryParticle = count_particles;
   std::cout<<"number of primary vertices  : "<<nPrimaryVertex  <<std::endl;
-  std::cout<<"number of primary particles : "<<nPrimaryParticle<<std::endl;
 
   G4SDManager* sdm = G4SDManager::GetSDMpointer();
   // Get the hit collections
@@ -275,11 +306,16 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]<0) {
       sdids[i] = sdm->GetCollectionID(sds[i]);
-      G4cout<<"AnalysisManager : "<<sds[i]<<" (ID="<<sdids[i]<<")"<<G4endl;
+      //G4cout<<"AnalysisManager : "<<sds[i]<<" (ID="<<sdids[i]<<")"<<G4endl;
     }
     if (sdids[i]>=0) {
       FillTree(sdids[i], sds[i]);
     }
+  }
+
+  nFromFSLParticles = tracksFromFSLSecondary.size();
+  if (nFromFSLParticles>0) {
+    nPrimaryParticle = nPrimaryParticle + nFromFSLParticles - 1;
   }
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
@@ -292,6 +328,32 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   std::cout<<"Recorded tracks       : "<<allTracksPTPair.size()<<std::endl;
   std::cout<<"Tracks from FSL       : "<<tracksFromFSL.size()<<std::endl;
   std::cout<<"Tracks from FSL (2nd) : "<<tracksFromFSLSecondary.size()<<std::endl;
+  std::cout<<"number of primary particles : "<<nPrimaryParticle
+    <<" , number of particles from fsl : "<<nFromFSLParticles<<std::endl;
+  std::cout<<countPrimaryParticle<<std::endl;
+
+  // cluster all tracks to primary particles
+  trackClusters.resize(nPrimaryParticle);
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+    trackClusters[iPrim].insert(primaryTrackID[iPrim]);
+  }
+  for (auto x : allTracksPTPair) {
+    // add the track to the corresponding cluster if its parent is in the cluster
+    // one track can have only one parent, break the loop once its parent is found
+    for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+      if (trackClusters[iPrim].find(x.first) != trackClusters[iPrim].end()) {
+        trackClusters[iPrim].insert(x.second);
+        break;
+      }
+    }
+  }
+
+  ShowerP.resize(nPrimaryParticle);
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+    ShowerP[iPrim] = TMath::Sqrt(Px[iPrim]*Px[iPrim]+Py[iPrim]*Py[iPrim]+Pz[iPrim]*Pz[iPrim]);
+    double costheta = Pz[iPrim]/ShowerP[iPrim];
+    AngleToBeamDir[iPrim] = TMath::ACos(costheta);
+  }
 
   // must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
   for (int i= 0; i< nsds; ++i) {
@@ -300,7 +362,77 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
+  std::cout<<"PDG Angle ShowerLength EInLAr EInHadCal EInMuonFinder dEdx ShowerLengthInLAr dEdxInLAr ProngType Pz"<<std::endl;
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
+    if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
+      prongType[iPrim] = 0;
+    } else if (abs(nuPDG)==16 && abs(nuFSLPDG)==15) {
+      bool tau2e = false;
+      bool tau2mu = false;
+      for (int iFromFSL= 0;iFromFSL< nFromFSLParticles; ++iFromFSL) {
+        if (fromFSLParticlePDG[iFromFSL]==13) {
+          tau2mu = true;
+        } else if (fromFSLParticlePDG[iFromFSL]==11) {
+          tau2e = true;
+        }
+      }
+      if (tau2e) {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 1;
+        } else {
+          prongType[iPrim] = 2;
+        }
+      } else if (tau2mu) {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 3;
+        } else {
+          prongType[iPrim] = 4;
+        } 
+      } else {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 5;
+        } else {
+          prongType[iPrim] = 6;
+        } 
+      }
+    }
+    if (abs(nuPDG)==14 && abs(nuFSLPDG)==14) {
+      prongType[iPrim] = 7;
+    } else if (abs(nuPDG)==14 && abs(nuFSLPDG)==13) {
+      if (abs(primaryTrackPDG[iPrim])==13) {
+        prongType[iPrim] = 8;
+      } else {
+        prongType[iPrim] = 9;
+      }
+    }
+    if (abs(nuPDG)==12 && abs(nuFSLPDG)==12) {
+      prongType[iPrim] = 10;
+    } else if (abs(nuPDG)==12 && abs(nuFSLPDG)==11) {
+      if (abs(primaryTrackPDG[iPrim])==11) {
+        prongType[iPrim] = 11;
+      } else {
+        prongType[iPrim] = 12;
+      }
+    }
+    dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
+    dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
+
+    std::cout<<std::setw(8)<<primaryTrackPDG[iPrim]<<" "
+             <<std::setw(8)<<AngleToBeamDir[iPrim]<<" "
+             <<std::setw(8)<<ShowerLength[iPrim]<<" "
+             <<std::setw(8)<<EInLAr[iPrim]<<" " 
+             <<std::setw(8)<<EInHadCal[iPrim]<<" "
+             <<std::setw(8)<<EInMuonFinder[iPrim]<<" "
+             <<std::setw(8)<<dEdx[iPrim]<<" "
+             <<std::setw(8)<<ShowerLengthInLAr[iPrim]<<" "
+             <<std::setw(8)<<dEdxInLAr[iPrim]<<" "
+             <<std::setw(8)<<prongType[iPrim]<<" "
+             <<std::setw(8)<<Pz[iPrim]<<std::endl;
+  }
+
   evt->Fill();
+
+  std::cout<<"Total number of hits : "<<nHits<<std::endl;
 
   if (m_saveEvd) {
     thefile->cd("/edep/");
@@ -331,12 +463,30 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
+      nHits++;
+
       double pre_x  = hit->GetPreStepPosition().x();
       double pre_y  = hit->GetPreStepPosition().y();
-      //double pre_z  = hit->GetPreStepPosition().z();
+      double pre_z  = hit->GetPreStepPosition().z();
       double post_x = hit->GetPostStepPosition().x();
       double post_y = hit->GetPostStepPosition().y();
-      //double post_z = hit->GetPostStepPosition().z();
+      double post_z = hit->GetPostStepPosition().z();
+      
+      if (m_saveHit) {
+        if (nHits<=40000000) {
+          HitTID[nHits-1] = hit->GetTID();
+          HitPID[nHits-1] = hit->GetPID();
+          HitPDG[nHits-1] = hit->GetParticle();
+          HitTrackStatus[nHits-1]  = hit->GetTrackStatus();
+          HitPrePositionX[nHits-1] = pre_x;
+          HitPrePositionY[nHits-1] = pre_y;
+          HitPrePositionZ[nHits-1] = pre_z;
+          HitPosPositionX[nHits-1] = post_x;
+          HitPosPositionY[nHits-1] = post_y;
+          HitPosPositionZ[nHits-1] = post_z;
+          HitEdep[nHits-1] = hit->GetEdep();
+        }
+      }
 
       // energy deposition in different volumes of the detector
       switch(detID) {
@@ -413,47 +563,35 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
           edepInCryGap += hit->GetEdep();
           break;
       }
+
+      allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
+
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
         if (hit->GetStepNo()==1) {
-          primaryTrackID[hit->GetTID()-1] = hit->GetTID();
-          primaryTrackPDG[hit->GetTID()-1] = hit->GetParticle();
+          if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
+          countPrimaryParticle++;
+          primaryParentID[countPrimaryParticle-1] = hit->GetPID();
+          primaryTrackID[countPrimaryParticle-1] = hit->GetTID();
+          primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
+          Px[countPrimaryParticle-1] = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1] = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1] = hit->GetInitMomentum().z();
+          Pmass[countPrimaryParticle-1] = hit->GetParticleMass();
         }
-        primaryTrackLength[hit->GetTID()-1] += hit->GetStepLength();
-        if (detID==1) {
-          primaryTrackLengthInTPC[hit->GetTID()-1] += hit->GetStepLength();
-        } 
       }
-
-      if (hit->GetStepNo()==1 && hit->GetPID()>nPrimaryParticle && hit->GetParticle()!=22) {
-        // record secondary particles, but exclude gamma
-        nSecondaryTracks++;
-        if (nSecondaryTracks<=2000000) 
-          secondaryTrackPDG[nSecondaryTracks-1] = hit->GetParticle();
-      }
-
-      // save step information around the vertex to study vertex activities
-      if (abs(hit->GetPreStepPosition().x() - nuX) < 12.5 * cm &&
-          abs(hit->GetPreStepPosition().y() - nuY) < 12.5 * cm &&
-          hit->GetPreStepPosition().z() - nuZ < 20.0 * cm &&
-          hit->GetPreStepPosition().z() - nuZ > -5.0 * cm) {
-        nStepsIn25cm++;
-        StepPIDIn25cm[nStepsIn25cm-1]       = hit->GetPID();
-        StepTIDIn25cm[nStepsIn25cm-1]       = hit->GetTID();
-        StepPDGCodeIn25cm[nStepsIn25cm-1]   = hit->GetParticle();
-        StepnoIn25cm[nStepsIn25cm-1]        = hit->GetStepNo();
-        StepPrePosIn25cmX[nStepsIn25cm-1]   = hit->GetPreStepPosition().x();
-        StepPrePosIn25cmY[nStepsIn25cm-1]   = hit->GetPreStepPosition().y();
-        StepPrePosIn25cmZ[nStepsIn25cm-1]   = hit->GetPreStepPosition().z();
-        StepPostPosIn25cmX[nStepsIn25cm-1]  = hit->GetPostStepPosition().x();
-        StepPostPosIn25cmY[nStepsIn25cm-1]  = hit->GetPostStepPosition().y();
-        StepPostPosIn25cmZ[nStepsIn25cm-1]  = hit->GetPostStepPosition().z();
-        StepEdepIn25cm[nStepsIn25cm-1]      = hit->GetEdep();
-      }
-
-      allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
       if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
         tracksFromFSLSecondary.insert(hit->GetTID());
+        if (hit->GetStepNo()==1) {
+          countPrimaryParticle++;
+          primaryParentID[countPrimaryParticle-1] = hit->GetPID();
+          primaryTrackID[countPrimaryParticle-1] = hit->GetTID();
+          primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
+          Px[countPrimaryParticle-1] = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1] = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1] = hit->GetInitMomentum().z();
+          Pmass[countPrimaryParticle-1] = hit->GetParticleMass();
+        }
       }
     } // end of hit loop
   }
@@ -473,7 +611,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
   };
   detIDs.find(sdName)->second();
 
-  nFromFSLParticles = tracksFromFSLSecondary.size();
   std::map<int, int> map_tracksFromFSLSecondary;
   int _idx = 0;
   for (auto _tid : tracksFromFSLSecondary) {
@@ -484,6 +621,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
+
       // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
       if (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) {
         int whichTrackFromFSL = map_tracksFromFSLSecondary[hit->GetTID()];
@@ -491,6 +629,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
             <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
             <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
+          fromFSLParticleTID[whichTrackFromFSL]  = hit->GetTID();
           fromFSLParticlePDG[whichTrackFromFSL]  = hit->GetParticle();
           fromFSLParticleKinE[whichTrackFromFSL] = hit->GetInitKinEnergy();
           fromFSLParticlePx[whichTrackFromFSL]   = hit->GetInitMomentum().getX();
@@ -511,6 +650,45 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           hEdepXYFSL->Fill(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdep());
           hEdepZXFSL->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().x(), hit->GetEdep());
           hEdepZYFSL->Fill(hit->GetEdepPosition().z()+3500, hit->GetEdepPosition().y(), hit->GetEdep());
+        }
+      }
+
+      int whichPrim = -1;
+      for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+        if (trackClusters[iPrim].find(hit->GetTID()) != trackClusters[iPrim].end()) {
+          whichPrim = iPrim;
+          break;
+        }
+      }
+      if (whichPrim< 0) { 
+        std::cout<<"Can't find the primary particle of the hit, something is wrong "<<hit->GetParticle()<<" "<<hit->GetEdep()<<std::endl; 
+        missCountedEnergy += hit->GetEdep();
+        continue;
+      } 
+      primaryTrackLength[whichPrim] += hit->GetStepLength();
+      if (detID==1) {
+        primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
+      }
+
+      if (hit->GetEdep()>2e-6) {
+        double pre_x  = hit->GetPreStepPosition().x();
+        double pre_y  = hit->GetPreStepPosition().y();
+        double pre_z  = hit->GetPreStepPosition().z();
+        double post_x = hit->GetPostStepPosition().x();
+        double post_y = hit->GetPostStepPosition().y();
+        double post_z = hit->GetPostStepPosition().z();
+        double len_Pre = TMath::Abs((pre_x-nuX)*Px[whichPrim]+(pre_y-nuY)*Py[whichPrim]+(pre_z-nuZ)*Pz[whichPrim])/ShowerP[whichPrim];
+        double len_Pos = TMath::Abs((post_x-nuX)*Px[whichPrim]+(post_y-nuY)*Py[whichPrim]+(post_z-nuZ)*Pz[whichPrim])/ShowerP[whichPrim]; 
+        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_Pre, len_Pos});
+        if (detID==1) { 
+          EInLAr[whichPrim] += hit->GetEdep();
+          ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_Pre, len_Pos});
+        }
+        if (detID==2 || detID==3 || detID==6) {
+          EInHadCal[whichPrim] += hit->GetEdep();
+        }
+        if (detID==4 || detID==5 || detID==7) {
+          EInMuonFinder[whichPrim] += hit->GetEdep();
         }
       }
     } // end of hit loop

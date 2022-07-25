@@ -61,8 +61,8 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double worldSizeY = 20 * m;
   G4double worldSizeZ = 20 * m;
   // LAr volume: +z being beam direction
-  G4double lArSizeX = 3.0 * m;
-  G4double lArSizeY = 3.0 * m;
+  G4double lArSizeX = 1.8 * m;
+  G4double lArSizeY = 1.8 * m;
   G4double lArSizeZ = 7.0 * m;
 
   // Experimental hall
@@ -196,7 +196,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   //
   // Muon Finder
   // 
-  thicknessAbsorber = 16 * cm;
+  thicknessAbsorber = 50 * cm;
   thicknessCaloX    = 1 * cm;
   thicknessCaloY    = 1 * cm;
   fNbOfAbsor = 2;

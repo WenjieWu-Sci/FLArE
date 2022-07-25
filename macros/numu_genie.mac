@@ -1,0 +1,16 @@
+/det/material LAr
+/det/saveGdml false
+
+/run/initialize
+
+/random/setSeeds 42
+/genie/useGenie true
+/genie/genieInput /dune/data/users/wenjiewu/genie/production/numu_kling_ar40/numu_kling_ar40_e5000.ghep.root
+/genie/genieIStart 5
+
+#/histo/fileName /dune/data/users/wenjiewu/FLArE_Data/nue_kling_ar40_evt10000.root
+/histo/fileName test_5_9.root
+/histo/saveEvd false
+/histo/saveHit false
+
+/run/beamOn 5

@@ -49,10 +49,10 @@
   factoryCmd->SetGuidance("set name for the histograms file");
   factoryCmd->AvailableForStates(G4State_PreInit,G4State_Idle); 
 
-  saveSecCmd = new G4UIcmdWithABool("/histo/saveSecondary", this);
-  saveSecCmd->SetGuidance("whether save the information of secondary particles");
-  saveSecCmd->SetParameterName("saveSecondary", true);
-  saveSecCmd->SetDefaultValue(false);
+  saveHitCmd = new G4UIcmdWithABool("/histo/saveHit", this);
+  saveHitCmd->SetGuidance("whether save the information of all hits");
+  saveHitCmd->SetParameterName("saveHit", true);
+  saveHitCmd->SetDefaultValue(false);
 
   saveEvdCmd = new G4UIcmdWithABool("/histo/saveEvd", this);
   saveEvdCmd->SetGuidance("whether save event display");
@@ -69,7 +69,7 @@
 AnalysisManagerMessenger::~AnalysisManagerMessenger()
 {
   delete factoryCmd;
-  delete saveSecCmd;
+  delete saveHitCmd;
   delete saveEvdCmd;
   delete histoDir;
 }
@@ -79,7 +79,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
 void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValues)
 {
   if (command == factoryCmd) histo->setFileName(newValues);
-  if (command == saveSecCmd) histo->saveSecondary(saveSecCmd->GetNewBoolValue(newValues));
+  if (command == saveHitCmd) histo->saveHit(saveHitCmd->GetNewBoolValue(newValues));
   if (command == saveEvdCmd) histo->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
 
   //  if(command == histoCmd) histo->setSeed(newValues);

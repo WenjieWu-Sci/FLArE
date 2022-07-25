@@ -6,9 +6,11 @@
 /random/setSeeds 42
 /genie/useGenie true
 /genie/genieInput /dune/data/users/wenjiewu/genie/production/nutau_bai_ar40/nutau_bai_ar40_e2000.ghep.root
-/genie/genieIStart 0
+/genie/genieIStart 6
 
-/histo/fileName /dune/data/users/wenjiewu/FLArE_Data/nutau_bai_ar40_evt1000_evd.root
-/histo/saveEvd true
+#/histo/fileName /dune/data/users/wenjiewu/FLArE_Data/nutau_bai_ar40_evt1000_evd.root
+/histo/fileName test_5_9.root
+/histo/saveEvd false
+/histo/saveHit false
 
-/run/beamOn 1000
+/run/beamOn 5

@@ -56,7 +56,7 @@ class AnalysisManagerMessenger: public G4UImessenger
 
     G4UIdirectory* histoDir;   
     G4UIcmdWithAString* factoryCmd;
-    G4UIcmdWithABool* saveSecCmd;
+    G4UIcmdWithABool* saveHitCmd;
     G4UIcmdWithABool* saveEvdCmd;
     G4UIcmdWithAnInteger* histoCmd;
 

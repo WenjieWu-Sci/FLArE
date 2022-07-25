@@ -13,12 +13,18 @@ LArBoxSD::LArBoxSD(G4String name) : G4VSensitiveDetector(name) {
 
 G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   G4Track* aTrack = aStep->GetTrack();
+
+  // enumerator: fAlive, fStopButAlive, fStopAndKill, fKillTrackAndSecondaries, fSuspend, fPostponeToNextEvent
+  // https://apc.u-paris.fr/~franco/g4doxy/html/G4TrackStatus_8hh.html#734825af9cdc612606614fdce0545157
+  // http://geant4.in2p3.fr/2005/Workshop/ShortCourse/session1/M.Asai.pdf
   G4int TrackStatus = aTrack->GetTrackStatus();
   //G4cout<<"debug (track status): "<<TrackStatus<<G4endl;
+
   G4ThreeVector TrackVertex = aTrack->GetVertexPosition();
   G4double TrackLength      = aTrack->GetTrackLength();
 
   G4int ParticleName = aTrack->GetParticleDefinition()->GetPDGEncoding();
+  G4double ParticleMass = aTrack->GetParticleDefinition()->GetPDGMass();
   G4int PID          = aTrack->GetParentID();
   G4int TID          = aTrack->GetTrackID();
   G4int Stepno       = aTrack->GetCurrentStepNumber();
@@ -62,6 +68,7 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   hit->SetTrackVertex(TrackVertex);
   hit->SetTrackLength(TrackLength);
   hit->SetParticle(ParticleName);
+  hit->SetParticleMass(ParticleMass);
   hit->SetPID(PID);
   hit->SetTID(TID);
   hit->SetStepNo(Stepno);
