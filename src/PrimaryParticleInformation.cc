@@ -18,16 +18,19 @@ PrimaryParticleInformation::~PrimaryParticleInformation()
 }
 
 void PrimaryParticleInformation::Print() const {
-  G4cout<<"ooooo  OOOOO  ooooo"<<G4endl;
+  G4cout<<G4endl;
   G4cout<<"PrimaryParticleInformation: PDG code "<<fPDG<<G4endl
     <<"Particle unique ID : "<<fPartID<<G4endl
     <<"MC momentum : "<<fMomentumMC<<" MeV"<<G4endl
     <<"MC vertex : "<<fVertexMC<<" mm"<<G4endl;
+  // omit this printout
+  /***************************************************
   if (fInteractionType!=-1 && fScatteringType!=-1) {
     G4cout<<"NeutrinoInteractionInformation : "
           <<fInteractionType<<" "<<fScatteringType;
     G4cout<<", FSL : "<<fFSLPDG<<" (" <<fFSLP4.X()<<", "
       <<fFSLP4.Y()<<", "<<fFSLP4.Z()<<", "<<fFSLP4.T() <<") GeV"<<G4endl;
   }
+  ***************************************************/
 }
 

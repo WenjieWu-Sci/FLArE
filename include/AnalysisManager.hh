@@ -54,6 +54,7 @@ class AnalysisManager {
     G4int    countPrimaryParticle;
     G4int    nPrimaryParticle;  ///<- number of primary particle 
                                 ///   (in case of genie neutrino interaction, number of stable particle in the final state)
+                                ///   (in case of the FSL decay, the decay products are counted as primary particle)
     G4double Px[2000000];       ///<- Px of primary particles
     G4double Py[2000000];       ///<- Py of primary particles
     G4double Pz[2000000];       ///<- Pz of primary particles
@@ -65,7 +66,7 @@ class AnalysisManager {
     G4double primaryTrackLength[2000000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[2000000]; ///<- track length of primary particles in TPC region
     G4int    prongType[2000000];
-    // fake reco
+    // pseudo-reco
     G4double EInLAr[2000000];
     G4double EInHadCal[2000000];
     G4double EInMuonFinder[2000000];
@@ -90,14 +91,14 @@ class AnalysisManager {
     G4double missCountedEnergy;
 
     G4int    nFromFSLParticles;
-    G4int    fromFSLParticleTID[2000000];
+    //G4int    fromFSLParticleTID[2000000];
     G4int    fromFSLParticlePDG[2000000];
-    G4double fromFSLParticleKinE[2000000];
-    G4double fromFSLParticlePx[2000000];
-    G4double fromFSLParticlePy[2000000];
-    G4double fromFSLParticlePz[2000000];
-    G4double fromFSLTrackLength[2000000];
-    G4double fromFSLTrackLengthInTPC[2000000];
+    //G4double fromFSLParticleKinE[2000000];
+    //G4double fromFSLParticlePx[2000000];
+    //G4double fromFSLParticlePy[2000000];
+    //G4double fromFSLParticlePz[2000000];
+    //G4double fromFSLTrackLength[2000000];
+    //G4double fromFSLTrackLengthInTPC[2000000];
 
     G4int    nHits;
     G4int    HitTID[40000000];
@@ -115,12 +116,15 @@ class AnalysisManager {
     G4bool m_saveHit;
     G4bool m_saveEvd;
 
-    TH2D* hEdepXY;
-    TH2D* hEdepZX;
-    TH2D* hEdepZY;
-    TH2D* hEdepXYFSL;
-    TH2D* hEdepZXFSL;
-    TH2D* hEdepZYFSL;
+    std::vector<TH2D*> hitClusterXY;
+    std::vector<TH2D*> hitClusterZX;
+    std::vector<TH2D*> hitClusterZY;
+//    TH2D* hEdepXY;
+//    TH2D* hEdepZX;
+//    TH2D* hEdepZY;
+//    TH2D* hEdepXYFSL;
+//    TH2D* hEdepZXFSL;
+//    TH2D* hEdepZYFSL;
 
 
   private:
