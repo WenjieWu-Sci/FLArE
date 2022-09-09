@@ -58,6 +58,9 @@ class AnalysisManager {
     G4double Px[2000000];       ///<- Px of primary particles
     G4double Py[2000000];       ///<- Py of primary particles
     G4double Pz[2000000];       ///<- Pz of primary particles
+    G4double VtxX[2000000];       ///<- Px of primary particles
+    G4double VtxY[2000000];       ///<- Py of primary particles
+    G4double VtxZ[2000000];       ///<- Pz of primary particles
     G4double Pmass[2000000];    ///<- mass of primary particles
     // Geant4 truth
     G4int    primaryParentID[2000000];         ///<- parent ID of primary particles
@@ -73,6 +76,8 @@ class AnalysisManager {
     G4double AngleToBeamDir[2000000];
     G4double ShowerLength[2000000];
     G4double ShowerLengthInLAr[2000000];
+    G4double ShowerWidth[2000000];
+    G4double ShowerWidthInLAr[2000000];
     G4double dEdx[2000000];
     G4double dEdxInLAr[2000000];
 
@@ -91,14 +96,7 @@ class AnalysisManager {
     G4double missCountedEnergy;
 
     G4int    nFromFSLParticles;
-    //G4int    fromFSLParticleTID[2000000];
     G4int    fromFSLParticlePDG[2000000];
-    //G4double fromFSLParticleKinE[2000000];
-    //G4double fromFSLParticlePx[2000000];
-    //G4double fromFSLParticlePy[2000000];
-    //G4double fromFSLParticlePz[2000000];
-    //G4double fromFSLTrackLength[2000000];
-    //G4double fromFSLTrackLengthInTPC[2000000];
 
     G4int    nHits;
     G4int    HitTID[40000000];
@@ -119,13 +117,6 @@ class AnalysisManager {
     std::vector<TH2D*> hitClusterXY;
     std::vector<TH2D*> hitClusterZX;
     std::vector<TH2D*> hitClusterZY;
-//    TH2D* hEdepXY;
-//    TH2D* hEdepZX;
-//    TH2D* hEdepZY;
-//    TH2D* hEdepXYFSL;
-//    TH2D* hEdepZXFSL;
-//    TH2D* hEdepZYFSL;
-
 
   private:
     void FillTree(G4int sdId, std::string sdName);

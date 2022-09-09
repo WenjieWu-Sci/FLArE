@@ -34,7 +34,6 @@ class LArBoxHit : public G4VHit {
     void SetEdepPosition(G4ThreeVector& edepPos) { fEdepPosition = edepPos; }
     void SetVolume(G4String volumeName) { fVolumeName = volumeName; }
     void SetStepStatus(G4int stepstatus) { fStepStatus = stepstatus; }
-    void SetIsFromFSL(G4bool isfromFSL) { fHitFromFSL = isfromFSL; }
 
     //getter
     G4int GetTrackStatus() const { return fTrackStatus; }
@@ -56,7 +55,6 @@ class LArBoxHit : public G4VHit {
     G4ThreeVector GetEdepPosition() const { return fEdepPosition; }
     G4String GetVolume() const { return fVolumeName; }
     G4int GetStepStatus() const { return fStepStatus; }
-    G4bool GetIsFromFSL() const { return fHitFromFSL; }
 
   private:
     G4int fTrackStatus;

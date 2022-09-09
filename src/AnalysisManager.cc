@@ -56,6 +56,9 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("Px"                     , Px                      , "Px[nPrimaryParticle]/D");
   evt->Branch("Py"                     , Py                      , "Py[nPrimaryParticle]/D");
   evt->Branch("Pz"                     , Pz                      , "Pz[nPrimaryParticle]/D");
+  evt->Branch("VtxX"                   , VtxX                    , "VtxX[nPrimaryParticle]/D");
+  evt->Branch("VtxY"                   , VtxY                    , "VtxY[nPrimaryParticle]/D");
+  evt->Branch("VtxZ"                   , VtxZ                    , "VtxZ[nPrimaryParticle]/D");
   evt->Branch("Pmass"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
   evt->Branch("primaryParentID"        , primaryParentID         , "primaryParentID[nPrimaryParticle]/I");
   evt->Branch("primaryTrackID"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
@@ -69,6 +72,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("AngleToBeamDir"         , AngleToBeamDir          , "AngleToBeamDir[nPrimaryParticle]/D");
   evt->Branch("ShowerLength"           , ShowerLength            , "ShowerLength[nPrimaryParticle]/D");
   evt->Branch("ShowerLengthInLAr"      , ShowerLengthInLAr       , "ShowerLengthInLAr[nPrimaryParticle]/D");
+  evt->Branch("ShowerWidth"            , ShowerWidth             , "ShowerWidth[nPrimaryParticle]/D");
+  evt->Branch("ShowerWidthInLAr"       , ShowerWidthInLAr        , "ShowerWidthInLAr[nPrimaryParticle]/D");
   evt->Branch("dEdx"                   , dEdx                    , "dEdx[nPrimaryParticle]/D");
   evt->Branch("dEdxInLAr"              , dEdxInLAr               , "dEdxInLAr[nPrimaryParticle]/D");
 
@@ -102,14 +107,6 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("missCountedEnergy"      , &missCountedEnergy     , "missCountedEnergy/D");
 
   evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
-  //evt->Branch("fromFSLParticleTID"     , fromFSLParticleTID      , "fromFSLParticleTID[nFromFSLParticles]/I");
-  //evt->Branch("fromFSLParticlePDG"     , fromFSLParticlePDG      , "fromFSLParticlePDG[nFromFSLParticles]/I");
-  //evt->Branch("fromFSLParticleKinE"    , fromFSLParticleKinE     , "fromFSLParticleKinE[nFromFSLParticles]/D");
-  //evt->Branch("fromFSLParticlePx"      , fromFSLParticlePx       , "fromFSLParticlePx[nFromFSLParticles]/D");
-  //evt->Branch("fromFSLParticlePy"      , fromFSLParticlePy       , "fromFSLParticlePy[nFromFSLParticles]/D");
-  //evt->Branch("fromFSLParticlePz"      , fromFSLParticlePz       , "fromFSLParticlePz[nFromFSLParticles]/D");
-  //evt->Branch("fromFSLTrackLength"     , fromFSLTrackLength      , "fromFSLTrackLength[nFromFSLParticles]/D");
-  //evt->Branch("fromFSLTrackLengthInTPC", fromFSLTrackLengthInTPC , "fromFSLTrackLengthInTPC[nFromFSLParticles]/D");
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -164,6 +161,9 @@ void AnalysisManager::BeginOfEvent() {
     Px[i]    = -999;
     Py[i]    = -999;
     Pz[i]    = -999;
+    VtxX[i]  = -9999;
+    VtxY[i]  = -9999;
+    VtxZ[i]  = -9999;
     Pmass[i] = -999;
     primaryParentID[i]         = -1;
     primaryTrackID[i]          = -1;
@@ -177,16 +177,11 @@ void AnalysisManager::BeginOfEvent() {
     AngleToBeamDir[i]          = -1;
     ShowerLength[i]            = -1;
     ShowerLengthInLAr[i]       = -1;
+    ShowerWidth[i]             = -1;
+    ShowerWidthInLAr[i]        = -1;
     dEdx[i]                    = -1;
     dEdxInLAr[i]               = -1;
-    //fromFSLParticleTID[i]      = -1;
     fromFSLParticlePDG[i]      = 0;
-    //fromFSLParticleKinE[i]     = -999;
-    //fromFSLParticlePx[i]       = 0;
-    //fromFSLParticlePy[i]       = 0;
-    //fromFSLParticlePz[i]       = 0;
-    //fromFSLTrackLength[i]      = 0;
-    //fromFSLTrackLengthInTPC[i] = 0;
   }
   if (m_saveHit) {
     for (G4int i= 0; i< 40000000; ++i) {
@@ -368,7 +363,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     AngleToBeamDir[iPrim] = TMath::ACos(costheta);
   }
 
-  // must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  // FillTrueEdep must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]>=0) {
       FillTrueEdep(sdids[i], sds[i]);
@@ -587,12 +582,15 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
           //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
           countPrimaryParticle++;
           primaryParentID[countPrimaryParticle-1] = hit->GetPID();
-          primaryTrackID[countPrimaryParticle-1] = hit->GetTID();
+          primaryTrackID[countPrimaryParticle-1]  = hit->GetTID();
           primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
-          Px[countPrimaryParticle-1] = hit->GetInitMomentum().x();
-          Py[countPrimaryParticle-1] = hit->GetInitMomentum().y();
-          Pz[countPrimaryParticle-1] = hit->GetInitMomentum().z();
-          Pmass[countPrimaryParticle-1] = hit->GetParticleMass();
+          Px[countPrimaryParticle-1]              = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1]              = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1]              = hit->GetInitMomentum().z();
+          VtxX[countPrimaryParticle-1]            = hit->GetTrackVertex().x();
+          VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
+          VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z();
+          Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
         }
       }
       // in case of the fsl decay, the decay products are counted as primary particle
@@ -601,12 +599,15 @@ void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
         if (hit->GetStepNo()==1) {
           countPrimaryParticle++;
           primaryParentID[countPrimaryParticle-1] = hit->GetPID();
-          primaryTrackID[countPrimaryParticle-1] = hit->GetTID();
+          primaryTrackID[countPrimaryParticle-1]  = hit->GetTID();
           primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
-          Px[countPrimaryParticle-1] = hit->GetInitMomentum().x();
-          Py[countPrimaryParticle-1] = hit->GetInitMomentum().y();
-          Pz[countPrimaryParticle-1] = hit->GetInitMomentum().z();
-          Pmass[countPrimaryParticle-1] = hit->GetParticleMass();
+          Px[countPrimaryParticle-1]              = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1]              = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1]              = hit->GetInitMomentum().z();
+          VtxX[countPrimaryParticle-1]            = hit->GetTrackVertex().x();
+          VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
+          VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z();
+          Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
         }
       }
     } // end of hit loop
@@ -645,17 +646,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           std::cout<<"TID : "<<hit->GetTID()     <<", PID : "           <<hit->GetPID()
             <<", PDG : "<<hit->GetParticle()     <<", CreatorProcess : "<<hit->GetCreatorProcess()
             <<", Ek : " <<hit->GetInitKinEnergy()<<" MeV"              <<std::endl;
-          //fromFSLParticleTID[whichTrackFromFSL]  = hit->GetTID();
           fromFSLParticlePDG[whichTrackFromFSL]  = hit->GetParticle();
-          //fromFSLParticleKinE[whichTrackFromFSL] = hit->GetInitKinEnergy();
-          //fromFSLParticlePx[whichTrackFromFSL]   = hit->GetInitMomentum().getX();
-          //fromFSLParticlePy[whichTrackFromFSL]   = hit->GetInitMomentum().getY();
-          //fromFSLParticlePz[whichTrackFromFSL]   = hit->GetInitMomentum().getZ();
         }
-        //fromFSLTrackLength[whichTrackFromFSL] += hit->GetStepLength();
-        //if (detID==1) {
-        //  fromFSLTrackLengthInTPC[whichTrackFromFSL] += hit->GetStepLength();
-        //}
       }
 
 
@@ -695,12 +687,35 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         double post_x = hit->GetPostStepPosition().x();
         double post_y = hit->GetPostStepPosition().y();
         double post_z = hit->GetPostStepPosition().z();
-        double len_Pre = TMath::Abs((pre_x-nuX)*Px[whichPrim]+(pre_y-nuY)*Py[whichPrim]+(pre_z-nuZ)*Pz[whichPrim])/ShowerP[whichPrim];
-        double len_Pos = TMath::Abs((post_x-nuX)*Px[whichPrim]+(post_y-nuY)*Py[whichPrim]+(post_z-nuZ)*Pz[whichPrim])/ShowerP[whichPrim]; 
-        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_Pre, len_Pos});
+        double mod_Pre = TMath::Sqrt((pre_x-VtxX[whichPrim])*(pre_x-VtxX[whichPrim])+
+                                     (pre_y-VtxY[whichPrim])*(pre_y-VtxY[whichPrim])+
+                                     (pre_z-VtxZ[whichPrim])*(pre_z-VtxZ[whichPrim]));
+        double mod_Pos = TMath::Sqrt((post_x-VtxX[whichPrim])*(post_x-VtxX[whichPrim])+
+                                     (post_y-VtxY[whichPrim])*(post_y-VtxY[whichPrim])+
+                                     (post_z-VtxZ[whichPrim])*(post_z-VtxZ[whichPrim]));
+        double product_Pre = (pre_x-VtxX[whichPrim])*Px[whichPrim]+
+                             (pre_y-VtxY[whichPrim])*Py[whichPrim]+
+                             (pre_z-VtxZ[whichPrim])*Pz[whichPrim];
+        double product_Pos = (post_x-VtxX[whichPrim])*Px[whichPrim]+
+                             (post_y-VtxY[whichPrim])*Py[whichPrim]+
+                             (post_z-VtxZ[whichPrim])*Pz[whichPrim];
+        double len_Pre = TMath::Abs(product_Pre)/ShowerP[whichPrim];
+        double len_Pos = TMath::Abs(product_Pos)/ShowerP[whichPrim]; 
+        double width_Pre = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pre,2)-TMath::Power(product_Pre,2))/ShowerP[whichPrim];
+        double width_Pos = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pos,2)-TMath::Power(product_Pos,2))/ShowerP[whichPrim];
+        // exclude non-zero hit and hits from neutron when calculating showerlength of the primary particle
+        // hits deposited little energy are difficult to be detected
+        // simply ignoring the hits is not the most correct but easiest way
+        if (hit->GetEdep()>0 && hit->GetParticle()!=2112) {
+          ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_Pre, len_Pos});
+          ShowerWidth[whichPrim] = std::max({ShowerWidth[whichPrim], width_Pre, width_Pos});
+        }
         if (detID==1) { 
           EInLAr[whichPrim] += hit->GetEdep();
-          ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_Pre, len_Pos});
+          if (hit->GetEdep()>0.1 && hit->GetParticle()!=2112) {
+            ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_Pre, len_Pos});
+            ShowerWidthInLAr[whichPrim] = std::max({ShowerWidthInLAr[whichPrim], width_Pre, width_Pos});
+          }
         }
         if (detID==2 || detID==3 || detID==6) {
           EInHadCal[whichPrim] += hit->GetEdep();
