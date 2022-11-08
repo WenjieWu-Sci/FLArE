@@ -663,9 +663,13 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         missCountedEnergy += hit->GetEdep();
         continue;
       } 
-      primaryTrackLength[whichPrim] += hit->GetStepLength();
-      if (detID==1) {
-        primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
+
+      if ((hit->GetPID()==0) |
+          (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end())) {
+        primaryTrackLength[whichPrim] += hit->GetStepLength();
+        if (detID==1) {
+          primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
+        }
       }
 
       if (m_saveEvd) {

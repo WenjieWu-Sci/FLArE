@@ -55,8 +55,17 @@ int main(int argc, char** argv) {
     G4String command = "/control/execute ";
     G4String fileName = argv[1];
     UImanager->ApplyCommand(command+fileName);
-    //ui->SessionStart();
-    //delete ui;
+    if (argc==3) {
+      G4String mode = argv[2];
+      if (mode == "vis") {
+        G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+        ui->SessionStart();
+        delete ui;
+      } else {
+        std::cout<<"Please specify the second argument as vis to visualize the event"<<std::endl;
+        return 0;
+      }
+    }
   }
 
   delete visManager;
