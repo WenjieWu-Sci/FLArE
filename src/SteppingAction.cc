@@ -26,6 +26,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
                                    "MuonFinderYCellPhysical"};
   std::string active_logical[2] = {"HadCatcherLogical",
                                    "MuonFinderLogical"};
+  // caveat
+  // it will break the track if there is a gap between active volumes,
+  // because the track in between active volumes will neither be in active_volumes, nor in active_logical,
+  // it will be a track in world and be killed
   if (volume != nullptr) {
     if (std::find(std::begin(active_volumes), std::end(active_volumes), volume->GetName())==std::end(active_volumes)) {
       G4LogicalVolume* mother_logical = volume->GetMotherLogical();
