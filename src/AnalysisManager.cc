@@ -205,9 +205,11 @@ void AnalysisManager::BeginOfEvent() {
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
   ShowerP.clear();
-  hitClusterXY.clear();
+  //hitClusterXY.clear();
   hitClusterZX.clear();
   hitClusterZY.clear();
+  vtxHitClusterZX.clear();
+  vtxHitClusterZY.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -284,41 +286,103 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   /// 0: deposited energy of all hits
   /// non-0: deposited energy of each prong (primary particle)
   if (m_saveEvd) {
-    int res = 5;
-    int len_x = 1800;
-    int len_y = 1800;
-    //int len_z = 8700; // 16cm steel for muon finder
-    int len_z = 9400;   // 50cm steel for muon finder
-    hitClusterXY.resize(nPrimaryParticle+1);
+    int res_tpc[3] = {2, 2, 2}; // mm
+    int len_tpc[3] = {1800, 1800, 7000}; // mm
+
+    int res_cal_z = 10; // mm
+    int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
+    //int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
+    
+    // binning definition
+    // x: drift direction on the transverse plane
+    // y: orthogonal to x on the transverse plane
+    // z: beam direction
+    int nbinx, nbiny, nbinz;
+    std::vector<double> binx, biny, binz;
+    for (int idim= 0; idim< 3; ++idim) {
+      switch (idim) {
+        case 0:
+          nbinx = len_tpc[idim]/res_tpc[idim];
+          for (int ibin=0; ibin<nbinx+1; ++ibin){
+            binx.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
+          }
+          break;
+        case 1:
+          nbiny = len_tpc[idim]/res_tpc[idim];
+          for (int ibin=0; ibin<nbiny+1; ++ibin) {
+            biny.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
+          }
+          break;
+        case 2:
+          nbinz = len_tpc[idim]/res_tpc[idim] + len_cal_z/res_cal_z;
+          for (int ibin=0; ibin<len_tpc[idim]/res_tpc[idim]; ++ibin) {
+            binz.push_back(ibin*res_tpc[idim]);
+          }
+          for (int ibin=0; ibin<len_cal_z/res_cal_z+1; ++ibin) {
+            binz.push_back(len_tpc[idim]+ibin*res_cal_z);
+          }
+          break;
+      }
+    }
+
+    //hitClusterXY.resize(nPrimaryParticle+1);
     hitClusterZX.resize(nPrimaryParticle+1);
     hitClusterZY.resize(nPrimaryParticle+1);
+    // hit cluster around the vertex
+    vtxHitClusterZX.resize(nPrimaryParticle+1);
+    vtxHitClusterZY.resize(nPrimaryParticle+1);
+
+
     std::string histname = "evt_"+std::to_string(evtID)+"_tot_EdepXY";
-    hitClusterXY[0] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-    hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
-    hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
+    //hitClusterXY[0] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+    //hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
+    //hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZX";
-    hitClusterZX[0] = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_x/res, -len_x/2, len_x/2);
+    hitClusterZX[0] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
     hitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
     hitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZY";
-    hitClusterZY[0] = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_y/res, -len_y/2, len_y/2);
+    hitClusterZY[0] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
     hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
     hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
     for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
-      histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-      hitClusterXY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-      hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
-      hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+      //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
+      //hitClusterXY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+      //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
+      //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX";
-      hitClusterZX[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_x/res, -len_x/2, len_x/2);
+      hitClusterZX[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
       hitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       hitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZY";
-      hitClusterZY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_z/res, 0, len_z, len_y/res, -len_y/2, len_y/2);
+      hitClusterZY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
       hitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       hitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
     }
-  }
+
+    histname = "evt_"+std::to_string(evtID)+"_tot_EdepZX_vtx";
+    vtxHitClusterZX[0] = new TH2D(histname.c_str(), histname.c_str(), 1500, -10, 140, 1000, -50, 50);
+    vtxHitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
+    vtxHitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
+    histname = "evt_"+std::to_string(evtID)+"_tot_EdepZY_vtx";
+    vtxHitClusterZY[0] = new TH2D(histname.c_str(), histname.c_str(), 1500, -10, 140, 1000, -50, 50);
+    vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
+    vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
+    for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
+      //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
+      //hitClusterXY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+      //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
+      //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+      histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX_vtx";
+      vtxHitClusterZX[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), 300, -10, 140, 200, -50, 50);
+      vtxHitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+      vtxHitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
+      histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZY_vtx";
+      vtxHitClusterZY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), 300, -10, 140, 200, -50, 50);
+      vtxHitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+      vtxHitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+    }
+  } // end of - if (m_saveEvd)
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
   tracksFromFSL.insert(1);
@@ -447,9 +511,17 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     thefile->mkdir(dirname.c_str());
     thefile->cd(dirname.c_str());
     for (int i=0; i<nPrimaryParticle+1; ++i) {
-      hitClusterXY[i]->Write();
+      //hitClusterXY[i]->Write();
       hitClusterZX[i]->Write();
       hitClusterZY[i]->Write();
+    }
+    dirname = "edep_vtx/evt_"+std::to_string(evtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    for (int i=0; i<nPrimaryParticle+1; ++i) {
+      //hitClusterXY[i]->Write();
+      vtxHitClusterZX[i]->Write();
+      vtxHitClusterZY[i]->Write();
     }
   }
 }
@@ -676,12 +748,17 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         double pos_x = hit->GetEdepPosition().x();
         double pos_y = hit->GetEdepPosition().y();
         double pos_z = hit->GetEdepPosition().z() + 3500;
-        hitClusterXY[0]->Fill(pos_x, pos_y, hit->GetEdep());
+        //hitClusterXY[0]->Fill(pos_x, pos_y, hit->GetEdep());
         hitClusterZX[0]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[0]->Fill(pos_z, pos_y, hit->GetEdep());
-        hitClusterXY[whichPrim+1]->Fill(pos_x, pos_y, hit->GetEdep());
+        //hitClusterXY[whichPrim+1]->Fill(pos_x, pos_y, hit->GetEdep());
         hitClusterZX[whichPrim+1]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[whichPrim+1]->Fill(pos_z, pos_y, hit->GetEdep());
+
+        vtxHitClusterZX[0]->Fill(pos_z-3500-nuZ, pos_x-nuX, hit->GetEdep());
+        vtxHitClusterZY[0]->Fill(pos_z-3500-nuZ, pos_y-nuY, hit->GetEdep());
+        vtxHitClusterZX[whichPrim+1]->Fill(pos_z-3500-VtxZ[whichPrim], pos_x-VtxX[whichPrim], hit->GetEdep());
+        vtxHitClusterZY[whichPrim+1]->Fill(pos_z-3500-VtxZ[whichPrim], pos_y-VtxY[whichPrim], hit->GetEdep());
       }
 
 //      if (hit->GetEdep()>1e-6) {

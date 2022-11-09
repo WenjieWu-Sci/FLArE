@@ -114,9 +114,11 @@ class AnalysisManager {
     G4bool m_saveHit;
     G4bool m_saveEvd;
 
-    std::vector<TH2D*> hitClusterXY;
+    //std::vector<TH2D*> hitClusterXY;
     std::vector<TH2D*> hitClusterZX;
     std::vector<TH2D*> hitClusterZY;
+    std::vector<TH2D*> vtxHitClusterZX;
+    std::vector<TH2D*> vtxHitClusterZY;
 
   private:
     void FillTree(G4int sdId, std::string sdName);

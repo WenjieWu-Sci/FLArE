@@ -2,18 +2,21 @@
 /det/material LAr
 
 /run/initialize
-#/control/execute macros/vis.mac
+/control/execute macros/vis.mac
 
 /gps/verbose 0
 /gps/direction 0 0 1
 
-/gps/pos/type Volume
-/gps/pos/shape Cylinder
-/gps/pos/rot1 1 0 0 
-/gps/pos/rot2 0 1 0
-/gps/pos/radius 0.1 mm
-/gps/pos/centre 0 0 0 m
-/gps/pos/halfz 3.5 m
+#/gps/pos/type Volume
+#/gps/pos/shape Cylinder
+#/gps/pos/rot1 1 0 0 
+#/gps/pos/rot2 0 1 0
+#/gps/pos/radius 0.1 mm
+#/gps/pos/centre 0 0 0 m
+#/gps/pos/halfz 3.5 m
+
+/gps/pos/type Point
+/gps/pos/centre 0 0.8 3 m
 
 # variables
 /gps/particle e-
@@ -21,4 +24,5 @@
 ## 200GeV, 300GeV, 500GeV, 800GeV, 1000GeV
 /gps/ene/mono 5 GeV
 /histo/fileName 5GeV.root
-/run/beamOn 10000
+/run/beamOn 1
+#/run/beamOn 10000
