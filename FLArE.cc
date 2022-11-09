@@ -9,10 +9,10 @@
 #include "ActionInitialization.hh"
 #include "FLArEDetectorConstruction.hh"
 //#include "FLArEDetectorConstructionMessenger.hh"
-#include "QGSP_BERT.hh"
 #include "AnalysisManager.hh"
 //#include "PrimaryGeneratorAction.hh"
 #include "G4PhysListFactory.hh"
+#include "G4StepLimiterPhysics.hh"
 
 using namespace std;
 
@@ -32,12 +32,21 @@ int main(int argc, char** argv) {
   auto runManager = new G4RunManager();
   runManager->SetVerboseLevel(1);
 
+  // Set mandatory initialization classes
   runManager->SetUserInitialization(new FLArEDetectorConstruction());
+
   //runManager->SetUserInitialization(new QGSP_BERT());
   G4PhysListFactory factory;
-  runManager->SetUserInitialization(factory.ReferencePhysList());
+  G4VModularPhysicsList* physicsList = factory.ReferencePhysList();
+  G4StepLimiterPhysics* stepLimiterPhys = new G4StepLimiterPhysics();
+  stepLimiterPhys->SetApplyToAll(true);     // activates step limit for ALL particles
+  physicsList->RegisterPhysics(stepLimiterPhys);
+  runManager->SetUserInitialization(physicsList);
+
+  // Set user action classes
   runManager->SetUserInitialization(new ActionInitialization());
 
+  // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive();
   visManager->SetVerboseLevel(1);   // Default, you can always override this using macro commands
   visManager->Initialize();

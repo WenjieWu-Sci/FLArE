@@ -24,6 +24,7 @@
 #include <G4PhysicalVolumeStore.hh>
 #include <G4LogicalVolumeStore.hh>
 #include <G4SolidStore.hh>
+#include <G4UserLimits.hh>
 #include "G4GDMLParser.hh"
 
 using namespace std;
@@ -106,6 +107,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
                                                     false,                  // pMany
                                                     0,                      // Copy No
                                                     fCheckOverlap);
+  lArBoxLog->SetUserLimits(new G4UserLimits(0.5*mm));
 
 
   G4double GapToHadCatcher   = 25 * cm;
