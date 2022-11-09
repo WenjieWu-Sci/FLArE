@@ -107,7 +107,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
                                                     false,                  // pMany
                                                     0,                      // Copy No
                                                     fCheckOverlap);
-  lArBoxLog->SetUserLimits(new G4UserLimits(0.5*mm));
+  lArBoxLog->SetUserLimits(new G4UserLimits(0.3*mm));
 
 
   G4double GapToHadCatcher   = 25 * cm;

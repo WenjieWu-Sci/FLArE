@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   G4PhysListFactory factory;
   G4VModularPhysicsList* physicsList = factory.ReferencePhysList();
   G4StepLimiterPhysics* stepLimiterPhys = new G4StepLimiterPhysics();
-  stepLimiterPhys->SetApplyToAll(true);     // activates step limit for ALL particles
+  //stepLimiterPhys->SetApplyToAll(true);     // activates step limit for ALL particles
   physicsList->RegisterPhysics(stepLimiterPhys);
   runManager->SetUserInitialization(physicsList);
 

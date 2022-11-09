@@ -392,7 +392,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
   // tracksFromFSL includes all the tracks orginating from the fsl
-  // tracksFromFSLSeconday only inclues the tracks directly decayed from the fsl
+  // tracksFromFSLSecondary only inclues the tracks directly decayed from the fsl
   std::cout<<"Recorded tracks       : "<<allTracksPTPair.size()<<std::endl;
   std::cout<<"Tracks from FSL       : "<<tracksFromFSL.size()<<std::endl;
   std::cout<<"Tracks from FSL (2nd) : "<<tracksFromFSLSecondary.size()<<std::endl;
@@ -409,7 +409,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     // then it forms a single cluster by itself, this is mainly for studying the tau decay.
     if ((x.second==1) && (nFromFSLParticles>0)) continue;
     // if this track is the decay product of the fsl, it should already been added to the trackClusters
-    if ((x.first==1) && (nFromFSLParticles>0)) continue;
+    if ((x.first==1) && (nFromFSLParticles>0) && (tracksFromFSLSecondary.find(x.second) != tracksFromFSLSecondary.end())) continue;
     // add the track to the corresponding cluster if its parent is in the cluster.
     // one track can have only one parent, break the loop once its parent is found.
     for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
@@ -731,7 +731,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         }
       }
       if (whichPrim< 0) { 
-        std::cout<<"Can't find the primary particle of the hit, something is wrong "<<hit->GetParticle()<<" "<<hit->GetEdep()<<std::endl; 
+        std::cout<<"Can't find the primary particle of the hit, something is wrong "<<hit->GetParticle()
+          <<" edep("<<hit->GetEdep()<<") TID("<<hit->GetTID()<<") PID("<<hit->GetPID()
+          <<") creator process ("<<hit->GetCreatorProcess()<<") position"<<hit->GetEdepPosition()<<std::endl; 
         missCountedEnergy += hit->GetEdep();
         continue;
       } 
@@ -784,7 +786,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         double len_Pos = TMath::Abs(product_Pos)/ShowerP[whichPrim]; 
         double width_Pre = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pre,2)-TMath::Power(product_Pre,2))/ShowerP[whichPrim];
         double width_Pos = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pos,2)-TMath::Power(product_Pos,2))/ShowerP[whichPrim];
-        // exclude non-zero hit and hits from neutron when calculating showerlength of the primary particle
+        // exclude zero hit and hits from neutron when calculating showerlength of the primary particle
         // hits deposited little energy are difficult to be detected
         // simply ignoring the hits is not the most correct but easiest way
         if (hit->GetEdep()>0 && hit->GetParticle()!=2112) {
@@ -793,7 +795,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         }
         if (detID==1) { 
           EInLAr[whichPrim] += hit->GetEdep();
-          if (hit->GetEdep()>0.1 && hit->GetParticle()!=2112) {
+          if (hit->GetEdep()>0 && hit->GetParticle()!=2112) {
             ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_Pre, len_Pos});
             ShowerWidthInLAr[whichPrim] = std::max({ShowerWidthInLAr[whichPrim], width_Pre, width_Pos});
           }
