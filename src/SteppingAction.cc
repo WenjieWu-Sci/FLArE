@@ -27,7 +27,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
   std::string active_logical[2] = {"HadCatcherLogical",
                                    "MuonFinderLogical"};
 
-  // caveat
   // it will break the track if there is a gap between active volumes,
   // because the track in between active volumes will neither be in active_volumes, nor in active_logical,
   // it will be a track in world and be killed
@@ -36,7 +35,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
       G4LogicalVolume* mother_logical = volume->GetMotherLogical();
       if (mother_logical != nullptr) {
         // for tracks in HadCatcher and MuonFinder absorber
-        if (std::find(std::begin(active_logical), std::end(active_logical), mother_logical->GetName())==std::end(active_logical)) {
+        if (std::find(std::begin(active_logical), std::end(active_logical), mother_logical->GetName())
+            ==std::end(active_logical)) {
           aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill); 
         }
       } else {

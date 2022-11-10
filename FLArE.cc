@@ -8,11 +8,8 @@
 #include <G4String.hh>
 #include "ActionInitialization.hh"
 #include "FLArEDetectorConstruction.hh"
-//#include "FLArEDetectorConstructionMessenger.hh"
 #include "AnalysisManager.hh"
-//#include "PrimaryGeneratorAction.hh"
-#include "G4PhysListFactory.hh"
-#include "G4StepLimiterPhysics.hh"
+#include "FLArEPhysicsList.hh"
 
 using namespace std;
 
@@ -34,14 +31,7 @@ int main(int argc, char** argv) {
 
   // Set mandatory initialization classes
   runManager->SetUserInitialization(new FLArEDetectorConstruction());
-
-  //runManager->SetUserInitialization(new QGSP_BERT());
-  G4PhysListFactory factory;
-  G4VModularPhysicsList* physicsList = factory.ReferencePhysList();
-  G4StepLimiterPhysics* stepLimiterPhys = new G4StepLimiterPhysics();
-  //stepLimiterPhys->SetApplyToAll(true);     // activates step limit for ALL particles
-  physicsList->RegisterPhysics(stepLimiterPhys);
-  runManager->SetUserInitialization(physicsList);
+  runManager->SetUserInitialization(new FLArEPhysicsList());
 
   // Set user action classes
   runManager->SetUserInitialization(new ActionInitialization());
