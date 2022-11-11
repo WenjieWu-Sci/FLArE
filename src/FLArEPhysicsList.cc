@@ -51,7 +51,7 @@ void FLArEPhysicsList::AddStepMax()
 
   fStepLimiter = new G4StepLimiter();
   fUserSpecialCuts = new G4UserSpecialCuts();
-  G4int nullNeutralPDG[7] = {-16, -14, -12, 12, 14, 16, 22};
+  G4int nullNeutralPDG[8] = {-16, -14, -12, 12, 14, 16, 22, 2112};
   while ((*particleIterator)()) {
     G4ParticleDefinition* particle = particleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();

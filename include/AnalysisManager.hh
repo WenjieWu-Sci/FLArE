@@ -6,8 +6,10 @@
 #include <G4Event.hh>
 #include <TFile.h>
 #include <TTree.h>
-#include <TH2D.h>
+#include <TH2F.h>
 #include "AnalysisManagerMessenger.hh"
+//#include <Math/Point3Dfwd.h>
+#include <Math/Point3D.h>
 
 class AnalysisManager {
   public:
@@ -114,11 +116,11 @@ class AnalysisManager {
     G4bool m_saveHit;
     G4bool m_saveEvd;
 
-    //std::vector<TH2D*> hitClusterXY;
-    std::vector<TH2D*> hitClusterZX;
-    std::vector<TH2D*> hitClusterZY;
-    std::vector<TH2D*> vtxHitClusterZX;
-    std::vector<TH2D*> vtxHitClusterZY;
+    //std::vector<TH2F*> hitClusterXY;
+    std::vector<TH2F*> hitClusterZX;
+    std::vector<TH2F*> hitClusterZY;
+    std::vector<TH2F*> vtxHitClusterZX;
+    std::vector<TH2F*> vtxHitClusterZY;
 
   private:
     void FillTree(G4int sdId, std::string sdName);
@@ -131,6 +133,8 @@ class AnalysisManager {
     std::set<int> tracksFromFSL;
     std::set<int> tracksFromFSLSecondary;
     std::vector<double> ShowerP;
+    std::vector<std::vector<ROOT::Math::XYZPoint> > f3DHitClusters;
+    std::vector<ROOT::Math::XYZPoint> fPrimVtx;
 };
 
 #endif

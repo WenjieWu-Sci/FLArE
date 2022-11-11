@@ -79,12 +79,17 @@ link_directories("$ENV{PYTHIA6_LIBRARY}")
 message(STATUS "pythia6 inc : $ENV{PYTHIA_INC}")
 set(PYTHIA_LIRARIES "$ENV{PYTHIA6_LIBRARY}/libPythia6.so")
 
+## Eigen
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+include(${EIGEN3_USE_FILE})
+message(STATUS "Eigen3 : ${EIGEN3_USE_FILE}")
+
 # Locate sources and headers for this project
 # We presume the existence of three directories
-include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
+include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/include)
-file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc)
-file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/reco/*.cc)
+file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/reco/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 
@@ -114,7 +119,8 @@ target_link_libraries(FLArE
   ${LOG4CPP_LIBRARIES}
   ${LIBXML2_LIBRARIES}
   ${PYTHIA_LIRARIES}
-  ${GENIE_LIBRARIES})
+  ${GENIE_LIBRARIES}
+  )
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

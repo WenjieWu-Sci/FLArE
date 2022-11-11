@@ -3,18 +3,23 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <iomanip>
 
 #include "AnalysisManager.hh"
 #include "LArBoxSD.hh"
 #include "LArBoxHit.hh"
 #include "PrimaryParticleInformation.hh"
+#include "reco/PCAAnalysis3D.hh"
+#include "reco/Cluster3D.hh"
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
 #include <G4SystemOfUnits.hh>
 #include <TFile.h>
 #include <TTree.h>
-#include <TH2D.h>
+#include <TH2F.h>
+//#include <Math/Point3Dfwd.h>
+//#include <Math/Point3D.h>
 
 AnalysisManager* AnalysisManager::instance = 0;
 
@@ -205,6 +210,9 @@ void AnalysisManager::BeginOfEvent() {
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
   ShowerP.clear();
+  f3DHitClusters.clear();
+  fPrimVtx.clear();
+
   //hitClusterXY.clear();
   hitClusterZX.clear();
   hitClusterZY.clear();
@@ -334,51 +342,51 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
 
     std::string histname = "evt_"+std::to_string(evtID)+"_tot_EdepXY";
-    //hitClusterXY[0] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+    //hitClusterXY[0] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
     //hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
     //hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZX";
-    hitClusterZX[0] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
+    hitClusterZX[0] = new TH2F(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
     hitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
     hitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZY";
-    hitClusterZY[0] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
+    hitClusterZY[0] = new TH2F(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
     hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
     hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
     for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
       //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-      //hitClusterXY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+      //hitClusterXY[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
       //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
       //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX";
-      hitClusterZX[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
+      hitClusterZX[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbinx, &binx[0]);
       hitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       hitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZY";
-      hitClusterZY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
+      hitClusterZY[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), nbinz, &binz[0], nbiny, &biny[0]);
       hitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       hitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
     }
 
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZX_vtx";
-    vtxHitClusterZX[0] = new TH2D(histname.c_str(), histname.c_str(), 1500, -10, 140, 1000, -50, 50);
+    vtxHitClusterZX[0] = new TH2F(histname.c_str(), histname.c_str(), 1500, -20, 280, 1000, -100, 100);
     vtxHitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
     vtxHitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
     histname = "evt_"+std::to_string(evtID)+"_tot_EdepZY_vtx";
-    vtxHitClusterZY[0] = new TH2D(histname.c_str(), histname.c_str(), 1500, -10, 140, 1000, -50, 50);
+    vtxHitClusterZY[0] = new TH2F(histname.c_str(), histname.c_str(), 1500, -20, 280, 1000, -100, 100);
     vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
     vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
     for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
       //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-      //hitClusterXY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+      //hitClusterXY[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
       //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
       //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX_vtx";
-      vtxHitClusterZX[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), 300, -10, 140, 200, -50, 50);
+      vtxHitClusterZX[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), 1500, -20, 280, 1000, -100, 100);
       vtxHitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       vtxHitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
       histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZY_vtx";
-      vtxHitClusterZY[iPrim+1] = new TH2D(histname.c_str(), histname.c_str(), 300, -10, 140, 200, -50, 50);
+      vtxHitClusterZY[iPrim+1] = new TH2F(histname.c_str(), histname.c_str(), 1500, -20, 280, 1000, -100, 100);
       vtxHitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
       vtxHitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
     }
@@ -427,14 +435,31 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     AngleToBeamDir[iPrim] = TMath::ACos(costheta);
   }
 
-  // FillTrueEdep must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  f3DHitClusters.resize(nPrimaryParticle);
+  fPrimVtx.resize(nPrimaryParticle);
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+    fPrimVtx[iPrim] = ROOT::Math::XYZPoint(VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]+3500);
+  }
+  /// FillTrueEdep must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]>=0) {
       FillTrueEdep(sdids[i], sds[i]);
     }
   }
+  pcaanalysis3d::PCAAnalysis3D* PCATrackFinder = new pcaanalysis3d::PCAAnalysis3D(f3DHitClusters, fPrimVtx);
 
-  std::cout<<"\nPDG Angle ShowerLength EInLAr EInHadCal EInMuonFinder dEdx ShowerLengthInLAr dEdxInLAr ProngType Pz"<<std::endl;
+//  std::cout<<"\nPDG Angle ShowerLength EInLAr EInHadCal EInMuonFinder dEdx ShowerLengthInLAr dEdxInLAr ProngType Pz"<<std::endl;
+  std::cout<<std::fixed<<std::setw(10)<<"PDG"
+           <<std::setw(12)<<"Angle"
+           <<std::setw(13)<<"ShowerLength"
+           <<std::setw(12)<<"EInLAr" 
+           <<std::setw(12)<<"EInHadCal"
+           <<std::setw(14)<<"EInMuonFinder"
+           <<std::setw(12)<<"dEdx"
+           <<std::setw(18)<<"ShowerLengthInLAr"
+           <<std::setw(12)<<"dEdxInLAr"
+           <<std::setw(10)<<"ProngType"
+           <<std::setw(12)<<"Pz"<<std::endl;
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
     if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
       prongType[iPrim] = 0;
@@ -489,17 +514,17 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
     dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
 
-    std::cout<<std::setw(8)<<primaryTrackPDG[iPrim]<<" "
-             <<std::setw(8)<<AngleToBeamDir[iPrim]<<" "
-             <<std::setw(8)<<ShowerLength[iPrim]<<" "
-             <<std::setw(8)<<EInLAr[iPrim]<<" " 
-             <<std::setw(8)<<EInHadCal[iPrim]<<" "
-             <<std::setw(8)<<EInMuonFinder[iPrim]<<" "
-             <<std::setw(8)<<dEdx[iPrim]<<" "
-             <<std::setw(8)<<ShowerLengthInLAr[iPrim]<<" "
-             <<std::setw(8)<<dEdxInLAr[iPrim]<<" "
-             <<std::setw(8)<<prongType[iPrim]<<" "
-             <<std::setw(8)<<Pz[iPrim]<<std::endl;
+    std::cout<<std::fixed<<std::setw(10)<<primaryTrackPDG[iPrim]
+             <<std::setw(12)<<AngleToBeamDir[iPrim]
+             <<std::setw(13)<<ShowerLength[iPrim]
+             <<std::setw(12)<<EInLAr[iPrim] 
+             <<std::setw(12)<<EInHadCal[iPrim]
+             <<std::setw(14)<<EInMuonFinder[iPrim]
+             <<std::setw(12)<<dEdx[iPrim]
+             <<std::setw(18)<<ShowerLengthInLAr[iPrim]
+             <<std::setw(12)<<dEdxInLAr[iPrim]
+             <<std::setw(10)<<prongType[iPrim]
+             <<std::setw(12)<<Pz[iPrim]<<std::endl;
   }
 
   evt->Fill();
@@ -737,6 +762,12 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         missCountedEnergy += hit->GetEdep();
         continue;
       } 
+
+      if (detID==1) {
+        ROOT::Math::XYZPoint p(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdepPosition().z()+3500);
+        f3DHitClusters[whichPrim].push_back(p);
+        //f3DHitClusters[whichPrim].push_back(ROOT::Math::XYZPoint(1.0,1.0,1.0));
+      }
 
       if ((hit->GetPID()==0) |
           (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end())) {

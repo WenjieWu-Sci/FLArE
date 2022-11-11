@@ -267,7 +267,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   // visualization
   G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));
-  crygapVis->SetVisibility(true);
+  crygapVis->SetVisibility(false);
   crygapVis->SetForceSolid(true);
   //crygapVis->SetForceWireframe(true);
   //crygapVis->SetForceAuxEdgeVisible(true);
@@ -280,16 +280,19 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   HadAbsorLayersLogical->SetVisAttributes(absorVis);
   MuonFinderAbsorLayersLogical->SetVisAttributes(absorVis);
 
-  G4VisAttributes* hadCalVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255));
+  G4VisAttributes* hadCalVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
   hadCalVis->SetVisibility(true);
+  //hadCalVis->SetForceSolid(true);
   hadCalVis->SetForceWireframe(true);
   hadCalVis->SetForceAuxEdgeVisible(true);
-  //HadCalXLayersLogical->SetVisAttributes(hadCalVis);
-  //HadCalYLayersLogical->SetVisAttributes(hadCalVis);
-  HadCalXCellLogical->SetVisAttributes(hadCalVis);
-  HadCalYCellLogical->SetVisAttributes(hadCalVis);
-  MuonFinderXCellLogical->SetVisAttributes(hadCalVis);
-  MuonFinderYCellLogical->SetVisAttributes(hadCalVis);
+  //HadCalXCellLogical->SetVisAttributes(hadCalVis);
+  //HadCalYCellLogical->SetVisAttributes(hadCalVis);
+  //MuonFinderXCellLogical->SetVisAttributes(hadCalVis);
+  //MuonFinderYCellLogical->SetVisAttributes(hadCalVis);
+  HadCalXLayersLogical->SetVisAttributes(hadCalVis);
+  HadCalYLayersLogical->SetVisAttributes(hadCalVis);
+  MuonFinderXLayersLogical->SetVisAttributes(hadCalVis);
+  MuonFinderYLayersLogical->SetVisAttributes(hadCalVis);
 
 //  hadCatcherLogical->SetVisAttributes(lArBoxVis);
 
