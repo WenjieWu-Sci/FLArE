@@ -417,6 +417,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   hitClusterZY.shrink_to_fit();
   vtxHitClusterZX.shrink_to_fit();
   vtxHitClusterZY.shrink_to_fit();
+
+  delete PCATrackFinder;
 }
 
 void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
