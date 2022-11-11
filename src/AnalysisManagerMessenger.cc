@@ -40,7 +40,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
   AnalysisManagerMessenger::AnalysisManagerMessenger(AnalysisManager* manager)
-:histo (manager)
+:anamanager (manager)
 {
   histoDir = new G4UIdirectory("/histo/");
   histoDir->SetGuidance("histograms control");
@@ -59,6 +59,11 @@
   saveEvdCmd->SetParameterName("saveEvd", true);
   saveEvdCmd->SetDefaultValue(false);
 
+  addDiffusionCmd = new G4UIcmdWithABool("/histo/addDiffusion", this);
+  addDiffusionCmd->SetGuidance("add toy diffusion effect");
+  addDiffusionCmd->SetParameterName("addDiffusion", true);
+  addDiffusionCmd->SetDefaultValue(false);
+
   //  histoCmd = new G4UIcmdWithAnInteger("/histo/setSeed",this);
   //  histoCmd->SetGuidance("Set random seed :");
   //  histoCmd->SetDefaultValue(1);
@@ -71,6 +76,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
   delete factoryCmd;
   delete saveHitCmd;
   delete saveEvdCmd;
+  delete addDiffusionCmd;
   delete histoDir;
 }
 
@@ -78,9 +84,10 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
 
 void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValues)
 {
-  if (command == factoryCmd) histo->setFileName(newValues);
-  if (command == saveHitCmd) histo->saveHit(saveHitCmd->GetNewBoolValue(newValues));
-  if (command == saveEvdCmd) histo->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
+  if (command == factoryCmd) anamanager->setFileName(newValues);
+  if (command == saveHitCmd) anamanager->saveHit(saveHitCmd->GetNewBoolValue(newValues));
+  if (command == saveEvdCmd) anamanager->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
+  if (command == addDiffusionCmd) anamanager->addDiffusion(addDiffusionCmd->GetNewBoolValue(newValues));
 
   //  if(command == histoCmd) histo->setSeed(newValues);
 }

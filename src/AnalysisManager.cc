@@ -222,7 +222,7 @@ void AnalysisManager::BeginOfEvent() {
   trackClusters.clear();
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
-  //ShowerP.clear();
+
   f3DHitClusters.clear();
   f3DHitEdep.clear();
   fPrimVtx.clear();
@@ -232,6 +232,14 @@ void AnalysisManager::BeginOfEvent() {
   hitClusterZY.clear();
   vtxHitClusterZX.clear();
   vtxHitClusterZY.clear();
+  //hitClusterZX.shrink_to_fit();
+  //hitClusterZY.shrink_to_fit();
+  //vtxHitClusterZX.shrink_to_fit();
+  //vtxHitClusterZY.shrink_to_fit();
+  //std::vector<TH2F*>().swap(hitClusterZX);
+  //std::vector<TH2F*>().swap(hitClusterZY);
+  //std::vector<TH2F*>().swap(vtxHitClusterZX);
+  //std::vector<TH2F*>().swap(vtxHitClusterZY);
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -379,7 +387,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     thefile->mkdir(dirname.c_str());
     thefile->cd(dirname.c_str());
     for (int i=0; i<nPrimaryParticle+1; ++i) {
-      //hitClusterXY[i]->Write();
       hitClusterZX[i]->Write();
       hitClusterZY[i]->Write();
     }
@@ -387,11 +394,29 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     thefile->mkdir(dirname.c_str());
     thefile->cd(dirname.c_str());
     for (int i=0; i<nPrimaryParticle+1; ++i) {
-      //hitClusterXY[i]->Write();
       vtxHitClusterZX[i]->Write();
       vtxHitClusterZY[i]->Write();
     }
   }
+
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+    delete hitClusterZX[iPrim];
+    delete hitClusterZY[iPrim];
+    delete vtxHitClusterZX[iPrim];
+    delete vtxHitClusterZY[iPrim];
+    f3DHitClusters[iPrim].clear();
+    f3DHitEdep[iPrim].clear();
+    f3DHitClusters[iPrim].shrink_to_fit();
+    f3DHitEdep[iPrim].shrink_to_fit();
+  }
+  hitClusterZX.clear();
+  hitClusterZY.clear();
+  vtxHitClusterZX.clear();
+  vtxHitClusterZY.clear();
+  hitClusterZX.shrink_to_fit();
+  hitClusterZY.shrink_to_fit();
+  vtxHitClusterZX.shrink_to_fit();
+  vtxHitClusterZY.shrink_to_fit();
 }
 
 void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
@@ -590,7 +615,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         }
       }
 
-
       int whichPrim = -1;
       for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
         if (trackClusters[iPrim].find(hit->GetTID()) != trackClusters[iPrim].end()) {
@@ -750,18 +774,12 @@ void AnalysisManager::InitializeEvd() {
     }
   }
 
-  //hitClusterXY.resize(nPrimaryParticle+1);
   hitClusterZX.resize(nPrimaryParticle+1);
   hitClusterZY.resize(nPrimaryParticle+1);
   // hit cluster around the vertex
   vtxHitClusterZX.resize(nPrimaryParticle+1);
   vtxHitClusterZY.resize(nPrimaryParticle+1);
 
-
-  //std::string histname = "Evt_"+std::to_string(evtID)+"_tot_EdepXY";
-  //hitClusterXY[0] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-  //hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
-  //hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
   TString histname, histtitle;
   histname.Form("evt_%d_tot_zx",evtID);
   histtitle.Form("ViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
@@ -774,11 +792,6 @@ void AnalysisManager::InitializeEvd() {
   hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
   hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
   for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
-    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-    //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-    //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
-    //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
-    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX";
     histname.Form("evt_%d_prong_%d_zx",evtID,iPrim);
     histtitle.Form("ViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
         evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
@@ -806,10 +819,6 @@ void AnalysisManager::InitializeEvd() {
   vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
   vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
   for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
-    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-    //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-    //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
-    //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
     histname.Form("evt_%d_prong_%d_zx_vtx",evtID,iPrim);
     histtitle.Form("VtxViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
         evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
@@ -841,7 +850,6 @@ void AnalysisManager::AddPseudoRecoVar() {
     <<std::setw(10)<<"ProngType"
     <<std::setw(12)<<"Pz"<<std::endl;
 
-//  ShowerP.resize(nPrimaryParticle);
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
     double ShowerP = TMath::Sqrt(Px[iPrim]*Px[iPrim]+Py[iPrim]*Py[iPrim]+Pz[iPrim]*Pz[iPrim]);
     double costheta = Pz[iPrim]/ShowerP;
@@ -900,7 +908,6 @@ void AnalysisManager::AddPseudoRecoVar() {
     dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
     dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
 
-    //std::ostream & o = std::cout;
     std::cout<<std::setiosflags(std::ios::fixed)<<std::setprecision(3);
     std::cout<<std::setw(10)<<primaryTrackPDG[iPrim];
     std::cout<<std::setw(12)<<AngleToBeamDir[iPrim];

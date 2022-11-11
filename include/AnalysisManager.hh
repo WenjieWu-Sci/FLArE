@@ -26,6 +26,7 @@ class AnalysisManager {
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
+    void addDiffusion(G4bool val) { m_addDiffusion = val; }
 
   private:
     static AnalysisManager* instance;
@@ -123,6 +124,7 @@ class AnalysisManager {
 
     G4bool m_saveHit;
     G4bool m_saveEvd;
+    G4bool m_addDiffusion;
 
     //std::vector<TH2F*> hitClusterXY;
     std::vector<TH2F*> hitClusterZX;

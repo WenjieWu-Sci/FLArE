@@ -52,13 +52,14 @@ class AnalysisManagerMessenger: public G4UImessenger
 
   private:
 
-    AnalysisManager* histo;
+    AnalysisManager* anamanager;
 
     G4UIdirectory* histoDir;   
     G4UIcmdWithAString* factoryCmd;
     G4UIcmdWithABool* saveHitCmd;
     G4UIcmdWithABool* saveEvdCmd;
     G4UIcmdWithAnInteger* histoCmd;
+    G4UIcmdWithABool* addDiffusionCmd;
 
 };
 
