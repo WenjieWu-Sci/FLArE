@@ -1,5 +1,6 @@
 #include "reco/PCAAnalysis3D.hh"
 #include "reco/Cluster3D.hh"
+#include "utils/range.hh"
 
 #include <TMath.h>
 
@@ -12,10 +13,13 @@
 
 namespace pcaanalysis3d {
   PCAAnalysis3D::PCAAnalysis3D(const std::vector<std::vector<ROOT::Math::XYZPoint> > & HitClusters,
+      const std::vector<std::vector<double> > & HitEdeps,
       const std::vector<ROOT::Math::XYZPoint> & Vertex):
     f3DHitClusters(HitClusters),
+    f3DHitEdeps(HitEdeps),
     fVertex(Vertex)
   {
+    Initialize();
     runPCA();
   }
 
@@ -26,12 +30,22 @@ namespace pcaanalysis3d {
   void PCAAnalysis3D::runPCA() {
     reco::PrincipalComponents pca = reco::PrincipalComponents();
     // run PCA fit for each cluster
-    for (int iprim= 0; iprim< f3DHitClusters.size(); ++iprim) {
-      PCAFit(f3DHitClusters[iprim], pca, fVertex[iprim]);
+    for (unsigned int iprim= 0; iprim< f3DHitClusters.size(); ++iprim) {
+      PCAFit(f3DHitClusters[iprim], f3DHitEdeps[iprim], pca, fVertex[iprim]);
+      fPCA3DDir.push_back(ROOT::Math::XYZPoint(pca.getEigenVectors().row(2)(0),
+            pca.getEigenVectors().row(2)(1), pca.getEigenVectors().row(2)(2)));
+
+      fCOCDir.push_back(CenterOfChargeDir(f3DHitClusters[iprim], f3DHitEdeps[iprim], fVertex[iprim]));
+      //if (iprim==4) {
+      //  for (auto hit : f3DHitClusters[iprim]) {
+      //    std::cout<<hit.X()<<" "<<hit.Y()<<" "<<hit.Z()<<std::endl;
+      //  }
+      //}
     }
   }
 
-  void PCAAnalysis3D::PCAFit(std::vector<ROOT::Math::XYZPoint> & HitCluster,
+  void PCAAnalysis3D::PCAFit(const std::vector<ROOT::Math::XYZPoint> & HitCluster,
+                             std::vector<double> & HitEdep,
                              reco::PrincipalComponents& pca,
                              ROOT::Math::XYZPoint & vertex)
   {
@@ -47,8 +61,11 @@ namespace pcaanalysis3d {
     Eigen::Vector3d meanPos(Eigen::Vector3d::Zero());
     double meanWeightSum(0.);
     int numHits(0);
-    for (auto hit : HitCluster) {
-      double weight = 1;
+    for (unsigned i : util::lang::indices(HitCluster)) {
+    //for (auto hit : HitCluster) {
+      auto hit = HitCluster[i];
+      auto weight = HitEdep[i];
+      //double weight = 1;
       meanPos(0) += hit.X() * weight;
       meanPos(1) += hit.Y() * weight;
       meanPos(2) += hit.Z() * weight;
@@ -117,16 +134,59 @@ namespace pcaanalysis3d {
       pca = reco::PrincipalComponents(
         true, numHits, recobEigenVals, recobEigenVecs, meanPos.cast<float>());
     } else {
-      std::cout << "PCA decompose failure, numPairs = " << numHits << std::endl;
+      std::cout << "(PCAAnalysis3D) PCA decompose failure, numPairs = " << numHits << std::endl;
       pca = reco::PrincipalComponents();
     }
 
     if ((meanPos(2)-vertex.Z())*(pca.getEigenVectors().row(2)(2))<0) {
       pca.flipAxis(2);
     }
-    std::cout<<"AngleToBeamDir : "<<TMath::ACos(pca.getEigenVectors().row(2)(2))<<std::endl;
+    //std::cout<<"AngleToBeamDir : "<<TMath::ACos(pca.getEigenVectors().row(2)(2))<<std::endl;
 
     return;
+  }
+
+  ROOT::Math::XYZPoint PCAAnalysis3D::CenterOfChargeDir(std::vector<ROOT::Math::XYZPoint> & HitCluster,
+                         std::vector<double> & HitEdep,
+                         ROOT::Math::XYZPoint & vertex)
+
+  {
+    // Run through Hits and get the mean position of all the hits
+    Eigen::Vector3d meanPos(Eigen::Vector3d::Zero());
+    double meanWeightSum(0.);
+    int numHits(0);
+    for (unsigned i : util::lang::indices(HitCluster)) {
+      auto hit = HitCluster[i];
+      auto weight = HitEdep[i];
+      //double weight = 1;
+      meanPos(0) += hit.X() * weight;
+      meanPos(1) += hit.Y() * weight;
+      meanPos(2) += hit.Z() * weight;
+      numHits++;
+
+      meanWeightSum += weight;
+    }
+
+    ROOT::Math::XYZPoint COCDir;
+    if (meanWeightSum!=0.) {
+      meanPos /= meanWeightSum;
+      COCDir = ROOT::Math::XYZPoint(meanPos(0)-vertex.X(),
+                                    meanPos(1)-vertex.Y(),
+                                    meanPos(2)-vertex.Z());
+      COCDir /= TMath::Sqrt(COCDir.Mag2());
+      //std::cout<<"COCDirToBeamDir : "<<TMath::ACos(COCDir.Z())<<std::endl;
+    } else {
+      meanPos /= numHits;
+      COCDir = ROOT::Math::XYZPoint(0, 0, 0);
+      //std::cout<<"CenterOfCharge failed, zero deposited energy"<<std::endl;
+    }
+
+    return COCDir;
+  }
+
+  void PCAAnalysis3D::Initialize() {
+    fPCA3DDir.clear();
+    fCOCDir.clear();
   }
 
 }

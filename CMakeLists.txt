@@ -89,7 +89,9 @@ message(STATUS "Eigen3 : ${EIGEN3_USE_FILE}")
 include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
 #include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc ${PROJECT_SOURCE_DIR}/src/reco/*.cc)
-file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_SOURCE_DIR}/include/reco/*.hh)
+file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh 
+  ${PROJECT_SOURCE_DIR}/include/reco/*.hh
+  ${PROJECT_SOURCE_DIR}/include/utils/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 

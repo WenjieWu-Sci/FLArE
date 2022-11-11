@@ -82,6 +82,14 @@ class AnalysisManager {
     G4double ShowerWidthInLAr[2000000];
     G4double dEdx[2000000];
     G4double dEdxInLAr[2000000];
+    // reco
+    // direction
+    G4double dir_pca_x[2000000];
+    G4double dir_pca_y[2000000];
+    G4double dir_pca_z[2000000];
+    G4double dir_coc_x[2000000];
+    G4double dir_coc_y[2000000];
+    G4double dir_coc_z[2000000];
 
     G4double edepInLAr;
     G4double edepInLArXY2500mm;
@@ -125,6 +133,7 @@ class AnalysisManager {
   private:
     void FillTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
+    double GetTotalEnergy(double px, double py, double pz, double m);
 
     G4HCofThisEvent* hcofEvent;
 
@@ -134,6 +143,7 @@ class AnalysisManager {
     std::set<int> tracksFromFSLSecondary;
     std::vector<double> ShowerP;
     std::vector<std::vector<ROOT::Math::XYZPoint> > f3DHitClusters;
+    std::vector<std::vector<double> > f3DHitEdep;
     std::vector<ROOT::Math::XYZPoint> fPrimVtx;
 };
 
