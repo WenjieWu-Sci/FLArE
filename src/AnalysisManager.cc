@@ -222,7 +222,7 @@ void AnalysisManager::BeginOfEvent() {
   trackClusters.clear();
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
-  ShowerP.clear();
+  //ShowerP.clear();
   f3DHitClusters.clear();
   f3DHitEdep.clear();
   fPrimVtx.clear();
@@ -304,126 +304,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     nPrimaryParticle = nPrimaryParticle + nFromFSLParticles;
   }
 
-  /// event displays
-  /// 0: deposited energy of all hits
-  /// non-0: deposited energy of each prong (primary particle)
-  if (m_saveEvd) {
-    int res_tpc[3] = {2, 2, 2}; // mm
-    int len_tpc[3] = {1800, 1800, 7000}; // mm
-
-    int res_cal_z = 10; // mm
-    int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
-    //int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
-    
-    // binning definition
-    // x: drift direction on the transverse plane
-    // y: orthogonal to x on the transverse plane
-    // z: beam direction
-    int nbinx, nbiny, nbinz;
-    std::vector<double> binx, biny, binz;
-    for (int idim= 0; idim< 3; ++idim) {
-      switch (idim) {
-        case 0:
-          nbinx = len_tpc[idim]/res_tpc[idim];
-          for (int ibin=0; ibin<nbinx+1; ++ibin){
-            binx.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
-          }
-          break;
-        case 1:
-          nbiny = len_tpc[idim]/res_tpc[idim];
-          for (int ibin=0; ibin<nbiny+1; ++ibin) {
-            biny.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
-          }
-          break;
-        case 2:
-          nbinz = len_tpc[idim]/res_tpc[idim] + len_cal_z/res_cal_z;
-          for (int ibin=0; ibin<len_tpc[idim]/res_tpc[idim]; ++ibin) {
-            binz.push_back(ibin*res_tpc[idim]);
-          }
-          for (int ibin=0; ibin<len_cal_z/res_cal_z+1; ++ibin) {
-            binz.push_back(len_tpc[idim]+ibin*res_cal_z);
-          }
-          break;
-      }
-    }
-
-    //hitClusterXY.resize(nPrimaryParticle+1);
-    hitClusterZX.resize(nPrimaryParticle+1);
-    hitClusterZY.resize(nPrimaryParticle+1);
-    // hit cluster around the vertex
-    vtxHitClusterZX.resize(nPrimaryParticle+1);
-    vtxHitClusterZY.resize(nPrimaryParticle+1);
-
-
-    //std::string histname = "Evt_"+std::to_string(evtID)+"_tot_EdepXY";
-    //hitClusterXY[0] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-    //hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
-    //hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
-    TString histname, histtitle;
-    histname.Form("evt_%d_tot_zx",evtID);
-    histtitle.Form("ViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
-    hitClusterZX[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbinx, &binx[0]);
-    hitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
-    hitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
-    histname.Form("evt_%d_tot_zy",evtID);
-    histtitle.Form("ViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
-    hitClusterZY[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbiny, &biny[0]);
-    hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
-    hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
-    for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
-      //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-      //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-      //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
-      //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
-      //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX";
-      histname.Form("evt_%d_prong_%d_zx",evtID,iPrim);
-      histtitle.Form("ViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
-          evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
-          VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
-      hitClusterZX[iPrim+1] = new TH2F(histname, histtitle, nbinz, &binz[0], nbinx, &binx[0]);
-      hitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
-      hitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
-      histname.Form("evt_%d_prong_%d_zy",evtID,iPrim);
-      histtitle.Form("ViewY: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
-          evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
-          VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
-      hitClusterZY[iPrim+1] = new TH2F(histname, histtitle, nbinz, &binz[0], nbiny, &biny[0]);
-      hitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
-      hitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
-    }
-
-    histname.Form("evt_%d_tot_zx_vtx",evtID);
-    histtitle.Form("VtxViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
-    vtxHitClusterZX[0] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
-    vtxHitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
-    vtxHitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
-    histname.Form("evt_%d_tot_zy_vtx",evtID);
-    histtitle.Form("VtxViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
-    vtxHitClusterZY[0] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
-    vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
-    vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
-    for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
-      //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
-      //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
-      //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
-      //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
-      histname.Form("evt_%d_prong_%d_zx_vtx",evtID,iPrim);
-      histtitle.Form("VtxViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
-          evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
-          VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
-      vtxHitClusterZX[iPrim+1] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
-      vtxHitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
-      vtxHitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
-      histname.Form("evt_%d_prong_%d_zy_vtx",evtID,iPrim);
-      histtitle.Form("VtxViewY: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
-          evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
-          VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
-      vtxHitClusterZY[iPrim+1] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
-      vtxHitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
-      vtxHitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
-    }
-  } // end of - if (m_saveEvd)
-
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
   tracksFromFSL.insert(1);
   for (auto x : allTracksPTPair) {
@@ -460,19 +340,17 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
-  ShowerP.resize(nPrimaryParticle);
-  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
-    ShowerP[iPrim] = TMath::Sqrt(Px[iPrim]*Px[iPrim]+Py[iPrim]*Py[iPrim]+Pz[iPrim]*Pz[iPrim]);
-    double costheta = Pz[iPrim]/ShowerP[iPrim];
-    AngleToBeamDir[iPrim] = TMath::ACos(costheta);
-  }
-
+  // true hit information for reconstruction
   f3DHitClusters.resize(nPrimaryParticle);
   f3DHitEdep.resize(nPrimaryParticle);
   fPrimVtx.resize(nPrimaryParticle);
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     fPrimVtx[iPrim] = ROOT::Math::XYZPoint(VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
   }
+
+  //if (m_saveEvd) {
+    InitializeEvd();
+  //} 
   /// FillTrueEdep must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]>=0) {
@@ -489,86 +367,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     dir_coc_z[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].Z();
   }
 
-//  std::cout<<"\nPDG Angle ShowerLength EInLAr EInHadCal EInMuonFinder dEdx ShowerLengthInLAr dEdxInLAr ProngType Pz"<<std::endl;
-  std::cout<<std::fixed<<std::setw(10)<<"PDG"
-           <<std::setw(12)<<"Angle"
-           <<std::setw(13)<<"ShowerLength"
-           <<std::setw(12)<<"EInLAr" 
-           <<std::setw(12)<<"EInHadCal"
-           <<std::setw(14)<<"EInMuonFinder"
-           <<std::setw(12)<<"dEdx"
-           <<std::setw(18)<<"ShowerLengthInLAr"
-           <<std::setw(12)<<"dEdxInLAr"
-           <<std::setw(10)<<"ProngType"
-           <<std::setw(12)<<"Pz"<<std::endl;
-  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
-    if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
-      prongType[iPrim] = 0;
-    } else if (abs(nuPDG)==16 && abs(nuFSLPDG)==15) {
-      bool tau2e = false;
-      bool tau2mu = false;
-      for (int iFromFSL= 0;iFromFSL< nFromFSLParticles; ++iFromFSL) {
-        if (fromFSLParticlePDG[iFromFSL]==13) {
-          tau2mu = true;
-        } else if (fromFSLParticlePDG[iFromFSL]==11) {
-          tau2e = true;
-        }
-      }
-      if (tau2e) {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 1;
-        } else {
-          prongType[iPrim] = 2;
-        }
-      } else if (tau2mu) {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 3;
-        } else {
-          prongType[iPrim] = 4;
-        } 
-      } else {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 5;
-        } else {
-          prongType[iPrim] = 6;
-        } 
-      }
-    }
-    if (abs(nuPDG)==14 && abs(nuFSLPDG)==14) {
-      prongType[iPrim] = 7;
-    } else if (abs(nuPDG)==14 && abs(nuFSLPDG)==13) {
-      if (abs(primaryTrackPDG[iPrim])==13) {
-        prongType[iPrim] = 8;
-      } else {
-        prongType[iPrim] = 9;
-      }
-    }
-    if (abs(nuPDG)==12 && abs(nuFSLPDG)==12) {
-      prongType[iPrim] = 10;
-    } else if (abs(nuPDG)==12 && abs(nuFSLPDG)==11) {
-      if (abs(primaryTrackPDG[iPrim])==11) {
-        prongType[iPrim] = 11;
-      } else {
-        prongType[iPrim] = 12;
-      }
-    }
-    dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
-    dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
-
-    //std::ostream & o = std::cout;
-    std::cout<<std::setiosflags(std::ios::fixed)<<std::setprecision(2);
-    std::cout<<std::setw(10)<<primaryTrackPDG[iPrim];
-    std::cout<<std::setw(12)<<AngleToBeamDir[iPrim];
-    std::cout<<std::setw(13)<<ShowerLength[iPrim];
-    std::cout<<std::setw(12)<<EInLAr[iPrim] ;
-    std::cout<<std::setw(12)<<EInHadCal[iPrim];
-    std::cout<<std::setw(14)<<EInMuonFinder[iPrim];
-    std::cout<<std::setw(12)<<dEdx[iPrim];
-    std::cout<<std::setw(18)<<ShowerLengthInLAr[iPrim];
-    std::cout<<std::setw(12)<<dEdxInLAr[iPrim];
-    std::cout<<std::setw(10)<<prongType[iPrim];
-    std::cout<<std::setw(12)<<Pz[iPrim]<<std::endl;
-  }
+  // AddPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
+  AddPseudoRecoVar();
 
   evt->Fill();
 
@@ -827,7 +627,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         }
       }
 
-      if (m_saveEvd) {
+      //if (m_saveEvd) {
         double pos_x = hit->GetEdepPosition().x();
         double pos_y = hit->GetEdepPosition().y();
         double pos_z = hit->GetEdepPosition().z() + 3500;
@@ -850,7 +650,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         //      <<") current process ("<<hit->GetProcessName()
         //      <<") position"<<hit->GetEdepPosition()<<std::endl; 
         //}
-      }
+      //}
 
 //      if (hit->GetEdep()>1e-6) {
         double pre_x  = hit->GetPreStepPosition().x();
@@ -871,10 +671,12 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         double product_Pos = (post_x-VtxX[whichPrim])*Px[whichPrim]+
                              (post_y-VtxY[whichPrim])*Py[whichPrim]+
                              (post_z-VtxZ[whichPrim])*Pz[whichPrim];
-        double len_Pre = TMath::Abs(product_Pre)/ShowerP[whichPrim];
-        double len_Pos = TMath::Abs(product_Pos)/ShowerP[whichPrim]; 
-        double width_Pre = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pre,2)-TMath::Power(product_Pre,2))/ShowerP[whichPrim];
-        double width_Pos = TMath::Sqrt(TMath::Power(ShowerP[whichPrim]*mod_Pos,2)-TMath::Power(product_Pos,2))/ShowerP[whichPrim];
+        double ShowerP = TMath::Sqrt(Px[whichPrim]*Px[whichPrim]+Py[whichPrim]*Py[whichPrim]+Pz[whichPrim]*Pz[whichPrim]);
+        // Length here is the project of the distance between the hit center and the vertex on the initial particle direction
+        double len_Pre = TMath::Abs(product_Pre)/ShowerP;
+        double len_Pos = TMath::Abs(product_Pos)/ShowerP; 
+        double width_Pre = TMath::Sqrt(TMath::Power(ShowerP*mod_Pre,2)-TMath::Power(product_Pre,2))/ShowerP;
+        double width_Pos = TMath::Sqrt(TMath::Power(ShowerP*mod_Pos,2)-TMath::Power(product_Pos,2))/ShowerP;
         // exclude zero hit and hits from neutron when calculating showerlength of the primary particle
         // hits deposited little energy are difficult to be detected
         // simply ignoring the hits is not the most correct but easiest way
@@ -904,3 +706,212 @@ double AnalysisManager::GetTotalEnergy(double px, double py, double pz, double m
   return TMath::Sqrt(px*px+py*py+pz*pz+m*m);
 }
 
+void AnalysisManager::InitializeEvd() {
+  /// event displays
+  /// 0: deposited energy of all hits
+  /// non-0: deposited energy of each prong (primary particle)
+  //
+  int res_tpc[3] = {2, 2, 2}; // mm
+  int len_tpc[3] = {1800, 1800, 7000}; // mm
+
+  int res_cal_z = 10; // mm
+  int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
+  //int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
+
+  // binning definition
+  // x: drift direction on the transverse plane
+  // y: orthogonal to x on the transverse plane
+  // z: beam direction
+  int nbinx, nbiny, nbinz;
+  std::vector<double> binx, biny, binz;
+  for (int idim= 0; idim< 3; ++idim) {
+    switch (idim) {
+      case 0:
+        nbinx = len_tpc[idim]/res_tpc[idim];
+        for (int ibin=0; ibin<nbinx+1; ++ibin){
+          binx.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
+        }
+        break;
+      case 1:
+        nbiny = len_tpc[idim]/res_tpc[idim];
+        for (int ibin=0; ibin<nbiny+1; ++ibin) {
+          biny.push_back(ibin*res_tpc[idim]-len_tpc[idim]/2);
+        }
+        break;
+      case 2:
+        nbinz = len_tpc[idim]/res_tpc[idim] + len_cal_z/res_cal_z;
+        for (int ibin=0; ibin<len_tpc[idim]/res_tpc[idim]; ++ibin) {
+          binz.push_back(ibin*res_tpc[idim]);
+        }
+        for (int ibin=0; ibin<len_cal_z/res_cal_z+1; ++ibin) {
+          binz.push_back(len_tpc[idim]+ibin*res_cal_z);
+        }
+        break;
+    }
+  }
+
+  //hitClusterXY.resize(nPrimaryParticle+1);
+  hitClusterZX.resize(nPrimaryParticle+1);
+  hitClusterZY.resize(nPrimaryParticle+1);
+  // hit cluster around the vertex
+  vtxHitClusterZX.resize(nPrimaryParticle+1);
+  vtxHitClusterZY.resize(nPrimaryParticle+1);
+
+
+  //std::string histname = "Evt_"+std::to_string(evtID)+"_tot_EdepXY";
+  //hitClusterXY[0] = new TH2F(histname.c_str(), histname.c_str(), len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+  //hitClusterXY[0]->GetXaxis()->SetTitle("X [mm]");
+  //hitClusterXY[0]->GetYaxis()->SetTitle("Y [mm]");
+  TString histname, histtitle;
+  histname.Form("evt_%d_tot_zx",evtID);
+  histtitle.Form("ViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  hitClusterZX[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbinx, &binx[0]);
+  hitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
+  hitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
+  histname.Form("evt_%d_tot_zy",evtID);
+  histtitle.Form("ViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  hitClusterZY[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbiny, &biny[0]);
+  hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
+  hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
+  for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
+    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
+    //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+    //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
+    //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepZX";
+    histname.Form("evt_%d_prong_%d_zx",evtID,iPrim);
+    histtitle.Form("ViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
+        evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
+        VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
+    hitClusterZX[iPrim+1] = new TH2F(histname, histtitle, nbinz, &binz[0], nbinx, &binx[0]);
+    hitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+    hitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
+    histname.Form("evt_%d_prong_%d_zy",evtID,iPrim);
+    histtitle.Form("ViewY: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
+        evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
+        VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
+    hitClusterZY[iPrim+1] = new TH2F(histname, histtitle, nbinz, &binz[0], nbiny, &biny[0]);
+    hitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+    hitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+  }
+
+  histname.Form("evt_%d_tot_zx_vtx",evtID);
+  histtitle.Form("VtxViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  vtxHitClusterZX[0] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
+  vtxHitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
+  vtxHitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
+  histname.Form("evt_%d_tot_zy_vtx",evtID);
+  histtitle.Form("VtxViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  vtxHitClusterZY[0] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
+  vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
+  vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
+  for (int iPrim=0; iPrim< nPrimaryParticle; ++iPrim) {
+    //histname = "evt_"+std::to_string(evtID)+"_Prong_"+std::to_string(iPrim)+"_EdepXY";
+    //hitClusterXY[iPrim+1] = new TH2F(histname, histname, len_x/res, -len_x/2, len_x/2, len_y/res, -len_y/2, len_y/2);
+    //hitClusterXY[iPrim+1]->GetXaxis()->SetTitle("X [mm]");
+    //hitClusterXY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+    histname.Form("evt_%d_prong_%d_zx_vtx",evtID,iPrim);
+    histtitle.Form("VtxViewX: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
+        evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
+        VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
+    vtxHitClusterZX[iPrim+1] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
+    vtxHitClusterZX[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+    vtxHitClusterZX[iPrim+1]->GetYaxis()->SetTitle("X [mm]");
+    histname.Form("evt_%d_prong_%d_zy_vtx",evtID,iPrim);
+    histtitle.Form("VtxViewY: EvtID %d PDG %d Etot %.1f GeV (%.1f, %.1f, %.1f) mm ",
+        evtID,primaryTrackPDG[iPrim],GetTotalEnergy(Px[iPrim],Py[iPrim],Pz[iPrim],Pmass[iPrim])/1000,
+        VtxX[iPrim],VtxY[iPrim],VtxZ[iPrim]);
+    vtxHitClusterZY[iPrim+1] = new TH2F(histname, histtitle, 1500, -20, 280, 1000, -100, 100);
+    vtxHitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
+    vtxHitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
+  }
+}
+
+void AnalysisManager::AddPseudoRecoVar() {
+  //  AngleToBeamDir, dEdx, dEdxInLAr ProngType
+  std::cout<<std::fixed<<std::setw(10)<<"PDG"
+    <<std::setw(12)<<"Angle"
+    <<std::setw(13)<<"ShowerLength"
+    <<std::setw(12)<<"EInLAr" 
+    <<std::setw(12)<<"EInHadCal"
+    <<std::setw(14)<<"EInMuonFinder"
+    <<std::setw(12)<<"dEdx"
+    <<std::setw(18)<<"ShowerLengthInLAr"
+    <<std::setw(12)<<"dEdxInLAr"
+    <<std::setw(10)<<"ProngType"
+    <<std::setw(12)<<"Pz"<<std::endl;
+
+//  ShowerP.resize(nPrimaryParticle);
+  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
+    double ShowerP = TMath::Sqrt(Px[iPrim]*Px[iPrim]+Py[iPrim]*Py[iPrim]+Pz[iPrim]*Pz[iPrim]);
+    double costheta = Pz[iPrim]/ShowerP;
+    AngleToBeamDir[iPrim] = TMath::ACos(costheta);
+
+    if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
+      prongType[iPrim] = 0;
+    } else if (abs(nuPDG)==16 && abs(nuFSLPDG)==15) {
+      bool tau2e = false;
+      bool tau2mu = false;
+      for (int iFromFSL= 0;iFromFSL< nFromFSLParticles; ++iFromFSL) {
+        if (fromFSLParticlePDG[iFromFSL]==13) {
+          tau2mu = true;
+        } else if (fromFSLParticlePDG[iFromFSL]==11) {
+          tau2e = true;
+        }
+      }
+      if (tau2e) {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 1;
+        } else {
+          prongType[iPrim] = 2;
+        }
+      } else if (tau2mu) {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 3;
+        } else {
+          prongType[iPrim] = 4;
+        } 
+      } else {
+        if (primaryParentID[iPrim]>0) {
+          prongType[iPrim] = 5;
+        } else {
+          prongType[iPrim] = 6;
+        } 
+      }
+    }
+    if (abs(nuPDG)==14 && abs(nuFSLPDG)==14) {
+      prongType[iPrim] = 7;
+    } else if (abs(nuPDG)==14 && abs(nuFSLPDG)==13) {
+      if (abs(primaryTrackPDG[iPrim])==13) {
+        prongType[iPrim] = 8;
+      } else {
+        prongType[iPrim] = 9;
+      }
+    }
+    if (abs(nuPDG)==12 && abs(nuFSLPDG)==12) {
+      prongType[iPrim] = 10;
+    } else if (abs(nuPDG)==12 && abs(nuFSLPDG)==11) {
+      if (abs(primaryTrackPDG[iPrim])==11) {
+        prongType[iPrim] = 11;
+      } else {
+        prongType[iPrim] = 12;
+      }
+    }
+    dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
+    dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
+
+    //std::ostream & o = std::cout;
+    std::cout<<std::setiosflags(std::ios::fixed)<<std::setprecision(3);
+    std::cout<<std::setw(10)<<primaryTrackPDG[iPrim];
+    std::cout<<std::setw(12)<<AngleToBeamDir[iPrim];
+    std::cout<<std::setw(13)<<ShowerLength[iPrim];
+    std::cout<<std::setw(12)<<EInLAr[iPrim] ;
+    std::cout<<std::setw(12)<<EInHadCal[iPrim];
+    std::cout<<std::setw(14)<<EInMuonFinder[iPrim];
+    std::cout<<std::setw(12)<<dEdx[iPrim];
+    std::cout<<std::setw(18)<<ShowerLengthInLAr[iPrim];
+    std::cout<<std::setw(12)<<dEdxInLAr[iPrim];
+    std::cout<<std::setw(10)<<prongType[iPrim];
+    std::cout<<std::setw(12)<<Pz[iPrim]<<std::endl;
+  }
+}

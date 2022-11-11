@@ -134,6 +134,8 @@ class AnalysisManager {
     void FillTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
     double GetTotalEnergy(double px, double py, double pz, double m);
+    void InitializeEvd();
+    void AddPseudoRecoVar();
 
     G4HCofThisEvent* hcofEvent;
 
@@ -141,7 +143,7 @@ class AnalysisManager {
     std::vector<std::set<int> > trackClusters;
     std::set<int> tracksFromFSL;
     std::set<int> tracksFromFSLSecondary;
-    std::vector<double> ShowerP;
+//    std::vector<double> ShowerP;
     std::vector<std::vector<ROOT::Math::XYZPoint> > f3DHitClusters;
     std::vector<std::vector<double> > f3DHitEdep;
     std::vector<ROOT::Math::XYZPoint> fPrimVtx;
