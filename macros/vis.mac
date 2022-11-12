@@ -12,12 +12,12 @@
 #
 /run/initialize
 #
-/genie/useGenie true
-/genie/genieInput genie/nutau_ar40_10GeV.ghep.root
-/genie/genieIStart 2
-#
-/histo/fileName nutau_10GeV.root
-/histo/saveEvd false
+#/genie/useGenie true
+#/genie/genieInput genie/nutau_ar40_10GeV.ghep.root
+#/genie/genieIStart 2
+##
+#/histo/fileName nutau_10GeV.root
+#/histo/saveEvd false
 #
 # Use this open statement to create an OpenGL view:
 /vis/open OGL 1000x800-0+0
@@ -32,12 +32,13 @@
 /vis/drawVolume
 #
 # Specify view angle:
-/vis/viewer/set/viewpointThetaPhi 90 180 
+#/vis/viewer/set/viewpointThetaPhi 90 180 
+/vis/viewer/set/viewpointThetaPhi 70 20 
 #
-#/vis/viewer/pan 4 -1
+/vis/viewer/pan -1.5 0
 # Specify zoom value:
-/vis/viewer/zoom 5
-/vis/viewer/scale 1 2 1
+/vis/viewer/zoom 4
+/vis/viewer/scale 1 1 1
 /vis/viewer/set/background white
 #
 # Specify style (surface or wireframe):
@@ -67,12 +68,12 @@
 /vis/modeling/trajectories/drawByParticleID-0/set pi- violet
 /vis/modeling/trajectories/drawByParticleID-0/set pi+ orange
 /vis/modeling/trajectories/drawByParticleID-0/set pi0 brown 
-/vis/modeling/trajectories/drawByParticleID-0/set mu- red
+/vis/modeling/trajectories/drawByParticleID-0/set mu- magenta
 
-#/vis/filtering/trajectories/create/particleFilter
-#/vis/filtering/trajectories/particleFilter-0/add gamma
-#/vis/filtering/trajectories/particleFilter-0/add neutron
-#/vis/filtering/trajectories/particleFilter-0/invert true
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add gamma
+/vis/filtering/trajectories/particleFilter-0/add neutron
+/vis/filtering/trajectories/particleFilter-0/invert true
 #/vis/filtering/trajectories/create/attributeFilter
 #/vis/filtering/trajectories/attributeFilter-0/setAttribute IMag
 #/vis/filtering/trajectories/attributeFilter-0/addInterval 1 GeV 1000 GeV
