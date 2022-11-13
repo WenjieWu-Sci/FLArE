@@ -23,6 +23,7 @@ class AnalysisManager {
     void EndOfEvent(const G4Event* event);
 
   public:
+    // function for controlling from the configuration file
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
@@ -138,6 +139,8 @@ class AnalysisManager {
     double GetTotalEnergy(double px, double py, double pz, double m);
     void InitializeEvd();
     void AddPseudoRecoVar();
+    void AddDiffusionToTrueHit(G4int sdId, std::string sdName);
+    double DistanceToAnode(double x);
 
     G4HCofThisEvent* hcofEvent;
 

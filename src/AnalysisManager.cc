@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <iomanip>
+#include <random>
 
 #include "AnalysisManager.hh"
 #include "LArBoxSD.hh"
@@ -232,14 +233,6 @@ void AnalysisManager::BeginOfEvent() {
   hitClusterZY.clear();
   vtxHitClusterZX.clear();
   vtxHitClusterZY.clear();
-  //hitClusterZX.shrink_to_fit();
-  //hitClusterZY.shrink_to_fit();
-  //vtxHitClusterZX.shrink_to_fit();
-  //vtxHitClusterZY.shrink_to_fit();
-  //std::vector<TH2F*>().swap(hitClusterZX);
-  //std::vector<TH2F*>().swap(hitClusterZY);
-  //std::vector<TH2F*>().swap(vtxHitClusterZX);
-  //std::vector<TH2F*>().swap(vtxHitClusterZY);
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -297,11 +290,16 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                            "HadAbsorbSD/lar_box",
                            "MuonFinderAbsorbSD/lar_box",
                            "CryGapSD/lar_box"};
+
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]<0) {
       sdids[i] = sdm->GetCollectionID(sds[i]);
     }
     if (sdids[i]>=0) {
+      if ((sdids[i]==0) && m_addDiffusion) {
+        // add diffusion to true hits in the TPC volume
+        AddDiffusionToTrueHit(sdids[i], sds[i]);
+      }
       FillTree(sdids[i], sds[i]);
     }
   }
@@ -404,9 +402,10 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     delete hitClusterZY[iPrim];
     delete vtxHitClusterZX[iPrim];
     delete vtxHitClusterZY[iPrim];
+    trackClusters[iPrim].clear();
     f3DHitClusters[iPrim].clear();
-    f3DHitEdep[iPrim].clear();
     f3DHitClusters[iPrim].shrink_to_fit();
+    f3DHitEdep[iPrim].clear();
     f3DHitEdep[iPrim].shrink_to_fit();
   }
   hitClusterZX.clear();
@@ -417,6 +416,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   hitClusterZY.shrink_to_fit();
   vtxHitClusterZX.shrink_to_fit();
   vtxHitClusterZY.shrink_to_fit();
+  trackClusters.clear();
+  trackClusters.shrink_to_fit();
 
   delete PCATrackFinder;
 }
@@ -923,4 +924,40 @@ void AnalysisManager::AddPseudoRecoVar() {
     std::cout<<std::setw(10)<<prongType[iPrim];
     std::cout<<std::setw(12)<<Pz[iPrim]<<std::endl;
   }
+}
+
+void AnalysisManager::AddDiffusionToTrueHit(G4int sdId, std::string sdName) {
+  // https://lar.bnl.gov/properties/
+  double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
+  double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
+  LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  if (hitCollection) {
+    for (auto hit: *hitCollection->GetVector()) {
+      double pos_x = hit->GetEdepPosition().x();
+      double pos_y = hit->GetEdepPosition().y();
+      double pos_z = hit->GetEdepPosition().z();
+      double distance_to_anode = DistanceToAnode(pos_x);
+      double drift_time = distance_to_anode/1.6*1e-6; // 1.6 mm/us at 500 V/cm
+      double sigma_t = TMath::Sqrt(4*DT*drift_time)*10;  // mm
+      double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;  // mm
+      std::normal_distribution<> norm_x{pos_x, sigma_l};
+      std::normal_distribution<> norm_y{pos_y, sigma_t};
+      std::normal_distribution<> norm_z{pos_z, sigma_t};
+      G4ThreeVector smearedPos(norm_x(gen), norm_y(gen), norm_z(gen));
+      hit->SetEdepPosition(smearedPos);
+    }
+  }
+}
+
+double AnalysisManager::DistanceToAnode(double x) {
+  double anode_x[6] = {-900, -301, -299, 299, 301, 900};
+  double distance = 9999;
+  for (int i= 0; i< 6; ++i) { 
+    double _distance = abs(x - anode_x[i]);
+    distance = std::min(distance, _distance);
+  }
+
+  return distance;
 }
