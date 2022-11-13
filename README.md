@@ -1,6 +1,6 @@
 # FLArE
 Simulation code for R&D of the FLArE detector
-![nutau evt display](./flare_nutau_evt.jpg)
+![nutau evt display](./flare_nutau_evd.jpg)
 
 ## To compile the code
 * Create a new directory to contain the executables (assume the path is /path/to/build)
