@@ -94,9 +94,10 @@ file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh
   ${PROJECT_SOURCE_DIR}/include/utils/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
+file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 
 # Enable macros for out-of-source build
-foreach(_file ${macros} ${genie})
+foreach(_file ${macros} ${genie} ${analysis})
   configure_file(
     ${_file}
     ${PROJECT_BINARY_DIR}/${_file}
