@@ -30,7 +30,7 @@
 using namespace std;
 
 FLArEDetectorConstruction::FLArEDetectorConstruction()
-  : G4VUserDetectorConstruction(), fDetMaterialName("LAr")
+  : G4VUserDetectorConstruction(), fDetMaterialName("LAr"), fDetGeomOption("single")
 {
   DefineMaterial();
   messenger = new FLArEDetectorConstructionMessenger(this);
@@ -69,9 +69,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // Experimental hall
   G4VSolid* worldBox = new G4Box("world", worldSizeX / 2, worldSizeY / 2, worldSizeZ / 2);
   worldLog = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Air"), "world");
-  G4VisAttributes* visAttr = new G4VisAttributes();
-  visAttr->SetVisibility(true);
-  worldLog->SetVisAttributes(visAttr);
   G4VPhysicalVolume* worldPhys = new G4PVPlacement(nullptr,
                                                    {},
                                                    worldLog,
@@ -93,12 +90,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // LAr box
   G4VSolid* lArBox = new G4Box("lArBox", lArSizeX / 2, lArSizeY / 2, lArSizeZ / 2);
   lArBoxLog = new G4LogicalVolume(lArBox, detectorMaterial, "lArBox");
-  G4VisAttributes* lArBoxVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
-  lArBoxVis->SetVisibility(true);
-  //lArBoxVis->SetForceSolid(true);
-  lArBoxVis->SetForceWireframe(true);
-  lArBoxVis->SetForceAuxEdgeVisible(true);
-  lArBoxLog->SetVisAttributes(lArBoxVis);
   G4VPhysicalVolume* lArBoxPhys = new G4PVPlacement(nullptr, // no Rotation
                                                     G4ThreeVector(0, 0, 0), // no transporation
                                                     lArBoxLog,              // current logical volume
@@ -107,10 +98,40 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
                                                     false,                  // pMany
                                                     0,                      // Copy No
                                                     fCheckOverlap);
-  lArBoxLog->SetUserLimits(new G4UserLimits(0.5*mm));
 
+  G4VisAttributes* lArBoxVis;
+  if (fDetGeomOption=="single") {
+    lArBoxVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
+    lArBoxVis->SetVisibility(true);
+    lArBoxVis->SetForceWireframe(true);
+    lArBoxVis->SetForceAuxEdgeVisible(true);
+    lArBoxLog->SetVisAttributes(lArBoxVis);
+    lArBoxLog->SetUserLimits(new G4UserLimits(0.5*mm));
+  } else if (fDetGeomOption=="3x7") {
+    lArBoxVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
+    lArBoxVis->SetVisibility(false);
+    lArBoxLog->SetVisAttributes(lArBoxVis);
 
-  G4double GapToHadCatcher   = 25 * cm;
+    auto TPCLayerSolid
+      = new G4Box("TPCLayerBox", 1.8*m/2, 1.8*m/2, 1.0*m/2);
+    auto TPCLayerLogical
+      = new G4LogicalVolume(TPCLayerSolid, detectorMaterial, "TPCLayerLogical");
+    auto TPCModuleSolid
+      = new G4Box("TPCModuleBox", 0.6*m/2, 1.8*m/2, 1.0*m/2);
+    TPCModuleLogical
+      = new G4LogicalVolume(TPCModuleSolid, detectorMaterial, "TPCModuleLogical");
+    new G4PVReplica("TPCModulePhysical", TPCModuleLogical, TPCLayerLogical, kXAxis, 3, 0.6*m);
+    new G4PVReplica("TPC", TPCLayerLogical, lArBoxLog, kZAxis, 7, 1.0*m);
+    G4VisAttributes* TPCModuleVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
+    TPCModuleVis->SetVisibility(true);
+    TPCModuleVis->SetForceWireframe(true);
+    TPCModuleVis->SetForceAuxEdgeVisible(true);
+    TPCLayerLogical->SetVisAttributes(lArBoxVis);
+    TPCModuleLogical->SetVisAttributes(TPCModuleVis);
+    TPCModuleLogical->SetUserLimits(new G4UserLimits(0.5*mm));
+  }
+
+  G4double GapToHadCatcher = 25 * cm;
 
   // Aluminum cryostat: 1/2 density
   auto crygapSolid = new G4Box("CryGapBox", lArSizeX/2, lArSizeY/2, GapToHadCatcher/2);
@@ -266,43 +287,34 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   }
 
   // visualization
-  G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));
-  crygapVis->SetVisibility(false);
-  crygapVis->SetForceSolid(true);
-  //crygapVis->SetForceWireframe(true);
-  //crygapVis->SetForceAuxEdgeVisible(true);
-  crygapLogical->SetVisAttributes(crygapVis);
+  //G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));
 
   G4VisAttributes* absorVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
   absorVis->SetVisibility(true);
-  absorVis->SetForceWireframe(true);
-  absorVis->SetForceAuxEdgeVisible(true);
+  //absorVis->SetForceWireframe(true);
+  //absorVis->SetForceAuxEdgeVisible(true);
   HadAbsorLayersLogical->SetVisAttributes(absorVis);
   MuonFinderAbsorLayersLogical->SetVisAttributes(absorVis);
 
   G4VisAttributes* hadCalVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
   hadCalVis->SetVisibility(true);
-  //hadCalVis->SetForceSolid(true);
-  hadCalVis->SetForceWireframe(true);
-  hadCalVis->SetForceAuxEdgeVisible(true);
-  //HadCalXCellLogical->SetVisAttributes(hadCalVis);
-  //HadCalYCellLogical->SetVisAttributes(hadCalVis);
-  //MuonFinderXCellLogical->SetVisAttributes(hadCalVis);
-  //MuonFinderYCellLogical->SetVisAttributes(hadCalVis);
+  //hadCalVis->SetForceWireframe(true);
+  //hadCalVis->SetForceAuxEdgeVisible(true);
   HadCalXLayersLogical->SetVisAttributes(hadCalVis);
   HadCalYLayersLogical->SetVisAttributes(hadCalVis);
   MuonFinderXLayersLogical->SetVisAttributes(hadCalVis);
   MuonFinderYLayersLogical->SetVisAttributes(hadCalVis);
 
-//  hadCatcherLogical->SetVisAttributes(lArBoxVis);
-
-  /*
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
-  hadAbsorPlaneLogical->SetVisAttributes(nullVis);
-  hadCalXPlaneLogical->SetVisAttributes(nullVis);
-  hadCalYPlaneLogical->SetVisAttributes(nullVis);
-  */
+  worldLog->SetVisAttributes(nullVis);
+  crygapLogical->SetVisAttributes(nullVis);
+  hadCatcherLogical->SetVisAttributes(nullVis);
+  muonFinderLogical->SetVisAttributes(nullVis);
+  HadCalXCellLogical->SetVisAttributes(nullVis);
+  HadCalYCellLogical->SetVisAttributes(nullVis);
+  MuonFinderXCellLogical->SetVisAttributes(nullVis);
+  MuonFinderYCellLogical->SetVisAttributes(nullVis);
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
@@ -316,9 +328,15 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   G4SDManager* sdManager = G4SDManager::GetSDMpointer();
   sdManager->SetVerboseLevel(2);
 
-  LArBoxSD* lArBoxSD = new LArBoxSD("lArBoxSD");
-  lArBoxLog->SetSensitiveDetector(lArBoxSD);
-  sdManager->AddNewDetector(lArBoxSD);
+  LArBoxSD* TPCModuleSD = new LArBoxSD("lArBoxSD");
+  if (fDetGeomOption=="single") {
+//    LArBoxSD* lArBoxSD = new LArBoxSD("lArBoxSD");
+    lArBoxLog->SetSensitiveDetector(TPCModuleSD);
+    sdManager->AddNewDetector(TPCModuleSD);
+  } else if (fDetGeomOption=="3x7") {
+    TPCModuleLogical->SetSensitiveDetector(TPCModuleSD);
+    sdManager->AddNewDetector(TPCModuleSD);
+  }
 
   LArBoxSD* HadCalXSD = new LArBoxSD("HadCalXSD");
   HadCalXCellLogical->SetSensitiveDetector(HadCalXSD);
@@ -357,6 +375,10 @@ void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {
 
   fDetMaterialName = detMaterial;
 //  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+}
+
+void FLArEDetectorConstruction::SetGeomOption(G4String detGeomOption) {
+  fDetGeomOption = detGeomOption;
 }
 
 //void FLArEDetectorConstruction::UpdateGeometry() {

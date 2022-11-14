@@ -23,6 +23,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
 
     void ConstructSDandField() override;
     void SetDetMaterial(G4String detMaterial);
+    void SetGeomOption(G4String detGeomOption);
     void saveGDML(G4bool i) { m_saveGdml = i; };
     void UpdateGeometry();
 
@@ -38,7 +39,9 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* crygapLogical;
+    G4LogicalVolume* TPCModuleLogical;
     G4String fDetMaterialName;
+    G4String fDetGeomOption;
     G4bool m_saveGdml;
 
     DetectorConstructionMaterial* LArBoxMaterials;

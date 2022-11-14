@@ -25,7 +25,8 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     FLArEDetectorConstruction* det;
     G4UIdirectory* detDir;
     G4UIcmdWithAString* detMatCmd;
-    G4UIcmdWithABool* detGeomCmd;
+    G4UIcmdWithAString* detGeomCmd;
+    G4UIcmdWithABool* detGdmlCmd;
 //    G4UIcommand* updateCmd;
 };
 

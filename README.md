@@ -20,6 +20,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 
 ## Macro command
 * `/det/material`, option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`
+* `/det/module`, option for tpc module option, choose from `single` (default) and `3x7`, run before `/run/initialize`
 * `/det/saveGdml`, option for saving detector geometry in a GDML file, `false` as default, run before `/run/initialize`
 * `/genie/useGenie`, option for PrimaryGeneratorMessenger, set `true` to read neutrino interactions from GENIE
 * `/genie/genieInput`, if `useGenie is true`, give which `.ghep.root` file to read GENIE events

@@ -16,9 +16,12 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
     detMatCmd = new G4UIcmdWithAString("/det/material", this);
     detMatCmd->SetGuidance("set material of the detector: LAr, LKr");
 
-    detGeomCmd = new G4UIcmdWithABool("/det/saveGdml", this);
-    detGeomCmd->SetParameterName("saveGdml", true);
-    detGeomCmd->SetDefaultValue(false);
+    detGeomCmd = new G4UIcmdWithAString("/det/module", this);
+    detGeomCmd->SetGuidance("set module option of the detector: single, 3x7");
+
+    detGdmlCmd = new G4UIcmdWithABool("/det/saveGdml", this);
+    detGdmlCmd->SetParameterName("saveGdml", true);
+    detGdmlCmd->SetDefaultValue(false);
 
 //    updateCmd = new G4UIcommand("/det/update", this);
 //    updateCmd->SetGuidance("update the detector geometry with changed value");
@@ -30,6 +33,7 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
 FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
   delete detMatCmd;
   delete detGeomCmd;
+  delete detGdmlCmd;
 //  delete updateCmd;
   delete detDir;
 }
@@ -38,7 +42,8 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
 
 void FLArEDetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
   if (command == detMatCmd)  det->SetDetMaterial(newValues);
-  if (command == detGeomCmd) det->saveGDML(detGeomCmd->GetNewBoolValue(newValues));
+  if (command == detGeomCmd)  det->SetGeomOption(newValues);
+  if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
 //  if (command == updateCmd) det->UpdateGeometry();
 }
 

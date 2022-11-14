@@ -1,4 +1,5 @@
 /det/material LAr
+/det/module single
 /det/saveGdml false
 
 /run/initialize
@@ -12,5 +13,6 @@
 /histo/fileName test_5_9.root
 /histo/saveEvd false
 /histo/saveHit false
+/histo/addDiffusion false
 
 /run/beamOn 5

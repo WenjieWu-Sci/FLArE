@@ -7,9 +7,6 @@
 /control/verbose 2
 /run/verbose 2
 #
-/det/material LAr
-/det/saveGdml false
-#
 /run/initialize
 #
 #/genie/useGenie true
@@ -35,9 +32,8 @@
 #/vis/viewer/set/viewpointThetaPhi 90 180 
 /vis/viewer/set/viewpointThetaPhi 70 20 
 #
-/vis/viewer/pan -1.5 0
-# Specify zoom value:
-/vis/viewer/zoom 4
+/vis/viewer/pan 0 0
+/vis/viewer/zoom 1
 /vis/viewer/scale 1 1 1
 /vis/viewer/set/background white
 #

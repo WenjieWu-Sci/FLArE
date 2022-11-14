@@ -16,7 +16,8 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
   G4Track* aTrack = aStep->GetTrack();
   // if the track is out of the active volumes, kill this track
   G4VPhysicalVolume* volume = aStep->GetPostStepPoint()->GetTouchable()->GetVolume();
-  std::string active_volumes[8] = {"lArBox",
+  std::string active_volumes[9] = {"lArBox",
+                                   "TPCModulePhysical",
                                    "CryGapPhysical",
                                    "HadCatcherPhysical",
                                    "HadCalXCellPhysical",
