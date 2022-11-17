@@ -20,6 +20,7 @@
 #include <TTree.h>
 #include <TH2F.h>
 #include <TString.h>
+#include <TRandom3.h>
 //#include <Math/Point3Dfwd.h>
 //#include <Math/Point3D.h>
 
@@ -224,15 +225,14 @@ void AnalysisManager::BeginOfEvent() {
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
 
-  f3DHitClusters.clear();
-  f3DHitEdep.clear();
-  fPrimVtx.clear();
+  //f3DHitClusters.clear();
+  //f3DHitEdep.clear();
+  //fPrimVtx.clear();
 
-  //hitClusterXY.clear();
   hitClusterZX.clear();
   hitClusterZY.clear();
-  vtxHitClusterZX.clear();
-  vtxHitClusterZY.clear();
+  //vtxHitClusterZX.clear();
+  //vtxHitClusterZY.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -296,11 +296,11 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       sdids[i] = sdm->GetCollectionID(sds[i]);
     }
     if (sdids[i]>=0) {
-      if ((sdids[i]==0) && m_addDiffusion) {
-        // add diffusion to true hits in the TPC volume
-        AddDiffusionToTrueHit(sdids[i], sds[i]);
-      }
-      FillTree(sdids[i], sds[i]);
+      //if ((sdids[i]==0) && m_addDiffusion) {
+      //  // add diffusion to true hits in the TPC volume
+      //  AddDiffusionToTrueHit(sdids[i], sds[i]);
+      //}
+      FillPrimaryTruthTree(sdids[i], sds[i]);
     }
   }
 
@@ -347,34 +347,40 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   }
 
   // true hit information for reconstruction
-  f3DHitClusters.resize(nPrimaryParticle);
-  f3DHitEdep.resize(nPrimaryParticle);
-  fPrimVtx.resize(nPrimaryParticle);
-  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
-    fPrimVtx[iPrim] = ROOT::Math::XYZPoint(VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
-  }
+  //f3DHitClusters.resize(nPrimaryParticle);
+  //f3DHitEdep.resize(nPrimaryParticle);
+  //fPrimVtx.resize(nPrimaryParticle);
+  //for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+  //  fPrimVtx[iPrim] = ROOT::Math::XYZPoint(VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
+  //}
 
   //if (m_saveEvd) {
-    InitializeEvd();
+  //if (!m_addDiffusion) 
   //} 
-  /// FillTrueEdep must run after FillTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  InitializeEvd();
+  /// FillTrueEdep must run after FillPrimaryTruthTree, otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]>=0) {
       FillTrueEdep(sdids[i], sds[i]);
     }
   }
-  pcaanalysis3d::PCAAnalysis3D* PCATrackFinder = new pcaanalysis3d::PCAAnalysis3D(f3DHitClusters, f3DHitEdep, fPrimVtx);
-  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
-    dir_pca_x[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].X();
-    dir_pca_y[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].Y();
-    dir_pca_z[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].Z();
-    dir_coc_x[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].X();
-    dir_coc_y[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].Y();
-    dir_coc_z[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].Z();
-  }
 
-  // AddPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
-  AddPseudoRecoVar();
+//  if (m_addDiffusion) {
+//    fastsim::FLArEToyElectronTransportation* test = new fastsim::FLArEToyElectronTransportation(f3DHitClusters, f3DHitEdep);
+//  }
+
+//  pcaanalysis3d::PCAAnalysis3D* PCATrackFinder = new pcaanalysis3d::PCAAnalysis3D(f3DHitClusters, f3DHitEdep, fPrimVtx);
+//  for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+//    dir_pca_x[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].X();
+//    dir_pca_y[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].Y();
+//    dir_pca_z[iPrim] = PCATrackFinder->GetPCA3DDir()[iPrim].Z();
+//    dir_coc_x[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].X();
+//    dir_coc_y[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].Y();
+//    dir_coc_z[iPrim] = PCATrackFinder->GetCOCDir()[iPrim].Z();
+//  }
+
+  // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
+  FillPseudoRecoVar();
 
   evt->Fill();
 
@@ -388,41 +394,42 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       hitClusterZX[i]->Write();
       hitClusterZY[i]->Write();
     }
-    dirname = "edep_vtx/evt_"+std::to_string(evtID)+"/";
-    thefile->mkdir(dirname.c_str());
-    thefile->cd(dirname.c_str());
-    for (int i=0; i<nPrimaryParticle+1; ++i) {
-      vtxHitClusterZX[i]->Write();
-      vtxHitClusterZY[i]->Write();
-    }
+//    dirname = "edep_vtx/evt_"+std::to_string(evtID)+"/";
+//    thefile->mkdir(dirname.c_str());
+//    thefile->cd(dirname.c_str());
+//    for (int i=0; i<nPrimaryParticle+1; ++i) {
+//      vtxHitClusterZX[i]->Write();
+//      vtxHitClusterZY[i]->Write();
+//    }
   }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     delete hitClusterZX[iPrim];
     delete hitClusterZY[iPrim];
-    delete vtxHitClusterZX[iPrim];
-    delete vtxHitClusterZY[iPrim];
+//    delete vtxHitClusterZX[iPrim];
+//    delete vtxHitClusterZY[iPrim];
     trackClusters[iPrim].clear();
-    f3DHitClusters[iPrim].clear();
-    f3DHitClusters[iPrim].shrink_to_fit();
-    f3DHitEdep[iPrim].clear();
-    f3DHitEdep[iPrim].shrink_to_fit();
+//    //f3DHitClusters[iPrim].clear();
+//    //f3DHitClusters[iPrim].shrink_to_fit();
+//    //f3DHitEdep[iPrim].clear();
+//    //f3DHitEdep[iPrim].shrink_to_fit();
   }
   hitClusterZX.clear();
   hitClusterZY.clear();
-  vtxHitClusterZX.clear();
-  vtxHitClusterZY.clear();
+//  vtxHitClusterZX.clear();
+//  vtxHitClusterZY.clear();
   hitClusterZX.shrink_to_fit();
   hitClusterZY.shrink_to_fit();
-  vtxHitClusterZX.shrink_to_fit();
-  vtxHitClusterZY.shrink_to_fit();
+//  vtxHitClusterZX.shrink_to_fit();
+//  vtxHitClusterZY.shrink_to_fit();
   trackClusters.clear();
   trackClusters.shrink_to_fit();
 
-  delete PCATrackFinder;
+//  delete PCATrackFinder;
+//  delete test;
 }
 
-void AnalysisManager::FillTree(G4int sdId, std::string sdName) {
+void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
   int detID = 0;
   const std::unordered_map<std::string,std::function<void()>> detIDs{
           {"lArBoxSD/lar_box",           [&](){ detID = 1; }},
@@ -634,17 +641,17 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         continue;
       } 
 
-      if (detID==1) {
-        //double pos_x = hit->GetEdepPosition().x();
-        //double pos_y = hit->GetEdepPosition().y();
-        //double pos_z = hit->GetEdepPosition().z() + 3500;
-        //if ((pos_z-3500-nuZ>-20) && (pos_z-3500-nuZ<280) &&
-        //    (abs(pos_x-nuX)<100) && (abs(pos_y-nuY)<100)) {
-          ROOT::Math::XYZPoint p(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdepPosition().z()+3500);
-          f3DHitClusters[whichPrim].push_back(p);
-          f3DHitEdep[whichPrim].push_back(hit->GetEdep());
-        //}
-      }
+      //if (detID==1) {
+      //  //double pos_x = hit->GetEdepPosition().x();
+      //  //double pos_y = hit->GetEdepPosition().y();
+      //  //double pos_z = hit->GetEdepPosition().z() + 3500;
+      //  //if ((pos_z-3500-nuZ>-20) && (pos_z-3500-nuZ<280) &&
+      //  //    (abs(pos_x-nuX)<100) && (abs(pos_y-nuY)<100)) {
+      //    ROOT::Math::XYZPoint p(hit->GetEdepPosition().x(), hit->GetEdepPosition().y(), hit->GetEdepPosition().z()+3500);
+      //    f3DHitClusters[whichPrim].push_back(p);
+      //    f3DHitEdep[whichPrim].push_back(hit->GetEdep());
+      //  //}
+      //}
 
       if ((hit->GetPID()==0) |
           (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end())) {
@@ -654,32 +661,24 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         }
       }
 
-      //if (m_saveEvd) {
-        double pos_x = hit->GetEdepPosition().x();
-        double pos_y = hit->GetEdepPosition().y();
-        double pos_z = hit->GetEdepPosition().z() + 3500;
-        //hitClusterXY[0]->Fill(pos_x, pos_y, hit->GetEdep());
+      double pos_x = hit->GetEdepPosition().x();
+      double pos_y = hit->GetEdepPosition().y();
+      double pos_z = hit->GetEdepPosition().z() + 3500;
+      if (detID==1 && m_addDiffusion) {
+        ToyElectronTransportation(whichPrim, pos_x, pos_y, pos_z, hit->GetEdep());
+      } else {
         hitClusterZX[0]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[0]->Fill(pos_z, pos_y, hit->GetEdep());
-        //hitClusterXY[whichPrim+1]->Fill(pos_x, pos_y, hit->GetEdep());
         hitClusterZX[whichPrim+1]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[whichPrim+1]->Fill(pos_z, pos_y, hit->GetEdep());
+      }
 
-        vtxHitClusterZX[0]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
-        vtxHitClusterZY[0]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
-        vtxHitClusterZX[whichPrim+1]->Fill(pos_z-VtxZ[whichPrim], pos_x-VtxX[whichPrim], hit->GetEdep());
-        vtxHitClusterZY[whichPrim+1]->Fill(pos_z-VtxZ[whichPrim], pos_y-VtxY[whichPrim], hit->GetEdep());
-
-        //if ((whichPrim==5) && (pos_z-VtxZ[whichPrim]<150)) {
-        //    std::cout<<"Debug(211) "<<hit->GetParticle()
-        //      <<" edep("<<hit->GetEdep()<<") TID("<<hit->GetTID()<<") PID("<<hit->GetPID()
-        //      <<") creator process ("<<hit->GetCreatorProcess()
-        //      <<") current process ("<<hit->GetProcessName()
-        //      <<") position"<<hit->GetEdepPosition()<<std::endl; 
-        //}
+      //  vtxHitClusterZX[0]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
+      //  vtxHitClusterZY[0]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
+      //  vtxHitClusterZX[whichPrim+1]->Fill(pos_z-VtxZ[whichPrim], pos_x-VtxX[whichPrim], hit->GetEdep());
+      //  vtxHitClusterZY[whichPrim+1]->Fill(pos_z-VtxZ[whichPrim], pos_y-VtxY[whichPrim], hit->GetEdep());
       //}
 
-//      if (hit->GetEdep()>1e-6) {
         double pre_x  = hit->GetPreStepPosition().x();
         double pre_y  = hit->GetPreStepPosition().y();
         double pre_z  = hit->GetPreStepPosition().z() + 3500;
@@ -724,7 +723,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         if (detID==4 || detID==5 || detID==7) {
           EInMuonFinder[whichPrim] += hit->GetEdep();
         }
-//      }
     } // end of hit loop
   }
 }
@@ -742,8 +740,8 @@ void AnalysisManager::InitializeEvd() {
   int len_tpc[3] = {1800, 1800, 7000}; // mm
 
   int res_cal_z = 10; // mm
-  int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
-  //int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
+  //int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
+  int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
 
   // binning definition
   // x: drift direction on the transverse plane
@@ -839,7 +837,7 @@ void AnalysisManager::InitializeEvd() {
   }
 }
 
-void AnalysisManager::AddPseudoRecoVar() {
+void AnalysisManager::FillPseudoRecoVar() {
   //  AngleToBeamDir, dEdx, dEdxInLAr ProngType
   std::cout<<std::fixed<<std::setw(10)<<"PDG"
     <<std::setw(12)<<"Angle"
@@ -926,30 +924,135 @@ void AnalysisManager::AddPseudoRecoVar() {
   }
 }
 
-void AnalysisManager::AddDiffusionToTrueHit(G4int sdId, std::string sdName) {
+/*
+void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep) {
   // https://lar.bnl.gov/properties/
   double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
   double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
-  LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
-  std::random_device rd{};
-  std::mt19937 gen{rd()};
-  if (hitCollection) {
-    for (auto hit: *hitCollection->GetVector()) {
-      double pos_x = hit->GetEdepPosition().x();
-      double pos_y = hit->GetEdepPosition().y();
-      double pos_z = hit->GetEdepPosition().z();
-      double distance_to_anode = DistanceToAnode(pos_x);
-      double drift_time = distance_to_anode/1.6*1e-6; // 1.6 mm/us at 500 V/cm
-      double sigma_t = TMath::Sqrt(4*DT*drift_time)*10;  // mm
-      double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;  // mm
-      std::normal_distribution<> norm_x{pos_x, sigma_l};
-      std::normal_distribution<> norm_y{pos_y, sigma_t};
-      std::normal_distribution<> norm_z{pos_z, sigma_t};
-      G4ThreeVector smearedPos(norm_x(gen), norm_y(gen), norm_z(gen));
-      hit->SetEdepPosition(smearedPos);
+  double drift_time = DistanceToAnode(pos_x)/1.6*1e-6; // 1.6 mm/us at 500 V/cm
+  double sigma_t = TMath::Sqrt(2*DT*drift_time)*10;    // mm
+  double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;    // mm
+  double sum_weight = 0;
+  int Ndiv = 20;
+  double step_x = 10*sigma_l/Ndiv; // (-5sigma, 5sigma) 
+  double step_y = 10*sigma_t/Ndiv; // (-5sigma, 5sigma)
+  double step_z = 10*sigma_t/Ndiv; // (-5sigma, 5sigma) 
+  for (int xbin= 0; xbin< Ndiv; ++xbin) {
+    for (int ybin= 0; ybin<= Ndiv; ++ybin) {
+      for (int zbin= 0; zbin<= Ndiv; ++zbin) {
+        double coord_x = pos_x - 5*sigma_l + (0.5+xbin)*step_x;
+        double coord_y = pos_y - 5*sigma_t + (0.5+ybin)*step_y;
+        double coord_z = pos_z - 5*sigma_t + (0.5+zbin)*step_z;
+        int binx = hitClusterZX[0]->GetYaxis()->FindBin(coord_x);
+        int biny = hitClusterZY[0]->GetYaxis()->FindBin(coord_y);
+        int binz = hitClusterZX[0]->GetXaxis()->FindBin(coord_z);
+        double weight = TMath::Gaus(coord_x,pos_x,sigma_l,true)*step_x
+          *TMath::Gaus(coord_y,pos_y,sigma_t,true)*step_y
+          *TMath::Gaus(coord_z,pos_z,sigma_t,true)*step_z;
+        sum_weight += weight;
+        hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(binz, binx), weight*hitEdep);
+        hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(binz, biny), weight*hitEdep);
+        hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(binz, binx), weight*hitEdep);
+        hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(binz, biny), weight*hitEdep);
+      }
+    }
+  }
+  if (abs(1-sum_weight)>1e-6) {
+    for (int xbin= 0; xbin< Ndiv; ++xbin) {
+      for (int ybin= 0; ybin<= Ndiv; ++ybin) {
+        for (int zbin= 0; zbin<= Ndiv; ++zbin) {
+          double coord_x = pos_x - 5*sigma_l + (0.5+xbin)*step_x;
+          double coord_y = pos_y - 5*sigma_t + (0.5+ybin)*step_y;
+          double coord_z = pos_z - 5*sigma_t + (0.5+zbin)*step_z;
+          int binx = hitClusterZX[0]->GetYaxis()->FindBin(coord_x);
+          int biny = hitClusterZY[0]->GetYaxis()->FindBin(coord_y);
+          int binz = hitClusterZX[0]->GetXaxis()->FindBin(coord_z);
+          double weight = TMath::Gaus(coord_x,pos_x,sigma_l,true)*step_x
+            *TMath::Gaus(coord_y,pos_y,sigma_t,true)*step_y
+            *TMath::Gaus(coord_z,pos_z,sigma_t,true)*step_z;
+          sum_weight += weight;
+          weight /= sum_weight;
+          hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(binz, binx), weight*(1-sum_weight)*hitEdep);
+          hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(binz, biny), weight*(1-sum_weight)*hitEdep);
+          hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(binz, binx), weight*(1-sum_weight)*hitEdep);
+          hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(binz, biny), weight*(1-sum_weight)*hitEdep);
+        }
+      }
     }
   }
 }
+*/
+
+void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep) {
+  // https://lar.bnl.gov/properties/
+  double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
+  double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
+  double drift_time = DistanceToAnode(pos_x)/1.6*1e-6; // 1.6 mm/us at 500 V/cm
+  double sigma_t = TMath::Sqrt(2*DT*drift_time)*10;    // mm
+  double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;    // mm
+  int binx1 = hitClusterZX[0]->GetYaxis()->FindBin(pos_x-5*sigma_l);
+  int binx2 = hitClusterZX[0]->GetYaxis()->FindBin(pos_x+5*sigma_l);
+  int biny1 = hitClusterZY[0]->GetYaxis()->FindBin(pos_y-5*sigma_t);
+  int biny2 = hitClusterZY[0]->GetYaxis()->FindBin(pos_y+5*sigma_t);
+  int binz1 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z-5*sigma_t);
+  int binz2 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z+5*sigma_t);
+  double sum_weight = 0;
+  for (int xbin= binx1; xbin<= binx2; ++xbin) {
+    for (int ybin= biny1; ybin<= biny2; ++ybin) {
+      for (int zbin= binz1; zbin<= binz2; ++zbin) {
+        double weight = TMath::Gaus(hitClusterZX[0]->GetYaxis()->GetBinCenter(xbin),pos_x,sigma_l,true)*(hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin))
+          *TMath::Gaus(hitClusterZY[0]->GetYaxis()->GetBinCenter(ybin),pos_y,sigma_t,true)*(hitClusterZY[0]->GetYaxis()->GetBinWidth(ybin))
+          *TMath::Gaus(hitClusterZX[0]->GetXaxis()->GetBinCenter(zbin),pos_z,sigma_t,true)*(hitClusterZX[0]->GetXaxis()->GetBinWidth(zbin));
+        sum_weight += weight;
+        hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(zbin, ybin), weight*hitEdep);
+        hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
+      }
+    }
+  }
+  if (abs(1-sum_weight)>1e-6) {
+    for (int xbin= binx1; xbin<= binx2; ++xbin) {
+      for (int ybin= biny1; ybin<= biny2; ++ybin) {
+        for (int zbin= binz1; zbin<= binz2; ++zbin) {
+          double weight = TMath::Gaus(hitClusterZX[0]->GetYaxis()->GetBinCenter(xbin),pos_x,sigma_l,true)*hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin)
+            *TMath::Gaus(hitClusterZY[0]->GetYaxis()->GetBinCenter(ybin),pos_y,sigma_t,true)*hitClusterZY[0]->GetYaxis()->GetBinWidth(ybin)
+            *TMath::Gaus(hitClusterZX[0]->GetXaxis()->GetBinCenter(zbin),pos_z,sigma_t,true)*hitClusterZX[0]->GetXaxis()->GetBinWidth(zbin);
+          weight /= sum_weight;
+          hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(zbin, xbin), weight*(1-sum_weight)*hitEdep);
+          hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(zbin, ybin), weight*(1-sum_weight)*hitEdep);
+          hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(zbin, xbin), weight*(1-sum_weight)*hitEdep);
+          hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*(1-sum_weight)*hitEdep);
+        }
+      }
+    }
+  }
+}
+
+//void AnalysisManager::AddDiffusionToTrueHit(G4int sdId, std::string sdName) {
+//  // https://lar.bnl.gov/properties/
+//  double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
+//  double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
+//  LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
+//  std::random_device rd{};
+//  std::mt19937 gen{rd()};
+//  if (hitCollection) {
+//    for (auto hit: *hitCollection->GetVector()) {
+//      double pos_x = hit->GetEdepPosition().x();
+//      double pos_y = hit->GetEdepPosition().y();
+//      double pos_z = hit->GetEdepPosition().z();
+//      double distance_to_anode = DistanceToAnode(pos_x);
+//      double drift_time = distance_to_anode/1.6*1e-6; // 1.6 mm/us at 500 V/cm
+//      double sigma_t = TMath::Sqrt(4*DT*drift_time)*10;  // mm
+//      double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;  // mm
+//      std::normal_distribution<> norm_x{pos_x, sigma_l};
+//      std::normal_distribution<> norm_y{pos_y, sigma_t};
+//      std::normal_distribution<> norm_z{pos_z, sigma_t};
+//      G4ThreeVector smearedPos(norm_x(gen), norm_y(gen), norm_z(gen));
+//      hit->SetEdepPosition(smearedPos);
+//    }
+//  }
+//}
 
 double AnalysisManager::DistanceToAnode(double x) {
   double anode_x[6] = {-900, -301, -299, 299, 301, 900};

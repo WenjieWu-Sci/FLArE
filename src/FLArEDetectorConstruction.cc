@@ -219,7 +219,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   //
   // Muon Finder
   // 
-  thicknessAbsorber = 50 * cm;
+  thicknessAbsorber = 16 * cm;
   thicknessCaloX    = 1 * cm;
   thicknessCaloY    = 1 * cm;
   fNbOfAbsor = 2;

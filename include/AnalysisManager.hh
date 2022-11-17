@@ -134,12 +134,13 @@ class AnalysisManager {
     std::vector<TH2F*> vtxHitClusterZY;
 
   private:
-    void FillTree(G4int sdId, std::string sdName);
+    void FillPrimaryTruthTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
     double GetTotalEnergy(double px, double py, double pz, double m);
     void InitializeEvd();
-    void AddPseudoRecoVar();
-    void AddDiffusionToTrueHit(G4int sdId, std::string sdName);
+    void FillPseudoRecoVar();
+    //void AddDiffusionToTrueHit(G4int sdId, std::string sdName);
+    void ToyElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep);
     double DistanceToAnode(double x);
 
     G4HCofThisEvent* hcofEvent;
