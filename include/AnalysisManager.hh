@@ -77,6 +77,10 @@ class AnalysisManager {
     G4double EInLAr[2000000];
     G4double EInHadCal[2000000];
     G4double EInMuonFinder[2000000];
+    G4double EInMuonFinderLayer1X[2000000];
+    G4double EInMuonFinderLayer1Y[2000000];
+    G4double EInMuonFinderLayer2X[2000000];
+    G4double EInMuonFinderLayer2Y[2000000];
     G4double AngleToBeamDir[2000000];
     G4double ShowerLength[2000000];
     G4double ShowerLengthInLAr[2000000];
@@ -84,11 +88,13 @@ class AnalysisManager {
     G4double ShowerWidthInLAr[2000000];
     G4double dEdx[2000000];
     G4double dEdxInLAr[2000000];
+    G4double dEdxAlongTrack[2000000][100];
+    G4int    dEdxTrackLength[2000000][100];
     // reco
     // direction
-    G4double dir_pca_x[2000000];
-    G4double dir_pca_y[2000000];
-    G4double dir_pca_z[2000000];
+    G4double dir_pol_x[2000000];
+    G4double dir_pol_y[2000000];
+    G4double dir_pol_z[2000000];
     G4double dir_coc_x[2000000];
     G4double dir_coc_y[2000000];
     G4double dir_coc_z[2000000];
@@ -149,10 +155,7 @@ class AnalysisManager {
     std::vector<std::set<int> > trackClusters;
     std::set<int> tracksFromFSL;
     std::set<int> tracksFromFSLSecondary;
-//    std::vector<double> ShowerP;
-    std::vector<std::vector<ROOT::Math::XYZPoint> > f3DHitClusters;
-    std::vector<std::vector<double> > f3DHitEdep;
-    std::vector<ROOT::Math::XYZPoint> fPrimVtx;
+    int fPrimIdxFSL;
 };
 
 #endif
