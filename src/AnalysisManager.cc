@@ -381,6 +381,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     dir_coc_x[iPrim] = linFit->GetCOCDir().X();
     dir_coc_y[iPrim] = linFit->GetCOCDir().Y();
     dir_coc_z[iPrim] = linFit->GetCOCDir().Z();
+    delete linFit;
   }
 
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
@@ -614,6 +615,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
+      if (hit->GetEdep()==0) continue;
 
       // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
       if (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) {

@@ -7,8 +7,8 @@
 namespace directionfitter {
   class LinearFit {
     public:
-      LinearFit(const TH2F* aEvdViewX, const TH2F* aEvdViewY,
-                const TH2F* aVtxEvdViewX, const TH2F* aVtxEvdViewY,
+      LinearFit(TH2F* aEvdViewX, TH2F* aEvdViewY,
+                TH2F* aVtxEvdViewX, TH2F* aVtxEvdViewY,
                 const double aVtxX, const double aVtxY, const double aVtxZ,
                 const double bVtxX, const double bVtxY, const double bVtxZ);
 

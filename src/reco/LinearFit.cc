@@ -6,8 +6,8 @@
 #include <TFitResult.h>
 
 namespace directionfitter {
-  LinearFit::LinearFit(const TH2F* aEvdViewX, const TH2F* aEvdViewY,
-                       const TH2F* aVtxEvdViewX, const TH2F* aVtxEvdViewY,
+  LinearFit::LinearFit(TH2F* aEvdViewX, TH2F* aEvdViewY,
+                       TH2F* aVtxEvdViewX, TH2F* aVtxEvdViewY,
                        const double aVtxX, const double aVtxY, const double aVtxZ,
                        const double bVtxX, const double bVtxY, const double bVtxZ)
   {
@@ -28,8 +28,8 @@ namespace directionfitter {
       fx->FixParameter(2, bVtxX-aVtxX);
       fy->FixParameter(1, bVtxZ-aVtxZ);
       fy->FixParameter(2, bVtxY-aVtxY);
-      TFitResultPtr rx = ((TH2F*)aVtxEvdViewX->Clone())->Fit("fx", "SQ0");
-      TFitResultPtr ry = ((TH2F*)aVtxEvdViewY->Clone())->Fit("fy", "SQ0");
+      TFitResultPtr rx = aVtxEvdViewX->Fit("fx", "SQ0");
+      TFitResultPtr ry = aVtxEvdViewY->Fit("fy", "SQ0");
       if (rx->IsValid() && ry->IsValid()) {
         if (center_xz_z - bVtxZ + aVtxZ > 0) {
           dir_z = 1/TMath::Sqrt(1+TMath::Power(rx->Parameter(0),2)+TMath::Power(ry->Parameter(0),2));
@@ -58,8 +58,8 @@ namespace directionfitter {
       fx->FixParameter(2, bVtxX);
       fy->FixParameter(1, bVtxZ);
       fy->FixParameter(2, bVtxY);
-      TFitResultPtr rx = ((TH2F*)aEvdViewX->Clone())->Fit("fx", "SQ0");
-      TFitResultPtr ry = ((TH2F*)aEvdViewY->Clone())->Fit("fy", "SQ0");
+      TFitResultPtr rx = aEvdViewX->Fit("fx", "SQ0");
+      TFitResultPtr ry = aEvdViewY->Fit("fy", "SQ0");
       if (rx->IsValid() && ry->IsValid()) {
         if (center_xz_z - bVtxZ > 0) {
           dir_z = 1/TMath::Sqrt(1+TMath::Power(rx->Parameter(0),2)+TMath::Power(ry->Parameter(0),2));
