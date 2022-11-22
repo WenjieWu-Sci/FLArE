@@ -670,7 +670,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
             double longitudinal_distance_to_vtx = ((pos_x-VtxX[whichPrim])*Px[whichPrim]+
                                                    (pos_y-VtxY[whichPrim])*Py[whichPrim]+
                                                    (pos_z-VtxZ[whichPrim])*Pz[whichPrim])/ShowerP;
-            if (int(longitudinal_distance_to_vtx)<100) {  // within 100 mm
+            if (int(longitudinal_distance_to_vtx)>=0 && int(longitudinal_distance_to_vtx)<100) {  // within 100 mm
               dEdxAlongTrack[whichPrim][int(longitudinal_distance_to_vtx)] += hit->GetEdep();
               dEdxTrackLength[whichPrim][int(longitudinal_distance_to_vtx)] = int(longitudinal_distance_to_vtx);
             }
@@ -682,8 +682,10 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
               double longitudinal_distance_to_vtx = ((pos_x-VtxX[fPrimIdxFSL])*Px[fPrimIdxFSL]+
                                                      (pos_y-VtxY[fPrimIdxFSL])*Py[fPrimIdxFSL]+
                                                      (pos_z-VtxZ[fPrimIdxFSL])*Pz[fPrimIdxFSL])/ShowerP_FSL;
-              dEdxAlongTrack[fPrimIdxFSL][int(longitudinal_distance_to_vtx)] += hit->GetEdep();
-              dEdxTrackLength[fPrimIdxFSL][int(longitudinal_distance_to_vtx)] = int(longitudinal_distance_to_vtx);
+              if (int(longitudinal_distance_to_vtx)>=0 && int(longitudinal_distance_to_vtx)<100) {  // within 100 mm
+                dEdxAlongTrack[fPrimIdxFSL][int(longitudinal_distance_to_vtx)] += hit->GetEdep();
+                dEdxTrackLength[fPrimIdxFSL][int(longitudinal_distance_to_vtx)] = int(longitudinal_distance_to_vtx);
+              }
             }
           }
         }
