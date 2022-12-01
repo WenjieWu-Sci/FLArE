@@ -12,6 +12,9 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack (const G4Track* aTra
   // Register primary tracks
   if (aTrack->GetParentID()==0) {
     fEventAction->AddPrimaryTrack();
+    // if this primary track is a pizero, make a flag
+    if (aTrack->GetParticleDefinition()->GetPDGEncoding() == 111) {
+    }
   }
 
   // Register only secondaries, i.e. tracks having ParentID > 0

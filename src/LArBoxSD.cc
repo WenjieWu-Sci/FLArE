@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <vector>
+
 #include "LArBoxSD.hh"
+#include "FLArETrackInformation.hh"
+
 #include <G4SDManager.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4VProcess.hh>
@@ -62,6 +65,16 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   G4String PosVolume = PostStep->GetPhysicalVolume()->GetName();
   G4int StepStatus   = PostStep->GetStepStatus();
 
+  FLArETrackInformation* aTrackInfo = (FLArETrackInformation*)(aTrack->GetUserInformation());
+  G4int trackIsFromPrimaryPizero = 0;
+  G4int trackIsFromFSLPizero = 0;
+  G4int trackIsFromPrimaryTau = 0;
+  if (aTrackInfo) {
+    trackIsFromPrimaryPizero = aTrackInfo->IsTrackFromPrimaryPizero();
+    trackIsFromFSLPizero = aTrackInfo->IsTrackFromFSLPizero();
+    trackIsFromPrimaryTau = aTrackInfo->IsTrackFromPrimaryTau();
+  }
+
   // Fill hit information
   LArBoxHit* hit = new LArBoxHit();
   hit->SetTrackStatus(TrackStatus);
@@ -81,6 +94,9 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   hit->SetStepLength(StepLength);
   hit->SetVolume(PosVolume);
   hit->SetStepStatus(StepStatus);
+  hit->SetTrackIsFromPrimaryPizero(trackIsFromPrimaryPizero);
+  hit->SetTrackIsFromFSLPizero(trackIsFromFSLPizero);
+  hit->SetTrackIsFromPrimaryTau(trackIsFromPrimaryTau);
 
   hit->SetEdep(edep);
   hit->SetEdepPosition(pos);

@@ -17,8 +17,8 @@ void plot_evd() {
 
   //TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_diffusion.root", "read");
   //TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_diffusion.root", "read");
-  TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/200GeV_mu-.root", "read");
-  std::string save_dir = "pics_mu-_200GeV";
+  TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_5_9.root", "read");
+  std::string save_dir = "pics_tmp";
 
   TTree* stree = (TTree*)sfile->Get("evt");
 
@@ -125,7 +125,7 @@ void drawOneEvd(double nuX, double nuY, double nuZ,
   TLine* LArTPC = new TLine(7000, -900, 7000, 900);
   TLine* HadCalus = new TLine(7250, -900, 7250, 900);
   TLine* HadCalds = new TLine(8300, -900, 8300, 900);
-  TLine* Muonds = new TLine(9340, -900, 8660, 900);
+  TLine* Muonds = new TLine(8660, -900, 8660, 900);
   LArTPC  ->SetLineStyle(3);
   HadCalus->SetLineStyle(3);
   HadCalds->SetLineStyle(3);

@@ -34,6 +34,9 @@ class LArBoxHit : public G4VHit {
     void SetEdepPosition(G4ThreeVector& edepPos) { fEdepPosition = edepPos; }
     void SetVolume(G4String volumeName) { fVolumeName = volumeName; }
     void SetStepStatus(G4int stepstatus) { fStepStatus = stepstatus; }
+    void SetTrackIsFromPrimaryPizero(G4int i) { fTrackIsFromPrimaryPizero = i; }
+    void SetTrackIsFromFSLPizero(G4int i) { fTrackIsFromFSLPizero = i; }
+    void SetTrackIsFromPrimaryTau(G4int i) { fTrackIsFromPrimaryTau = i; }
 
     //getter
     G4int GetTrackStatus() const { return fTrackStatus; }
@@ -55,6 +58,9 @@ class LArBoxHit : public G4VHit {
     G4ThreeVector GetEdepPosition() const { return fEdepPosition; }
     G4String GetVolume() const { return fVolumeName; }
     G4int GetStepStatus() const { return fStepStatus; }
+    G4int GetIsTrackFromPrimaryPizero() const { return fTrackIsFromPrimaryPizero; }
+    G4int GetIsTrackFromFSLPizero() const { return fTrackIsFromFSLPizero; }
+    G4int GetIsTrackFromPrimaryTau() const { return fTrackIsFromPrimaryTau; }
 
   private:
     G4int fTrackStatus;
@@ -77,6 +83,9 @@ class LArBoxHit : public G4VHit {
     G4String fVolumeName;
     G4int fStepStatus;
     G4bool fHitFromFSL;
+    G4int fTrackIsFromPrimaryPizero;
+    G4int fTrackIsFromFSLPizero;
+    G4int fTrackIsFromPrimaryTau;
 };
 
 using LArBoxHitsCollection = G4THitsCollection<LArBoxHit>;

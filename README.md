@@ -27,6 +27,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 * `/genie/genieIStart`, if `useGenie is true`, give the start position of the file to read GENIE events
 * `/histo/fileName`, option for AnalysisManagerMessenger, set name of the file saving all analysis variables
 * `/histo/saveEvd`, if `true` save spatial distribution of energy deposition, `false` in default to save space
+* `/histo/addDiffusion`, if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion
 
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.

@@ -27,7 +27,7 @@ class AnalysisManager {
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
-    void addDiffusion(G4bool val) { m_addDiffusion = val; }
+    void addDiffusion(G4String val) { m_addDiffusion = val; }
 
   private:
     static AnalysisManager* instance;
@@ -58,46 +58,55 @@ class AnalysisManager {
     G4int    countPrimaryParticle;
     G4int    nPrimaryParticle;  ///<- number of primary particle 
                                 ///   (in case of genie neutrino interaction, number of stable particle in the final state)
-                                ///   (in case of the FSL decay, the decay products are counted as primary particle)
-    G4double Px[2000000];       ///<- Px of primary particles
-    G4double Py[2000000];       ///<- Py of primary particles
-    G4double Pz[2000000];       ///<- Pz of primary particles
-    G4double VtxX[2000000];       ///<- Px of primary particles
-    G4double VtxY[2000000];       ///<- Py of primary particles
-    G4double VtxZ[2000000];       ///<- Pz of primary particles
-    G4double Pmass[2000000];    ///<- mass of primary particles
+                                ///   (in case of the FSL decay, decay products counted as primary particle)
+                                ///   (in case of the final state pizero, decay products counted as primary particle)
+    G4double Px[1000];          ///<- Px of primary particles
+    G4double Py[1000];          ///<- Py of primary particles
+    G4double Pz[1000];          ///<- Pz of primary particles
+    G4double Pmass[1000];       ///<- mass of primary particles
+    G4double VtxX[1000];        ///<- Px of primary particles
+    G4double VtxY[1000];        ///<- Py of primary particles
+    G4double VtxZ[1000];        ///<- Pz of primary particles
     // Geant4 truth
-    G4int    primaryParentID[2000000];         ///<- parent ID of primary particles
-    G4int    primaryTrackID[2000000];          ///<- track ID of primary particles
-    G4int    primaryTrackPDG[2000000];         ///<- PDG of primary particles, for G4 use
-    G4double primaryTrackLength[2000000];      ///<- track length of primary particles
-    G4double primaryTrackLengthInTPC[2000000]; ///<- track length of primary particles in TPC region
-    G4int    prongType[2000000];
+    G4int    primaryParentID[1000];         ///<- parent ID of primary particles
+    G4int    primaryParentPDG[1000];        ///<- parent PDG of primary particles
+    G4int    primaryTrackID[1000];          ///<- track ID of primary particles
+    G4int    primaryTrackPDG[1000];         ///<- PDG of primary particles, for G4 use
+    G4double primaryTrackLength[1000];      ///<- track length of primary particles
+    G4double primaryTrackLengthInTPC[1000]; ///<- track length of primary particles in TPC region
+    G4int    prongIndex[1000];
+    G4int    prongType[1000];               ///<- 0: final state lepton
+                                            ///<- 1: original primary particle
+                                            ///<- 2: decay products of the short lived final state lepton (namely tau-,
+                                            ///      could also be a michel electron from muon decay)
+                                            ///<- 3: decay products of the primary pizero (dominantely 2gamma)
+                                            ///<- 4: decay prodcuts of the tau decay pizero
     // pseudo-reco
-    G4double EInLAr[2000000];
-    G4double EInHadCal[2000000];
-    G4double EInMuonFinder[2000000];
-    G4double EInMuonFinderLayer1X[2000000];
-    G4double EInMuonFinderLayer1Y[2000000];
-    G4double EInMuonFinderLayer2X[2000000];
-    G4double EInMuonFinderLayer2Y[2000000];
-    G4double AngleToBeamDir[2000000];
-    G4double ShowerLength[2000000];
-    G4double ShowerLengthInLAr[2000000];
-    G4double ShowerWidth[2000000];
-    G4double ShowerWidthInLAr[2000000];
-    G4double dEdx[2000000];
-    G4double dEdxInLAr[2000000];
-    G4double dEdxAlongTrack[2000000][100];
-    G4int    dEdxTrackLength[2000000][100];
+    G4double EInDetector[1000];
+    G4double EInLAr[1000];
+    G4double EInHadCal[1000];
+    G4double EInMuonFinder[1000];
+    G4double EInMuonFinderLayer1X[1000];
+    G4double EInMuonFinderLayer1Y[1000];
+    G4double EInMuonFinderLayer2X[1000];
+    G4double EInMuonFinderLayer2Y[1000];
+    G4double AngleToBeamDir[1000];
+    G4double ShowerLength[1000];
+    G4double ShowerLengthInLAr[1000];
+    G4double ShowerWidth[1000];
+    G4double ShowerWidthInLAr[1000];
+    G4double dEdx[1000];
+    G4double dEdxInLAr[1000];
+    G4double dEdxAlongTrack[1000][100];
+    G4int    dEdxTrackLength[1000][100];
     // reco
     // direction
-    G4double dir_pol_x[2000000];
-    G4double dir_pol_y[2000000];
-    G4double dir_pol_z[2000000];
-    G4double dir_coc_x[2000000];
-    G4double dir_coc_y[2000000];
-    G4double dir_coc_z[2000000];
+    G4double dir_pol_x[1000];
+    G4double dir_pol_y[1000];
+    G4double dir_pol_z[1000];
+    G4double dir_coc_x[1000];
+    G4double dir_coc_y[1000];
+    G4double dir_coc_z[1000];
 
     G4double edepInLAr;
     G4double edepInLArXY2500mm;
@@ -114,6 +123,8 @@ class AnalysisManager {
     G4double missCountedEnergy;
 
     G4int    nFromFSLParticles;
+    G4int    nFromFSPizeroParticles;
+    G4int    nFromFSLDecayPizeroParticles;
     G4int    fromFSLParticlePDG[2000000];
 
     G4int    nHits;
@@ -131,7 +142,7 @@ class AnalysisManager {
 
     G4bool m_saveHit;
     G4bool m_saveEvd;
-    G4bool m_addDiffusion;
+    TString m_addDiffusion;
 
     //std::vector<TH2F*> hitClusterXY;
     std::vector<TH2F*> hitClusterZX;
@@ -145,8 +156,8 @@ class AnalysisManager {
     double GetTotalEnergy(double px, double py, double pz, double m);
     void InitializeEvd();
     void FillPseudoRecoVar();
-    //void AddDiffusionToTrueHit(G4int sdId, std::string sdName);
     void ToyElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep);
+    void ToySingleElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep);
     double DistanceToAnode(double x);
 
     G4HCofThisEvent* hcofEvent;
@@ -155,6 +166,8 @@ class AnalysisManager {
     std::vector<std::set<int> > trackClusters;
     std::set<int> tracksFromFSL;
     std::set<int> tracksFromFSLSecondary;
+    std::set<int> tracksFromFSPizeroSecondary;
+    std::set<int> tracksFromFSLDecayPizeroSecondary;
     int fPrimIdxFSL;
 };
 

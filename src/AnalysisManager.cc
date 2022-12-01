@@ -40,6 +40,7 @@ AnalysisManager::AnalysisManager() {
   evt = 0;
   messenger = new AnalysisManagerMessenger(this);
   m_filename = "test.root";
+  m_addDiffusion = "false";
   m_saveHit = false;
   m_saveEvd = false;
 }
@@ -71,11 +72,14 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("VtxZ"                   , VtxZ                    , "VtxZ[nPrimaryParticle]/D");
   evt->Branch("Pmass"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
   evt->Branch("primaryParentID"        , primaryParentID         , "primaryParentID[nPrimaryParticle]/I");
+  evt->Branch("primaryParentPDG"       , primaryParentPDG        , "primaryParentPDG[nPrimaryParticle]/I");
   evt->Branch("primaryTrackID"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
   evt->Branch("primaryTrackPDG"        , primaryTrackPDG         , "primaryTrackPDG[nPrimaryParticle]/I");
   evt->Branch("primaryTrackLength"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
   evt->Branch("primaryTrackLengthInTPC", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
+  evt->Branch("prongIndex"             , prongIndex              , "prongIndex[nPrimaryParticle]/I");
   evt->Branch("prongType"              , prongType               , "prongType[nPrimaryParticle]/I");
+  evt->Branch("EInDetector"            , EInDetector             , "EInDetector[nPrimaryParticle]/D");
   evt->Branch("EInLAr"                 , EInLAr                  , "EInLAr[nPrimaryParticle]/D");
   evt->Branch("EInHadCal"              , EInHadCal               , "EInHadCal[nPrimaryParticle]/D");
   evt->Branch("EInMuonFinder"          , EInMuonFinder           , "EInMuonFinder[nPrimaryParticle]/D");
@@ -147,39 +151,39 @@ void AnalysisManager::EndOfRun() {
 }
 
 void AnalysisManager::BeginOfEvent() {
-  nuIdx                  = -1;
-  nuPDG                  = 0;
-  nuE                    = -999;
-  nuX                    = -999;
-  nuY                    = -999;
-  nuZ                    = -999;
-  nuIntType              = -1;
-  nuScatteringType       = -1;
-  nuFSLPDG               = 0;
-  nuFSLPx                = -999;
-  nuFSLPy                = -999;
-  nuFSLPz                = -999;
-  nuFSLE                 = -999;
-  nHits                  = 0;
-  edepInLAr              = 0;
-  edepInLArXY2500mm      = 0;
-  edepInLArXY2000mm      = 0;
-  edepInLArXY1500mm      = 0;
-  edepInLArXY1000mm      = 0;
-  edepInHadCalX          = 0;
-  edepInHadCalY          = 0;
-  edepInMuonFinderX      = 0;
-  edepInMuonFinderY      = 0;
-  edepInHadAborb         = 0;
-  edepInMuonFinderAbsorb = 0;
-  edepInCryGap           = 0;
-  missCountedEnergy      = 0;
-  nPrimaryParticle       = 0;
-  nFromFSLParticles      = 0;
-  countPrimaryParticle   = 0;
-  //nSecondaryTracks       = 0;
-  //nStepsIn25cm           = 0;
-  for (G4int i= 0; i< 2000000; ++i) {
+  nuIdx                        = -1;
+  nuPDG                        = 0;
+  nuE                          = -999;
+  nuX                          = -999;
+  nuY                          = -999;
+  nuZ                          = -999;
+  nuIntType                    = -1;
+  nuScatteringType             = -1;
+  nuFSLPDG                     = 0;
+  nuFSLPx                      = -999;
+  nuFSLPy                      = -999;
+  nuFSLPz                      = -999;
+  nuFSLE                       = -999;
+  nHits                        = 0;
+  edepInLAr                    = 0;
+  edepInLArXY2500mm            = 0;
+  edepInLArXY2000mm            = 0;
+  edepInLArXY1500mm            = 0;
+  edepInLArXY1000mm            = 0;
+  edepInHadCalX                = 0;
+  edepInHadCalY                = 0;
+  edepInMuonFinderX            = 0;
+  edepInMuonFinderY            = 0;
+  edepInHadAborb               = 0;
+  edepInMuonFinderAbsorb       = 0;
+  edepInCryGap                 = 0;
+  missCountedEnergy            = 0;
+  nPrimaryParticle             = 0;
+  nFromFSLParticles            = 0;
+  nFromFSPizeroParticles       = 0;
+  nFromFSLDecayPizeroParticles = 0;
+  countPrimaryParticle         = 0;
+  for (G4int i= 0; i< 1000; ++i) {
     Px[i]    = -999;
     Py[i]    = -999;
     Pz[i]    = -999;
@@ -188,11 +192,14 @@ void AnalysisManager::BeginOfEvent() {
     VtxZ[i]  = -999;
     Pmass[i] = -999;
     primaryParentID[i]         = -1;
+    primaryParentPDG[i]        = 0;
     primaryTrackID[i]          = -1;
     primaryTrackPDG[i]         = 0;
+    prongIndex[i]              = -1;
     prongType[i]               = -1;
     primaryTrackLength[i]      = 0;
     primaryTrackLengthInTPC[i] = 0;
+    EInDetector[i]             = 0;
     EInLAr[i]                  = 0;
     EInHadCal[i]               = 0;
     EInMuonFinder[i]           = 0;
@@ -203,8 +210,8 @@ void AnalysisManager::BeginOfEvent() {
     AngleToBeamDir[i]          = -1;
     ShowerLength[i]            = -1;
     ShowerLengthInLAr[i]       = -1;
-    ShowerWidth[i]             = -1;
-    ShowerWidthInLAr[i]        = -1;
+    ShowerWidth[i]             = 0;
+    ShowerWidthInLAr[i]        = 0;
     dEdx[i]                    = -1;
     dEdxInLAr[i]               = -1;
     for (G4int j= 0; j< 100; ++j) {
@@ -240,6 +247,8 @@ void AnalysisManager::BeginOfEvent() {
   trackClusters.clear();
   tracksFromFSL.clear();
   tracksFromFSLSecondary.clear();
+  tracksFromFSPizeroSecondary.clear();
+  tracksFromFSLDecayPizeroSecondary.clear();
   fPrimIdxFSL = -1;
 
   hitClusterZX.clear();
@@ -312,17 +321,18 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       FillPrimaryTruthTree(sdids[i], sds[i]);
     }
   }
+  // update number of primary particles
+  // including decay products from tau and pizero
+  nPrimaryParticle = countPrimaryParticle;
+  nFromFSLParticles = tracksFromFSLSecondary.size();
+  nFromFSPizeroParticles = tracksFromFSPizeroSecondary.size();
+  nFromFSLDecayPizeroParticles = tracksFromFSLDecayPizeroSecondary.size();
+
   // in case this is not a neutrino event
   if (nuPDG==0) {
     nuX = VtxX[0];
     nuY = VtxY[0];
     nuZ = VtxZ[0];
-  }
-
-  nFromFSLParticles = tracksFromFSLSecondary.size();
-  if (nFromFSLParticles>0) {
-    // if fsl decays, count decay products as primary particles
-    nPrimaryParticle = nPrimaryParticle + nFromFSLParticles;
   }
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
@@ -348,12 +358,18 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       fPrimIdxFSL = iPrim;
     }
   }
+  if (fPrimIdxFSL>=0) prongType[fPrimIdxFSL] = 0;
+  
   for (auto x : allTracksPTPair) {
     // if this track is the fsl (TID=1) and it decays (nFromFSLParticles>0),
     // then it forms a single cluster by itself, this is mainly for studying the tau decay.
     if ((x.second==1) && (nFromFSLParticles>0)) continue;
     // if this track is the decay product of the fsl, it should already been added to the trackClusters
     if ((x.first==1) && (nFromFSLParticles>0) && (tracksFromFSLSecondary.find(x.second) != tracksFromFSLSecondary.end())) continue;
+    // if this is the decay product of the final state pizero, it should already been added to the trackClusters
+    if ((tracksFromFSPizeroSecondary.find(x.second) != tracksFromFSPizeroSecondary.end())) continue;
+    // if this is the decay product of the tau decay pizero, it should already been added to the trackClusters
+    if ((tracksFromFSLDecayPizeroSecondary.find(x.second) != tracksFromFSLDecayPizeroSecondary.end())) continue;
     // add the track to the corresponding cluster if its parent is in the cluster.
     // one track can have only one parent, break the loop once its parent is found.
     for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
@@ -568,6 +584,8 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
           VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z() + 3500;
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
+          prongType[countPrimaryParticle-1]       = 1;
+          prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
         }
       }
       // in case of the fsl decay, the decay products are counted as primary particle
@@ -585,6 +603,46 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
           VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z() + 3500;
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
+          prongType[countPrimaryParticle-1]       = 2;
+          prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+        }
+      }
+      // in case of pizero
+      if (hit->GetIsTrackFromPrimaryPizero()) {
+        tracksFromFSPizeroSecondary.insert(hit->GetTID());
+        if (hit->GetStepNo()==1) {
+          countPrimaryParticle++;
+          primaryParentID[countPrimaryParticle-1] = hit->GetPID();
+          primaryTrackID[countPrimaryParticle-1]  = hit->GetTID();
+          primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
+          Px[countPrimaryParticle-1]              = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1]              = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1]              = hit->GetInitMomentum().z();
+          VtxX[countPrimaryParticle-1]            = hit->GetTrackVertex().x();
+          VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
+          VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z() + 3500;
+          Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
+          prongType[countPrimaryParticle-1]       = 3;
+          prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+        }
+      }
+      // in case of tau decay pizero
+      if (hit->GetIsTrackFromFSLPizero()) {
+        tracksFromFSLDecayPizeroSecondary.insert(hit->GetTID());
+        if (hit->GetStepNo()==1) {
+          countPrimaryParticle++;
+          primaryParentID[countPrimaryParticle-1] = hit->GetPID();
+          primaryTrackID[countPrimaryParticle-1]  = hit->GetTID();
+          primaryTrackPDG[countPrimaryParticle-1] = hit->GetParticle();
+          Px[countPrimaryParticle-1]              = hit->GetInitMomentum().x();
+          Py[countPrimaryParticle-1]              = hit->GetInitMomentum().y();
+          Pz[countPrimaryParticle-1]              = hit->GetInitMomentum().z();
+          VtxX[countPrimaryParticle-1]            = hit->GetTrackVertex().x();
+          VtxY[countPrimaryParticle-1]            = hit->GetTrackVertex().y();
+          VtxZ[countPrimaryParticle-1]            = hit->GetTrackVertex().z() + 3500;
+          Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
+          prongType[countPrimaryParticle-1]       = 4;
+          prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
         }
       }
     } // end of hit loop
@@ -615,8 +673,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
-      if (hit->GetEdep()==0) continue;
-
       // Particles decay from the final state lepton in GENIE, or decay from the primary particles in G4
       if (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) {
         int whichTrackFromFSL = map_tracksFromFSLSecondary[hit->GetTID()];
@@ -648,9 +704,12 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
       double pos_y = hit->GetEdepPosition().y();
       double pos_z = hit->GetEdepPosition().z() + 3500;
       double ShowerP = TMath::Sqrt(Px[whichPrim]*Px[whichPrim]+Py[whichPrim]*Py[whichPrim]+Pz[whichPrim]*Pz[whichPrim]);
-      if (detID==1 && m_addDiffusion) {
+      // fill event display
+      if (detID==1 && m_addDiffusion=="toy") {
         ToyElectronTransportation(whichPrim, pos_x, pos_y, pos_z, hit->GetEdep());
-      } else {
+      } else if (detID==1 && m_addDiffusion=="single") {
+        ToySingleElectronTransportation(whichPrim, pos_x, pos_y, pos_z, hit->GetEdep());
+      }else {
         hitClusterZX[0]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[0]->Fill(pos_z, pos_y, hit->GetEdep());
         hitClusterZX[whichPrim+1]->Fill(pos_z, pos_x, hit->GetEdep());
@@ -660,13 +719,17 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         vtxHitClusterZX[whichPrim+1]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
         vtxHitClusterZY[whichPrim+1]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
       }
-
+      // calculate dEdx along the track
+      // combine the tracks if they come from the final state lepton, namely tau-
       if ((hit->GetPID()==0) |
-          (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end())) {
+          (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) |
+          (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end()) |
+          (tracksFromFSLDecayPizeroSecondary.find(hit->GetTID()) != tracksFromFSLDecayPizeroSecondary.end())) {
         primaryTrackLength[whichPrim] += hit->GetStepLength();
         if (detID==1) {
           primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
-          if (hit->GetPID()==0) {
+          if ((hit->GetPID()==0) |
+              (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end())) {
             double longitudinal_distance_to_vtx = ((pos_x-VtxX[whichPrim])*Px[whichPrim]+
                                                    (pos_y-VtxY[whichPrim])*Py[whichPrim]+
                                                    (pos_z-VtxZ[whichPrim])*Pz[whichPrim])/ShowerP;
@@ -690,44 +753,37 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           }
         }
       }
-
-      double pre_x  = hit->GetPreStepPosition().x();
-      double pre_y  = hit->GetPreStepPosition().y();
-      double pre_z  = hit->GetPreStepPosition().z() + 3500;
-      double post_x = hit->GetPostStepPosition().x();
-      double post_y = hit->GetPostStepPosition().y();
-      double post_z = hit->GetPostStepPosition().z() + 3500;
-      double mod_Pre = TMath::Sqrt((pre_x-VtxX[whichPrim])*(pre_x-VtxX[whichPrim])+
-                                   (pre_y-VtxY[whichPrim])*(pre_y-VtxY[whichPrim])+
-                                   (pre_z-VtxZ[whichPrim])*(pre_z-VtxZ[whichPrim]));
-      double mod_Pos = TMath::Sqrt((post_x-VtxX[whichPrim])*(post_x-VtxX[whichPrim])+
-                                   (post_y-VtxY[whichPrim])*(post_y-VtxY[whichPrim])+
-                                   (post_z-VtxZ[whichPrim])*(post_z-VtxZ[whichPrim]));
-      double product_Pre = (pre_x-VtxX[whichPrim])*Px[whichPrim]+
-                           (pre_y-VtxY[whichPrim])*Py[whichPrim]+
-                           (pre_z-VtxZ[whichPrim])*Pz[whichPrim];
-      double product_Pos = (post_x-VtxX[whichPrim])*Px[whichPrim]+
-                           (post_y-VtxY[whichPrim])*Py[whichPrim]+
-                           (post_z-VtxZ[whichPrim])*Pz[whichPrim];
-      // Length here is the project of the distance between the hit center and the vertex on the initial particle direction
-      double len_Pre = TMath::Abs(product_Pre)/ShowerP;
-      double len_Pos = TMath::Abs(product_Pos)/ShowerP; 
-      double width_Pre = TMath::Sqrt(TMath::Power(ShowerP*mod_Pre,2)-TMath::Power(product_Pre,2))/ShowerP;
-      double width_Pos = TMath::Sqrt(TMath::Power(ShowerP*mod_Pos,2)-TMath::Power(product_Pos,2))/ShowerP;
-      // exclude zero hit and hits from neutron when calculating showerlength of the primary particle
-      // hits deposited little energy are difficult to be detected
-      // simply ignoring the hits is not the most correct but easiest way
-      if (hit->GetEdep()>0 && hit->GetParticle()!=2112) {
-        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_Pre, len_Pos});
-        ShowerWidth[whichPrim] = std::max({ShowerWidth[whichPrim], width_Pre, width_Pos});
+      // calculate the shower/track length and width
+      // length: defined as the longest projection distance at the true direction between vertex and hits
+      //         length = |\vector{hit_position}|\cdot\cos(theta) = \vertor{hit_position}\cdot\vector{P} / |\vector{P}|
+      // width: defined as the weighted average of the least distance of the hits to the true direction
+      double dsquare_hit_vtx = TMath::Power((pos_x-VtxX[whichPrim]),2)+
+                               TMath::Power((pos_y-VtxY[whichPrim]),2)+
+                               TMath::Power((pos_z-VtxZ[whichPrim]),2);
+      double product_hit_p = (pos_x-VtxX[whichPrim])*Px[whichPrim]+
+                             (pos_y-VtxY[whichPrim])*Py[whichPrim]+
+                             (pos_z-VtxZ[whichPrim])*Pz[whichPrim];
+      double len_hit = TMath::Abs(product_hit_p)/ShowerP;
+      double width_hit = TMath::Sqrt((dsquare_hit_vtx - product_hit_p*product_hit_p/ShowerP/ShowerP));
+      // exclude zero hit when calculating showerlength of the primary particle
+      // exclude hits from the cryo gap (detID=8)
+      if (hit->GetEdep()>0 && detID!=8) {
+        EInDetector[whichPrim] += hit->GetEdep();
+        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});
+        //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
+        double weighted_width_hit = width_hit*hit->GetEdep();
+        if (!std::isnan(weighted_width_hit)) ShowerWidth[whichPrim] += weighted_width_hit;
       }
       if (detID==1) { 
-        EInLAr[whichPrim] += hit->GetEdep();
-        if (hit->GetEdep()>0 && hit->GetParticle()!=2112) {
-          ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_Pre, len_Pos});
-          ShowerWidthInLAr[whichPrim] = std::max({ShowerWidthInLAr[whichPrim], width_Pre, width_Pos});
+        if (hit->GetEdep()>0) {
+          EInLAr[whichPrim] += hit->GetEdep();
+          ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_hit});
+          //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
+          double weighted_width_hit = width_hit*hit->GetEdep();
+          if (!std::isnan(weighted_width_hit)) ShowerWidthInLAr[whichPrim] += weighted_width_hit;
         }
       }
+
       if (detID==2 || detID==3 || detID==6) {
         EInHadCal[whichPrim] += hit->GetEdep();
       }
@@ -865,21 +921,28 @@ void AnalysisManager::FillPseudoRecoVar() {
   //  AngleToBeamDir, dEdx, dEdxInLAr ProngType
   std::cout<<std::fixed<<std::setw(10)<<"PDG"
     <<std::setw(12)<<"Angle"
+    <<std::setw(13)<<"TrackLength"
     <<std::setw(13)<<"ShowerLength"
+    <<std::setw(18)<<"ShowerWidthInLAr"
     <<std::setw(12)<<"EInLAr" 
     <<std::setw(12)<<"EInHadCal"
-    <<std::setw(14)<<"EInMuonFinder"
-    <<std::setw(12)<<"dEdx"
-    <<std::setw(18)<<"ShowerLengthInLAr"
     <<std::setw(12)<<"dEdxInLAr"
     <<std::setw(10)<<"ProngType"
     <<std::setw(12)<<"Pz"<<std::endl;
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
+    if (EInDetector[iPrim]>0) {
+      ShowerWidth[iPrim] = ShowerWidth[iPrim]/EInDetector[iPrim];
+    }
+    if (EInLAr[iPrim]>0) {
+      ShowerWidthInLAr[iPrim] = ShowerWidthInLAr[iPrim]/EInLAr[iPrim];
+    }
+
     double ShowerP = TMath::Sqrt(Px[iPrim]*Px[iPrim]+Py[iPrim]*Py[iPrim]+Pz[iPrim]*Pz[iPrim]);
     double costheta = Pz[iPrim]/ShowerP;
     AngleToBeamDir[iPrim] = TMath::ACos(costheta);
 
+    /*
     if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
       prongType[iPrim] = 0;
     } else if (abs(nuPDG)==16 && abs(nuFSLPDG)==15) {
@@ -930,18 +993,18 @@ void AnalysisManager::FillPseudoRecoVar() {
         prongType[iPrim] = 12;
       }
     }
+    */
     dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
     dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
 
     std::cout<<std::setiosflags(std::ios::fixed)<<std::setprecision(3);
     std::cout<<std::setw(10)<<primaryTrackPDG[iPrim];
     std::cout<<std::setw(12)<<AngleToBeamDir[iPrim];
+    std::cout<<std::setw(13)<<primaryTrackLength[iPrim];
     std::cout<<std::setw(13)<<ShowerLength[iPrim];
+    std::cout<<std::setw(18)<<ShowerWidthInLAr[iPrim];
     std::cout<<std::setw(12)<<EInLAr[iPrim] ;
     std::cout<<std::setw(12)<<EInHadCal[iPrim];
-    std::cout<<std::setw(14)<<EInMuonFinder[iPrim];
-    std::cout<<std::setw(12)<<dEdx[iPrim];
-    std::cout<<std::setw(18)<<ShowerLengthInLAr[iPrim];
     std::cout<<std::setw(12)<<dEdxInLAr[iPrim];
     std::cout<<std::setw(10)<<prongType[iPrim];
     std::cout<<std::setw(12)<<Pz[iPrim]<<std::endl;
@@ -1003,6 +1066,35 @@ void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, dou
       vtxHitClusterZY[0]->AddBinContent(vtxHitClusterZY[0]->GetBin(zbin, ybin), weight*hitEdep);
       vtxHitClusterZY[whichPrim+1]->AddBinContent(vtxHitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
     }
+  }
+}
+
+void AnalysisManager::ToySingleElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep) {
+  // https://lar.bnl.gov/properties/
+  double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
+  double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
+  double Wion = 23.6*1e-6;  // MeV/pair
+  int num_electrons = int(hitEdep/Wion);
+  double drift_time = DistanceToAnode(pos_x)/1.6*1e-6; // 1.6 mm/us at 500 V/cm
+  double sigma_t = TMath::Sqrt(2*DT*drift_time)*10;    // mm
+  double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;    // mm
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+  std::normal_distribution<> norm_x{pos_x, sigma_l};
+  std::normal_distribution<> norm_y{pos_y, sigma_t};
+  std::normal_distribution<> norm_z{pos_z, sigma_t};
+  for (int ielectron= 0; ielectron< num_electrons; ++ielectron) {
+    double smeared_x = norm_x(gen);
+    double smeared_y = norm_y(gen);
+    double smeared_z = norm_z(gen);
+    hitClusterZX[0]->Fill(smeared_z, smeared_x, Wion);
+    hitClusterZX[whichPrim+1]->Fill(smeared_z, smeared_x, Wion);
+    hitClusterZY[0]->Fill(smeared_z, smeared_y, Wion);
+    hitClusterZY[whichPrim+1]->Fill(smeared_z, smeared_y, Wion);
+    vtxHitClusterZX[0]->Fill(smeared_z-nuZ, smeared_x-nuX, Wion);
+    vtxHitClusterZX[whichPrim+1]->Fill(smeared_z-nuZ, smeared_x-nuX, Wion);
+    vtxHitClusterZY[0]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
+    vtxHitClusterZY[whichPrim+1]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
   }
 }
 
