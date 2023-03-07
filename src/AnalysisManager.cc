@@ -17,6 +17,8 @@
 #include <G4Event.hh>
 #include <G4SDManager.hh>
 #include <G4SystemOfUnits.hh>
+#include <G4Poisson.hh>
+
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
@@ -1073,8 +1075,14 @@ void AnalysisManager::ToySingleElectronTransportation(int whichPrim, double pos_
   // https://lar.bnl.gov/properties/
   double DT = 13.2327; // Transverse diffusion coefficients @ 500 V/cm, cm^2/s
   double DL = 6.627;   // Longitudinal diffusion coeeficients @ 500 V/cm, cm^2/s
+  
   double Wion = 23.6*1e-6;  // MeV/pair
-  int num_electrons = int(hitEdep/Wion);
+  int avg_electrons = int(hitEdep/Wion);
+  int num_electrons = 0;
+  if(avg_electrons < 20) num_electrons = int(G4Poisson(avg_electrons)+0.5);
+  else  num_electrons = int(G4RandGauss::shoot(avg_electrons, sqrt(avg_electrons))+0.5);
+  if(num_electrons < 0) num_electrons = 0 ;  
+  
   double drift_time = DistanceToAnode(pos_x)/1.6*1e-6; // 1.6 mm/us at 500 V/cm
   double sigma_t = TMath::Sqrt(2*DT*drift_time)*10;    // mm
   double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;    // mm
