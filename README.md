@@ -34,4 +34,6 @@ There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_
 As denoted by the name, they're used to simulate e-/mu-/tau- leptons in a LAr or LKr detector. To run a simulation, just do `./FLArE macros/LAr_e-.mac`.
 If you want to modify the lepton energy you intend to simulate, modify the parameters inside the mac scripts.
 
-Some initial results can be found at [cern indico](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf)
+Some initial results can be found at 
+[cern indico 1] (https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
+[cern indico 2] (https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)
