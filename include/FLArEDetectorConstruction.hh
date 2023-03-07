@@ -4,6 +4,7 @@
 #include <G4VUserDetectorConstruction.hh>
 #include <G4String.hh>
 
+//class G4GlobalMagFieldMessenger;
 class G4LogicalVolume;
 class FLArEDetectorConstructionMessenger;
 class DetectorConstructionMaterial;
@@ -32,8 +33,10 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
 
     G4LogicalVolume* worldLog;
     G4LogicalVolume* lArBoxLog;
+    G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
+    G4LogicalVolume* muonFinderLogical;
     G4LogicalVolume* MuonFinderXCellLogical;
     G4LogicalVolume* MuonFinderYCellLogical;
     G4LogicalVolume* HadAbsorLayersLogical;
@@ -46,6 +49,8 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
 
     DetectorConstructionMaterial* LArBoxMaterials;
     FLArEDetectorConstructionMessenger* messenger;
+
+    //static G4ThreadLocal G4GlobalMagFieldMessenger* fMagFieldMessenger; // magnetic field messenger
 };
 
 #endif

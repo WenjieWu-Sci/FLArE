@@ -25,9 +25,16 @@
 #include <G4LogicalVolumeStore.hh>
 #include <G4SolidStore.hh>
 #include <G4UserLimits.hh>
-#include "G4GDMLParser.hh"
+#include <G4GlobalMagFieldMessenger.hh>
+#include <G4AutoDelete.hh>
+#include <G4UniformMagField.hh>
+#include <G4FieldManager.hh>
+#include <G4GDMLParser.hh>
 
 using namespace std;
+
+//G4ThreadLocal
+//G4GlobalMagFieldMessenger* FLArEDetectorConstruction::fMagFieldMessenger = 0;
 
 FLArEDetectorConstruction::FLArEDetectorConstruction()
   : G4VUserDetectorConstruction(), fDetMaterialName("LAr"), fDetGeomOption("single")
@@ -158,7 +165,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   auto hadCatcherSolid
     = new G4Box("HadCatcherBox", lArSizeX/2, lArSizeY/2, HadCatcherLength/2);
-  auto hadCatcherLogical
+  hadCatcherLogical
     = new G4LogicalVolume(hadCatcherSolid, LArBoxMaterials->Material("Air"), "HadCatcherLogical");
   new G4PVPlacement(nullptr,
                     G4ThreeVector(0, 0, lArSizeZ/2+HadCatcherLength/2+GapToHadCatcher),
@@ -228,7 +235,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   auto muonFinderSolid
     = new G4Box("MuonFinderBox", lArSizeX/2, lArSizeY/2, MuonFinderLength/2);
-  auto muonFinderLogical
+  muonFinderLogical
     = new G4LogicalVolume(muonFinderSolid, LArBoxMaterials->Material("Air"), "MuonFinderLogical");
   new G4PVPlacement(nullptr,
                     G4ThreeVector(0, 0, lArSizeZ/2+MuonFinderLength/2+GapToHadCatcher+HadCatcherLength),
@@ -365,6 +372,18 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* CryGapSD = new LArBoxSD("CryGapSD");
   crygapLogical->SetSensitiveDetector(CryGapSD);
   sdManager->AddNewDetector(CryGapSD);
+
+  // Create global magnetic field
+  G4ThreeVector fieldValue = G4ThreeVector(1.*tesla, 0, 0);
+  G4UniformMagField* magField = new G4UniformMagField(fieldValue);
+  G4FieldManager* fieldMgr = new G4FieldManager();
+  fieldMgr->SetDetectorField(magField);
+  fieldMgr->CreateChordFinder(magField);
+  hadCatcherLogical->SetFieldManager(fieldMgr, true);
+  muonFinderLogical->SetFieldManager(fieldMgr, true);
+  //Register the field and its manager for deletion
+  G4AutoDelete::Register(magField);
+  G4AutoDelete::Register(fieldMgr);
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {
