@@ -17,13 +17,13 @@
 #include <G4Event.hh>
 #include <G4SDManager.hh>
 #include <G4SystemOfUnits.hh>
+#include <Randomize.hh>
 #include <G4Poisson.hh>
 
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
 #include <TString.h>
-#include <TRandom3.h>
 #include <Math/ProbFunc.h>
 //#include <Math/Point3Dfwd.h>
 //#include <Math/Point3D.h>
@@ -1086,15 +1086,10 @@ void AnalysisManager::ToySingleElectronTransportation(int whichPrim, double pos_
   double drift_time = DistanceToAnode(pos_x)/1.6*1e-6; // 1.6 mm/us at 500 V/cm
   double sigma_t = TMath::Sqrt(2*DT*drift_time)*10;    // mm
   double sigma_l = TMath::Sqrt(2*DL*drift_time)*10;    // mm
-  std::random_device rd{};
-  std::mt19937 gen{rd()};
-  std::normal_distribution<> norm_x{pos_x, sigma_l};
-  std::normal_distribution<> norm_y{pos_y, sigma_t};
-  std::normal_distribution<> norm_z{pos_z, sigma_t};
   for (int ielectron= 0; ielectron< num_electrons; ++ielectron) {
-    double smeared_x = norm_x(gen);
-    double smeared_y = norm_y(gen);
-    double smeared_z = norm_z(gen);
+    double smeared_x = G4RandGauss::shoot(pos_x, sigma_l);
+    double smeared_y = G4RandGauss::shoot(pos_y, sigma_t);
+    double smeared_z = G4RandGauss::shoot(pos_z, sigma_t);
     hitClusterZX[0]->Fill(smeared_z, smeared_x, Wion);
     hitClusterZX[whichPrim+1]->Fill(smeared_z, smeared_x, Wion);
     hitClusterZY[0]->Fill(smeared_z, smeared_y, Wion);
