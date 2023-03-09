@@ -434,7 +434,7 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   crygapLogical->SetSensitiveDetector(CryGapSD);
   sdManager->AddNewDetector(CryGapSD);
 
-  // Create global magnetic field
+  // HadCatcher + MuonFinder  magnetic field
   G4ThreeVector fieldValue = G4ThreeVector(1.*tesla, 0, 0);
   G4UniformMagField* magField = new G4UniformMagField(fieldValue);
   G4FieldManager* fieldMgr = new G4FieldManager();
@@ -445,6 +445,18 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   //Register the field and its manager for deletion
   G4AutoDelete::Register(magField);
   G4AutoDelete::Register(fieldMgr);
+
+  // FASER2 magnetic field
+  G4ThreeVector fieldValueFASER2(0.,1*tesla,0.); // 1T, horizonal bending
+  G4UniformMagField* magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
+  G4FieldManager* fieldMgrFASER2 = new G4FieldManager();
+  fieldMgrFASER2->SetDetectorField(magFieldFASER2);
+  fieldMgrFASER2->CreateChordFinder(magFieldFASER2);
+  FASER2MagnetWindow->SetFieldManager(fieldMgrFASER2, true);
+  
+  G4AutoDelete::Register(magFieldFASER2);
+  G4AutoDelete::Register(fieldMgrFASER2);
+  
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {
