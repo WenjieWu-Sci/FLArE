@@ -367,6 +367,10 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   HadCalYLayersLogical->SetVisAttributes(hadCalVis);
   MuonFinderXLayersLogical->SetVisAttributes(hadCalVis);
   MuonFinderYLayersLogical->SetVisAttributes(hadCalVis);
+  
+  G4VisAttributes* magnetVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
+  magnetVis->SetVisibility(true);
+  FASER2MagnetYoke->SetVisAttributes(magnetVis);
 
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
@@ -378,6 +382,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   HadCalYCellLogical->SetVisAttributes(nullVis);
   MuonFinderXCellLogical->SetVisAttributes(nullVis);
   MuonFinderYCellLogical->SetVisAttributes(nullVis);
+  FASER2MagnetWindow->SetVisAttributes(nullVis);
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
