@@ -11,6 +11,7 @@
 #include <G4ReplicatedSlice.hh>
 #include <G4PVReplica.hh>
 #include <G4AssemblyVolume.hh>
+#include <G4SubtractionSolid.hh>
 #include <G4RotationMatrix.hh>
 #include <G4ThreeVector.hh>
 #include <G4PhysicalConstants.hh>
@@ -67,7 +68,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // create an experimental hall with size 20*20*20 m
   G4double worldSizeX = 20 * m;
   G4double worldSizeY = 20 * m;
-  G4double worldSizeZ = 20 * m;
+  G4double worldSizeZ = 80 * m;
   // LAr volume: +z being beam direction
   G4double lArSizeX = 1.8 * m;
   G4double lArSizeY = 1.8 * m;
@@ -292,6 +293,61 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
     G4ThreeVector Tm(0, 0, thicknessOneLayer*i - MuonFinderLength/2);
     MuonFinderAbsorAssembly->MakeImprint(muonFinderLogical, Tm, &Rm);
   }
+
+  //-----------------------------------
+  // FASER2 Magnet
+  
+  // size: latest baseline 
+  G4double magnetWindowX = 3.0*m;
+  G4double magnetWindowY = 1.0*m;
+  G4double magnetWindowZ = 4.0*m;
+
+  G4double magnetYokeThicknessX = 1.5*m;
+  G4double magnetYokeThicknessY = 2.0*m;
+
+  // positioning
+  G4double detectorGapLength = 1.2*m;
+  G4double lengthFORMOSA = 4.0*m;
+  G4double lengthFASERnu2 = 8.0*m;
+
+  G4double lengthDecayTunnelFASER2 = 10*m;
+  G4double lengthVetoStationFASER2 = 20.*cm; //guesses
+  G4double lengthTrackStationFASER2 = 20.*cm; 
+
+  // from the center of FLArE lAr volume 
+  G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
+			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2 +
+			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
+			lengthTrackStationFASER2 + magnetWindowZ/2.;  
+
+  auto magnetYokeBlock = new G4Box("MagnetYokeBlock", magnetWindowX/2.+magnetYokeThicknessX, magnetWindowY/2.+magnetYokeThicknessY, magnetWindowZ/2.);
+  auto magnetWindowSolid = new G4Box("MagnetYokeWindow", magnetWindowX/2., magnetWindowY/2., magnetWindowZ/2.);
+  auto magnetYokeSolid = new G4SubtractionSolid("MagnetYoke",
+				magnetYokeBlock, // block - window = hollow block
+				magnetWindowSolid, 
+				0, // no rotation
+				G4ThreeVector(0,0,0)); //no translation
+  
+  FASER2MagnetYoke = new G4LogicalVolume(magnetYokeSolid, LArBoxMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
+  FASER2MagnetWindow = new G4LogicalVolume(magnetWindowSolid, LArBoxMaterials->Material("Air"), "FASER2MagnetWindowLogical"); 
+
+  G4VPhysicalVolume* FASER2MagnetYokePhys = new G4PVPlacement(nullptr,      // no Rotation
+                                           G4ThreeVector(0, 0, magnetPosZ), // translation 
+                                           FASER2MagnetYoke,         //logical volume
+                                           "FASER2MagnetYokePhys",   // name
+                                           worldLog,                 // mother logical volume
+                                           false,                    // pMany
+                                           0,                        // Copy No
+                                           fCheckOverlap);
+
+  G4VPhysicalVolume* FASER2MagnetWindowPhys = new G4PVPlacement(nullptr,    // no Rotation
+                                           G4ThreeVector(0, 0, magnetPosZ), // translation
+                                           FASER2MagnetWindow,       // logical volume
+                                           "FASER2MagnetWindoPhys",  // name
+                                           worldLog,                 // mother logical volume
+                                           false,                    // pMany
+                                           0,                        // Copy No
+                                           fCheckOverlap);
 
   // visualization
   //G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));

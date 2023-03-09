@@ -43,6 +43,8 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* crygapLogical;
     G4LogicalVolume* TPCModuleLogical;
+    G4LogicalVolume* FASER2MagnetYoke;
+    G4LogicalVolume* FASER2MagnetWindow;
     G4String fDetMaterialName;
     G4String fDetGeomOption;
     G4bool m_saveGdml;
