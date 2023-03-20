@@ -19,21 +19,27 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 * pythia6 v6_4_28r
 
 ## Macro command
-* `/det/material`, option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`
-* `/det/module`, option for tpc module option, choose from `single` (default) and `3x7`, run before `/run/initialize`
-* `/det/saveGdml`, option for saving detector geometry in a GDML file, `false` as default, run before `/run/initialize`
-* `/genie/useGenie`, option for PrimaryGeneratorMessenger, set `true` to read neutrino interactions from GENIE
-* `/genie/genieInput`, if `useGenie is true`, give which `.ghep.root` file to read GENIE events
-* `/genie/genieIStart`, if `useGenie is true`, give the start position of the file to read GENIE events
-* `/histo/fileName`, option for AnalysisManagerMessenger, set name of the file saving all analysis variables
-* `/histo/saveEvd`, if `true` save spatial distribution of energy deposition, `false` in default to save space
-* `/histo/addDiffusion`, if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion
+|Command |Description |
+|:--|:--|
+|/det/material       | option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`|
+|/det/module         | option for tpc module option, choose from `single` (default) and `3x7`, run before `/run/initialize`|
+|/det/saveGdml       | option for saving detector geometry in a GDML file, `false` as default, run before `/run/initialize`|
+|/genie/useGenie     | option for PrimaryGeneratorMessenger, set `true` to read neutrino interactions from GENIE|
+|/genie/genieInput   | if `useGenie is true`, give which `.ghep.root` file to read GENIE events|
+|/genie/genieIStart  | if `useGenie is true`, give the start position of the file to read GENIE events|
+|/histo/fileName     | option for AnalysisManagerMessenger, set name of the file saving all analysis variables|
+|/histo/saveEvd      | if `true` save spatial distribution of energy deposition, `false` in default to save space|
+|/histo/addDiffusion | if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion|
 
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.
 As denoted by the name, they're used to simulate e-/mu-/tau- leptons in a LAr or LKr detector. To run a simulation, just do `./FLArE macros/LAr_e-.mac`.
 If you want to modify the lepton energy you intend to simulate, modify the parameters inside the mac scripts.
 
-Some initial results can be found at 
-[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
+## Submit grid jobs on DUNEGPVMs
+
+## Some initial results
+
+[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf)
+ 
 [cern indico 2](https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)

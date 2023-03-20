@@ -27,15 +27,16 @@
 #include <G4SolidStore.hh>
 #include <G4UserLimits.hh>
 #include <G4GlobalMagFieldMessenger.hh>
-#include <G4AutoDelete.hh>
 #include <G4UniformMagField.hh>
 #include <G4FieldManager.hh>
 #include <G4GDMLParser.hh>
 
 using namespace std;
 
-//G4ThreadLocal
-//G4GlobalMagFieldMessenger* FLArEDetectorConstruction::fMagFieldMessenger = 0;
+G4ThreadLocal G4UniformMagField* FLArEDetectorConstruction::magField = 0;
+G4ThreadLocal G4FieldManager* FLArEDetectorConstruction::fieldMgr = 0;
+G4ThreadLocal G4UniformMagField* FLArEDetectorConstruction::magFieldFASER2 = 0;
+G4ThreadLocal G4FieldManager* FLArEDetectorConstruction::fieldMgrFASER2 = 0;
 
 FLArEDetectorConstruction::FLArEDetectorConstruction()
   : G4VUserDetectorConstruction(), fDetMaterialName("LAr"), fDetGeomOption("single")
@@ -435,27 +436,21 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   sdManager->AddNewDetector(CryGapSD);
 
   // HadCatcher + MuonFinder  magnetic field
-  G4ThreeVector fieldValue = G4ThreeVector(1.*tesla, 0, 0);
-  G4UniformMagField* magField = new G4UniformMagField(fieldValue);
-  G4FieldManager* fieldMgr = new G4FieldManager();
+  G4ThreeVector fieldValue = G4ThreeVector(0,1.*tesla, 0);
+  magField = new G4UniformMagField(fieldValue);
+  fieldMgr = new G4FieldManager();
   fieldMgr->SetDetectorField(magField);
   fieldMgr->CreateChordFinder(magField);
   hadCatcherLogical->SetFieldManager(fieldMgr, true);
   muonFinderLogical->SetFieldManager(fieldMgr, true);
-  //Register the field and its manager for deletion
-  G4AutoDelete::Register(magField);
-  G4AutoDelete::Register(fieldMgr);
 
   // FASER2 magnetic field
   G4ThreeVector fieldValueFASER2(0.,1*tesla,0.); // 1T, horizonal bending
-  G4UniformMagField* magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
-  G4FieldManager* fieldMgrFASER2 = new G4FieldManager();
+  magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
+  fieldMgrFASER2 = new G4FieldManager();
   fieldMgrFASER2->SetDetectorField(magFieldFASER2);
   fieldMgrFASER2->CreateChordFinder(magFieldFASER2);
   FASER2MagnetWindow->SetFieldManager(fieldMgrFASER2, true);
-  
-  G4AutoDelete::Register(magFieldFASER2);
-  G4AutoDelete::Register(fieldMgrFASER2);
   
 }
 

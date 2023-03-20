@@ -57,9 +57,9 @@ class AnalysisManager {
 
     G4int    countPrimaryParticle;
     G4int    nPrimaryParticle;  ///<- number of primary particle 
-                                ///   (in case of genie neutrino interaction, number of stable particle in the final state)
-                                ///   (in case of the FSL decay, decay products counted as primary particle)
-                                ///   (in case of the final state pizero, decay products counted as primary particle)
+                                ///<- (in case of genie neutrino interaction, number of stable particle in the final state)
+                                ///<- (in case of the FSL decay, decay products counted as primary particle)
+                                ///<- (in case of the final state pizero, decay products counted as primary particle)
     G4double Px[1000];          ///<- Px of primary particles
     G4double Py[1000];          ///<- Py of primary particles
     G4double Pz[1000];          ///<- Pz of primary particles
@@ -78,7 +78,7 @@ class AnalysisManager {
     G4int    prongType[1000];               ///<- 0: final state lepton
                                             ///<- 1: original primary particle
                                             ///<- 2: decay products of the short lived final state lepton (namely tau-,
-                                            ///      could also be a michel electron from muon decay)
+                                            ///<-    could also be a michel electron from muon decay)
                                             ///<- 3: decay products of the primary pizero (dominantely 2gamma)
                                             ///<- 4: decay prodcuts of the tau decay pizero
     // pseudo-reco
