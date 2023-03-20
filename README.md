@@ -39,5 +39,7 @@ If you want to modify the lepton energy you intend to simulate, modify the param
 ## Submit grid jobs on DUNEGPVMs
 
 ## Some initial results
-[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
+
+[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf)
+ 
 [cern indico 2](https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)
