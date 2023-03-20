@@ -26,15 +26,14 @@
 #include <G4SolidStore.hh>
 #include <G4UserLimits.hh>
 #include <G4GlobalMagFieldMessenger.hh>
-#include <G4AutoDelete.hh>
 #include <G4UniformMagField.hh>
 #include <G4FieldManager.hh>
 #include <G4GDMLParser.hh>
 
 using namespace std;
 
-//G4ThreadLocal
-//G4GlobalMagFieldMessenger* FLArEDetectorConstruction::fMagFieldMessenger = 0;
+G4ThreadLocal G4UniformMagField* FLArEDetectorConstruction::magField = 0;
+G4ThreadLocal G4FieldManager* FLArEDetectorConstruction::fieldMgr = 0;
 
 FLArEDetectorConstruction::FLArEDetectorConstruction()
   : G4VUserDetectorConstruction(), fDetMaterialName("LAr"), fDetGeomOption("single")
@@ -373,17 +372,14 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   crygapLogical->SetSensitiveDetector(CryGapSD);
   sdManager->AddNewDetector(CryGapSD);
 
-  // Create global magnetic field
+  // magnetic field 
   G4ThreeVector fieldValue = G4ThreeVector(1.*tesla, 0, 0);
-  G4UniformMagField* magField = new G4UniformMagField(fieldValue);
-  G4FieldManager* fieldMgr = new G4FieldManager();
+  magField = new G4UniformMagField(fieldValue);
+  fieldMgr = new G4FieldManager();
   fieldMgr->SetDetectorField(magField);
   fieldMgr->CreateChordFinder(magField);
   hadCatcherLogical->SetFieldManager(fieldMgr, true);
   muonFinderLogical->SetFieldManager(fieldMgr, true);
-  //Register the field and its manager for deletion
-  G4AutoDelete::Register(magField);
-  G4AutoDelete::Register(fieldMgr);
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {
