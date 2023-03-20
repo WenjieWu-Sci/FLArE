@@ -19,7 +19,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 * pythia6 v6_4_28r
 
 ## Macro command
-| | |
+|Command |Description |
 |:--|:--|
 |/det/material       | option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`|
 |/det/module         | option for tpc module option, choose from `single` (default) and `3x7`, run before `/run/initialize`|
@@ -38,6 +38,6 @@ If you want to modify the lepton energy you intend to simulate, modify the param
 
 ## Submit grid jobs on DUNEGPVMs
 
-Some initial results can be found at 
+## Some initial results
 [cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
 [cern indico 2](https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)
