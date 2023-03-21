@@ -99,14 +99,14 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // LAr box
   G4VSolid* lArBox = new G4Box("lArBox", lArSizeX / 2, lArSizeY / 2, lArSizeZ / 2);
   lArBoxLog = new G4LogicalVolume(lArBox, detectorMaterial, "lArBox");
-  G4VPhysicalVolume* lArBoxPhys = new G4PVPlacement(nullptr, // no Rotation
-                                                    G4ThreeVector(0, 0, 0), // no transporation
-                                                    lArBoxLog,              // current logical volume
-                                                    "lArBox",               // name
-                                                    worldLog,               // mother logical volume
-                                                    false,                  // pMany
-                                                    0,                      // Copy No
-                                                    fCheckOverlap);
+  new G4PVPlacement(nullptr, // no Rotation
+                    G4ThreeVector(0, 0, 0), // no transporation
+                    lArBoxLog,              // current logical volume
+                    "lArBox",               // name
+                    worldLog,               // mother logical volume
+                    false,                  // pMany
+                    0,                      // Copy No
+                    fCheckOverlap);
 
   G4VisAttributes* lArBoxVis;
   if (fDetGeomOption=="single") {
@@ -332,23 +332,23 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   FASER2MagnetYoke = new G4LogicalVolume(magnetYokeSolid, LArBoxMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
   FASER2MagnetWindow = new G4LogicalVolume(magnetWindowSolid, LArBoxMaterials->Material("Air"), "FASER2MagnetWindowLogical"); 
 
-  G4VPhysicalVolume* FASER2MagnetYokePhys = new G4PVPlacement(nullptr,      // no Rotation
-                                           G4ThreeVector(0, 0, magnetPosZ), // translation 
-                                           FASER2MagnetYoke,         //logical volume
-                                           "FASER2MagnetYokePhys",   // name
-                                           worldLog,                 // mother logical volume
-                                           false,                    // pMany
-                                           0,                        // Copy No
-                                           fCheckOverlap);
+  new G4PVPlacement(nullptr,      // no Rotation
+                    G4ThreeVector(0, 0, magnetPosZ), // translation 
+                    FASER2MagnetYoke,         //logical volume
+                    "FASER2MagnetYokePhys",   // name
+                    worldLog,                 // mother logical volume
+                    false,                    // pMany
+                    0,                        // Copy No
+                    fCheckOverlap);
 
-  G4VPhysicalVolume* FASER2MagnetWindowPhys = new G4PVPlacement(nullptr,    // no Rotation
-                                           G4ThreeVector(0, 0, magnetPosZ), // translation
-                                           FASER2MagnetWindow,       // logical volume
-                                           "FASER2MagnetWindoPhys",  // name
-                                           worldLog,                 // mother logical volume
-                                           false,                    // pMany
-                                           0,                        // Copy No
-                                           fCheckOverlap);
+  new G4PVPlacement(nullptr,    // no Rotation
+                    G4ThreeVector(0, 0, magnetPosZ), // translation
+                    FASER2MagnetWindow,       // logical volume
+                    "FASER2MagnetWindoPhys",  // name
+                    worldLog,                 // mother logical volume
+                    false,                    // pMany
+                    0,                        // Copy No
+                    fCheckOverlap);
 
   // visualization
   //G4VisAttributes* crygapVis = new G4VisAttributes(G4Colour(196./255, 203./255, 207./255, 1.0));
