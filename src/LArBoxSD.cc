@@ -68,11 +68,11 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   FLArETrackInformation* aTrackInfo = (FLArETrackInformation*)(aTrack->GetUserInformation());
   G4int trackIsFromPrimaryPizero = 0;
   G4int trackIsFromFSLPizero = 0;
-  G4int trackIsFromPrimaryTau = 0;
+  G4int trackIsFromPrimaryLepton = 0;
   if (aTrackInfo) {
     trackIsFromPrimaryPizero = aTrackInfo->IsTrackFromPrimaryPizero();
     trackIsFromFSLPizero = aTrackInfo->IsTrackFromFSLPizero();
-    trackIsFromPrimaryTau = aTrackInfo->IsTrackFromPrimaryTau();
+    trackIsFromPrimaryLepton = aTrackInfo->IsTrackFromPrimaryLepton();
   }
 
   // Fill hit information
@@ -96,7 +96,7 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   hit->SetStepStatus(StepStatus);
   hit->SetTrackIsFromPrimaryPizero(trackIsFromPrimaryPizero);
   hit->SetTrackIsFromFSLPizero(trackIsFromFSLPizero);
-  hit->SetTrackIsFromPrimaryTau(trackIsFromPrimaryTau);
+  hit->SetTrackIsFromPrimaryLepton(trackIsFromPrimaryLepton);
 
   hit->SetEdep(edep);
   hit->SetEdepPosition(pos);

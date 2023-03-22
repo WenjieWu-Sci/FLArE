@@ -23,15 +23,15 @@ class FLArETrackInformation : public G4VUserTrackInformation
   public:
     inline void SetTrackIsFromPrimaryPizero(G4int i) {fFromPrimaryPizero = i;}
     inline void SetTrackIsFromFSLPizero(G4int i) {fFromFSLPizero = i;}
-    inline void SetTrackIsFromPrimaryTau(G4int i) {fFromPrimaryTau = i;}
+    inline void SetTrackIsFromPrimaryLepton(G4int i) {fFromPrimaryLepton = i;}
     inline G4int IsTrackFromPrimaryPizero() const {return fFromPrimaryPizero;}
     inline G4int IsTrackFromFSLPizero() const {return fFromFSLPizero;}
-    inline G4int IsTrackFromPrimaryTau() const {return fFromPrimaryTau;}
+    inline G4int IsTrackFromPrimaryLepton() const {return fFromPrimaryLepton;}
 
   private:
     G4int fFromPrimaryPizero;
     G4int fFromFSLPizero;
-    G4int fFromPrimaryTau;
+    G4int fFromPrimaryLepton;
 };
 
 extern G4ThreadLocal

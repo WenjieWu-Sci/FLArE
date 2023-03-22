@@ -338,10 +338,14 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   }
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
-  tracksFromFSL.insert(1);
-  for (auto x : allTracksPTPair) {
-    if (tracksFromFSL.find(x.first) != tracksFromFSL.end()) {
-      tracksFromFSL.insert(x.second);
+  // should only work with neutrino interaction generator
+  // exception to single particle generator: tau, mu
+  if (nuPDG!=0 || abs(primaryTrackPDG[0])==15 || abs(primaryTrackPDG[0])==13) {
+    tracksFromFSL.insert(1);
+    for (auto x : allTracksPTPair) {
+      if (tracksFromFSL.find(x.first) != tracksFromFSL.end()) {
+        tracksFromFSL.insert(x.second);
+      }
     }
   }
   // tracksFromFSL includes all the tracks orginating from the fsl
@@ -352,11 +356,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   std::cout<<"number of primary particles : "<<nPrimaryParticle
     <<" , in which number of particles from fsl : "<<nFromFSLParticles<<std::endl;
 
-  // cluster all tracks to primary particles
+  //- cluster all tracks to primary particles
+  //- mark the index of the final state lepton from the neutrino interaction
   trackClusters.resize(nPrimaryParticle);
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     trackClusters[iPrim].insert(primaryTrackID[iPrim]);
-    if (primaryTrackID[iPrim]==1) {
+    if (primaryTrackID[iPrim]==1 && nuPDG!=0) {
       fPrimIdxFSL = iPrim;
     }
   }
@@ -590,8 +595,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
         }
       }
-      // in case of the fsl decay, the decay products are counted as primary particle
-      if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+      // in case of the fsl decay, the decay products are counted as primary particles
+      // * tau- decay (dominant)
+      // * mu- decay
+      //if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+      if (hit->GetIsTrackFromPrimaryLepton()) {
         tracksFromFSLSecondary.insert(hit->GetTID());
         if (hit->GetStepNo()==1) {
           countPrimaryParticle++;
@@ -609,7 +617,7 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
         }
       }
-      // in case of pizero
+      // in case of pizero in the list of primary tracks, its decay products are also counted as primary particles
       if (hit->GetIsTrackFromPrimaryPizero()) {
         tracksFromFSPizeroSecondary.insert(hit->GetTID());
         if (hit->GetStepNo()==1) {
@@ -865,12 +873,20 @@ void AnalysisManager::InitializeEvd() {
 
   TString histname, histtitle;
   histname.Form("evt_%d_tot_zx",evtID);
-  histtitle.Form("ViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  if (nuPDG!=0) {
+    histtitle.Form("ViewX: EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  } else {
+    histtitle.Form("ViewX: EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,primaryTrackPDG[0],GetTotalEnergy(Px[0], Py[0], Pz[0], Pmass[0])/1000, VtxX[0], VtxY[0], VtxZ[0]);
+  }
   hitClusterZX[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbinx, &binx[0]);
   hitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
   hitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
   histname.Form("evt_%d_tot_zy",evtID);
-  histtitle.Form("ViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  if (nuPDG!=0) {
+    histtitle.Form("ViewY: EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  } else {
+    histtitle.Form("ViewY: EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,primaryTrackPDG[0],GetTotalEnergy(Px[0], Py[0], Pz[0], Pmass[0])/1000, VtxX[0], VtxY[0], VtxZ[0]);
+  }
   hitClusterZY[0] = new TH2F(histname, histtitle, nbinz, &binz[0], nbiny, &biny[0]);
   hitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
   hitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
@@ -892,12 +908,20 @@ void AnalysisManager::InitializeEvd() {
   }
 
   histname.Form("evt_%d_tot_zx_vtx",evtID);
-  histtitle.Form("VtxViewX: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  if (nuPDG!=0) {
+    histtitle.Form("VtxViewX: EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  } else {
+    histtitle.Form("VtxViewX: EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,primaryTrackPDG[0],GetTotalEnergy(Px[0], Py[0], Pz[0], Pmass[0])/1000, VtxX[0], VtxY[0], VtxZ[0]);
+  }
   vtxHitClusterZX[0] = new TH2F(histname, histtitle, 1500, -20, 280, 600, -60, 60);
   vtxHitClusterZX[0]->GetXaxis()->SetTitle("Z [mm]");
   vtxHitClusterZX[0]->GetYaxis()->SetTitle("X [mm]");
   histname.Form("evt_%d_tot_zy_vtx",evtID);
-  histtitle.Form("VtxViewY: EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  if (nuPDG!=0) {
+    histtitle.Form("VtxViewY: EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+  } else {
+    histtitle.Form("VtxViewY: EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,primaryTrackPDG[0],GetTotalEnergy(Px[0], Py[0], Pz[0], Pmass[0])/1000, VtxX[0], VtxY[0], VtxZ[0]);
+  }
   vtxHitClusterZY[0] = new TH2F(histname, histtitle, 1500, -20, 280, 600, -60, 60);
   vtxHitClusterZY[0]->GetXaxis()->SetTitle("Z [mm]");
   vtxHitClusterZY[0]->GetYaxis()->SetTitle("Y [mm]");
@@ -944,58 +968,6 @@ void AnalysisManager::FillPseudoRecoVar() {
     double costheta = Pz[iPrim]/ShowerP;
     AngleToBeamDir[iPrim] = TMath::ACos(costheta);
 
-    /*
-    if (abs(nuPDG)==16 && abs(nuFSLPDG)==16) {
-      prongType[iPrim] = 0;
-    } else if (abs(nuPDG)==16 && abs(nuFSLPDG)==15) {
-      bool tau2e = false;
-      bool tau2mu = false;
-      for (int iFromFSL= 0;iFromFSL< nFromFSLParticles; ++iFromFSL) {
-        if (fromFSLParticlePDG[iFromFSL]==13) {
-          tau2mu = true;
-        } else if (fromFSLParticlePDG[iFromFSL]==11) {
-          tau2e = true;
-        }
-      }
-      if (tau2e) {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 1;
-        } else {
-          prongType[iPrim] = 2;
-        }
-      } else if (tau2mu) {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 3;
-        } else {
-          prongType[iPrim] = 4;
-        } 
-      } else {
-        if (primaryParentID[iPrim]>0) {
-          prongType[iPrim] = 5;
-        } else {
-          prongType[iPrim] = 6;
-        } 
-      }
-    }
-    if (abs(nuPDG)==14 && abs(nuFSLPDG)==14) {
-      prongType[iPrim] = 7;
-    } else if (abs(nuPDG)==14 && abs(nuFSLPDG)==13) {
-      if (abs(primaryTrackPDG[iPrim])==13) {
-        prongType[iPrim] = 8;
-      } else {
-        prongType[iPrim] = 9;
-      }
-    }
-    if (abs(nuPDG)==12 && abs(nuFSLPDG)==12) {
-      prongType[iPrim] = 10;
-    } else if (abs(nuPDG)==12 && abs(nuFSLPDG)==11) {
-      if (abs(primaryTrackPDG[iPrim])==11) {
-        prongType[iPrim] = 11;
-      } else {
-        prongType[iPrim] = 12;
-      }
-    }
-    */
     dEdx[iPrim] = (EInLAr[iPrim] + EInHadCal[iPrim] + EInMuonFinder[iPrim])/ShowerLength[iPrim];
     dEdxInLAr[iPrim] = EInLAr[iPrim]/ShowerLengthInLAr[iPrim];
 
