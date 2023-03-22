@@ -15,7 +15,7 @@ SteppingAction::SteppingAction(RunAction* runAction)
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep) {
  
-  TrackLiveDebugging(aStep);
+  //TrackLiveDebugging(aStep);
 	
   G4Track* aTrack = aStep->GetTrack();
   G4ThreeVector post_pos = aStep->GetPostStepPoint()->GetPosition();
