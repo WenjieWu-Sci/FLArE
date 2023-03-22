@@ -312,8 +312,8 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double lengthFASERnu2 = 8.0*m;
 
   G4double lengthDecayTunnelFASER2 = 10*m;
-  G4double lengthVetoStationFASER2 = 20.*cm; //guesses
-  G4double lengthTrackStationFASER2 = 20.*cm; 
+  G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
+  G4double lengthTrackStationFASER2 = 70.*cm; 
 
   // from the center of FLArE lAr volume 
   G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
