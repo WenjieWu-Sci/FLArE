@@ -8,7 +8,7 @@ FLArETrackInformation::FLArETrackInformation()
 {
   fFromPrimaryPizero = 0;
   fFromFSLPizero = 0;
-  fFromPrimaryTau = 0;
+  fFromPrimaryLepton = 0;
 }
 
 FLArETrackInformation::FLArETrackInformation(const G4Track* aTrack) 
@@ -16,7 +16,7 @@ FLArETrackInformation::FLArETrackInformation(const G4Track* aTrack)
 {
   fFromPrimaryPizero = 0;
   fFromFSLPizero = 0;
-  fFromPrimaryTau = 0;
+  fFromPrimaryLepton = 0;
 }
 
 FLArETrackInformation::~FLArETrackInformation()
@@ -27,7 +27,7 @@ FLArETrackInformation& FLArETrackInformation
 {
   fFromPrimaryPizero = aTrackInfo.fFromPrimaryPizero;
   fFromFSLPizero = aTrackInfo.fFromFSLPizero;
-  fFromPrimaryTau = aTrackInfo.fFromPrimaryTau;
+  fFromPrimaryLepton = aTrackInfo.fFromPrimaryLepton;
 
   return *this;
 }
@@ -36,6 +36,6 @@ void FLArETrackInformation::Print() const
 {
     G4cout << "Is from primary pizero " << fFromPrimaryPizero << G4endl;
     G4cout << "Is from final state lepton decay pizero " << fFromFSLPizero << G4endl;
-    G4cout << "Is from primary tau    " << fFromPrimaryTau << G4endl;
+    G4cout << "Is from primary lepton (tau or muon)    " << fFromPrimaryLepton << G4endl;
 }
 

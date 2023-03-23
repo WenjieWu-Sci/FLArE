@@ -26,22 +26,26 @@ void FLArETrackingAction::PostUserTrackingAction(const G4Track* aTrack)
           }
         }
       } 
-    } else if (aTrack->GetParticleDefinition()->GetPDGEncoding()==15) {
-      // This is a primary tau-
+    } else if (aTrack->GetTrackID()==1 &&
+               (abs(aTrack->GetParticleDefinition()->GetPDGEncoding())==15 ||
+                abs(aTrack->GetParticleDefinition()->GetPDGEncoding())==13)) {
+      // This is a primary tau- or mu (lepton that can decay)
       G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
       if (secondaries) {
         size_t nSeco = secondaries->size();
         if (nSeco>0) {
           for (size_t i=0; i<nSeco; ++i) {
-            FLArETrackInformation* info =  new FLArETrackInformation();
-            info->SetTrackIsFromPrimaryTau(1);
-            (*secondaries)[i]->SetUserInformation(info);
+            if ((*secondaries)[i]->GetCreatorProcess()->GetProcessName()=="Decay") {
+              FLArETrackInformation* info =  new FLArETrackInformation();
+              info->SetTrackIsFromPrimaryLepton(1);
+              (*secondaries)[i]->SetUserInformation(info);
+            }
           }
         }
       }
     }
-  } else if (aTrack->GetParentID()==1) {
-    // This is a pizero from FSL (tau-)
+  } else if (aTrack->GetParentID()==1 && aTrack->GetCreatorProcess()->GetProcessName()=="Decay") {
+    // This is a pizero decayed from FSL (tau-)
     if (aTrack->GetParticleDefinition()->GetPDGEncoding()==111) {
       G4TrackVector* secondaries = fpTrackingManager->GimmeSecondaries();
       if (secondaries) {

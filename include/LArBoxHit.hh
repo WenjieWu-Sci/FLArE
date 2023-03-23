@@ -36,7 +36,7 @@ class LArBoxHit : public G4VHit {
     void SetStepStatus(G4int stepstatus) { fStepStatus = stepstatus; }
     void SetTrackIsFromPrimaryPizero(G4int i) { fTrackIsFromPrimaryPizero = i; }
     void SetTrackIsFromFSLPizero(G4int i) { fTrackIsFromFSLPizero = i; }
-    void SetTrackIsFromPrimaryTau(G4int i) { fTrackIsFromPrimaryTau = i; }
+    void SetTrackIsFromPrimaryLepton(G4int i) { fTrackIsFromPrimaryLepton = i; }
 
     //getter
     G4int GetTrackStatus() const { return fTrackStatus; }
@@ -60,7 +60,7 @@ class LArBoxHit : public G4VHit {
     G4int GetStepStatus() const { return fStepStatus; }
     G4int GetIsTrackFromPrimaryPizero() const { return fTrackIsFromPrimaryPizero; }
     G4int GetIsTrackFromFSLPizero() const { return fTrackIsFromFSLPizero; }
-    G4int GetIsTrackFromPrimaryTau() const { return fTrackIsFromPrimaryTau; }
+    G4int GetIsTrackFromPrimaryLepton() const { return fTrackIsFromPrimaryLepton; }
 
   private:
     G4int fTrackStatus;
@@ -85,7 +85,7 @@ class LArBoxHit : public G4VHit {
     G4bool fHitFromFSL;
     G4int fTrackIsFromPrimaryPizero;
     G4int fTrackIsFromFSLPizero;
-    G4int fTrackIsFromPrimaryTau;
+    G4int fTrackIsFromPrimaryLepton;
 };
 
 using LArBoxHitsCollection = G4THitsCollection<LArBoxHit>;
