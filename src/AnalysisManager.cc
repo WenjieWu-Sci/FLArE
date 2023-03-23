@@ -304,8 +304,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   if (!hcofEvent) return;
 
   // loop over all sensitive detectors
-  const G4int nsds = 8;
-  G4int sdids[nsds] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  const G4int nsds = 10;
+  G4int sdids[nsds] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   std::string sds[nsds] = {"lArBoxSD/lar_box",
                            "HadCalXSD/lar_box",
                            "HadCalYSD/lar_box",
@@ -313,7 +313,9 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                            "MuonFinderYSD/lar_box",
                            "HadAbsorbSD/lar_box",
                            "MuonFinderAbsorbSD/lar_box",
-                           "CryGapSD/lar_box"};
+                           "CryGapSD/lar_box",
+                           "TrkHorScinSD/lar_box",
+                           "TrkVerScinSD/lar_box"};
 
   for (int i= 0; i< nsds; ++i) {
     if (sdids[i]<0) {
@@ -460,6 +462,8 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           {"HadAbsorbSD/lar_box",        [&](){ detID = 6; }},
           {"MuonFinderAbsorbSD/lar_box", [&](){ detID = 7; }},
           {"CryGapSD/lar_box",           [&](){ detID = 8; }},
+          {"TrkHorScinSD/lar_box",       [&](){ detID = 9; }},
+          {"TrkVerScinSD/lar_box",       [&](){ detID = 10; }},
   };
   detIDs.find(sdName)->second();
 
@@ -565,7 +569,7 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           break;
         case 8:
           edepInCryGap += hit->GetEdep();
-          break;
+          break;	
       }
 
       allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
@@ -662,6 +666,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           {"HadAbsorbSD/lar_box",        [&](){ detID = 6; }},
           {"MuonFinderAbsorbSD/lar_box", [&](){ detID = 7; }},
           {"CryGapSD/lar_box",           [&](){ detID = 8; }},
+          {"TrkHorScinSD/lar_box",       [&](){ detID = 9; }},
+          {"TrkVerScinSD/lar_box",       [&](){ detID = 10; }},
   };
   detIDs.find(sdName)->second();
 
