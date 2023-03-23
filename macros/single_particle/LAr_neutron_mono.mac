@@ -1,0 +1,17 @@
+# define detector material before run initialization
+/det/material LAr
+
+/run/initialize
+
+/gps/verbose 0
+/gps/direction 0 0 1
+
+/gps/pos/type Point
+/gps/pos/centre 0 0 -2.5 m
+
+# variables
+/gps/particle neutron
+/gps/ene/mono 4.147947 GeV
+/histo/saveEvd false
+/histo/fileName neutron_momentum_5GeV.root
+/run/beamOn 1

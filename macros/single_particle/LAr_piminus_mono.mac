@@ -1,0 +1,17 @@
+# define detector material before run initialization
+/det/material LAr
+
+/run/initialize
+
+/gps/verbose 0
+/gps/direction 0 0 1
+
+/gps/pos/type Point
+/gps/pos/centre 0 0 -2.5 m
+
+# variables
+/gps/particle pi-
+/gps/ene/mono 24.860819 GeV
+/histo/saveEvd false
+/histo/fileName piminus_momentum_25GeV.root
+/run/beamOn 1
