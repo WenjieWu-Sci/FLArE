@@ -28,6 +28,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |/genie/genieInput   | if `useGenie is true`, give which `.ghep.root` file to read GENIE events|
 |/genie/genieIStart  | if `useGenie is true`, give the start position of the file to read GENIE events|
 |/histo/fileName     | option for AnalysisManagerMessenger, set name of the file saving all analysis variables|
+|/histo/saveHit      | if `true` save information for all hits, `false` in default to save space|
 |/histo/saveEvd      | if `true` save spatial distribution of energy deposition, `false` in default to save space|
 |/histo/addDiffusion | if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion|
 

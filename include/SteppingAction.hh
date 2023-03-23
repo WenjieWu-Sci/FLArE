@@ -10,6 +10,7 @@ class SteppingAction : public G4UserSteppingAction {
     SteppingAction(RunAction*);
 
     void UserSteppingAction(const G4Step*) override;
+    void TrackLiveDebugging(const G4Step*);
 
   private:
     RunAction* fRunAction;

@@ -44,6 +44,10 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* crygapLogical;
     G4LogicalVolume* TPCModuleLogical;
+    G4LogicalVolume* FASER2MagnetYoke;
+    G4LogicalVolume* FASER2MagnetWindow;
+    G4LogicalVolume* trkVerScinLogical;
+    G4LogicalVolume* trkHorScinLogical; 
     G4String fDetMaterialName;
     G4String fDetGeomOption;
     G4bool m_saveGdml;
@@ -53,6 +57,8 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
 
     static G4ThreadLocal G4UniformMagField* magField;
     static G4ThreadLocal G4FieldManager* fieldMgr;
+    static G4ThreadLocal G4UniformMagField* magFieldFASER2;
+    static G4ThreadLocal G4FieldManager* fieldMgrFASER2;
 };
 
 #endif
