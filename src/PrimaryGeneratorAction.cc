@@ -63,6 +63,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     neux4           = fActionGenie->NeuX4();
     int_type        = fActionGenie->InteractionTypeId();
     scattering_type = fActionGenie->ScatteringTypeId();
+    w               = fActionGenie->GetW();
     fslpdg          = fActionGenie->FSLPDG();
     fslp4           = fActionGenie->FSLP4();
     fslx4           = fActionGenie->FSLX4();
@@ -84,7 +85,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
         primary_particle->SetUserInformation(new PrimaryParticleInformation(
               count_particles, primary_particle->GetPDGcode(), primary_particle->GetMass(),
               primary_particle->GetMomentum(), anEvent->GetPrimaryVertex(ivtx)->GetPosition(),
-              neuidx, neupdg, neup4, neux4, int_type, scattering_type,
+              neuidx, neupdg, neup4, neux4, int_type, scattering_type, w,
               fslpdg, fslp4, fslx4));
         count_particles++;
       }

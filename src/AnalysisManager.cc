@@ -60,6 +60,7 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("nuZ"                    , &nuZ                    , "nuZ/D");
   evt->Branch("nuIntType"              , &nuIntType              , "nuIntType/I");
   evt->Branch("nuScatteringType"       , &nuScatteringType       , "nuScatteringType/I");
+  evt->Branch("W"                      , &nuW                    , "W/D");
   evt->Branch("nuFSLPDG"               , &nuFSLPDG               , "nuFSLPDG/I");
   evt->Branch("nuFSLPx"                , &nuFSLPx                , "nuFSLPx/D");
   evt->Branch("nuFSLPy"                , &nuFSLPy                , "nuFSLPy/D");
@@ -161,6 +162,7 @@ void AnalysisManager::BeginOfEvent() {
   nuZ                          = -999;
   nuIntType                    = -1;
   nuScatteringType             = -1;
+  nuW                          = -1;
   nuFSLPDG                     = 0;
   nuFSLPx                      = -999;
   nuFSLPy                      = -999;
@@ -283,6 +285,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuZ              = primary_particle_info->GetNeuX4().Z() + 3500;
           nuIntType        = primary_particle_info->GetInteractionTypeId();
           nuScatteringType = primary_particle_info->GetScatteringTypeId();
+          nuW              = primary_particle_info->GetW();
           nuFSLPDG         = primary_particle_info->GetFSLPDG();
           nuFSLPx          = primary_particle_info->GetFSLP4().X();
           nuFSLPy          = primary_particle_info->GetFSLP4().Y();

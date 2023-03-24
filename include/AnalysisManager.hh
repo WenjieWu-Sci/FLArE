@@ -49,6 +49,7 @@ class AnalysisManager {
     G4double nuZ;               ///<- neutrino vertex Z
     G4int    nuIntType;         ///<- interaction type: CC, NC, et.al.
     G4int    nuScatteringType;  ///<- scattering type: QE, DIS, RES, MEC, et. al.
+    G4double nuW;               ///<- invariant hadronic mass
     G4int    nuFSLPDG;          ///<- Final state lepton PDG code (for genie neutrino interaction)
     G4double nuFSLPx;           ///<- Final state lepton Px 
     G4double nuFSLPy;           ///<- Final state lepton Py

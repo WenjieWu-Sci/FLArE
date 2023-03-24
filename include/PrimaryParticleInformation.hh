@@ -28,7 +28,7 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     PrimaryParticleInformation(G4int aID, G4int aPDG, G4double aMass,
         G4ThreeVector aMomentum, G4ThreeVector aVertex,
         G4int aneuIdx, G4int aneuPDG, TLorentzVector aneuP4, TLorentzVector aneuX4,
-        G4int aInttype, G4int aScatteringtype, 
+        G4int aInttype, G4int aScatteringtype, G4double aW,
         G4int afslPDG, TLorentzVector afslP4, TLorentzVector afslX4);
 
     virtual ~PrimaryParticleInformation();
@@ -55,6 +55,7 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     inline TLorentzVector GetNeuX4() const { return fNeuX4; };
     inline G4int GetInteractionTypeId() const  { return fInteractionType; };
     inline G4int GetScatteringTypeId()  const  { return fScatteringType;  };
+    inline G4double GetW() const { return fW; };
     inline G4int GetFSLPDG() const { return fFSLPDG; };
     inline TLorentzVector GetFSLP4() const { return fFSLP4; };
     inline TLorentzVector GetFSLX4() const { return fFSLX4; };
@@ -96,6 +97,9 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
 
     /// Scattering type of the neutrino interaction if it is from GENIE
     G4int fScatteringType;
+    
+    /// invariant hadronic mass
+    G4double fW;
 
     /// fsl PDG of the neutrino interaction if it is from GENIE
     G4int fFSLPDG;
