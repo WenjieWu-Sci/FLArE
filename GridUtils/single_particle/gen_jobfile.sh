@@ -24,14 +24,14 @@ cat << EOF >> ${filename}
 
 /random/setSeeds ${seed}
 
-/gps/pos/type point
+/gps/pos/type Point
 /gps/pos/centre 0 0 -2.5 m
 /gps/direction 0 0 1
 /gps/particle ${particle}
 /gps/ene/mono ${particle_kin} GeV
 
 /histo/saveEvd false
-/hist/fileName ${outputfile}
+/histo/fileName ${outputfile}
 
 /run/beamOn ${num_evt_per_file}
 EOF
