@@ -51,91 +51,95 @@ AnalysisManager::~AnalysisManager() {;}
 
 void AnalysisManager::bookEvtTree() {
   evt = new TTree("evt", "evtTreeInfo");
-  evt->Branch("evtID"                  , &evtID                  , "evtID/I");
-  evt->Branch("nuIdx"                  , &nuIdx                  , "nuIdx/I");
-  evt->Branch("nuPDG"                  , &nuPDG                  , "nuPDG/I");
-  evt->Branch("nuE"                    , &nuE                    , "nuE/D");
-  evt->Branch("nuX"                    , &nuX                    , "nuX/D");
-  evt->Branch("nuY"                    , &nuY                    , "nuY/D");
-  evt->Branch("nuZ"                    , &nuZ                    , "nuZ/D");
-  evt->Branch("nuIntType"              , &nuIntType              , "nuIntType/I");
-  evt->Branch("nuScatteringType"       , &nuScatteringType       , "nuScatteringType/I");
-  evt->Branch("W"                      , &nuW                    , "W/D");
-  evt->Branch("nuFSLPDG"               , &nuFSLPDG               , "nuFSLPDG/I");
-  evt->Branch("nuFSLPx"                , &nuFSLPx                , "nuFSLPx/D");
-  evt->Branch("nuFSLPy"                , &nuFSLPy                , "nuFSLPy/D");
-  evt->Branch("nuFSLPz"                , &nuFSLPz                , "nuFSLPz/D");
-  evt->Branch("nuFSLE"                 , &nuFSLE                 , "nuFSLE/D");
-  evt->Branch("nPrimaryParticle"       , &nPrimaryParticle       , "nPrimaryParticle/I");
-  evt->Branch("Px"                     , Px                      , "Px[nPrimaryParticle]/D");
-  evt->Branch("Py"                     , Py                      , "Py[nPrimaryParticle]/D");
-  evt->Branch("Pz"                     , Pz                      , "Pz[nPrimaryParticle]/D");
-  evt->Branch("VtxX"                   , VtxX                    , "VtxX[nPrimaryParticle]/D");
-  evt->Branch("VtxY"                   , VtxY                    , "VtxY[nPrimaryParticle]/D");
-  evt->Branch("VtxZ"                   , VtxZ                    , "VtxZ[nPrimaryParticle]/D");
-  evt->Branch("Pmass"                  , Pmass                   , "Pmass[nPrimaryParticle]/D");
-  evt->Branch("primaryParentID"        , primaryParentID         , "primaryParentID[nPrimaryParticle]/I");
-  evt->Branch("primaryParentPDG"       , primaryParentPDG        , "primaryParentPDG[nPrimaryParticle]/I");
-  evt->Branch("primaryTrackID"         , primaryTrackID          , "primaryTrackID[nPrimaryParticle]/I");
-  evt->Branch("primaryTrackPDG"        , primaryTrackPDG         , "primaryTrackPDG[nPrimaryParticle]/I");
-  evt->Branch("primaryTrackLength"     , primaryTrackLength      , "primaryTrackLength[nPrimaryParticle]/D");
-  evt->Branch("primaryTrackLengthInTPC", primaryTrackLengthInTPC , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
-  evt->Branch("prongIndex"             , prongIndex              , "prongIndex[nPrimaryParticle]/I");
-  evt->Branch("prongType"              , prongType               , "prongType[nPrimaryParticle]/I");
-  evt->Branch("EInDetector"            , EInDetector             , "EInDetector[nPrimaryParticle]/D");
-  evt->Branch("EInLAr"                 , EInLAr                  , "EInLAr[nPrimaryParticle]/D");
-  evt->Branch("EInHadCal"              , EInHadCal               , "EInHadCal[nPrimaryParticle]/D");
-  evt->Branch("EInMuonFinder"          , EInMuonFinder           , "EInMuonFinder[nPrimaryParticle]/D");
-  evt->Branch("EInMuonFinderLayer1X"   , EInMuonFinderLayer1X    , "EInMuonFinderLayer1X[nPrimaryParticle]/D");
-  evt->Branch("EInMuonFinderLayer1Y"   , EInMuonFinderLayer1Y    , "EInMuonFinderLayer1Y[nPrimaryParticle]/D");
-  evt->Branch("EInMuonFinderLayer2X"   , EInMuonFinderLayer2X    , "EInMuonFinderLayer2X[nPrimaryParticle]/D");
-  evt->Branch("EInMuonFinderLayer2Y"   , EInMuonFinderLayer2Y    , "EInMuonFinderLayer2Y[nPrimaryParticle]/D");
-  evt->Branch("AngleToBeamDir"         , AngleToBeamDir          , "AngleToBeamDir[nPrimaryParticle]/D");
-  evt->Branch("ShowerLength"           , ShowerLength            , "ShowerLength[nPrimaryParticle]/D");
-  evt->Branch("ShowerLengthInLAr"      , ShowerLengthInLAr       , "ShowerLengthInLAr[nPrimaryParticle]/D");
-  evt->Branch("ShowerWidth"            , ShowerWidth             , "ShowerWidth[nPrimaryParticle]/D");
-  evt->Branch("ShowerWidthInLAr"       , ShowerWidthInLAr        , "ShowerWidthInLAr[nPrimaryParticle]/D");
-  evt->Branch("dEdx"                   , dEdx                    , "dEdx[nPrimaryParticle]/D");
-  evt->Branch("dEdxInLAr"              , dEdxInLAr               , "dEdxInLAr[nPrimaryParticle]/D");
-  evt->Branch("dEdxAlongTrack"         , dEdxAlongTrack          , "dEdxAlongTrack[nPrimaryParticle][100]/D");
-  evt->Branch("dEdxTrackLength"        , dEdxTrackLength         , "dEdxTrackLength[nPrimaryParticle][100]/I");
-  evt->Branch("dir_pol_x"              , dir_pol_x               , "dir_pol_x[nPrimaryParticle]/D");
-  evt->Branch("dir_pol_y"              , dir_pol_y               , "dir_pol_y[nPrimaryParticle]/D");
-  evt->Branch("dir_pol_z"              , dir_pol_z               , "dir_pol_z[nPrimaryParticle]/D");
-  evt->Branch("dir_coc_x"              , dir_coc_x               , "dir_coc_x[nPrimaryParticle]/D");
-  evt->Branch("dir_coc_y"              , dir_coc_y               , "dir_coc_y[nPrimaryParticle]/D");
-  evt->Branch("dir_coc_z"              , dir_coc_z               , "dir_coc_z[nPrimaryParticle]/D");
+  evt->Branch("evtID"                     , &evtID                     , "evtID/I");
+  evt->Branch("nuIdx"                     , &nuIdx                     , "nuIdx/I");
+  evt->Branch("nuPDG"                     , &nuPDG                     , "nuPDG/I");
+  evt->Branch("nuE"                       , &nuE                       , "nuE/D");
+  evt->Branch("nuX"                       , &nuX                       , "nuX/D");
+  evt->Branch("nuY"                       , &nuY                       , "nuY/D");
+  evt->Branch("nuZ"                       , &nuZ                       , "nuZ/D");
+  evt->Branch("nuIntType"                 , &nuIntType                 , "nuIntType/I");
+  evt->Branch("nuScatteringType"          , &nuScatteringType          , "nuScatteringType/I");
+  evt->Branch("W"                         , &nuW                       , "W/D");
+  evt->Branch("nuFSLPDG"                  , &nuFSLPDG                  , "nuFSLPDG/I");
+  evt->Branch("nuFSLPx"                   , &nuFSLPx                   , "nuFSLPx/D");
+  evt->Branch("nuFSLPy"                   , &nuFSLPy                   , "nuFSLPy/D");
+  evt->Branch("nuFSLPz"                   , &nuFSLPz                   , "nuFSLPz/D");
+  evt->Branch("nuFSLE"                    , &nuFSLE                    , "nuFSLE/D");
+  evt->Branch("TotalDedxAlongTrackInCM"   , TotalDedxAlongTrackInCM    , "TotalDedxAlongTrackInCM[200]/D");
+  evt->Branch("TotalDedxTrackLength"      , TotalDedxTrackLength       , "TotalDedxTrackLength[200]/I");
+  evt->Branch("TotalVtxDedxAlongTrackInCM", TotalVtxDedxAlongTrackInCM , "TotalVtxDedxAlongTrackInCM[500]/D");
+  evt->Branch("TotalVtxDedxTrackLength"   , TotalVtxDedxTrackLength    , "TotalVtxDedxTrackLength[500]/I");
+  evt->Branch("nPrimaryParticle"          , &nPrimaryParticle          , "nPrimaryParticle/I");
+  evt->Branch("Px"                        , Px                         , "Px[nPrimaryParticle]/D");
+  evt->Branch("Py"                        , Py                         , "Py[nPrimaryParticle]/D");
+  evt->Branch("Pz"                        , Pz                         , "Pz[nPrimaryParticle]/D");
+  evt->Branch("VtxX"                      , VtxX                       , "VtxX[nPrimaryParticle]/D");
+  evt->Branch("VtxY"                      , VtxY                       , "VtxY[nPrimaryParticle]/D");
+  evt->Branch("VtxZ"                      , VtxZ                       , "VtxZ[nPrimaryParticle]/D");
+  evt->Branch("Pmass"                     , Pmass                      , "Pmass[nPrimaryParticle]/D");
+  evt->Branch("primaryParentID"           , primaryParentID            , "primaryParentID[nPrimaryParticle]/I");
+  evt->Branch("primaryParentPDG"          , primaryParentPDG           , "primaryParentPDG[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackID"            , primaryTrackID             , "primaryTrackID[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackPDG"           , primaryTrackPDG            , "primaryTrackPDG[nPrimaryParticle]/I");
+  evt->Branch("primaryTrackLength"        , primaryTrackLength         , "primaryTrackLength[nPrimaryParticle]/D");
+  evt->Branch("primaryTrackLengthInTPC"   , primaryTrackLengthInTPC    , "primaryTrackLengthInTPC[nPrimaryParticle]/D");
+  evt->Branch("prongIndex"                , prongIndex                 , "prongIndex[nPrimaryParticle]/I");
+  evt->Branch("prongType"                 , prongType                  , "prongType[nPrimaryParticle]/I");
+  evt->Branch("EInDetector"               , EInDetector                , "EInDetector[nPrimaryParticle]/D");
+  evt->Branch("EInLAr"                    , EInLAr                     , "EInLAr[nPrimaryParticle]/D");
+  evt->Branch("EInHadCal"                 , EInHadCal                  , "EInHadCal[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinder"             , EInMuonFinder              , "EInMuonFinder[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinderLayer1X"      , EInMuonFinderLayer1X       , "EInMuonFinderLayer1X[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinderLayer1Y"      , EInMuonFinderLayer1Y       , "EInMuonFinderLayer1Y[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinderLayer2X"      , EInMuonFinderLayer2X       , "EInMuonFinderLayer2X[nPrimaryParticle]/D");
+  evt->Branch("EInMuonFinderLayer2Y"      , EInMuonFinderLayer2Y       , "EInMuonFinderLayer2Y[nPrimaryParticle]/D");
+  evt->Branch("AngleToBeamDir"            , AngleToBeamDir             , "AngleToBeamDir[nPrimaryParticle]/D");
+  evt->Branch("ShowerLength"              , ShowerLength               , "ShowerLength[nPrimaryParticle]/D");
+  evt->Branch("ShowerLengthInLAr"         , ShowerLengthInLAr          , "ShowerLengthInLAr[nPrimaryParticle]/D");
+  evt->Branch("ShowerWidth"               , ShowerWidth                , "ShowerWidth[nPrimaryParticle]/D");
+  evt->Branch("ShowerWidthInLAr"          , ShowerWidthInLAr           , "ShowerWidthInLAr[nPrimaryParticle]/D");
+  evt->Branch("dEdx"                      , dEdx                       , "dEdx[nPrimaryParticle]/D");
+  evt->Branch("dEdxInLAr"                 , dEdxInLAr                  , "dEdxInLAr[nPrimaryParticle]/D");
+  evt->Branch("dEdxAlongTrack"            , dEdxAlongTrack             , "dEdxAlongTrack[nPrimaryParticle][100]/D");
+  evt->Branch("dEdxTrackLength"           , dEdxTrackLength            , "dEdxTrackLength[nPrimaryParticle][100]/I");
+  evt->Branch("dir_pol_x"                 , dir_pol_x                  , "dir_pol_x[nPrimaryParticle]/D");
+  evt->Branch("dir_pol_y"                 , dir_pol_y                  , "dir_pol_y[nPrimaryParticle]/D");
+  evt->Branch("dir_pol_z"                 , dir_pol_z                  , "dir_pol_z[nPrimaryParticle]/D");
+  evt->Branch("dir_coc_x"                 , dir_coc_x                  , "dir_coc_x[nPrimaryParticle]/D");
+  evt->Branch("dir_coc_y"                 , dir_coc_y                  , "dir_coc_y[nPrimaryParticle]/D");
+  evt->Branch("dir_coc_z"                 , dir_coc_z                  , "dir_coc_z[nPrimaryParticle]/D");
 
-  evt->Branch("nHits"                  , &nHits                 , "nHits/I");
+  evt->Branch("nHits"                     , &nHits                     , "nHits/I");
   if (m_saveHit) {
-    evt->Branch("HitTID"               , HitTID                 , "HitTID[nHits]/I");
-    evt->Branch("HitPID"               , HitPID                 , "HitPID[nHits]/I");
-    evt->Branch("HitPDG"               , HitPDG                 , "HitPDG[nHits]/I");
-    evt->Branch("HitTrackStatus"       , HitTrackStatus         , "HitTrackStatus[nHits]/I");
-    evt->Branch("HitPrePositionX"      , HitPrePositionX        , "HitPrePositionX[nHits]/D");
-    evt->Branch("HitPrePositionY"      , HitPrePositionY        , "HitPrePositionY[nHits]/D");
-    evt->Branch("HitPrePositionZ"      , HitPrePositionZ        , "HitPrePositionZ[nHits]/D");
-    evt->Branch("HitPosPositionX"      , HitPosPositionX        , "HitPosPositionX[nHits]/D");
-    evt->Branch("HitPosPositionY"      , HitPosPositionY        , "HitPosPositionY[nHits]/D");
-    evt->Branch("HitPosPositionZ"      , HitPosPositionZ        , "HitPosPositionZ[nHits]/D");
-    evt->Branch("HitEdep"              , HitEdep                , "HitEdep[nHits]/D");
+    evt->Branch("HitTID"                  , HitTID                     , "HitTID[nHits]/I");
+    evt->Branch("HitPID"                  , HitPID                     , "HitPID[nHits]/I");
+    evt->Branch("HitPDG"                  , HitPDG                     , "HitPDG[nHits]/I");
+    evt->Branch("HitTrackStatus"          , HitTrackStatus             , "HitTrackStatus[nHits]/I");
+    evt->Branch("HitPrePositionX"         , HitPrePositionX            , "HitPrePositionX[nHits]/D");
+    evt->Branch("HitPrePositionY"         , HitPrePositionY            , "HitPrePositionY[nHits]/D");
+    evt->Branch("HitPrePositionZ"         , HitPrePositionZ            , "HitPrePositionZ[nHits]/D");
+    evt->Branch("HitPosPositionX"         , HitPosPositionX            , "HitPosPositionX[nHits]/D");
+    evt->Branch("HitPosPositionY"         , HitPosPositionY            , "HitPosPositionY[nHits]/D");
+    evt->Branch("HitPosPositionZ"         , HitPosPositionZ            , "HitPosPositionZ[nHits]/D");
+    evt->Branch("HitEdep"                 , HitEdep                    , "HitEdep[nHits]/D");
   }
 
-  evt->Branch("edepInLAr"              , &edepInLAr             , "edepInLAr/D");
-  evt->Branch("edepInLArXY2500mm"      , &edepInLArXY2500mm     , "edepInLArXY2500mm/D");
-  evt->Branch("edepInLArXY2000mm"      , &edepInLArXY2000mm     , "edepInLArXY2000mm/D");
-  evt->Branch("edepInLArXY1500mm"      , &edepInLArXY1500mm     , "edepInLArXY1500mm/D");
-  evt->Branch("edepInLArXY1000mm"      , &edepInLArXY1000mm     , "edepInLArXY1000mm/D");
-  evt->Branch("edepInHadCalX"          , &edepInHadCalX         , "edepInHadCalX/D");
-  evt->Branch("edepInHadCalY"          , &edepInHadCalY         , "edepInHadCalY/D");
-  evt->Branch("edepInMuonFinderX"      , &edepInMuonFinderX     , "edepInMuonFinderX/D");
-  evt->Branch("edepInMuonFinderY"      , &edepInMuonFinderY     , "edepInMuonFinderY/D");
-  evt->Branch("edepInHadAborb"         , &edepInHadAborb        , "edepInHadAborb/D");
-  evt->Branch("edepInMuonFinderAbsorb" , &edepInMuonFinderAbsorb, "edepInMuonFinderAbsorb/D");
-  evt->Branch("edepInCryGap"           , &edepInCryGap          , "edepInCryGap/D");
-  evt->Branch("missCountedEnergy"      , &missCountedEnergy     , "missCountedEnergy/D");
+  evt->Branch("edepInLAr"                 , &edepInLAr                 , "edepInLAr/D");
+  evt->Branch("edepInLArXY2500mm"         , &edepInLArXY2500mm         , "edepInLArXY2500mm/D");
+  evt->Branch("edepInLArXY2000mm"         , &edepInLArXY2000mm         , "edepInLArXY2000mm/D");
+  evt->Branch("edepInLArXY1500mm"         , &edepInLArXY1500mm         , "edepInLArXY1500mm/D");
+  evt->Branch("edepInLArXY1000mm"         , &edepInLArXY1000mm         , "edepInLArXY1000mm/D");
+  evt->Branch("edepInHadCalX"             , &edepInHadCalX             , "edepInHadCalX/D");
+  evt->Branch("edepInHadCalY"             , &edepInHadCalY             , "edepInHadCalY/D");
+  evt->Branch("edepInMuonFinderX"         , &edepInMuonFinderX         , "edepInMuonFinderX/D");
+  evt->Branch("edepInMuonFinderY"         , &edepInMuonFinderY         , "edepInMuonFinderY/D");
+  evt->Branch("edepInHadAborb"            , &edepInHadAborb            , "edepInHadAborb/D");
+  evt->Branch("edepInMuonFinderAbsorb"    , &edepInMuonFinderAbsorb    , "edepInMuonFinderAbsorb/D");
+  evt->Branch("edepInCryGap"              , &edepInCryGap              , "edepInCryGap/D");
+  evt->Branch("missCountedEnergy"         , &missCountedEnergy         , "missCountedEnergy/D");
 
-  evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
+  evt->Branch("nFromFSLParticles"         , &nFromFSLParticles         , "nFromFSLParticles/I");
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -187,6 +191,14 @@ void AnalysisManager::BeginOfEvent() {
   nFromFSPizeroParticles       = 0;
   nFromFSLDecayPizeroParticles = 0;
   countPrimaryParticle         = 0;
+  for (G4int j= 0; j< 200; ++j) {
+    TotalDedxAlongTrackInCM[j] = 0;
+    TotalDedxTrackLength[j] = -1;
+  }
+  for (G4int j= 0; j< 500; ++j) {
+    TotalVtxDedxAlongTrackInCM[j] = 0;
+    TotalVtxDedxTrackLength[j] = -1;
+  }
   for (G4int i= 0; i< 1000; ++i) {
     Px[i]    = -999;
     Py[i]    = -999;
@@ -728,7 +740,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         ToyElectronTransportation(whichPrim, pos_x, pos_y, pos_z, hit->GetEdep());
       } else if (detID==1 && m_addDiffusion=="single") {
         ToySingleElectronTransportation(whichPrim, pos_x, pos_y, pos_z, hit->GetEdep());
-      }else {
+      } else {
         hitClusterZX[0]->Fill(pos_z, pos_x, hit->GetEdep());
         hitClusterZY[0]->Fill(pos_z, pos_y, hit->GetEdep());
         hitClusterZX[whichPrim+1]->Fill(pos_z, pos_x, hit->GetEdep());
@@ -737,6 +749,24 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         vtxHitClusterZY[0]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
         vtxHitClusterZX[whichPrim+1]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
         vtxHitClusterZY[whichPrim+1]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
+      }
+      if (detID==1) {
+        double longitudinal_distance_to_vtx;  // in mm
+        if (nuPDG!=0) {
+          longitudinal_distance_to_vtx = (pos_z-nuZ);
+        } else {
+          longitudinal_distance_to_vtx = ((pos_x-VtxX[0])*Px[0]+
+                                          (pos_y-VtxY[0])*Py[0]+
+                                          (pos_z-VtxZ[0])*Pz[0])/TMath::Sqrt(Px[0]*Px[0]+Py[0]*Py[0]+Pz[0]*Pz[0]);
+        }
+        if (int(longitudinal_distance_to_vtx)>=0 && int(longitudinal_distance_to_vtx)<500) {  // within 500 mm
+          TotalVtxDedxAlongTrackInCM[int(longitudinal_distance_to_vtx)] += hit->GetEdep();
+          TotalVtxDedxTrackLength[int(longitudinal_distance_to_vtx)] = int(longitudinal_distance_to_vtx);
+        }
+        if (int(longitudinal_distance_to_vtx/10.0)>=0 && int(longitudinal_distance_to_vtx/10.0)<200) {  // within 200 cm
+          TotalDedxAlongTrackInCM[int(longitudinal_distance_to_vtx/10.0)] += hit->GetEdep();
+          TotalDedxTrackLength[int(longitudinal_distance_to_vtx/10.0)] = int(longitudinal_distance_to_vtx/10.0);
+        }
       }
       // calculate dEdx along the track
       // combine the tracks if they come from the final state lepton, namely tau-

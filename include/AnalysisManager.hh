@@ -100,6 +100,10 @@ class AnalysisManager {
     G4double dEdxInLAr[1000];
     G4double dEdxAlongTrack[1000][100];
     G4int    dEdxTrackLength[1000][100];
+    G4double TotalDedxAlongTrackInCM[200];
+    G4int    TotalDedxTrackLength[200];
+    G4double TotalVtxDedxAlongTrackInCM[500];
+    G4int    TotalVtxDedxTrackLength[500];
     // reco
     // direction
     G4double dir_pol_x[1000];
