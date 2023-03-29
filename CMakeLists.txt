@@ -97,7 +97,7 @@ file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 
 # Enable macros for out-of-source build
-foreach(_file ${macros} ${genie} ${analysis})
+foreach(_file ${macros} ${genie} ${analysis} ${GridUtils})
   configure_file(
     ${_file}
     ${PROJECT_BINARY_DIR}/${_file}
