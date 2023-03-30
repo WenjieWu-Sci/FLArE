@@ -16,7 +16,7 @@ setup gcc v9_3_0
 
 filelist=$1
 mymacro_full=$2
-outputpath=$4
+outputpath=$3
 
 my_condor_work=${_CONDOR_SCRATCH_DIR}/work
 

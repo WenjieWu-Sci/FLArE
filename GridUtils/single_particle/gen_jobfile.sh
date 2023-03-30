@@ -13,7 +13,6 @@ function gen_single_particle_macros {
     outputfile="LAr_${particle}_momentum_${particle_momentum}GeV_${i}.root"
     if [ -f ${filename} ]; then
       echo "${filename} exists, delete file first"
-      echo ""
       rm ${filename}
     fi
 cat << EOF >> ${filename}
@@ -45,6 +44,7 @@ function gen_batch_macros {
   list_particle_mass=(0.000511 0.105658 1.77686 0.134977 0.13957 0.493677 0.938272 0.939565 0)
   list_particle_momentum=(20 20 20 25 25 50 8 5 20)
   for i in "${!list_particles[@]}"; do
+    echo ""
     echo "generating macro files of ${list_particles[i]} ..."
     particle_mass=${list_particle_mass[i]}
     particle_momentum=${list_particle_momentum[i]}
@@ -58,8 +58,8 @@ if [ $# == 0 ]; then
 elif [ $1 == "macro" ]; then
   echo "generating macro files for single particles ..."
   echo ""
-  num_of_evt_per_file=1000
-  num_of_files=10
+  num_of_evt_per_file=200
+  num_of_files=50
   gen_batch_macros $num_of_evt_per_file $num_of_files
 elif [ $1 == "-h" ]; then
   echo "macro : generate macro files for single particles"
