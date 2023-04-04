@@ -17,8 +17,8 @@ void plot_evd() {
 
   //TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_diffusion.root", "read");
   //TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_diffusion.root", "read");
-  TFile* sfile = new TFile("/dune/app/users/wenjiewu/FLArE_Dev/FLArE_build/test_5_9.root", "read");
-  std::string save_dir = "pics_tmp";
+  TFile* sfile = new TFile("~/pi0_momentum_25GeV.root", "read");
+  std::string save_dir = "~/pics/pics_pi0_momentum_25GeV";
 
   TTree* stree = (TTree*)sfile->Get("evt");
 
@@ -97,7 +97,11 @@ void drawEvd(std::string save_dir, int evtID,
     TString text_content;
     if (idx==0) {
       save_filename.Form("%s/evt_%d_tot_Edep.pdf",save_dir.c_str(),evtID);
-      text_content.Form("EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+      if (nuPDG != 0) {
+        text_content.Form("EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+      } else {
+        text_content.Form("EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,trackPDG[0],GetTotalEnergy(Px[0],Py[0],Pz[0],Pmass[0])/1000,VtxX[0],VtxY[0],VtxZ[0]);
+      }
       drawOneEvd(nuX, nuY, nuZ, hitClustersZX[idx], hitClustersZY[idx], save_filename, text_content, true);
     } else {
       save_filename.Form("%s/evt_%d_Prong_%d_Edep.pdf",save_dir.c_str(),evtID,idx-1);
@@ -108,7 +112,11 @@ void drawEvd(std::string save_dir, int evtID,
 
     if (idx==0) {
       save_filename.Form("%s/evt_vtx_%d_tot_Edep.pdf",save_dir.c_str(),evtID);
-      text_content.Form("EvtID %d nuPDG %d nuE %.2f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+      if (nuPDG != 0) {
+        text_content.Form("EvtID %d nuPDG %d nuE %.1f GeV nuVtx (%.1f, %.1f, %.1f) mm ",evtID,nuPDG,nuE,nuX,nuY,nuZ);
+      } else {
+        text_content.Form("EvtID %d PDG %d Etot %.1f GeV Vtx (%.1f, %.1f, %.1f) mm ",evtID,trackPDG[0],GetTotalEnergy(Px[0],Py[0],Pz[0],Pmass[0])/1000,VtxX[0],VtxY[0],VtxZ[0]);
+      }
       drawOneEvd(nuX, nuY, nuZ, vtxHitClustersZX[idx], vtxHitClustersZY[idx], save_filename, text_content, false);
     } else {
       save_filename.Form("%s/evt_vtx_%d_Prong_%d_Edep.pdf",save_dir.c_str(),evtID,idx-1);
@@ -164,7 +172,7 @@ void drawOneEvd(double nuX, double nuY, double nuZ,
   hitClusterZX->GetYaxis()->SetTickSize(0.01);
   hitClusterZX->GetZaxis()->SetLabelSize(0.08);
   hitClusterZX->GetZaxis()->SetLabelOffset(0.001);
-  hitClusterZX->Draw("colz");
+  hitClusterZX->Draw("9 colz");
   if(drawVtx) vzx->Draw("same");
   LArTPC->Draw("same");
   HadCalus->Draw("same");
@@ -192,7 +200,7 @@ void drawOneEvd(double nuX, double nuY, double nuZ,
   hitClusterZY->GetXaxis()->SetLabelSize(0.08*padratio);
   hitClusterZY->GetZaxis()->SetLabelSize(0.08*padratio);
   hitClusterZY->GetZaxis()->SetLabelOffset(0.001/padratio);
-  hitClusterZY->Draw("colz");
+  hitClusterZY->Draw("9 colz");
   if(drawVtx) vzy->Draw("same");
   LArTPC->Draw("same");
   HadCalus->Draw("same");
