@@ -39,6 +39,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     TLorentzVector neux4;
     G4int int_type        { -1 };
     G4int scattering_type { -1 };
+    G4double w { -1 };
     G4int fslpdg;
     TLorentzVector fslp4;
     TLorentzVector fslx4;

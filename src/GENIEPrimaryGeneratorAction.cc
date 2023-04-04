@@ -81,12 +81,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   const ProcessInfo procInfo = event->Summary()->ProcInfo();
   int_type        = procInfo.InteractionTypeId();
   scattering_type = procInfo.ScatteringTypeId();
-  /****
-  InteractionType _int_type;
-  ScatteringType _scattering_type;
-  std::cout<<_int_type.AsString(int_type)<<" "
-           <<_scattering_type.AsString(scattering_type)<<std::endl;
-  ****/
+  W               = event->Summary()->Kine().W();  // invariant hadronic mass
 
   GHepParticle* neu = event->Probe();
   neuIdx = ghepEvtStartIdx + evtID;
