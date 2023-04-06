@@ -69,7 +69,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // create an experimental hall with size 20*20*20 m
   G4double worldSizeX = 20 * m;
   G4double worldSizeY = 20 * m;
-  G4double worldSizeZ = 80 * m;
+  G4double worldSizeZ = 90 * m;
   // LAr volume: +z being beam direction
   G4double lArSizeX = 1.8 * m;
   G4double lArSizeY = 1.8 * m;
