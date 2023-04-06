@@ -27,6 +27,7 @@ class AnalysisManager {
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
+    void circleFit(G4bool val) { m_circularFit = val; }
     void addDiffusion(G4String val) { m_addDiffusion = val; }
 
   private:
@@ -142,6 +143,7 @@ class AnalysisManager {
 
     G4bool m_saveHit;
     G4bool m_saveEvd;
+    G4bool m_circularFit;
     TString m_addDiffusion;
 
     //std::vector<TH2F*> hitClusterXY;
@@ -149,6 +151,14 @@ class AnalysisManager {
     std::vector<TH2F*> hitClusterZY;
     std::vector<TH2F*> vtxHitClusterZX;
     std::vector<TH2F*> vtxHitClusterZY;
+
+    // FSL hits for circular fit
+    std::vector<double> hitXFSL;
+    std::vector<double> hitZFSL;
+    G4int circNhits;
+    G4int circStatus;
+    G4double xc, zc, rc;
+    G4double chi2;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);

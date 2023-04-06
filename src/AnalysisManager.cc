@@ -13,6 +13,7 @@
 #include "reco/PCAAnalysis3D.hh"
 #include "reco/Cluster3D.hh"
 #include "reco/LinearFit.hh"
+#include "reco/CircleFit.hh"
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
@@ -45,6 +46,7 @@ AnalysisManager::AnalysisManager() {
   m_addDiffusion = "false";
   m_saveHit = false;
   m_saveEvd = false;
+  m_circularFit = false;
 }
 
 AnalysisManager::~AnalysisManager() {;}
@@ -134,7 +136,18 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("edepInCryGap"           , &edepInCryGap          , "edepInCryGap/D");
   evt->Branch("missCountedEnergy"      , &missCountedEnergy     , "missCountedEnergy/D");
 
-  evt->Branch("nFromFSLParticles"      , &nFromFSLParticles      , "nFromFSLParticles/I");
+  evt->Branch("nFromFSLParticles"      , &nFromFSLParticles     , "nFromFSLParticles/I");
+
+  if(m_circularFit){
+    evt->Branch("circStatus"           , &circStatus            , "circStatus/I"); 
+    evt->Branch("circXc"               , &xc                    , "circXc/D"); 
+    evt->Branch("circZc"               , &zc                    , "circZc/D");
+    evt->Branch("circRc"               , &rc                    , "circRc/D");
+    evt->Branch("circChi2"             , &chi2                  , "circChi2/D"); 
+    evt->Branch("circNhits"            , &circNhits             , "circNhits/I");
+    evt->Branch("circHitXFSL"          , &hitXFSL);
+    evt->Branch("circHitZFSL"          , &hitZFSL);        
+  }
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -257,6 +270,9 @@ void AnalysisManager::BeginOfEvent() {
   hitClusterZY.clear();
   vtxHitClusterZX.clear();
   vtxHitClusterZY.clear();
+
+  hitXFSL.clear();
+  hitZFSL.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -409,6 +425,16 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     delete linFit;
   }
 
+  if (m_circularFit){
+    circularfitter::CircleFit* circFit = new circularfitter::CircleFit(hitXFSL,hitZFSL);
+    circStatus = circFit->GetStatus();
+    circNhits = hitXFSL.size();
+    xc = circFit->GetXc();
+    zc = circFit->GetZc();
+    rc = circFit->GetR();
+    chi2 = circFit->GetChi2();
+  }
+  
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
   FillPseudoRecoVar();
 
@@ -576,6 +602,12 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           edepInCryGap += hit->GetEdep();
           break;	
       }
+
+      // save FSL hits for circle fitting
+      if( detID > 1 && detID < 6 && TMath::Abs(hit->GetParticle())==13 && hit->GetPID() == 0 ){
+        hitXFSL.push_back(post_x);
+        hitZFSL.push_back(post_z);
+      } 
 
       allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
 
