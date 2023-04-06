@@ -31,6 +31,7 @@ class GENIEPrimaryGeneratorAction {
     G4int             FSLPDG() { return fslPDG; };
     TLorentzVector    FSLP4()  { return fslP4; };
     TLorentzVector    FSLX4()  { return fslX4; };
+    G4double          GetW()   { return W; };
     
   private:
     G4GeneralParticleSource* fGPS;
@@ -53,6 +54,7 @@ class GENIEPrimaryGeneratorAction {
     G4int fslPDG;
     TLorentzVector fslP4;
     TLorentzVector fslX4;
+    G4double W;
 };
 
 #endif

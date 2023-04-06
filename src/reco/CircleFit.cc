@@ -67,7 +67,6 @@ namespace circularfitter {
       fChi2 += dist*dist;
     }
 
-    fChi2 /= n;
     fStatus = 0;
   }
 

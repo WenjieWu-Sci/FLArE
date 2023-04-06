@@ -9,13 +9,8 @@
 #
 /run/initialize
 #
-#/genie/useGenie true
-#/genie/genieInput genie/nutau_ar40_10GeV.ghep.root
-#/genie/genieIStart 2
-##
-#/histo/fileName nutau_10GeV.root
-#/histo/saveEvd false
-#
+
+#/vis/open DAWNFILE
 # Use this open statement to create an OpenGL view:
 /vis/open OGL 1000x800-0+0
 /vis/ogl/set/displayListLimit 5000000
@@ -29,13 +24,15 @@
 /vis/drawVolume
 #
 # Specify view angle:
-#/vis/viewer/set/viewpointThetaPhi 90 180 
-/vis/viewer/set/viewpointThetaPhi 70 20 
+#/vis/viewer/set/viewpointThetaPhi 90 180  # cross-section view
+#/vis/viewer/set/viewpointThetaPhi 70 20   # view with neutrinos enter from the right
+/vis/viewer/set/viewpointThetaPhi 70 200  # view aligns with Yichen's engineering drawing
 #
 /vis/viewer/pan 0 0
 /vis/viewer/zoom 1
 /vis/viewer/scale 1 1 1
 /vis/viewer/set/background white
+#/vis/viewer/set/background white ! ! 0.
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe

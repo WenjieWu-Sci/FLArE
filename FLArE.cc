@@ -19,8 +19,8 @@ using namespace std;
  */
 int main(int argc, char** argv) {
   std::cout<<"Application starting..."<<std::endl;
-  G4long myseed = 345354;
-  CLHEP::HepRandom::setTheSeed(myseed);
+//  G4long myseed = 345354;
+//  CLHEP::HepRandom::setTheSeed(myseed);
 
   // invoke analysis manager before ui manager to invoke analysis manager messenger
   AnalysisManager* analysis = AnalysisManager::GetInstance();
