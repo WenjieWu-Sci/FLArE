@@ -7,6 +7,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
+#include <THnSparse.h>
 #include "AnalysisManagerMessenger.hh"
 //#include <Math/Point3Dfwd.h>
 #include <Math/Point3D.h>
@@ -100,10 +101,8 @@ class AnalysisManager {
     G4double dEdxInLAr[1000];
     G4double dEdxAlongTrack[1000][100];
     G4int    dEdxTrackLength[1000][100];
-    G4double TotalDedxAlongTrackInCM[200];
-    G4int    TotalDedxTrackLength[200];
-    G4double TotalVtxDedxAlongTrackInCM[500];
-    G4int    TotalVtxDedxTrackLength[500];
+    G4double TotalDedxLongitudinal[3000];
+    G4double TrueTotalDedxLongitudinal[3000];
     // reco
     // direction
     G4double dir_pol_x[1000];
@@ -154,6 +153,7 @@ class AnalysisManager {
     std::vector<TH2F*> hitClusterZY;
     std::vector<TH2F*> vtxHitClusterZX;
     std::vector<TH2F*> vtxHitClusterZY;
+    THnSparseF* hist3DEdep;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
