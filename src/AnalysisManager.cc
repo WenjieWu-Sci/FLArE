@@ -111,6 +111,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("dir_coc_z"                 , dir_coc_z                  , "dir_coc_z[nPrimaryParticle]/D");
 
   evt->Branch("nHits"                     , &nHits                     , "nHits/I");
+  evt->Branch("sparseFractionMem"         , &sparseFractionMem         , "sparseFractionMem/D");
+  evt->Branch("sparseFractionBins"        , &sparseFractionBins        , "sparseFractionBins/D");
   if (m_saveHit) {
     evt->Branch("HitTID"                  , HitTID                     , "HitTID[nHits]/I");
     evt->Branch("HitPID"                  , HitPID                     , "HitPID[nHits]/I");
@@ -173,6 +175,8 @@ void AnalysisManager::BeginOfEvent() {
   nuFSLPz                      = -999;
   nuFSLE                       = -999;
   nHits                        = 0;
+  sparseFractionMem            = -1;
+  sparseFractionBins           = -1;
   edepInLAr                    = 0;
   edepInLArXY2500mm            = 0;
   edepInLArXY2000mm            = 0;
@@ -408,8 +412,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
-  std::cout<<"hist3DEdep->GetSparseFractionMem() : "<<hist3DEdep->GetSparseFractionMem()<<std::endl;
-  std::cout<<"hist3DEdep->GetSparseFractionBins() : "<<hist3DEdep->GetSparseFractionBins()<<std::endl;
+  sparseFractionMem = hist3DEdep->GetSparseFractionMem();
+  sparseFractionBins = hist3DEdep->GetSparseFractionBins();
   slid::ShowerLID* shwlid = new slid::ShowerLID(hist3DEdep, nuX, nuY, nuZ, 0., 0., 1.); 
   Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
   std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
@@ -867,7 +871,7 @@ void AnalysisManager::InitializeEvd() {
   /// 0: deposited energy of all hits
   /// non-0: deposited energy of each prong (primary particle)
   //
-  Int_t res_tpc[3] = {1, 1, 1}; // mm
+  Int_t res_tpc[3] = {1, 2, 2}; // mm
   int len_tpc[3] = {1800, 1800, 7000}; // mm
 
   int res_cal_z = 10; // mm

@@ -154,6 +154,8 @@ class AnalysisManager {
     std::vector<TH2F*> vtxHitClusterZX;
     std::vector<TH2F*> vtxHitClusterZY;
     THnSparseF* hist3DEdep;
+    G4double sparseFractionMem;
+    G4double sparseFractionBins;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
