@@ -63,7 +63,8 @@ namespace circularfitter {
     //compute chi2
     fChi2 = 0.0;
     for (int i = 0; i < n; i++) {
-      fChi2 += TMath::Abs((z.at(i) - fZc) * (z.at(i) - fZc) + (x.at(i) - fXc) * (x.at(i) - fXc) - fR * fR);
+      double dist = TMath::Sqrt((z.at(i) - fZc) * (z.at(i) - fZc) + (x.at(i) - fXc) * (x.at(i) - fXc) ) - fR;
+      fChi2 += dist*dist;
     }
 
     fChi2 /= n;
