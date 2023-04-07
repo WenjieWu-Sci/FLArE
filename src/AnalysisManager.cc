@@ -148,9 +148,15 @@ void AnalysisManager::bookEvtTree() {
     evt->Branch("circXc"                  , &xc                        , "circXc/D"); 
     evt->Branch("circZc"                  , &zc                        , "circZc/D");
     evt->Branch("circRc"                  , &rc                        , "circRc/D");
-    evt->Branch("circChi2"                , &chi2                      , "circChi2/D"); 
+    evt->Branch("circChi2"                , &chi2c                     , "circChi2/D"); 
     evt->Branch("circNhits"               , &circNhits                 , "circNhits/I");
+    evt->Branch("lineStatus"              , &lineStatus                , "lineStatus/I"); 
+    evt->Branch("p0"                      , &p0                        , "p0/D"); 
+    evt->Branch("p1"                      , &p1                        , "p1/D");
+    evt->Branch("cosDip"                  , &cosDip                    , "cosDip/D");
+    evt->Branch("lineChi2"                , &chi2l                     , "lineChi2/D"); 
     evt->Branch("circHitXFSL"             , &hitXFSL);
+    evt->Branch("circHitYFSL"             , &hitYFSL);
     evt->Branch("circHitZFSL"             , &hitZFSL);        
   }
 }
@@ -286,6 +292,7 @@ void AnalysisManager::BeginOfEvent() {
   vtxHitClusterZY.clear();
 
   hitXFSL.clear();
+  hitYFSL.clear();
   hitZFSL.clear();
 }
 
@@ -442,12 +449,18 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
   if (m_circularFit){
     circularfitter::CircleFit* circFit = new circularfitter::CircleFit(hitXFSL,hitZFSL);
+    circularfitter::LineFit* lineFit = new circularfitter::LineFit(hitZFSL,hitYFSL);
     circStatus = circFit->GetStatus();
+    lineStatus = lineFit->GetStatus();
     circNhits = hitXFSL.size();
     xc = circFit->GetXc();
     zc = circFit->GetZc();
     rc = circFit->GetR();
-    chi2 = circFit->GetChi2();
+    p0 = lineFit->GetP0();
+    p1 = lineFit->GetP1();
+    cosDip = lineFit->GetCosDip();
+    chi2c = circFit->GetChi2();
+    chi2l = lineFit->GetChi2();
   }
   
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
@@ -621,6 +634,7 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
       // save FSL hits for circle fitting
       if( detID > 1 && detID < 6 && TMath::Abs(hit->GetParticle())==13 && hit->GetPID() == 0 ){
         hitXFSL.push_back(post_x);
+        hitYFSL.push_back(post_y);
         hitZFSL.push_back(post_z);
       } 
 

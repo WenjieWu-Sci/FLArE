@@ -160,10 +160,13 @@ class AnalysisManager {
     // FSL hits for circular fit
     std::vector<double> hitXFSL;
     std::vector<double> hitZFSL;
+    std::vector<double> hitYFSL;
     G4int circNhits;
     G4int circStatus;
+    G4int lineStatus;
     G4double xc, zc, rc;
-    G4double chi2;
+    G4double p0, p1, cosDip;
+    G4double chi2c, chi2l;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);

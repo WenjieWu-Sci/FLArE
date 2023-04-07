@@ -66,11 +66,59 @@ namespace circularfitter {
       double dist = TMath::Sqrt((z.at(i) - fZc) * (z.at(i) - fZc) + (x.at(i) - fXc) * (x.at(i) - fXc) ) - fR;
       fChi2 += dist*dist;
     }
-
+  
+    fChi2 /= n;
     fStatus = 0;
   }
 
   CircleFit::~CircleFit() 
+  {
+  }
+
+// -----------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------
+
+  LineFit::LineFit(const std::vector<double> z, const std::vector<double> y)
+  {
+    fP0 = -9999;
+    fP1 = -9999;
+    fCosDip = -9999;
+    
+    if( z.size() != y.size() ) { fStatus = 1; return; }
+    int n = z.size(); 	
+    
+    double S1 = 0.;
+    double SZ = 0.;
+    double SY = 0.;
+    double SYZ = 0.;
+    double SZZ = 0.;
+
+    for (int i = 0; i < n; i++) {
+      S1 += 1.;
+      SZ += z.at(i);
+      SY += y.at(i);
+      SYZ += z.at(i) * y.at(i);
+      SZZ += z.at(i) * z.at(i);
+    }
+    
+    double D = S1 * SZZ - SZ * SZ;
+    
+    if (D == 0.) { fStatus = 2; return; }
+
+    fP0 = (SY * SZZ - SZ * SYZ) / D;  // i.p. at x = 0
+    fP1 = (S1 * SYZ - SZ * SY) / D;   // tg(theta)
+    fCosDip = 1./TMath::Sqrt(1+fP1*fP1);    
+
+    fChi2 = 0.;
+    for (int i = 0; i < n; i++) {
+      fChi2 += (y.at(i) - fP0 - fP1 * z.at(i)) * (y.at(i) - fP0 - fP1 * z.at(i));
+    }
+    
+    fChi2 /= n;
+    fStatus = 0;
+  }
+
+  LineFit::~LineFit() 
   {
   }
 }
