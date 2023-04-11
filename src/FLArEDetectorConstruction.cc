@@ -524,7 +524,7 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   sdManager->AddNewDetector(TrkVerScinSD);
 
   // HadCatcher + MuonFinder  magnetic field
-  G4ThreeVector fieldValue = G4ThreeVector(0,1.*tesla, 0);
+  G4ThreeVector fieldValue = G4ThreeVector(0,fFieldValue, 0);
   magField = new G4UniformMagField(fieldValue);
   fieldMgr = new G4FieldManager();
   fieldMgr->SetDetectorField(magField);

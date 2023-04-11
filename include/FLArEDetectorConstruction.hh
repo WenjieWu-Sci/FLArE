@@ -27,6 +27,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     void SetDetMaterial(G4String detMaterial);
     void SetGeomOption(G4String detGeomOption);
     void saveGDML(G4bool i) { m_saveGdml = i; };
+    void SetFieldValue(G4double val) { fFieldValue = val; }
     void UpdateGeometry();
 
   private:
@@ -50,6 +51,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* trkHorScinLogical; 
     G4String fDetMaterialName;
     G4String fDetGeomOption;
+    G4double fFieldValue;
     G4bool m_saveGdml;
 
     DetectorConstructionMaterial* LArBoxMaterials;
