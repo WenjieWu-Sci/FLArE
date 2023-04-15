@@ -1,5 +1,6 @@
 #include "reco/CircleFit.hh"
 
+#include <iostream>
 #include <vector>
 #include <TMath.h>
 
@@ -118,7 +119,69 @@ namespace circularfitter {
     fStatus = 0;
   }
 
+  line LineFit::GetLine()
+  {
+    line l;
+    l.q = fP0;
+    l.m = fP1;
+    return l;
+  }
+
   LineFit::~LineFit() 
   {
   }
+
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+
+  CircleExtractor::CircleExtractor(const std::vector<double> zpre, const std::vector<double> xpre,
+                      const std::vector<double> zpost, const std::vector<double> xpost)
+  {
+    LineFit lf_pre(zpre,xpre);
+    LineFit lf_post(zpost,xpost);
+
+    fpre = lf_pre.GetLine();
+    fpost = lf_post.GetLine();
+
+    fZin = fMagnetZPos - fMagnetZSize/2.;
+    fZout = fMagnetZPos + fMagnetZSize/2.;
+
+    fXin = extrapolateLine(fZin,fpre);
+    fXout = extrapolateLine(fZout,fpost);
+
+    std::pair<double,double> p = getPerpLineIntersection(fZin,fXin,fZout,fXout,fpre,fpost);
+    fXc = p.second;
+    fZc = p.first;
+
+    fR1 = getR(fZin,fXin,fZc,fXc);
+    fR2 = getR(fZout,fXout,fZc,fXc);
+  }
+
+  double CircleExtractor::extrapolateLine(double z, line l)
+  { 
+    return l.q + z*l.m; 
+  }
+  
+  std::pair<double,double> CircleExtractor::getPerpLineIntersection(double zin, double xin, double zout, double xout, line l1, line l2)
+  {
+    double m1 = l1.m;
+    double m2 = l2.m;
+    
+    double z = m1*m2/(m1-m2)*(xout-xin) + m1*zout/(m1-m2) - m2*zin/(m1-m2);
+    double x1 = xin - 1./m1*(z-zin);
+    double x2 = xout - 1./m2*(z-zout);
+
+    return std::make_pair(z,(x1+x2)/2.);
+  }
+  
+  double CircleExtractor::getR(double za, double xa, double zb, double xb)
+  {
+    return TMath::Sqrt( (za-zb)*(za-zb) + (xa-xb)*(xa-xb) );
+  }
+
+  CircleExtractor::~CircleExtractor() 
+  {
+  }
+
+
 }

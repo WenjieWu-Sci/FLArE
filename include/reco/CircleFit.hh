@@ -4,6 +4,15 @@
 #include <vector>
 
 namespace circularfitter {
+
+  const double fMagnetZPos = 35960.+3500.;
+  const double fMagnetZSize = 4000.; //4 m
+
+  struct line {
+    double m;
+    double q;
+  };
+
   class CircleFit {
     public:
       CircleFit(const std::vector<double> x, const std::vector<double> z);
@@ -33,6 +42,7 @@ namespace circularfitter {
       double GetCosDip() { return fCosDip; };
       double GetChi2() { return fChi2; };
       int GetStatus() { return fStatus; };
+      line GetLine(); 
 
       ~LineFit();
 
@@ -43,8 +53,32 @@ namespace circularfitter {
       double fChi2;
       int fStatus;
   };
+  
+  class CircleExtractor {
+    public:
+      CircleExtractor(const std::vector<double> zpre, const std::vector<double> xpre,
+                      const std::vector<double> zpost, const std::vector<double> xpost);
 
+      double extrapolateLine(double z, line l);
+      std::pair<double,double> getPerpLineIntersection(double z1, double x1, double z2, double x2, line l1, line l2);
+      double getR(double za, double xa, double zb, double xb);
 
+      double GetXc() { return fXc; };
+      double GetZc() { return fZc; };
+      double GetR() { return (fR1+fR2)/2.; };
+      line GetPreLine() { return fpre; };
+      line GetPostLine() { return fpost; };     
+
+      ~CircleExtractor();
+    
+    private:
+      line fpre;
+      line fpost;
+      double fZc, fXc;
+      double fZin, fXin;
+      double fZout, fXout;
+      double fR1;
+      double fR2;        
+  };
 }
-
 #endif

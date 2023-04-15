@@ -158,15 +158,28 @@ class AnalysisManager {
     std::vector<TH2F*> vtxHitClusterZY;
 
     // FSL hits for circular fit
-    std::vector<double> hitXFSL;
-    std::vector<double> hitZFSL;
-    std::vector<double> hitYFSL;
-    G4int circNhits;
-    G4int circStatus;
-    G4int lineStatus;
-    G4double xc, zc, rc;
+    G4int circNhits; //hits in HadCat+MF
+    G4int preTrkNhits; // hits in pre-Trk
+    G4int postTrkNhits; // hits in post-Trk
+    G4int circStatus, lineStatus; 
+    G4double xc, zc, rc; //fit in HadCat+MF
     G4double p0, p1, cosDip;
     G4double chi2c, chi2l;
+    G4double trkxc, trkzc, trkrc; //fit in Trk
+    G4double trkp0, trkp1, trkcosDip;
+    G4double trkmIn, trkqIn, trkmOut, trkqOut;
+    std::vector<double> hitXFSL; //hits/true P
+    std::vector<double> hitZFSL;
+    std::vector<double> hitYFSL;
+    std::vector<double> hitPFSL;
+    std::vector<double> preTrkXFSL;
+    std::vector<double> preTrkZFSL;
+    std::vector<double> preTrkYFSL;
+    std::vector<double> preTrkPFSL;
+    std::vector<double> postTrkXFSL;
+    std::vector<double> postTrkZFSL;
+    std::vector<double> postTrkYFSL;
+    std::vector<double> postTrkPFSL;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
