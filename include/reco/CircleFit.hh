@@ -80,5 +80,21 @@ namespace circularfitter {
       double fR1;
       double fR2;        
   };
+  
+  class ParabolicFit {
+    public:
+      ParabolicFit(const std::vector<double> z, const std::vector<double> x, double r0);
+
+      double GetA() { return fA; };
+      double GetB() { return fB; };
+      double GetR() { return fR; };
+
+      ~ParabolicFit();
+
+    private:
+      double fA;
+      double fB;
+      double fR;
+  };
 }
 #endif

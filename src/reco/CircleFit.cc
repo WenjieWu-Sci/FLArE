@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <TMath.h>
+#include <TGraph.h>
+#include <TF1.h>
 
 namespace circularfitter {
   CircleFit::CircleFit(const std::vector<double> x, const std::vector<double> z)
@@ -183,5 +185,32 @@ namespace circularfitter {
   {
   }
 
+// ----------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
+
+  ParabolicFit::ParabolicFit(std::vector<double> z, std::vector<double> x, double r0)
+  {	
+    TGraph *g = new TGraph();
+    
+    for(int i=0; i<z.size(); i++){  g->SetPoint(i,z.at(i),x.at(i)); }
+
+    // parabolic in x-z plane: x = a + b*z + x*z2	
+    TF1 *f = new TF1("f","[0]+[1]*x+[2]*x*x",z.front()-100,z.back()+100);
+    f->SetParameter(0,0);
+    f->SetParameter(1, (x.at(1)-x.at(0))/(z.at(1)-z.at(0)) );
+    f->SetParameter(2, 1./(2*r0) );
+	
+    g->Fit("f", "QN");
+	
+    fA = f->GetParameter(0);
+    fB = f->GetParameter(1);	
+    double c = f->GetParameter(2);
+
+    fR = 1./(2*c);
+  }
+  
+  ParabolicFit::~ParabolicFit() 
+  {
+  }
 
 }
