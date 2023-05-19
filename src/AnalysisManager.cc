@@ -691,23 +691,26 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
 
       // save FSL (only muons!) hits for circle fitting
       if( TMath::Abs(hit->GetParticle())==13 && hit->GetPID() == 0 ){
+        double px = hit->GetInitMomentum().x();
+        double pz = hit->GetInitMomentum().z();
+        double p_perp = TMath::Sqrt(px*px+pz*pz);
         if( detID > 1 && detID < 6){
           hitXFSL.push_back(post_x);
           hitYFSL.push_back(post_y);
           hitZFSL.push_back(post_z);
-          hitPFSL.push_back(hit->GetInitMomentum().mag());
+          hitPFSL.push_back(p_perp);
         }
         else if( detID > 8 && post_z < circularfitter::fMagnetZPos){
           preTrkXFSL.push_back(post_x);
           preTrkYFSL.push_back(post_y);
           preTrkZFSL.push_back(post_z);
-          preTrkPFSL.push_back(hit->GetInitMomentum().mag());
+          preTrkPFSL.push_back(p_perp);
         }
         else if ( detID > 8 && post_z > circularfitter::fMagnetZPos){
           postTrkXFSL.push_back(post_x);
           postTrkYFSL.push_back(post_y);
           postTrkZFSL.push_back(post_z);
-          postTrkPFSL.push_back(hit->GetInitMomentum().mag());
+          postTrkPFSL.push_back(p_perp);
         }
       }
 

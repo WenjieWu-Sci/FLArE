@@ -12,7 +12,7 @@ function gen_single_particle_macros {
   for i in `seq 1 1 ${num_file}`
   do
     seed=$((42+i))
-    filename="/pnfs/dune/persistent/users/mvicenzi/job_sub/macros/muon_studies/${particle}_momentum_${particle_momentum}GeV_B_${field}T_${i}.mac"
+    filename="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/muon_studies/${particle}_momentum_${particle_momentum}GeV_B_${field}T_${i}.mac"
     outputfile="${particle}_momentum_${particle_momentum}GeV_B_${field}T_${i}.root"
     if [ -f ${filename} ]; then
       echo "${filename} exists, delete file first"
@@ -49,10 +49,10 @@ function gen_batch_macros {
   n_files=$1; shift
   particle="mu-"
   particle_mass=0.105658
-  list_particle_momentum=(0.5 1 5 10 15 20 25 30)
-  list_fields=(0.5 1 1.5)
+  list_particle_momentum=(20 30)
+  list_fields=(0 1)
   
-  list="/pnfs/dune/persistent/users/mvicenzi/job_sub/macros/muon_studies/macros_list.txt"
+  list="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/muon_studies/macros_list.txt"
   local_list="temp.txt"
   if [ -f ${list} ]; then
       rm ${list} ${local_list}
@@ -74,7 +74,7 @@ function gen_batch_macros {
   cp $local_list $list
 }
 
-num_of_evt_per_file=10
-num_of_files=1
+num_of_evt_per_file=$1
+num_of_files=$2
 
 gen_batch_macros $num_of_evt_per_file $num_of_files
