@@ -59,6 +59,11 @@
   saveEvdCmd->SetParameterName("saveEvd", true);
   saveEvdCmd->SetDefaultValue(false);
 
+  circleFitCmd = new G4UIcmdWithABool("/histo/circleFit", this);
+  circleFitCmd->SetGuidance("perform circular fit");
+  circleFitCmd->SetParameterName("circleFit", true);
+  circleFitCmd->SetDefaultValue(false);
+  
   addDiffusionCmd = new G4UIcmdWithAString("/histo/addDiffusion", this);
   addDiffusionCmd->SetGuidance("add toy diffusion effect");
   addDiffusionCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
@@ -75,6 +80,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
   delete factoryCmd;
   delete saveHitCmd;
   delete saveEvdCmd;
+  delete circleFitCmd;
   delete addDiffusionCmd;
   delete histoDir;
 }
@@ -86,6 +92,7 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
   if (command == factoryCmd) anamanager->setFileName(newValues);
   if (command == saveHitCmd) anamanager->saveHit(saveHitCmd->GetNewBoolValue(newValues));
   if (command == saveEvdCmd) anamanager->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
+  if (command == circleFitCmd) anamanager->circleFit(circleFitCmd->GetNewBoolValue(newValues));
   if (command == addDiffusionCmd) anamanager->addDiffusion(newValues);
 
   //  if(command == histoCmd) histo->setSeed(newValues);

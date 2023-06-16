@@ -5,6 +5,7 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcommand.hh"
 #include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -23,6 +24,12 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
     detGdmlCmd->SetParameterName("saveGdml", true);
     detGdmlCmd->SetDefaultValue(false);
 
+    detFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/field", this);
+    detFieldCmd->SetUnitCategory("Magnetic flux density");
+    detFieldCmd->SetDefaultUnit("tesla");
+    detFieldCmd->SetUnitCandidates("tesla kG G");
+    detFieldCmd->SetDefaultValue(1.0);
+
 //    updateCmd = new G4UIcommand("/det/update", this);
 //    updateCmd->SetGuidance("update the detector geometry with changed value");
 //    updateCmd->SetGuidance("must be run before beamOn if detector has been changed");
@@ -34,6 +41,7 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
   delete detMatCmd;
   delete detGeomCmd;
   delete detGdmlCmd;
+  delete detFieldCmd;
 //  delete updateCmd;
   delete detDir;
 }
@@ -42,8 +50,9 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
 
 void FLArEDetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
   if (command == detMatCmd)  det->SetDetMaterial(newValues);
-  if (command == detGeomCmd)  det->SetGeomOption(newValues);
+  if (command == detGeomCmd) det->SetGeomOption(newValues);
   if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
 //  if (command == updateCmd) det->UpdateGeometry();
 }
 

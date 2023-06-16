@@ -13,6 +13,7 @@
 #include "reco/PCAAnalysis3D.hh"
 #include "reco/Cluster3D.hh"
 #include "reco/LinearFit.hh"
+#include "reco/CircleFit.hh"
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
@@ -45,6 +46,7 @@ AnalysisManager::AnalysisManager() {
   m_addDiffusion = "false";
   m_saveHit = false;
   m_saveEvd = false;
+  m_circularFit = false;
 }
 
 AnalysisManager::~AnalysisManager() {;}
@@ -138,8 +140,46 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("edepInMuonFinderAbsorb"    , &edepInMuonFinderAbsorb    , "edepInMuonFinderAbsorb/D");
   evt->Branch("edepInCryGap"              , &edepInCryGap              , "edepInCryGap/D");
   evt->Branch("missCountedEnergy"         , &missCountedEnergy         , "missCountedEnergy/D");
-
+  
   evt->Branch("nFromFSLParticles"         , &nFromFSLParticles         , "nFromFSLParticles/I");
+
+  if(m_circularFit){
+    evt->Branch("circNhits"               , &circNhits                 , "circNhits/I");
+    evt->Branch("preTrkNhits"             , &preTrkNhits               , "preTrkNhits/I");
+    evt->Branch("postTrkNhits"            , &postTrkNhits              , "postTrkNhits/I");
+    evt->Branch("circStatus"              , &circStatus                , "circStatus/I"); 
+    evt->Branch("lineStatus"              , &lineStatus                , "lineStatus/I"); 
+    evt->Branch("circXc"                  , &xc                        , "circXc/D"); 
+    evt->Branch("circZc"                  , &zc                        , "circZc/D");
+    evt->Branch("circRc"                  , &rc                        , "circRc/D");
+    evt->Branch("circChi2"                , &chi2c                     , "circChi2/D"); 
+    evt->Branch("circp0"                  , &p0                        , "circp0/D"); 
+    evt->Branch("circp1"                  , &p1                        , "circp1/D");
+    evt->Branch("circcosDip"              , &cosDip                    , "circcosDip/D");
+    evt->Branch("lineChi2"                , &chi2l                     , "lineChi2/D"); 
+    evt->Branch("trkXc"                   , &trkxc                     , "trkXc/D"); 
+    evt->Branch("trkZc"                   , &trkzc                     , "trkZc/D");
+    evt->Branch("trkRc"                   , &trkrc                     , "trkRc/D");
+    evt->Branch("trkp0"                   , &trkp0                     , "trkp0/D"); 
+    evt->Branch("trkp1"                   , &trkp1                     , "trkp1/D");
+    evt->Branch("trkcosDip"               , &trkcosDip                 , "trkcosDip/D");
+    evt->Branch("trkqIn"                  , &trkqIn                    , "trkqIn/D");
+    evt->Branch("trkmIn"                  , &trkmIn                    , "trkmIn/D");
+    evt->Branch("trkqOut"                 , &trkqOut                   , "trkqOut/D");
+    evt->Branch("trkmOut"                 , &trkmOut                   , "trkmOut/D");
+    evt->Branch("circHitXFSL"             , &hitXFSL);
+    evt->Branch("circHitYFSL"             , &hitYFSL);
+    evt->Branch("circHitZFSL"             , &hitZFSL);        
+    evt->Branch("circHitPFSL"             , &hitPFSL);        
+    evt->Branch("preHitTrkXFSL"           , &preTrkXFSL);
+    evt->Branch("preHitTrkYFSL"           , &preTrkYFSL);
+    evt->Branch("preHitTrkZFSL"           , &preTrkZFSL);        
+    evt->Branch("preHitTrkPFSL"           , &preTrkPFSL);        
+    evt->Branch("postHitTrkXFSL"          , &postTrkXFSL);
+    evt->Branch("postHitTrkYFSL"          , &postTrkYFSL);
+    evt->Branch("postHitTrkZFSL"          , &postTrkZFSL);        
+    evt->Branch("postHitTrkPFSL"          , &postTrkPFSL);        
+  }
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -271,6 +311,19 @@ void AnalysisManager::BeginOfEvent() {
   hitClusterZY.clear();
   vtxHitClusterZX.clear();
   vtxHitClusterZY.clear();
+
+  hitXFSL.clear();
+  hitYFSL.clear();
+  hitZFSL.clear();
+  hitPFSL.clear();
+  preTrkXFSL.clear();
+  preTrkYFSL.clear();
+  preTrkZFSL.clear();
+  preTrkPFSL.clear();
+  postTrkXFSL.clear();
+  postTrkYFSL.clear();
+  postTrkZFSL.clear();
+  postTrkPFSL.clear();
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -424,6 +477,50 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     delete linFit;
   }
 
+  if (m_circularFit){
+    
+    circNhits = hitXFSL.size();
+    preTrkNhits = preTrkXFSL.size();
+    postTrkNhits = postTrkXFSL.size();
+    
+    if ( circNhits > 0 ){
+      circularfitter::CircleFit* circFit = new circularfitter::CircleFit(hitXFSL,hitZFSL);
+      circularfitter::LineFit* lineFit = new circularfitter::LineFit(hitZFSL,hitYFSL);
+      circStatus = circFit->GetStatus();
+      lineStatus = lineFit->GetStatus();
+      xc = circFit->GetXc();
+      zc = circFit->GetZc();
+      rc = circFit->GetR();
+      p0 = lineFit->GetP0();
+      p1 = lineFit->GetP1();
+      cosDip = lineFit->GetCosDip();
+      chi2c = circFit->GetChi2();
+      chi2l = lineFit->GetChi2();
+    }
+
+    if( preTrkNhits > 0 && postTrkNhits > 0){
+      circularfitter::CircleExtractor* circExtract = new circularfitter::CircleExtractor(preTrkZFSL,preTrkXFSL,postTrkZFSL,postTrkXFSL);
+      trkxc = circExtract->GetXc();
+      trkzc = circExtract->GetZc();
+      trkrc = circExtract->GetR();
+      circularfitter::line prel = circExtract->GetPreLine();
+      circularfitter::line postl = circExtract->GetPostLine();
+      trkqIn = prel.q;
+      trkmIn = prel.m;
+      trkqOut = postl.q;
+      trkmOut = postl.m;
+      
+      std::vector<double> allZ = preTrkZFSL;
+      allZ.insert( allZ.end(), postTrkZFSL.begin(), postTrkZFSL.end());
+      std::vector<double> allY = preTrkYFSL;
+      allY.insert( allY.end(), postTrkYFSL.begin(), postTrkYFSL.end());
+      circularfitter::LineFit* lineFit2 = new circularfitter::LineFit(allZ,allY);
+      trkp0 = lineFit2->GetP0();
+      trkp1 = lineFit2->GetP1();
+      trkcosDip = lineFit2->GetCosDip();
+    }
+  }
+  
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
   FillPseudoRecoVar();
 
@@ -590,6 +687,31 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
         case 8:
           edepInCryGap += hit->GetEdep();
           break;	
+      }
+
+      // save FSL (only muons!) hits for circle fitting
+      if( TMath::Abs(hit->GetParticle())==13 && hit->GetPID() == 0 ){
+        double px = hit->GetInitMomentum().x();
+        double pz = hit->GetInitMomentum().z();
+        double p_perp = TMath::Sqrt(px*px+pz*pz);
+        if( detID > 1 && detID < 6){
+          hitXFSL.push_back(post_x);
+          hitYFSL.push_back(post_y);
+          hitZFSL.push_back(post_z);
+          hitPFSL.push_back(p_perp);
+        }
+        else if( detID > 8 && post_z < circularfitter::fMagnetZPos){
+          preTrkXFSL.push_back(post_x);
+          preTrkYFSL.push_back(post_y);
+          preTrkZFSL.push_back(post_z);
+          preTrkPFSL.push_back(p_perp);
+        }
+        else if ( detID > 8 && post_z > circularfitter::fMagnetZPos){
+          postTrkXFSL.push_back(post_x);
+          postTrkYFSL.push_back(post_y);
+          postTrkZFSL.push_back(post_z);
+          postTrkPFSL.push_back(p_perp);
+        }
       }
 
       allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
