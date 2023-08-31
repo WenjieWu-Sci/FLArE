@@ -441,22 +441,25 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     std::string dirname = "edep/evt_"+std::to_string(evtID)+"/";
     thefile->mkdir(dirname.c_str());
     thefile->cd(dirname.c_str());
-//    for (int i=0; i<nPrimaryParticle+1; ++i) {
-//      if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
-//      if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
-//      hitClusterZX[i]->Write();
-//      hitClusterZY[i]->Write();
-//    }
+    for (int i=0; i<nPrimaryParticle+1; ++i) {
+      if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
+      if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
+      hitClusterZX[i]->Write();
+      hitClusterZY[i]->Write();
+    }
+    dirname = "edep_vtx/evt_"+std::to_string(evtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    for (int i=0; i<nPrimaryParticle+1; ++i) {
+      if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
+      if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
+      vtxHitClusterZX[i]->Write();
+      vtxHitClusterZY[i]->Write();
+    }
+    dirname = "edep_3D/evt_"+std::to_string(evtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
     hist3DEdep->Write();
-//    dirname = "edep_vtx/evt_"+std::to_string(evtID)+"/";
-//    thefile->mkdir(dirname.c_str());
-//    thefile->cd(dirname.c_str());
-//    for (int i=0; i<nPrimaryParticle+1; ++i) {
-//      if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
-//      if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
-//      vtxHitClusterZX[i]->Write();
-//      vtxHitClusterZY[i]->Write();
-//    }
   }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
@@ -758,9 +761,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         vtxHitClusterZY[0]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
         vtxHitClusterZX[whichPrim+1]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
         vtxHitClusterZY[whichPrim+1]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
+        double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
+        hist3DEdep->Fill(hit_position_xyz, hit->GetEdep());
       }
-      const double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
-      hist3DEdep->Fill(hit_position_xyz, hit->GetEdep());
       if (detID==1) {
         double longitudinal_distance_to_vtx;  // in mm
         if (nuPDG!=0) {
@@ -871,7 +874,7 @@ void AnalysisManager::InitializeEvd() {
   /// 0: deposited energy of all hits
   /// non-0: deposited energy of each prong (primary particle)
   //
-  Int_t res_tpc[3] = {1, 2, 2}; // mm
+  Int_t res_tpc[3] = {1, 5, 5}; // mm
   int len_tpc[3] = {1800, 1800, 7000}; // mm
 
   int res_cal_z = 10; // mm
@@ -1051,6 +1054,34 @@ void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, dou
   int biny2 = hitClusterZY[0]->GetYaxis()->FindBin(pos_y+5*sigma_t);
   int binz1 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z-5*sigma_t);
   int binz2 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z+5*sigma_t);
+  for (int zbin= binz1; zbin<= binz2; ++zbin) {
+    for (int xbin= binx1; xbin<= binx2; ++xbin) {
+      for (int ybin = biny1; ybin<= biny2; ++ybin) {
+        // assume smearing at three directions is independent to each other
+        double prob_x = ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin)+hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin), sigma_l, pos_x) - 
+                        ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin), sigma_l, pos_x);
+        double prob_y = ROOT::Math::normal_cdf(hitClusterZY[0]->GetYaxis()->GetBinLowEdge(ybin)+hitClusterZY[0]->GetYaxis()->GetBinWidth(ybin), sigma_t, pos_y) - 
+                        ROOT::Math::normal_cdf(hitClusterZY[0]->GetYaxis()->GetBinLowEdge(ybin), sigma_t, pos_y);
+        double prob_z = ROOT::Math::normal_cdf(hitClusterZX[0]->GetXaxis()->GetBinLowEdge(zbin)+hitClusterZX[0]->GetXaxis()->GetBinWidth(zbin), sigma_t, pos_z) - 
+                        ROOT::Math::normal_cdf(hitClusterZX[0]->GetXaxis()->GetBinLowEdge(zbin), sigma_t, pos_z);
+        double weight = prob_x * prob_y * prob_z;
+        hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(zbin, ybin), weight*hitEdep);
+        hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
+        int xyz_bin[3] = {xbin, ybin, zbin};
+        double pos_center[3];
+        for (int i= 0; i< 3; ++i) {
+          pos_center[i] = hist3DEdep->GetAxis(i)->GetBinCenter(xyz_bin[i]);
+        }
+        hist3DEdep->Fill(pos_center, weight*hitEdep);
+        //std::cout<<"hello "<<hist3DEdep->GetBinContent(xyz_bin)<<" "<<weight*hitEdep<<" ";
+        //hist3DEdep->AddBinContent(xyz_bin, weight*hitEdep);
+        //std::cout<<hist3DEdep->GetBinContent(xyz_bin)<<std::endl;
+      }
+    }
+  }
+  /*
   for (int zbin = binz1; zbin<= binz2; ++zbin) {
     for (int xbin= binx1; xbin<= binx2; ++xbin) {
       double weight = (ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin)+hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin), sigma_l, pos_x)
@@ -1069,6 +1100,7 @@ void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, dou
       hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
     }
   }
+  */
   
   binx1 = std::max(vtxHitClusterZX[0]->GetYaxis()->FindBin(pos_x-nuX-5*sigma_l), 1);
   binx2 = std::min(vtxHitClusterZX[0]->GetYaxis()->FindBin(pos_x-nuX+5*sigma_l), vtxHitClusterZX[0]->GetYaxis()->GetNbins());
@@ -1123,6 +1155,8 @@ void AnalysisManager::ToySingleElectronTransportation(int whichPrim, double pos_
     vtxHitClusterZX[whichPrim+1]->Fill(smeared_z-nuZ, smeared_x-nuX, Wion);
     vtxHitClusterZY[0]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
     vtxHitClusterZY[whichPrim+1]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
+    double smeared_xyz[3] = {smeared_x, smeared_y, smeared_z};
+    hist3DEdep->Fill(smeared_xyz, Wion);
   }
 }
 
