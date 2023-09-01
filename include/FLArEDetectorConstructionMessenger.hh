@@ -11,6 +11,7 @@ class G4UIdirectory;
 class G4UIcommand;
 class G4UIcmdWithAString;
 class G4UIcmdWithABool;
+class G4UIcmdWithADoubleAndUnit;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -28,6 +29,7 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithAString* detGeomCmd;
     G4UIcmdWithABool* detGdmlCmd;
 //    G4UIcommand* updateCmd;
+    G4UIcmdWithADoubleAndUnit* detFieldCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

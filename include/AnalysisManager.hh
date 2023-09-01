@@ -28,6 +28,7 @@ class AnalysisManager {
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void saveEvd(G4bool val) { m_saveEvd = val; }
+    void circleFit(G4bool val) { m_circularFit = val; }
     void addDiffusion(G4String val) { m_addDiffusion = val; }
 
   private:
@@ -146,6 +147,7 @@ class AnalysisManager {
 
     G4bool m_saveHit;
     G4bool m_saveEvd;
+    G4bool m_circularFit;
     TString m_addDiffusion;
 
     //std::vector<TH2F*> hitClusterXY;
@@ -156,6 +158,30 @@ class AnalysisManager {
     THnSparseF* hist3DEdep;
     G4double sparseFractionMem;
     G4double sparseFractionBins;
+
+    // FSL hits for circular fit
+    G4int circNhits; //hits in HadCat+MF
+    G4int preTrkNhits; // hits in pre-Trk
+    G4int postTrkNhits; // hits in post-Trk
+    G4int circStatus, lineStatus; 
+    G4double xc, zc, rc; //fit in HadCat+MF
+    G4double p0, p1, cosDip;
+    G4double chi2c, chi2l;
+    G4double trkxc, trkzc, trkrc; //fit in Trk
+    G4double trkp0, trkp1, trkcosDip;
+    G4double trkmIn, trkqIn, trkmOut, trkqOut;
+    std::vector<double> hitXFSL; //hits/true P
+    std::vector<double> hitZFSL;
+    std::vector<double> hitYFSL;
+    std::vector<double> hitPFSL;
+    std::vector<double> preTrkXFSL;
+    std::vector<double> preTrkZFSL;
+    std::vector<double> preTrkYFSL;
+    std::vector<double> preTrkPFSL;
+    std::vector<double> postTrkXFSL;
+    std::vector<double> postTrkZFSL;
+    std::vector<double> postTrkYFSL;
+    std::vector<double> postTrkPFSL;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);

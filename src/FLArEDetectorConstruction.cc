@@ -69,7 +69,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // create an experimental hall with size 20*20*20 m
   G4double worldSizeX = 20 * m;
   G4double worldSizeY = 20 * m;
-  G4double worldSizeZ = 80 * m;
+  G4double worldSizeZ = 90 * m;
   // LAr volume: +z being beam direction
   G4double lArSizeX = 1.8 * m;
   G4double lArSizeY = 1.8 * m;
@@ -313,7 +313,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   G4double lengthDecayTunnelFASER2 = 10*m;
   G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
-  G4double lengthTrackStationFASER2 = 70.*cm; 
+  G4double lengthTrackStationFASER2 = 3.*m; //6 tracking stations + gas
 
   // from the center of FLArE lAr volume 
   G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
@@ -363,16 +363,17 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   G4int magTrkNScintY = 2;
   G4int magTrkNScintX = 7;
+  G4int NTrackingStations = 6;
 
   G4double magHorizontalScinSize = magTrkStationY / magTrkNScintY; // y size of horizontal scin
   G4double magVerticalScinSize = magTrkStationX / magTrkNScintX; // x size of vertical scin
 
   G4double scinThickness = 1 * cm; //guess (probably less, 0.5 cm)
   G4double stationThickness = 2*scinThickness;
-  G4double gapThickness = 20 * cm; // guess
-  G4double gapToMagnet = 20*cm; //guess
+  G4double gapThickness = 50*cm;
+  G4double gapToMagnet = 50*cm; 
 
-  G4double totThickness = 3*stationThickness + 2*gapThickness;
+  G4double totThickness = 6*stationThickness + 5*gapThickness;
 
   auto trkStationSolid = new G4Box("trkStationBox", magTrkStationX/2, magTrkStationY/2., totThickness/2.);
   auto firstTrkStationLogical = new G4LogicalVolume(trkStationSolid, LArBoxMaterials->Material("Polystyrene"), "firstTrkStationLogical");
@@ -418,11 +419,11 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   pos.setZ(scinThickness/2.);
   trackingStationAssembly->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
 
-  for (int i= -1; i<2; ++i) { 
+  for (int i= 0; i<NTrackingStations; ++i) { 
     G4RotationMatrix Rm(0, 0, 0);
-    G4ThreeVector Tm(0, 0, i*(gapThickness+stationThickness));
-    trackingStationAssembly->MakeImprint(firstTrkStationLogical, Tm, &Rm); //place 3 before magnet
-    trackingStationAssembly->MakeImprint(secondTrkStationLogical, Tm, &Rm); //place 3 after magnet
+    G4ThreeVector Tm(0, 0, -totThickness/2.+0.5*stationThickness+i*(gapThickness+stationThickness));
+    trackingStationAssembly->MakeImprint(firstTrkStationLogical, Tm, &Rm); //place before magnet
+    trackingStationAssembly->MakeImprint(secondTrkStationLogical, Tm, &Rm); //place after magnet
   }
 
   //-------------------------------------------------------------------
@@ -523,7 +524,7 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   sdManager->AddNewDetector(TrkVerScinSD);
 
   // HadCatcher + MuonFinder  magnetic field
-  G4ThreeVector fieldValue = G4ThreeVector(0,1.*tesla, 0);
+  G4ThreeVector fieldValue = G4ThreeVector(0,fFieldValue, 0);
   magField = new G4UniformMagField(fieldValue);
   fieldMgr = new G4FieldManager();
   fieldMgr->SetDetectorField(magField);
