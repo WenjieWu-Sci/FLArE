@@ -13,6 +13,7 @@
 #include "reco/PCAAnalysis3D.hh"
 #include "reco/Cluster3D.hh"
 #include "reco/LinearFit.hh"
+#include "reco/ShowerLID.hh"
 #include "reco/CircleFit.hh"
 
 #include <G4Event.hh>
@@ -24,6 +25,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
+#include <THnSparse.h>
 #include <TString.h>
 #include <Math/ProbFunc.h>
 //#include <Math/Point3Dfwd.h>
@@ -68,10 +70,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("nuFSLPy"                   , &nuFSLPy                   , "nuFSLPy/D");
   evt->Branch("nuFSLPz"                   , &nuFSLPz                   , "nuFSLPz/D");
   evt->Branch("nuFSLE"                    , &nuFSLE                    , "nuFSLE/D");
-  evt->Branch("TotalDedxAlongTrackInCM"   , TotalDedxAlongTrackInCM    , "TotalDedxAlongTrackInCM[200]/D");
-  evt->Branch("TotalDedxTrackLength"      , TotalDedxTrackLength       , "TotalDedxTrackLength[200]/I");
-  evt->Branch("TotalVtxDedxAlongTrackInCM", TotalVtxDedxAlongTrackInCM , "TotalVtxDedxAlongTrackInCM[500]/D");
-  evt->Branch("TotalVtxDedxTrackLength"   , TotalVtxDedxTrackLength    , "TotalVtxDedxTrackLength[500]/I");
+  evt->Branch("TotalDedxLongitudinal"     , TotalDedxLongitudinal      , "TotalDedxLongitudinal[3000]/D");
+  evt->Branch("TrueTotalDedxLongitudinal" , TrueTotalDedxLongitudinal  , "TrueTotalDedxLongitudinal[3000]/D");
   evt->Branch("nPrimaryParticle"          , &nPrimaryParticle          , "nPrimaryParticle/I");
   evt->Branch("Px"                        , Px                         , "Px[nPrimaryParticle]/D");
   evt->Branch("Py"                        , Py                         , "Py[nPrimaryParticle]/D");
@@ -113,6 +113,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("dir_coc_z"                 , dir_coc_z                  , "dir_coc_z[nPrimaryParticle]/D");
 
   evt->Branch("nHits"                     , &nHits                     , "nHits/I");
+  evt->Branch("sparseFractionMem"         , &sparseFractionMem         , "sparseFractionMem/D");
+  evt->Branch("sparseFractionBins"        , &sparseFractionBins        , "sparseFractionBins/D");
   if (m_saveHit) {
     evt->Branch("HitTID"                  , HitTID                     , "HitTID[nHits]/I");
     evt->Branch("HitPID"                  , HitPID                     , "HitPID[nHits]/I");
@@ -213,6 +215,8 @@ void AnalysisManager::BeginOfEvent() {
   nuFSLPz                      = -999;
   nuFSLE                       = -999;
   nHits                        = 0;
+  sparseFractionMem            = -1;
+  sparseFractionBins           = -1;
   edepInLAr                    = 0;
   edepInLArXY2500mm            = 0;
   edepInLArXY2000mm            = 0;
@@ -231,13 +235,9 @@ void AnalysisManager::BeginOfEvent() {
   nFromFSPizeroParticles       = 0;
   nFromFSLDecayPizeroParticles = 0;
   countPrimaryParticle         = 0;
-  for (G4int j= 0; j< 200; ++j) {
-    TotalDedxAlongTrackInCM[j] = 0;
-    TotalDedxTrackLength[j] = -1;
-  }
-  for (G4int j= 0; j< 500; ++j) {
-    TotalVtxDedxAlongTrackInCM[j] = 0;
-    TotalVtxDedxTrackLength[j] = -1;
+  for (G4int j= 0; j< 3000; ++j) {
+    TotalDedxLongitudinal[j] = 0;
+    TrueTotalDedxLongitudinal[j] = 0;
   }
   for (G4int i= 0; i< 1000; ++i) {
     Px[i]    = -999;
@@ -465,6 +465,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
+  sparseFractionMem = hist3DEdep->GetSparseFractionMem();
+  sparseFractionBins = hist3DEdep->GetSparseFractionBins();
+  slid::ShowerLID* shwlid = new slid::ShowerLID(hist3DEdep, nuX, nuY, nuZ, 0., 0., 1.); 
+  Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
+  std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
+
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     directionfitter::LinearFit* linFit = new directionfitter::LinearFit(hitClusterZX[iPrim+1], hitClusterZY[iPrim+1],
         vtxHitClusterZX[iPrim+1], vtxHitClusterZY[iPrim+1], nuX, nuY, nuZ, VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
@@ -547,6 +553,10 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       vtxHitClusterZX[i]->Write();
       vtxHitClusterZY[i]->Write();
     }
+    dirname = "edep_3D/evt_"+std::to_string(evtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    hist3DEdep->Write();
   }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
@@ -566,6 +576,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   vtxHitClusterZY.shrink_to_fit();
   trackClusters.clear();
   trackClusters.shrink_to_fit();
+
+  delete hist3DEdep;
 }
 
 void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
@@ -871,6 +883,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
         vtxHitClusterZY[0]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
         vtxHitClusterZX[whichPrim+1]->Fill(pos_z-nuZ, pos_x-nuX, hit->GetEdep());
         vtxHitClusterZY[whichPrim+1]->Fill(pos_z-nuZ, pos_y-nuY, hit->GetEdep());
+        double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
+        hist3DEdep->Fill(hit_position_xyz, hit->GetEdep());
       }
       if (detID==1) {
         double longitudinal_distance_to_vtx;  // in mm
@@ -881,13 +895,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
                                           (pos_y-VtxY[0])*Py[0]+
                                           (pos_z-VtxZ[0])*Pz[0])/TMath::Sqrt(Px[0]*Px[0]+Py[0]*Py[0]+Pz[0]*Pz[0]);
         }
-        if (int(longitudinal_distance_to_vtx)>=0 && int(longitudinal_distance_to_vtx)<500) {  // within 500 mm
-          TotalVtxDedxAlongTrackInCM[int(longitudinal_distance_to_vtx)] += hit->GetEdep();
-          TotalVtxDedxTrackLength[int(longitudinal_distance_to_vtx)] = int(longitudinal_distance_to_vtx);
-        }
-        if (int(longitudinal_distance_to_vtx/10.0)>=0 && int(longitudinal_distance_to_vtx/10.0)<200) {  // within 200 cm
-          TotalDedxAlongTrackInCM[int(longitudinal_distance_to_vtx/10.0)] += hit->GetEdep();
-          TotalDedxTrackLength[int(longitudinal_distance_to_vtx/10.0)] = int(longitudinal_distance_to_vtx/10.0);
+        if (Int_t(longitudinal_distance_to_vtx)>=0 && Int_t(longitudinal_distance_to_vtx)<3000) {  // within 3000 mm
+          TrueTotalDedxLongitudinal[Int_t(longitudinal_distance_to_vtx)] += hit->GetEdep();
         }
       }
       // calculate dEdx along the track
@@ -987,7 +996,7 @@ void AnalysisManager::InitializeEvd() {
   /// 0: deposited energy of all hits
   /// non-0: deposited energy of each prong (primary particle)
   //
-  int res_tpc[3] = {2, 2, 2}; // mm
+  Int_t res_tpc[3] = {1, 5, 5}; // mm
   int len_tpc[3] = {1800, 1800, 7000}; // mm
 
   int res_cal_z = 10; // mm
@@ -1067,6 +1076,14 @@ void AnalysisManager::InitializeEvd() {
     hitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
     hitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
   }
+
+  histname.Form("evt_%d_3DHit", evtID);
+  histtitle.Form("3DView: EvtID %d", evtID);
+  const int num_bins_xyz[3] = {nbinx, nbiny, nbinz};
+  hist3DEdep = new THnSparseF(histname, histtitle, 3, num_bins_xyz);
+  hist3DEdep->SetBinEdges(0, &binx[0]); 
+  hist3DEdep->SetBinEdges(1, &biny[0]);
+  hist3DEdep->SetBinEdges(2, &binz[0]);
 
   histname.Form("evt_%d_tot_zx_vtx",evtID);
   if (nuPDG!=0) {
@@ -1159,6 +1176,34 @@ void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, dou
   int biny2 = hitClusterZY[0]->GetYaxis()->FindBin(pos_y+5*sigma_t);
   int binz1 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z-5*sigma_t);
   int binz2 = hitClusterZX[0]->GetXaxis()->FindBin(pos_z+5*sigma_t);
+  for (int zbin= binz1; zbin<= binz2; ++zbin) {
+    for (int xbin= binx1; xbin<= binx2; ++xbin) {
+      for (int ybin = biny1; ybin<= biny2; ++ybin) {
+        // assume smearing at three directions is independent to each other
+        double prob_x = ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin)+hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin), sigma_l, pos_x) - 
+                        ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin), sigma_l, pos_x);
+        double prob_y = ROOT::Math::normal_cdf(hitClusterZY[0]->GetYaxis()->GetBinLowEdge(ybin)+hitClusterZY[0]->GetYaxis()->GetBinWidth(ybin), sigma_t, pos_y) - 
+                        ROOT::Math::normal_cdf(hitClusterZY[0]->GetYaxis()->GetBinLowEdge(ybin), sigma_t, pos_y);
+        double prob_z = ROOT::Math::normal_cdf(hitClusterZX[0]->GetXaxis()->GetBinLowEdge(zbin)+hitClusterZX[0]->GetXaxis()->GetBinWidth(zbin), sigma_t, pos_z) - 
+                        ROOT::Math::normal_cdf(hitClusterZX[0]->GetXaxis()->GetBinLowEdge(zbin), sigma_t, pos_z);
+        double weight = prob_x * prob_y * prob_z;
+        hitClusterZX[0]->AddBinContent(hitClusterZX[0]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZX[whichPrim+1]->AddBinContent(hitClusterZX[whichPrim+1]->GetBin(zbin, xbin), weight*hitEdep);
+        hitClusterZY[0]->AddBinContent(hitClusterZY[0]->GetBin(zbin, ybin), weight*hitEdep);
+        hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
+        int xyz_bin[3] = {xbin, ybin, zbin};
+        double pos_center[3];
+        for (int i= 0; i< 3; ++i) {
+          pos_center[i] = hist3DEdep->GetAxis(i)->GetBinCenter(xyz_bin[i]);
+        }
+        hist3DEdep->Fill(pos_center, weight*hitEdep);
+        //std::cout<<"hello "<<hist3DEdep->GetBinContent(xyz_bin)<<" "<<weight*hitEdep<<" ";
+        //hist3DEdep->AddBinContent(xyz_bin, weight*hitEdep);
+        //std::cout<<hist3DEdep->GetBinContent(xyz_bin)<<std::endl;
+      }
+    }
+  }
+  /*
   for (int zbin = binz1; zbin<= binz2; ++zbin) {
     for (int xbin= binx1; xbin<= binx2; ++xbin) {
       double weight = (ROOT::Math::normal_cdf(hitClusterZX[0]->GetYaxis()->GetBinLowEdge(xbin)+hitClusterZX[0]->GetYaxis()->GetBinWidth(xbin), sigma_l, pos_x)
@@ -1177,6 +1222,7 @@ void AnalysisManager::ToyElectronTransportation(int whichPrim, double pos_x, dou
       hitClusterZY[whichPrim+1]->AddBinContent(hitClusterZY[whichPrim+1]->GetBin(zbin, ybin), weight*hitEdep);
     }
   }
+  */
   
   binx1 = std::max(vtxHitClusterZX[0]->GetYaxis()->FindBin(pos_x-nuX-5*sigma_l), 1);
   binx2 = std::min(vtxHitClusterZX[0]->GetYaxis()->FindBin(pos_x-nuX+5*sigma_l), vtxHitClusterZX[0]->GetYaxis()->GetNbins());
@@ -1231,6 +1277,8 @@ void AnalysisManager::ToySingleElectronTransportation(int whichPrim, double pos_
     vtxHitClusterZX[whichPrim+1]->Fill(smeared_z-nuZ, smeared_x-nuX, Wion);
     vtxHitClusterZY[0]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
     vtxHitClusterZY[whichPrim+1]->Fill(smeared_z-nuZ, smeared_y-nuY, Wion);
+    double smeared_xyz[3] = {smeared_x, smeared_y, smeared_z};
+    hist3DEdep->Fill(smeared_xyz, Wion);
   }
 }
 
