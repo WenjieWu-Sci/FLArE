@@ -86,6 +86,9 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
                                                    false, 
                                                    0);
 
+  //-----------------------------------
+  // TPC volume
+  
   G4Material* detectorMaterial = 0;
   if (fDetMaterialName == "LAr") {
     detectorMaterial = LArBoxMaterials->Material("LiquidArgon");
@@ -140,23 +143,45 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
     TPCModuleLogical->SetUserLimits(new G4UserLimits(0.5*mm));
   }
 
-  G4double GapToHadCatcher = 25 * cm;
 
-  // Aluminum cryostat: 1/2 density
-  auto crygapSolid = new G4Box("CryGapBox", lArSizeX/2, lArSizeY/2, GapToHadCatcher/2);
-  crygapLogical = new G4LogicalVolume(crygapSolid, LArBoxMaterials->Material("FakeAluminium"), "CryGapLogical");
-  new G4PVPlacement(nullptr,
-                    G4ThreeVector(0, 0, lArSizeZ/2+GapToHadCatcher/2),
-                    crygapLogical,
-                    "CryGapPhysical",
-                    worldLog,
-                    false,
-                    0,
+  //-----------------------------------
+  // insulation
+
+  G4double ThicknessInsulation = 80 * cm; 
+
+  auto CryoInsulationBlockSolid = new G4Box("CryoInsulationBlock", 
+                                            lArSizeX/2.+ThicknessInsulation, 
+                                            lArSizeY/2.+ThicknessInsulation,
+                                            lArSizeZ/2.+ThicknessInsulation);
+  auto CryoInsulationSolid = new G4SubtractionSolid("CryoInsulation",
+                                                    CryoInsulationBlockSolid,
+                                                    lArBox,
+                                                    0, //no rotation
+                                                    G4ThreeVector(0,0,0)); // no translation
+  cryoInsulationLog = new G4LogicalVolume(CryoInsulationSolid, 
+                                          LArBoxMaterials->Material("R_PUF"), 
+                                          "CryoInsulationLogical"); 
+  new G4PVPlacement(nullptr,      // no Rotation
+                    G4ThreeVector(0, 0, 0),   // no transportation 
+                    cryoInsulationLog,        // logical volume
+                    "CryoInsulationPhys",     // name
+                    worldLog,                 // mother logical volume
+                    false,                    // pMany
+                    0,                        // Copy No
                     fCheckOverlap);
+  G4VisAttributes* CryoInsulationVis;
+  CryoInsulationVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
+  CryoInsulationVis->SetVisibility(true);
+  CryoInsulationVis->SetForceWireframe(true);
+  CryoInsulationVis->SetForceAuxEdgeVisible(true);
+  cryoInsulationLog->SetVisAttributes(CryoInsulationVis);
 
-  //
+
+  //-----------------------------------
   // Hadron Calorimeter
-  // 
+  
+  G4double GapToHadCatcher = ThicknessInsulation;
+
   G4double thicknessAbsorber = 5 * cm;
   G4double thicknessCaloX    = 1 * cm;
   G4double thicknessCaloY    = 1 * cm;
@@ -456,7 +481,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
   worldLog->SetVisAttributes(nullVis);
-  crygapLogical->SetVisAttributes(nullVis);
   hadCatcherLogical->SetVisAttributes(nullVis);
   muonFinderLogical->SetVisAttributes(nullVis);
   HadCalXCellLogical->SetVisAttributes(nullVis);
@@ -510,10 +534,6 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
   MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
   sdManager->AddNewDetector(MuonFinderAbsorbSD);
-
-  LArBoxSD* CryGapSD = new LArBoxSD("CryGapSD");
-  crygapLogical->SetSensitiveDetector(CryGapSD);
-  sdManager->AddNewDetector(CryGapSD);
 
   LArBoxSD* TrkHorScinSD = new LArBoxSD("TrkHorScinSD");
   trkHorScinLogical->SetSensitiveDetector(TrkHorScinSD);

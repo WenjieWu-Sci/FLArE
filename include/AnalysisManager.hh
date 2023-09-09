@@ -124,7 +124,6 @@ class AnalysisManager {
     G4double edepInMuonFinderY;
     G4double edepInHadAborb;
     G4double edepInMuonFinderAbsorb;
-    G4double edepInCryGap;
     G4double missCountedEnergy;
 
     G4int    nFromFSLParticles;
