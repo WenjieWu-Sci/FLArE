@@ -36,6 +36,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
 
     G4LogicalVolume* worldLog;
     G4LogicalVolume* lArBoxLog;
+    G4LogicalVolume* cryoInsulationLog;
     G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
@@ -44,7 +45,6 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderYCellLogical;
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
-    G4LogicalVolume* crygapLogical;
     G4LogicalVolume* TPCModuleLogical;
     G4LogicalVolume* trkVerScinLogical;
     G4LogicalVolume* trkHorScinLogical; 
