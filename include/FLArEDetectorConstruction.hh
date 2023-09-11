@@ -5,6 +5,7 @@
 #include <G4String.hh>
 #include <G4UniformMagField.hh>
 #include <G4FieldManager.hh>
+#include <G4AssemblyVolume.hh>
 
 class G4LogicalVolume;
 class FLArEDetectorConstructionMessenger;
@@ -45,14 +46,14 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* crygapLogical;
     G4LogicalVolume* TPCModuleLogical;
-    G4LogicalVolume* FASER2MagnetYoke;
-    G4LogicalVolume* FASER2MagnetWindow;
     G4LogicalVolume* trkVerScinLogical;
     G4LogicalVolume* trkHorScinLogical; 
     G4String fDetMaterialName;
     G4String fDetGeomOption;
     G4double fFieldValue;
     G4bool m_saveGdml;
+
+    G4LogicalVolume* fFASER2MagneticVolume;
 
     DetectorConstructionMaterial* LArBoxMaterials;
     FLArEDetectorConstructionMessenger* messenger;

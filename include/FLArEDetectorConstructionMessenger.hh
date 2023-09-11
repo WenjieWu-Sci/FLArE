@@ -2,16 +2,18 @@
 #define FLAREDETECTORCONSTRUCTIONMESSENGER_HH
 
 #include "G4UImessenger.hh"
+#include "G4UIcommand.hh"
+#include "G4UIdirectory.hh"
+#include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class FLArEDetectorConstruction;
-class G4UIdirectory;
-class G4UIcommand;
-class G4UIcmdWithAString;
-class G4UIcmdWithABool;
-class G4UIcmdWithADoubleAndUnit;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -25,11 +27,22 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
   private:
     FLArEDetectorConstruction* det;
     G4UIdirectory* detDir;
+    
+    // GENERAL OPTIONS
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithAString* detGeomCmd;
     G4UIcmdWithABool* detGdmlCmd;
-//    G4UIcommand* updateCmd;
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
+
+    // FASER2 SPECTROMETER MAGNET
+    G4UIcmdWithAString* magnetGeomCmd;
+    G4UIcmdWithADoubleAndUnit* magnetFieldCmd;
+    G4UIcmdWithADoubleAndUnit* magnetWinXCmd;
+    G4UIcmdWithADoubleAndUnit* magnetWinYCmd;
+    G4UIcmdWithADoubleAndUnit* magnetWinZCmd;
+    G4UIcmdWithADoubleAndUnit* yokeThickXCmd;
+    G4UIcmdWithADoubleAndUnit* yokeThickYCmd;
+    
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -3,6 +3,9 @@
 #include "FLArEDetectorConstructionMessenger.hh"
 #include "LArBoxSD.hh"
 
+#include "geometry/SpectrometerMagnetConstruction.hh"
+#include "geometry/GeometricalParameters.hh"
+
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4NistManager.hh>
@@ -297,14 +300,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   //-----------------------------------
   // FASER2 Magnet
-  
-  // size: latest baseline 
-  G4double magnetWindowX = 3.0*m;
-  G4double magnetWindowY = 1.0*m;
-  G4double magnetWindowZ = 4.0*m;
-
-  G4double magnetYokeThicknessX = 1.5*m;
-  G4double magnetYokeThicknessY = 2.0*m;
 
   // positioning
   G4double detectorGapLength = 1.2*m;
@@ -315,40 +310,21 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
   G4double lengthTrackStationFASER2 = 3.*m; //6 tracking stations + gas
 
+  G4double magnetWindowZ = GeometricalParameters::Get()->GetSpectrometerMagnetWindowZ();
+
   // from the center of FLArE lAr volume 
   G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
 			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2 +
 			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
 			lengthTrackStationFASER2 + magnetWindowZ/2.;  
 
-  auto magnetYokeBlock = new G4Box("MagnetYokeBlock", magnetWindowX/2.+magnetYokeThicknessX, magnetWindowY/2.+magnetYokeThicknessY, magnetWindowZ/2.);
-  auto magnetWindowSolid = new G4Box("MagnetYokeWindow", magnetWindowX/2., magnetWindowY/2., magnetWindowZ/2.);
-  auto magnetYokeSolid = new G4SubtractionSolid("MagnetYoke",
-				magnetYokeBlock, // block - window = hollow block
-				magnetWindowSolid, 
-				0, // no rotation
-				G4ThreeVector(0,0,0)); //no translation
+  G4ThreeVector mag(0.,0.,magnetPosZ);
+
+  SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
+  G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
+  fFASER2MagneticVolume = magnetAssembler->GetMagneticVolume(); //need to assign B field
   
-  FASER2MagnetYoke = new G4LogicalVolume(magnetYokeSolid, LArBoxMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
-  FASER2MagnetWindow = new G4LogicalVolume(magnetWindowSolid, LArBoxMaterials->Material("Air"), "FASER2MagnetWindowLogical"); 
-
-  new G4PVPlacement(nullptr,      // no Rotation
-                    G4ThreeVector(0, 0, magnetPosZ), // translation 
-                    FASER2MagnetYoke,         //logical volume
-                    "FASER2MagnetYokePhys",   // name
-                    worldLog,                 // mother logical volume
-                    false,                    // pMany
-                    0,                        // Copy No
-                    fCheckOverlap);
-
-  new G4PVPlacement(nullptr,    // no Rotation
-                    G4ThreeVector(0, 0, magnetPosZ), // translation
-                    FASER2MagnetWindow,       // logical volume
-                    "FASER2MagnetWindowPhys",  // name
-                    worldLog,                 // mother logical volume
-                    false,                    // pMany
-                    0,                        // Copy No
-                    fCheckOverlap);
+  magnetAssembly->MakeImprint(worldLog, mag, nullptr, 0, true);
 
 
   //-----------------------------------------------------------------
@@ -358,6 +334,9 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // 1st layer: 2 horizontal modules; (tot heigth: 1m)
   // 2nd layer: 6/7 vertical modules; (tot length: 3.5m)
   
+  G4double magnetWindowX = GeometricalParameters::Get()->GetSpectrometerMagnetWindowX();
+  G4double magnetWindowY = GeometricalParameters::Get()->GetSpectrometerMagnetWindowY();
+
   G4double magTrkStationX = magnetWindowX + 0.5*m;
   G4double magTrkStationY = magnetWindowY;
 
@@ -376,8 +355,8 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double totThickness = 6*stationThickness + 5*gapThickness;
 
   auto trkStationSolid = new G4Box("trkStationBox", magTrkStationX/2, magTrkStationY/2., totThickness/2.);
-  auto firstTrkStationLogical = new G4LogicalVolume(trkStationSolid, LArBoxMaterials->Material("Polystyrene"), "firstTrkStationLogical");
-  auto secondTrkStationLogical = new G4LogicalVolume(trkStationSolid, LArBoxMaterials->Material("Polystyrene"), "secondTrkStationLogical");
+  auto firstTrkStationLogical = new G4LogicalVolume(trkStationSolid, LArBoxMaterials->Material("Air"), "firstTrkStationLogical");
+  auto secondTrkStationLogical = new G4LogicalVolume(trkStationSolid, LArBoxMaterials->Material("Air"), "secondTrkStationLogical");
   new G4PVPlacement(nullptr,
                     G4ThreeVector(0, 0, magnetPosZ - magnetWindowZ/2.- gapToMagnet - totThickness/2.),
                     firstTrkStationLogical,
@@ -448,11 +427,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   MuonFinderYLayersLogical->SetVisAttributes(hadCalVis);
   trkVerScinLogical->SetVisAttributes(hadCalVis);  
   trkHorScinLogical->SetVisAttributes(hadCalVis);  
-
-  G4VisAttributes* magnetVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
-  magnetVis->SetVisibility(true);
-  FASER2MagnetYoke->SetVisAttributes(magnetVis);
-
+  
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
   worldLog->SetVisAttributes(nullVis);
@@ -463,7 +438,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   HadCalYCellLogical->SetVisAttributes(nullVis);
   MuonFinderXCellLogical->SetVisAttributes(nullVis);
   MuonFinderYCellLogical->SetVisAttributes(nullVis);
-  FASER2MagnetWindow->SetVisAttributes(nullVis);
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
@@ -533,13 +507,14 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   muonFinderLogical->SetFieldManager(fieldMgr, true);
 
   // FASER2 magnetic field
-  G4ThreeVector fieldValueFASER2(0.,1*tesla,0.); // 1T, horizonal bending
+  G4double field = GeometricalParameters::Get()->GetSpectrometerMagnetField();
+  G4ThreeVector fieldValueFASER2(0.,field,0.);
   magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
   fieldMgrFASER2 = new G4FieldManager();
   fieldMgrFASER2->SetDetectorField(magFieldFASER2);
   fieldMgrFASER2->CreateChordFinder(magFieldFASER2);
-  FASER2MagnetWindow->SetFieldManager(fieldMgrFASER2, true);
-  
+  fFASER2MagneticVolume->SetFieldManager(fieldMgrFASER2, true);
+
 }
 
 void FLArEDetectorConstruction::SetDetMaterial(G4String detMaterial) {
