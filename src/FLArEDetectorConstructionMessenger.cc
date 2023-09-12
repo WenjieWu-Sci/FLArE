@@ -93,6 +93,23 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
     magnetGapCmd->SetDefaultValue(0.5);
     magnetNumberCmd = new G4UIcmdWithAnInteger("/det/magnetNumber", this);
     magnetNumberCmd->SetDefaultValue(3);
+    // Tracking stations
+    trackingNumberCmd = new G4UIcmdWithAnInteger("/det/trackingNumber", this);
+    trackingNumberCmd->SetDefaultValue(6);
+    trackingNBarsYCmd = new G4UIcmdWithAnInteger("/det/trackingNBarsY", this);
+    trackingNBarsYCmd->SetDefaultValue(3);
+    trackingNBarsXCmd = new G4UIcmdWithAnInteger("/det/trackingNBarsX", this);
+    trackingNBarsXCmd->SetDefaultValue(7);
+    trackingScinThickCmd = new G4UIcmdWithADoubleAndUnit("/det/trackingScinThick", this);
+    trackingScinThickCmd->SetUnitCategory("Length");
+    trackingScinThickCmd->SetDefaultUnit("cm");
+    trackingScinThickCmd->SetUnitCandidates("cm m mm");
+    trackingScinThickCmd->SetDefaultValue(1.0);
+    trackingGapCmd = new G4UIcmdWithADoubleAndUnit("/det/trackingGap", this);
+    trackingGapCmd->SetUnitCategory("Length");
+    trackingGapCmd->SetDefaultUnit("m");
+    trackingGapCmd->SetUnitCandidates("cm m mm");
+    trackingGapCmd->SetDefaultValue(0.5);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -116,6 +133,12 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
   delete magnetLengthZCmd;
   delete magnetGapCmd;
   delete magnetNumberCmd;
+
+  delete trackingNumberCmd;
+  delete trackingNBarsYCmd;
+  delete trackingNBarsXCmd;
+  delete trackingScinThickCmd;
+  delete trackingGapCmd;
 
   delete detDir;
 }
@@ -158,6 +181,17 @@ void FLArEDetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4Str
   else if (command == magnetNumberCmd) 
     GeometricalParameters::Get()->SetNSpectrometerMagnets(magnetNumberCmd->GetNewIntValue(newValues));
 
+  //faser2 tracking stations
+  else if (command == trackingNumberCmd) 
+    GeometricalParameters::Get()->SetNTrackingStations(trackingNumberCmd->GetNewIntValue(newValues));
+  else if (command == trackingNBarsYCmd) 
+    GeometricalParameters::Get()->SetNScintillatorBarsY(trackingNBarsYCmd->GetNewIntValue(newValues));
+  else if (command == trackingNBarsXCmd) 
+    GeometricalParameters::Get()->SetNScintillatorBarsX(trackingNBarsXCmd->GetNewIntValue(newValues));
+  else if (command == trackingScinThickCmd) 
+    GeometricalParameters::Get()->SetScintillatorThickness(trackingScinThickCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == trackingGapCmd) 
+    GeometricalParameters::Get()->SetTrackingStationGap(trackingGapCmd->ConvertToDimensionedDouble(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -21,11 +21,11 @@ class GeometricalParameters  {
     magnetOption ConvertStringToMagnetOption(G4String val);
     void SetSpectrometerMagnetOption(magnetOption val) { fSpectrometerMagnetOption = val; }
     magnetOption GetSpectrometerMagnetOption() { return fSpectrometerMagnetOption; }
-
     void SetSpectrometerMagnetField(G4double val) { fSpectrometerMagnetField = val; }
     G4ThreeVector GetSpectrometerMagnetField();
-    
-    // SAMURAI deisgn
+    void SetSpectrometerMagnetTotalSizeZ(G4double val) { fSpectrometerMagnetTotalSizeZ = val; }
+    G4double GetSpectrometerMagnetTotalSizeZ() { return fSpectrometerMagnetTotalSizeZ; }
+    // SAMURAI design
     void SetSpectrometerMagnetWindowX(G4double val) { fSpectrometerMagnetWindowX = val; }
     G4double GetSpectrometerMagnetWindowX() { return fSpectrometerMagnetWindowX; }
     void SetSpectrometerMagnetWindowY(G4double val) { fSpectrometerMagnetWindowY = val; }
@@ -46,8 +46,19 @@ class GeometricalParameters  {
     void SetNSpectrometerMagnets(G4int val) { fNSpectrometerMagnets = val; }
     G4int GetNSpectrometerMagnets() { return fNSpectrometerMagnets; }
     void SetSpectrometerMagnetGap(G4double val) { fSpectrometerMagnetGap = val; }
-    G4double GetSpectrometerMagnetGap() { return fSpectrometerMagnetGap; }
-  
+    G4double GetSpectrometerMagnetGap() { return fSpectrometerMagnetGap; }  
+    // Tracking station
+    void SetNTrackingStations(G4int val) { fNTrackingStations = val; }
+    G4int GetNTrackingStations() { return fNTrackingStations; }  
+    void SetNScintillatorBarsY(G4int val) { fNScintillatorBarsY = val; }
+    G4int GetNScintillatorBarsY() { return fNScintillatorBarsY; }  
+    void SetNScintillatorBarsX(G4int val) { fNScintillatorBarsX = val; }
+    G4int GetNScintillatorBarsX() { return fNScintillatorBarsX; }  
+    void SetScintillatorThickness(G4double val) { fScintillatorThickness = val; }
+    G4double GetScintillatorThickness() { return fScintillatorThickness; }  
+    void SetTrackingStationGap(G4double val) { fTrackingStationGap = val; }
+    G4double GetTrackingStationGap() { return fTrackingStationGap; }  
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -55,6 +66,7 @@ class GeometricalParameters  {
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;
     G4double fSpectrometerMagnetField;
+    G4double fSpectrometerMagnetTotalSizeZ;
     // SAMURAI design
     G4double fSpectrometerMagnetWindowX;
     G4double fSpectrometerMagnetWindowY;
@@ -67,7 +79,12 @@ class GeometricalParameters  {
     G4double fSpectrometerMagnetLengthZ;
     G4int fNSpectrometerMagnets;
     G4double fSpectrometerMagnetGap;
-
+    // Tracking stations
+    G4int fNTrackingStations;
+    G4int fNScintillatorBarsY;
+    G4int fNScintillatorBarsX;
+    G4double fScintillatorThickness;
+    G4double fTrackingStationGap;
 };
 
 #endif 

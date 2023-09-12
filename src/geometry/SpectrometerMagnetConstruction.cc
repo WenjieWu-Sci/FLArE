@@ -10,7 +10,8 @@
 #include "G4ThreeVector.hh"
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
-#include <G4SystemOfUnits.hh>
+#include "G4SystemOfUnits.hh"
+#include "G4PVReplica.hh"
 
 SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
 {
@@ -27,8 +28,22 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fMagnetWindowZ = GeometricalParameters::Get()->GetSpectrometerMagnetWindowZ();
     fMagnetYokeThicknessX = GeometricalParameters::Get()->GetSpectrometerMagnetYokeThickX();
     fMagnetYokeThicknessY = GeometricalParameters::Get()->GetSpectrometerMagnetYokeThickY();
+   
+    fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
+    fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size
+    fTrackingStationY = fMagnetWindowY; // match magnet size
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
+    fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
+    fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
+    G4double gapToMagnet = fTrackingStationGap;
+    G4double stationThickness = 2*fScinThickness;
+    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
+   
+    GeometricalParameters::Get()->SetSpectrometerMagnetTotalSizeZ(fMagnetWindowZ+2*totThickness+2*gapToMagnet);
 
     BuildSAMURAIDesign(); //sets logical volumes
+    BuildTrackingStation(); //sets assembly volume
     
     fMagnetAssembly = new G4AssemblyVolume();
     G4RotationMatrix *noRot = new G4RotationMatrix();
@@ -36,17 +51,32 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     // center of the assembly is the center of the magnet window
     G4ThreeVector magCenter(0.,0.,0.);
 
+    // placing magnet + yoke
     fMagnetAssembly->AddPlacedVolume(fMagnetWindow,magCenter,noRot);
     fMagnetAssembly->AddPlacedVolume(fMagnetYoke,magCenter,noRot);
+
+    // middle position of pre-magnet and post-magnet tracking stations
+    G4ThreeVector offset(0, 0, fMagnetWindowZ/2.+ gapToMagnet + totThickness/2.);
+    G4ThreeVector preStationsCenter = magCenter - offset;
+    G4ThreeVector postStationsCenter = magCenter + offset;
+  
+    // placing tracking stations (before/after magnet)
+    for (int i= 0; i<fNTrackingStations; ++i) { 
+      G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
+      G4ThreeVector Tp = postStationsCenter + T;
+      G4ThreeVector Tm = preStationsCenter + T;
+      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tm, noRot); //place before magnet
+      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tp, noRot); //place after magnet
+    }
 
   } else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
  
     G4cout << "Building CrystalPulling spectrometer magnet" << G4endl;
-    fMagnetLengthZ = 1.25*m;
-    fMagnetInnerR = 0.8*m;
-    fMagnetOuterR = 1.2*m;
-    fNMagnets = 3;
-    fMagnetGap = 0.5*m;
+    fMagnetLengthZ = GeometricalParameters::Get()->GetSpectrometerMagnetLengthZ();
+    fMagnetInnerR = GeometricalParameters::Get()->GetSpectrometerMagnetInnerR();
+    fMagnetOuterR = GeometricalParameters::Get()->GetSpectrometerMagnetOuterR();
+    fNMagnets = GeometricalParameters::Get()->GetNSpectrometerMagnets();
+    fMagnetGap = GeometricalParameters::Get()->GetSpectrometerMagnetGap();
     
     BuildCrystalPullingDesign(); //sets logical volumes
     
@@ -76,6 +106,11 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
   G4VisAttributes* magnetVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
   magnetVis->SetVisibility(true);
   fMagnetYoke->SetVisAttributes(magnetVis);
+  
+  G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+  stationVis->SetVisibility(true);
+  fHorTrackingScinBar->SetVisAttributes(stationVis);  
+  fVerTrackingScinBar->SetVisAttributes(stationVis);  
 }
 
 SpectrometerMagnetConstruction::~SpectrometerMagnetConstruction()
@@ -106,4 +141,36 @@ void SpectrometerMagnetConstruction::BuildCrystalPullingDesign()
 
   fMagnetYoke = new G4LogicalVolume(magnetYokeSolid, fMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
   fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical");
+}
+
+void SpectrometerMagnetConstruction::BuildTrackingStation()
+{
+  // Each tracking station is made of 2 layers
+  // 1st layer: fNScinBarsY horizontal modules
+  // 2nd layer: fNScinBarsX vertical modules
+  G4double horizontalScinSize = fTrackingStationY / fNScinBarsY; // y size of horizontal scin
+  G4double verticalScinSize = fTrackingStationX / fNScinBarsX; // x size of vertical scin
+
+  // layer volume: same size, but first has horizontal bars, second one has vertical bars
+  auto trkLayerSolid = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
+  auto trkHorLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkHorLayerLogical"); 
+  auto trkVerLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkVerLayerLogical"); 
+  
+  // first layer is made of 2 horizontal pieces
+  auto trkHorScinSolid = new G4Box("trkHorScinSolid", fTrackingStationX/2., horizontalScinSize/2., fScinThickness/2.);
+  fHorTrackingScinBar = new G4LogicalVolume(trkHorScinSolid, fMaterials->Material("Polystyrene"), "trkHorScinLogical");
+  new G4PVReplica("trkHorScinPhysical", fHorTrackingScinBar,
+                  trkHorLayerLogical, kYAxis, fNScinBarsY, horizontalScinSize);
+  // secondo layer is made of 7 vertical pieces
+  auto trkVerScinSolid = new G4Box("trkHorScinSolid", verticalScinSize/2., fTrackingStationY/2., fScinThickness/2.);
+  fVerTrackingScinBar = new G4LogicalVolume(trkVerScinSolid, fMaterials->Material("Polystyrene"), "trkVerScinLogical");
+  new G4PVReplica("trkVerScinPhysical", fVerTrackingScinBar,
+                  trkVerLayerLogical, kXAxis, fNScinBarsX, verticalScinSize);
+  
+  fTrackingStation = new G4AssemblyVolume(); //one assembly has 2 layers
+  G4RotationMatrix rot(0, 0, 0);
+  G4ThreeVector pos(0, 0, -fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkHorLayerLogical,pos,&rot);
+  pos.setZ(fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
 }

@@ -48,6 +48,12 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithADoubleAndUnit* magnetLengthZCmd;
     G4UIcmdWithADoubleAndUnit* magnetGapCmd;
     G4UIcmdWithAnInteger* magnetNumberCmd;
+    // Tracking stations
+    G4UIcmdWithAnInteger* trackingNumberCmd;
+    G4UIcmdWithAnInteger* trackingNBarsYCmd;
+    G4UIcmdWithAnInteger* trackingNBarsXCmd;
+    G4UIcmdWithADoubleAndUnit* trackingScinThickCmd;
+    G4UIcmdWithADoubleAndUnit* trackingGapCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

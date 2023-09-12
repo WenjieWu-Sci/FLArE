@@ -22,12 +22,15 @@ class SpectrometerMagnetConstruction {
     // Returns assembly volume for placement    
     G4AssemblyVolume* GetSpectrometerMagnetAssembly(){ return fMagnetAssembly;}
   
-    // Returns magnetic logical volume
+    // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
+    G4LogicalVolume* GetHorTrackingScinBar(){ return fHorTrackingScinBar;}
+    G4LogicalVolume* GetVerTrackingScinBar(){ return fVerTrackingScinBar;}
 
     // Construction methods
     void BuildSAMURAIDesign();
     void BuildCrystalPullingDesign();
+    void BuildTrackingStation();
 
   private:
 
@@ -35,7 +38,10 @@ class SpectrometerMagnetConstruction {
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
-    
+    G4AssemblyVolume* fTrackingStation;
+    G4LogicalVolume* fHorTrackingScinBar;   
+    G4LogicalVolume* fVerTrackingScinBar;   
+
     // SAMURAI design
     G4double fMagnetWindowX;
     G4double fMagnetWindowY;
@@ -49,6 +55,15 @@ class SpectrometerMagnetConstruction {
     G4double fMagnetLengthZ;
     G4int fNMagnets;
     G4double fMagnetGap;
+
+    // Tracking stations
+    G4int fNTrackingStations;
+    G4double fTrackingStationX;
+    G4double fTrackingStationY;
+    G4double fScinThickness;
+    G4int fNScinBarsY;
+    G4int fNScinBarsX;
+    G4double fTrackingStationGap;
 };
 
 #endif

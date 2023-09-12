@@ -46,14 +46,14 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* TPCModuleLogical;
-    G4LogicalVolume* trkVerScinLogical;
-    G4LogicalVolume* trkHorScinLogical; 
     G4String fDetMaterialName;
     G4String fDetGeomOption;
     G4double fFieldValue;
     G4bool m_saveGdml;
 
-    G4LogicalVolume* fFASER2MagneticVolume;
+    G4LogicalVolume* FASER2MagnetLogical;
+    G4LogicalVolume* TrackingVerScinBarLogical;
+    G4LogicalVolume* TrackingHorScinBarLogical; 
 
     DetectorConstructionMaterial* LArBoxMaterials;
     FLArEDetectorConstructionMessenger* messenger;
