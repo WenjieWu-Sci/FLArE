@@ -5,17 +5,25 @@ GeometricalParameters *GeometricalParameters::me = 0;
 
 GeometricalParameters::GeometricalParameters()
 {
-  // default values
-  fSpectrometerMagnetOption = "SAMURAI";
+  // **** DEFAULT VALUES ***
+  
+  // FASER2 magnet
+  fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
+  // SAMURAI design
   fSpectrometerMagnetWindowX = 3.0*m;
   fSpectrometerMagnetWindowY = 1.0*m;
   fSpectrometerMagnetWindowZ = 4.0*m;
   fSpectrometerMagnetYokeThickX = 1.5*m;
   fSpectrometerMagnetYokeThickY = 2.0*m;
+  // CrystalPulling design
+  fSpectrometerMagnetLengthZ = 1.25*m;
+  fSpectrometerMagnetInnerR = 0.8*m;
+  fSpectrometerMagnetOuterR = 1.2*m;
+  fNSpectrometerMagnets = 3;
+  fSpectrometerMagnetGap = 0.5*m;
 
 }
-
 
 GeometricalParameters* GeometricalParameters::Get()
 {
@@ -24,5 +32,25 @@ GeometricalParameters* GeometricalParameters::Get()
   return me; 
 }
 
+GeometricalParameters::magnetOption GeometricalParameters::ConvertStringToMagnetOption(G4String val)
+{
+  if (val == "SAMURAI" || val == "samurai")
+    return magnetOption::SAMURAI;
+  else if (val == "CrystalPulling" || val == "crystalpulling")     
+    return magnetOption::CrystalPulling;
+  else {
+    G4cout << "ERROR: unknown FASER2 magnet geometry!" << G4endl;
+    return magnetOption::unknown;
+  }
+}
 
+G4ThreeVector GeometricalParameters::GetSpectrometerMagnetField()
+{
+  if (fSpectrometerMagnetOption == magnetOption::SAMURAI )
+    return G4ThreeVector(0.,fSpectrometerMagnetField,0.); //field along Y
+  else if (fSpectrometerMagnetOption == magnetOption::CrystalPulling)     
+    return G4ThreeVector(fSpectrometerMagnetField,0.,0.); //field along X
+  else
+    return G4ThreeVector(0.,0.,0.);
+}
 

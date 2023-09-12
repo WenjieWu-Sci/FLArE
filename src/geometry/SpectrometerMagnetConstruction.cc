@@ -6,9 +6,11 @@
 #include "G4LogicalVolume.hh"
 #include "G4Box.hh"
 #include "G4SubtractionSolid.hh"
+#include "G4Tubs.hh"
 #include "G4ThreeVector.hh"
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
+#include <G4SystemOfUnits.hh>
 
 SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
 {
@@ -17,7 +19,7 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
 
   // choose magnet option
   G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption(); 
-  if( opt == "SAMURAI" || opt == "samurai" ){
+  if( opt == GeometricalParameters::magnetOption::SAMURAI ){
     
     G4cout << "Building SAMURAI spectrometer magnet" << G4endl;
     fMagnetWindowX = GeometricalParameters::Get()->GetSpectrometerMagnetWindowX();
@@ -37,13 +39,31 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fMagnetAssembly->AddPlacedVolume(fMagnetWindow,magCenter,noRot);
     fMagnetAssembly->AddPlacedVolume(fMagnetYoke,magCenter,noRot);
 
-  } else if ( opt == "CrystalPulling" || opt == "crystalpulling" ){
+  } else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
  
     G4cout << "Building CrystalPulling spectrometer magnet" << G4endl;
+    fMagnetLengthZ = 1.25*m;
+    fMagnetInnerR = 0.8*m;
+    fMagnetOuterR = 1.2*m;
+    fNMagnets = 3;
+    fMagnetGap = 0.5*m;
+    
     BuildCrystalPullingDesign(); //sets logical volumes
+    
+    fMagnetAssembly = new G4AssemblyVolume();
+    G4RotationMatrix *noRot = new G4RotationMatrix();
 
-    // to do ....
-
+    // center of the assembly is the center of middle magnet window
+    // if fNMagnets is even, it falls in the gap between the two middle magnets
+    G4ThreeVector magCenter(0.,0.,0.);
+   
+    for(int i=0; i<fNMagnets; i++){
+      G4double offset = (i-0.5*(fNMagnets-1))*(fMagnetGap+fMagnetLengthZ);
+      G4ThreeVector magPos = magCenter + G4ThreeVector(0.,0.,offset);
+      fMagnetAssembly->AddPlacedVolume(fMagnetWindow,magPos,noRot);
+      fMagnetAssembly->AddPlacedVolume(fMagnetYoke,magPos,noRot);
+    }
+   
   } else {
     G4cout << "ERROR: unknown FASER2 spectrometer magnet option!" << G4endl;  
   }
@@ -81,5 +101,9 @@ void SpectrometerMagnetConstruction::BuildSAMURAIDesign()
 
 void SpectrometerMagnetConstruction::BuildCrystalPullingDesign()
 {
-  //TODO
+  auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
+  auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
+
+  fMagnetYoke = new G4LogicalVolume(magnetYokeSolid, fMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
+  fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical");
 }

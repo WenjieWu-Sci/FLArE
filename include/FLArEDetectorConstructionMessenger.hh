@@ -8,7 +8,6 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
-#include "G4UIcmdWith3VectorAndUnit.hh"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -35,6 +34,7 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
 
     // FASER2 SPECTROMETER MAGNET
+    // SAMURAI
     G4UIcmdWithAString* magnetGeomCmd;
     G4UIcmdWithADoubleAndUnit* magnetFieldCmd;
     G4UIcmdWithADoubleAndUnit* magnetWinXCmd;
@@ -42,7 +42,12 @@ class FLArEDetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithADoubleAndUnit* magnetWinZCmd;
     G4UIcmdWithADoubleAndUnit* yokeThickXCmd;
     G4UIcmdWithADoubleAndUnit* yokeThickYCmd;
-    
+    // CrystalPulling
+    G4UIcmdWithADoubleAndUnit* magnetInnerRCmd;
+    G4UIcmdWithADoubleAndUnit* magnetOuterRCmd;
+    G4UIcmdWithADoubleAndUnit* magnetLengthZCmd;
+    G4UIcmdWithADoubleAndUnit* magnetGapCmd;
+    G4UIcmdWithAnInteger* magnetNumberCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

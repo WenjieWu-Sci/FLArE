@@ -333,7 +333,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   G4double lengthDecayTunnelFASER2 = 10*m;
   G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
-  G4double lengthTrackStationFASER2 = 3.*m; //6 tracking stations + gas
+  G4double lengthTrackStationFASER2 = 3.*m; //6 tracking stations + gap
 
   G4double magnetWindowZ = GeometricalParameters::Get()->GetSpectrometerMagnetWindowZ();
 
@@ -343,13 +343,13 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
 			lengthTrackStationFASER2 + magnetWindowZ/2.;  
 
-  G4ThreeVector mag(0.,0.,magnetPosZ);
+  G4ThreeVector magPos(0.,0.,magnetPosZ);
 
   SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
-  G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
   fFASER2MagneticVolume = magnetAssembler->GetMagneticVolume(); //need to assign B field
   
-  magnetAssembly->MakeImprint(worldLog, mag, nullptr, 0, true);
+  G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
+  magnetAssembly->MakeImprint(worldLog, magPos, nullptr, 0, true);
 
 
   //-----------------------------------------------------------------
@@ -358,7 +358,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   // 3 assemblies, each made of 2 layers
   // 1st layer: 2 horizontal modules; (tot heigth: 1m)
   // 2nd layer: 6/7 vertical modules; (tot length: 3.5m)
-  
+ 
   G4double magnetWindowX = GeometricalParameters::Get()->GetSpectrometerMagnetWindowX();
   G4double magnetWindowY = GeometricalParameters::Get()->GetSpectrometerMagnetWindowY();
 
@@ -508,7 +508,7 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
   MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
   sdManager->AddNewDetector(MuonFinderAbsorbSD);
-
+  
   LArBoxSD* TrkHorScinSD = new LArBoxSD("TrkHorScinSD");
   trkHorScinLogical->SetSensitiveDetector(TrkHorScinSD);
   sdManager->AddNewDetector(TrkHorScinSD);
@@ -527,8 +527,7 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   muonFinderLogical->SetFieldManager(fieldMgr, true);
 
   // FASER2 magnetic field
-  G4double field = GeometricalParameters::Get()->GetSpectrometerMagnetField();
-  G4ThreeVector fieldValueFASER2(0.,field,0.);
+  G4ThreeVector fieldValueFASER2 = GeometricalParameters::Get()->GetSpectrometerMagnetField();
   magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
   fieldMgrFASER2 = new G4FieldManager();
   fieldMgrFASER2->SetDetectorField(magFieldFASER2);

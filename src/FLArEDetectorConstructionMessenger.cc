@@ -7,6 +7,7 @@
 #include "G4UIcommand.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWithAnInteger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -38,42 +39,60 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
     magnetGeomCmd->SetGuidance("Set the magnet design option");
     magnetGeomCmd->SetCandidates("SAMURAI CrystalPulling");
     magnetGeomCmd->SetDefaultValue("SAMURAI");
-
     magnetFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetField", this);
     magnetFieldCmd->SetUnitCategory("Magnetic flux density");
     magnetFieldCmd->SetDefaultUnit("tesla");
     magnetFieldCmd->SetUnitCandidates("tesla kG G");
     magnetFieldCmd->SetDefaultValue(1.0);
-    
+    // SAMURAI design
     magnetWinXCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinX", this);
     magnetWinXCmd->SetUnitCategory("Length");
     magnetWinXCmd->SetDefaultUnit("m");
     magnetWinXCmd->SetUnitCandidates("cm m mm");
     magnetWinXCmd->SetDefaultValue(3.0);
-    
     magnetWinYCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinY", this);
     magnetWinYCmd->SetUnitCategory("Length");
     magnetWinYCmd->SetDefaultUnit("m");
     magnetWinYCmd->SetUnitCandidates("cm m mm");
     magnetWinYCmd->SetDefaultValue(1.0);
-    
     magnetWinZCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinZ", this);
     magnetWinZCmd->SetUnitCategory("Length");
     magnetWinZCmd->SetDefaultUnit("m");
     magnetWinZCmd->SetUnitCandidates("cm m mm");
     magnetWinZCmd->SetDefaultValue(4.0);
-    
     yokeThickXCmd = new G4UIcmdWithADoubleAndUnit("/det/yokeThickX", this);
     yokeThickXCmd->SetUnitCategory("Length");
     yokeThickXCmd->SetDefaultUnit("m");
     yokeThickXCmd->SetUnitCandidates("cm m mm");
     yokeThickXCmd->SetDefaultValue(1.5);
-    
     yokeThickYCmd = new G4UIcmdWithADoubleAndUnit("/det/yokeThickY", this);
     yokeThickYCmd->SetUnitCategory("Length");
     yokeThickYCmd->SetDefaultUnit("m");
     yokeThickYCmd->SetUnitCandidates("cm m mm");
     yokeThickYCmd->SetDefaultValue(2.0);
+    // CrystalPullign design
+    magnetInnerRCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetInnerR", this);
+    magnetInnerRCmd->SetUnitCategory("Length");
+    magnetInnerRCmd->SetDefaultUnit("m");
+    magnetInnerRCmd->SetUnitCandidates("cm m mm");
+    magnetInnerRCmd->SetDefaultValue(0.8);
+    magnetOuterRCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetOuterR", this);
+    magnetOuterRCmd->SetUnitCategory("Length");
+    magnetOuterRCmd->SetDefaultUnit("m");
+    magnetOuterRCmd->SetUnitCandidates("cm m mm");
+    magnetOuterRCmd->SetDefaultValue(1.2);
+    magnetLengthZCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetLengthZ", this);
+    magnetLengthZCmd->SetUnitCategory("Length");
+    magnetLengthZCmd->SetDefaultUnit("m");
+    magnetLengthZCmd->SetUnitCandidates("cm m mm");
+    magnetLengthZCmd->SetDefaultValue(1.25);
+    magnetGapCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetGap", this);
+    magnetGapCmd->SetUnitCategory("Length");
+    magnetGapCmd->SetDefaultUnit("m");
+    magnetGapCmd->SetUnitCandidates("cm m mm");
+    magnetGapCmd->SetDefaultValue(0.5);
+    magnetNumberCmd = new G4UIcmdWithAnInteger("/det/magnetNumber", this);
+    magnetNumberCmd->SetDefaultValue(3);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -91,6 +110,12 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
   delete magnetWinZCmd;
   delete yokeThickXCmd;
   delete yokeThickYCmd;
+    
+  delete magnetInnerRCmd;
+  delete magnetOuterRCmd;
+  delete magnetLengthZCmd;
+  delete magnetGapCmd;
+  delete magnetNumberCmd;
 
   delete detDir;
 }
@@ -103,18 +128,36 @@ void FLArEDetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4Str
   if (command == detGeomCmd) det->SetGeomOption(newValues);
   
   // flare
-  if (command == detMatCmd)  det->SetDetMaterial(newValues);
-  if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
-  if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == detMatCmd)  det->SetDetMaterial(newValues);
+  else if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
 
   // faser2 magnet
-  if (command == magnetGeomCmd)  GeometricalParameters::Get()->SetSpectrometerMagnetOption(newValues);
-  if (command == magnetFieldCmd) GeometricalParameters::Get()->SetSpectrometerMagnetField(magnetFieldCmd->ConvertToDimensionedDouble(newValues));
-  if (command == magnetWinXCmd) GeometricalParameters::Get()->SetSpectrometerMagnetWindowX(magnetWinXCmd->ConvertToDimensionedDouble(newValues));
-  if (command == magnetWinYCmd) GeometricalParameters::Get()->SetSpectrometerMagnetWindowY(magnetWinYCmd->ConvertToDimensionedDouble(newValues));
-  if (command == magnetWinZCmd) GeometricalParameters::Get()->SetSpectrometerMagnetWindowZ(magnetWinZCmd->ConvertToDimensionedDouble(newValues));
-  if (command == yokeThickXCmd) GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickX(yokeThickXCmd->ConvertToDimensionedDouble(newValues));
-  if (command == yokeThickYCmd) GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickY(yokeThickYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetGeomCmd)  
+    GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
+  else if (command == magnetFieldCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetField(magnetFieldCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetWinXCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowX(magnetWinXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetWinYCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowY(magnetWinYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetWinZCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowZ(magnetWinZCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == yokeThickXCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickX(yokeThickXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == yokeThickYCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickY(yokeThickYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetInnerRCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetInnerR(magnetInnerRCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetOuterRCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetOuterR(magnetOuterRCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetLengthZCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetLengthZ(magnetLengthZCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetGapCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetGap(magnetGapCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == magnetNumberCmd) 
+    GeometricalParameters::Get()->SetNSpectrometerMagnets(magnetNumberCmd->GetNewIntValue(newValues));
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

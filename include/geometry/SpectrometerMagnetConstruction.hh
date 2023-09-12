@@ -44,7 +44,11 @@ class SpectrometerMagnetConstruction {
     G4double fMagnetYokeThicknessY;
 
     // Crystal-pulling design
-    //...
+    G4double fMagnetInnerR;
+    G4double fMagnetOuterR;
+    G4double fMagnetLengthZ;
+    G4int fNMagnets;
+    G4double fMagnetGap;
 };
 
 #endif
