@@ -30,7 +30,7 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fMagnetYokeThicknessY = GeometricalParameters::Get()->GetSpectrometerMagnetYokeThickY();
    
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
-    fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size
+    fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size + bending plane
     fTrackingStationY = fMagnetWindowY; // match magnet size
     fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
     fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
@@ -78,7 +78,22 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fNMagnets = GeometricalParameters::Get()->GetNSpectrometerMagnets();
     fMagnetGap = GeometricalParameters::Get()->GetSpectrometerMagnetGap();
     
+    fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
+    fTrackingStationX = 2*fMagnetInnerR; //match magnet size
+    fTrackingStationY = 2*fMagnetInnerR + 0.5*m; // match magnet size + bending plane
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
+    fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
+    fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
+    G4double gapToMagnet = fTrackingStationGap;
+    G4double stationThickness = 2*fScinThickness;
+    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
+    G4double magnetsLengthZ = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*fMagnetGap;
+
+    GeometricalParameters::Get()->SetSpectrometerMagnetTotalSizeZ(magnetsLengthZ+2*totThickness+2*gapToMagnet);
+    
     BuildCrystalPullingDesign(); //sets logical volumes
+    BuildTrackingStation();
     
     fMagnetAssembly = new G4AssemblyVolume();
     G4RotationMatrix *noRot = new G4RotationMatrix();
@@ -92,6 +107,20 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
       G4ThreeVector magPos = magCenter + G4ThreeVector(0.,0.,offset);
       fMagnetAssembly->AddPlacedVolume(fMagnetWindow,magPos,noRot);
       fMagnetAssembly->AddPlacedVolume(fMagnetYoke,magPos,noRot);
+    }
+    
+    // middle position of pre-magnet and post-magnet tracking stations
+    G4ThreeVector offset(0, 0, magnetsLengthZ/2.+ gapToMagnet + totThickness/2.);
+    G4ThreeVector preStationsCenter = magCenter - offset;
+    G4ThreeVector postStationsCenter = magCenter + offset;
+  
+    // placing tracking stations (before/after magnet)
+    for (int i= 0; i<fNTrackingStations; ++i) { 
+      G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
+      G4ThreeVector Tp = postStationsCenter + T;
+      G4ThreeVector Tm = preStationsCenter + T;
+      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tm, noRot); //place before magnet
+      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tp, noRot); //place after magnet
     }
    
   } else {

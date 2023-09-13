@@ -25,8 +25,8 @@ GeometricalParameters::GeometricalParameters()
   fSpectrometerMagnetGap = 0.5*m;
   // Tracking stations
   fNTrackingStations = 6;
-  fNScintillatorBarsY = 7;
-  fNScintillatorBarsX = 3;
+  fNScintillatorBarsY = 3;
+  fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
 }

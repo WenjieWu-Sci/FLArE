@@ -333,7 +333,6 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   G4double lengthDecayTunnelFASER2 = 10*m;
   G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
-  G4double lengthTrackStationFASER2 = 3.*m; //6 tracking stations + gap
 
   SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
   FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
@@ -346,7 +345,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
 			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2 +
 			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
-			lenghtSpectrometerMagnetAssembly/2.;  
+			lengthSpectrometerMagnetAssembly/2.;  
 
   G4ThreeVector magPos(0.,0.,magnetPosZ); 
   magnetAssembly->MakeImprint(worldLog, magPos, nullptr, 0, true);
