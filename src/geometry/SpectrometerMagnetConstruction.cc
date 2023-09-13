@@ -80,8 +80,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fMagnetGap = GeometricalParameters::Get()->GetSpectrometerMagnetGap();
     
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
-    fTrackingStationX = 2*fMagnetInnerR; //match magnet size
-    fTrackingStationY = 2*fMagnetInnerR + 0.5*m; // match magnet size + bending plane
+    fTrackingStationX = 2*fMagnetInnerR + 0.5*m ; //match magnet size + bending plane (for now, FIXME?)
+    fTrackingStationY = 2*fMagnetInnerR; // match magnet size
     fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
     fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
