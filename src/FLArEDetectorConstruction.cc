@@ -341,11 +341,13 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
 
   // from the center of FLArE lAr volume 
-  G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetSpectrometerMagnetTotalSizeZ();
+  G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetMagnetTotalSizeZ() 
+                                            + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
   G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
 			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2 +
 			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
 			lengthSpectrometerMagnetAssembly/2.;  
+  GeometricalParameters::Get()->SetMagnetZPosition(magnetPosZ); // save for momentum analysis
 
   G4ThreeVector magPos(0.,0.,magnetPosZ); 
   magnetAssembly->MakeImprint(worldLog, magPos, nullptr, 0, true);

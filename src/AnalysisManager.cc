@@ -7,6 +7,7 @@
 #include <random>
 
 #include "AnalysisManager.hh"
+#include "geometry/GeometricalParameters.hh"
 #include "LArBoxSD.hh"
 #include "LArBoxHit.hh"
 #include "PrimaryParticleInformation.hh"
@@ -705,13 +706,13 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           hitZFSL.push_back(post_z);
           hitPFSL.push_back(p_perp);
         }
-        else if( detID > 7 && post_z < circularfitter::fMagnetZPos){
+        else if( detID > 7 && post_z < GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
           preTrkXFSL.push_back(post_x);
           preTrkYFSL.push_back(post_y);
           preTrkZFSL.push_back(post_z);
           preTrkPFSL.push_back(p_perp);
         }
-        else if ( detID > 7 && post_z > circularfitter::fMagnetZPos){
+        else if ( detID > 7 && post_z > GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
           postTrkXFSL.push_back(post_x);
           postTrkYFSL.push_back(post_y);
           postTrkZFSL.push_back(post_z);

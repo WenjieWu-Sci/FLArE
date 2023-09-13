@@ -10,7 +10,9 @@ GeometricalParameters::GeometricalParameters()
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
-  fSpectrometerMagnetTotalSizeZ = 10.24*m;
+  fMagnetTotalSizeZ = 4*m;
+  fTrackingStationTotalSizeZ = 3.12*m;
+  fMagnetZPos = 40*m;
   // SAMURAI design
   fSpectrometerMagnetWindowX = 3.0*m;
   fSpectrometerMagnetWindowY = 1.0*m;
@@ -55,7 +57,7 @@ G4ThreeVector GeometricalParameters::GetSpectrometerMagnetField()
   if (fSpectrometerMagnetOption == magnetOption::SAMURAI )
     return G4ThreeVector(0.,fSpectrometerMagnetField,0.); //field along Y
   else if (fSpectrometerMagnetOption == magnetOption::CrystalPulling)     
-    return G4ThreeVector(fSpectrometerMagnetField,0.,0.); //field along X
+    return G4ThreeVector(0.,fSpectrometerMagnetField,0.); //field along Y (for now, FIXME?)
   else
     return G4ThreeVector(0.,0.,0.);
 }

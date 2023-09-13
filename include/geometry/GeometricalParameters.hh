@@ -23,8 +23,12 @@ class GeometricalParameters  {
     magnetOption GetSpectrometerMagnetOption() { return fSpectrometerMagnetOption; }
     void SetSpectrometerMagnetField(G4double val) { fSpectrometerMagnetField = val; }
     G4ThreeVector GetSpectrometerMagnetField();
-    void SetSpectrometerMagnetTotalSizeZ(G4double val) { fSpectrometerMagnetTotalSizeZ = val; }
-    G4double GetSpectrometerMagnetTotalSizeZ() { return fSpectrometerMagnetTotalSizeZ; }
+    void SetMagnetTotalSizeZ(G4double val) { fMagnetTotalSizeZ = val; }
+    G4double GetMagnetTotalSizeZ() { return fMagnetTotalSizeZ; }
+    void SetTrackingStationTotalSizeZ(G4double val) { fTrackingStationTotalSizeZ = val; }
+    G4double GetTrackingStationTotalSizeZ() { return fTrackingStationTotalSizeZ; }
+    void SetMagnetZPosition(G4double val) { fMagnetZPos = val; }
+    G4double GetMagnetZPosition() { return fMagnetZPos; }
     // SAMURAI design
     void SetSpectrometerMagnetWindowX(G4double val) { fSpectrometerMagnetWindowX = val; }
     G4double GetSpectrometerMagnetWindowX() { return fSpectrometerMagnetWindowX; }
@@ -66,7 +70,9 @@ class GeometricalParameters  {
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;
     G4double fSpectrometerMagnetField;
-    G4double fSpectrometerMagnetTotalSizeZ;
+    G4double fMagnetTotalSizeZ;
+    G4double fTrackingStationTotalSizeZ;
+    G4double fMagnetZPos;
     // SAMURAI design
     G4double fSpectrometerMagnetWindowX;
     G4double fSpectrometerMagnetWindowY;

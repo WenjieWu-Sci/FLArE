@@ -1,13 +1,16 @@
+////////////////////////////////////////////////////////////////////////
+// \file    CircularFit.hh
+// \brief   Class headers to perform circular fits using analytical methods
+//          for momentum estimation in magnetic fields
+// \author  M. Vicenzi (mvicenzi@bnl.gov)
+////////////////////////////////////////////////////////////////////////
+
 #ifndef CIRCULARFIT_HH
 #define CIRCULARFIT_HH
 
 #include <vector>
 
 namespace circularfitter {
-
-  const double fMagnetZPos = 35960.+3500.;
-  const double fMagnetZSize = 4000.; //4 m
-
   struct line {
     double m;
     double q;

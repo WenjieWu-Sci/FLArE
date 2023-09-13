@@ -19,21 +19,44 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 * pythia6 v6_4_28r
 
 ## Macro command
+### Geometry
+|Command |Description | Default |
+|:--|:--|:--|
+|/det/material          | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|
+|/det/module            | option for tpc module option, choose `single` or `3x7`, run before `/run/initialize` |`single`|
+|/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
+|/det/field             | option for setting the magnetic field value in FLArE HadCather and Muon Finder       |`1 T`|
+|/det/magnetGeom        | option for FASER2 magnet geometry, choose `SAMURAI` or `CrystalPulling`              |`SAMURAI`|
+|/det/magnetField       | option for setting the FASER2 magnetic field value                                   |`1 T`|
+|/det/magnetWinX        | option for SAMURAI magnet window size along X axis                                   |`3.0 m`|
+|/det/magnetWinY        | option for SAMURAI magnet window size along Y axis                                   |`1.0 m`|
+|/det/magnetWinZ        | option for SAMURAI magnet window size along Z size                                   |`4.0 m`|
+|/det/yokeThickX        | option for SAMURAI yoke thickness along X axis                                       |`1.5 m`|
+|/det/yokeThickY        | option for SAMURAI yoke thickness along Y axis                                       |`2.0 m`|
+|/det/magnetNumber      | option for number of CrystalPulling magnets                                          |`3`|
+|/det/magnetInnerR      | option for CrystalPulling magnet inner radius                                        |`0.8 m`|
+|/det/magnetOuterR      | option for CrystalPulling magnet outer radius                                        |`1.2 m`|
+|/det/magnetLengthZ     | option for CrystalPulling magnet size along Z axis                                   |`1.25 m`|
+|/det/magnetGap         | option for gap length (along Z) between CrystalPullin magnets                        |`0.5 m`|
+|/det/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
+|/det/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
+|/det/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
+|/det/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
+|/det/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |` 0.5 m`|
+### Event generators
 |Command |Description |
 |:--|:--|
-|/det/material       | option for detector material, choose from `LAr` (default) and `LKr`, run before `/run/initialize`|
-|/det/module         | option for tpc module option, choose from `single` (default) and `3x7`, run before `/run/initialize`|
-|/det/saveGdml       | option for saving detector geometry in a GDML file, `false` as default, run before `/run/initialize`|
-|/det/field          | option for setting the magnetic field value (Tesla) in FLArE HadCather and Muon Finder, default is `1 T`|
 |/genie/useGenie     | option for PrimaryGeneratorMessenger, set `true` to read neutrino interactions from GENIE|
 |/genie/genieInput   | if `useGenie is true`, give which `.ghep.root` file to read GENIE events|
 |/genie/genieIStart  | if `useGenie is true`, give the start position of the file to read GENIE events|
+### Analysis
+|Command |Description |
+|:--|:--|
 |/histo/fileName     | option for AnalysisManagerMessenger, set name of the file saving all analysis variables|
 |/histo/saveHit      | if `true` save information for all hits, `false` in default to save space|
 |/histo/saveEvd      | if `true` save spatial distribution of energy deposition, `false` in default to save space|
 |/histo/circleFit    | if `true` run circle fitting and save information in output, `false` in default to save space|
 |/histo/addDiffusion | if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion|
-
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.
 As denoted by the name, they're used to simulate e-/mu-/tau- leptons in a LAr or LKr detector. To run a simulation, just do `./FLArE macros/LAr_e-.mac`.

@@ -40,7 +40,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     G4double stationThickness = 2*fScinThickness;
     G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
    
-    GeometricalParameters::Get()->SetSpectrometerMagnetTotalSizeZ(fMagnetWindowZ+2*totThickness+2*gapToMagnet);
+    GeometricalParameters::Get()->SetMagnetTotalSizeZ(fMagnetWindowZ);
+    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness+gapToMagnet);
 
     BuildSAMURAIDesign(); //sets logical volumes
     BuildTrackingStation(); //sets assembly volume
@@ -90,7 +91,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
     G4double magnetsLengthZ = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*fMagnetGap;
 
-    GeometricalParameters::Get()->SetSpectrometerMagnetTotalSizeZ(magnetsLengthZ+2*totThickness+2*gapToMagnet);
+    GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetsLengthZ);
+    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness+gapToMagnet);
     
     BuildCrystalPullingDesign(); //sets logical volumes
     BuildTrackingStation();

@@ -1,4 +1,13 @@
+////////////////////////////////////////////////////////////////////////
+// \file    CircularFit.cc
+// \brief   Classes to perform circular fits using analytical methods
+//          for momentum estimation in magnetic fields
+// \author  M. Vicenzi (mvicenzi@bnl.gov)
+////////////////////////////////////////////////////////////////////////
+
 #include "reco/CircleFit.hh"
+#include "geometry/GeometricalParameters.hh"
+#include "G4SystemOfUnits.hh"
 
 #include <iostream>
 #include <vector>
@@ -145,8 +154,10 @@ namespace circularfitter {
     fpre = lf_pre.GetLine();
     fpost = lf_post.GetLine();
 
-    fZin = fMagnetZPos - fMagnetZSize/2.;
-    fZout = fMagnetZPos + fMagnetZSize/2.;
+    double zpos = GeometricalParameters::Get()->GetMagnetZPosition() + 3500*mm; //offset due to coordinate change in AnalysisManager
+    double size = GeometricalParameters::Get()->GetMagnetTotalSizeZ();
+    fZin = zpos - size/2.;
+    fZout = zpos + size/2.;
 
     fXin = extrapolateLine(fZin,fpre);
     fXout = extrapolateLine(fZout,fpost);
@@ -192,7 +203,7 @@ namespace circularfitter {
   {	
     TGraph *g = new TGraph();
     
-    for(int i=0; i<z.size(); i++){  g->SetPoint(i,z.at(i),x.at(i)); }
+    for(unsigned int i=0; i<z.size(); i++){  g->SetPoint(i,z.at(i),x.at(i)); }
 
     // parabolic in x-z plane: x = a + b*z + x*z2	
     TF1 *f = new TF1("f","[0]+[1]*x+[2]*x*x",z.front()-100,z.back()+100);
