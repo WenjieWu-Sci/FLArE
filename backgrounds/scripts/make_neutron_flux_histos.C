@@ -22,7 +22,7 @@ double Emin, Emax;
 double Ebinsize;
 
 // files
-std::string outpath_n = "../muons/n_flux_histograms.root";
+std::string outpath_n = "../neutrons/n_flux_histograms.root";
 TFile *fin; //input
 TFile *fout; //output
 
