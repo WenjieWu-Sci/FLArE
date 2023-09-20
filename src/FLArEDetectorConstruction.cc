@@ -5,6 +5,7 @@
 
 #include "geometry/SpectrometerMagnetConstruction.hh"
 #include "geometry/GeometricalParameters.hh"
+#include "geometry/FASERnu2DetectorConstruction.hh"
 
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -324,15 +325,24 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   }
 
   //-----------------------------------
-  // FASER2 Magnet + Tracking stations
-
-  // positioning
+  // FASERnu2 Emulsion Detector
   G4double detectorGapLength = 1.2*m;
   G4double lengthFORMOSA = 4.0*m;
-  G4double lengthFASERnu2 = 8.0*m;
 
-  G4double lengthDecayTunnelFASER2 = 10*m;
-  G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
+  FASERnu2DetectorConstruction *FASERnu2Assembler = new FASERnu2DetectorConstruction();
+  FASERnu2EmulsionLogical = FASERnu2Assembler->GetEmulsionFilm();
+  FASERnu2VetoInterfaceLogical = FASERnu2Assembler->GetVetoInterfaceDetector();
+  G4AssemblyVolume* FASERnu2Assembly = FASERnu2Assembler->GetFASERnu2Assembly();
+  
+  // positioning
+  G4double lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
+  G4double FASERnu2PosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
+			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2/2;
+  G4ThreeVector FASERnu2Pos(0.,0.,FASERnu2PosZ); 
+  FASERnu2Assembly->MakeImprint(worldLog, FASERnu2Pos, nullptr, 0, true);
+  
+  //-----------------------------------
+  // FASER2 Magnet + Tracking stations
 
   SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
   FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
@@ -340,12 +350,13 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   TrackingHorScinBarLogical = magnetAssembler->GetHorTrackingScinBar(); //need to assign SD
   G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
 
-  // from the center of FLArE lAr volume 
+  // positioning
+  G4double lengthDecayTunnelFASER2 = 10*m;
+  G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
   G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetMagnetTotalSizeZ() 
                                             + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
-  G4double magnetPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
-			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2 +
-			detectorGapLength + lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
+  G4double magnetPosZ = FASERnu2PosZ + lengthFASERnu2/2. + detectorGapLength + 
+                        lengthVetoStationFASER2 + lengthDecayTunnelFASER2 +
 			lengthSpectrometerMagnetAssembly/2.;  
   GeometricalParameters::Get()->SetMagnetZPosition(magnetPosZ); // save for momentum analysis
 
@@ -428,6 +439,14 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
   MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
   sdManager->AddNewDetector(MuonFinderAbsorbSD);
+
+  LArBoxSD* EmulsionFilmSD = new LArBoxSD("FASERnu2EmulsionSD");
+  FASERnu2EmulsionLogical->SetSensitiveDetector(EmulsionFilmSD);
+  sdManager->AddNewDetector(EmulsionFilmSD);
+  
+  LArBoxSD* VetoInterfaceSD = new LArBoxSD("FASERnu2VetoInterfaceSD");
+  FASERnu2VetoInterfaceLogical->SetSensitiveDetector(VetoInterfaceSD);
+  sdManager->AddNewDetector(VetoInterfaceSD);
 
   LArBoxSD* TrkHorScinSD = new LArBoxSD("TrkHorScinSD");
   TrackingHorScinBarLogical->SetSensitiveDetector(TrkHorScinSD);

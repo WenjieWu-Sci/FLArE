@@ -55,6 +55,9 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* TrackingVerScinBarLogical;
     G4LogicalVolume* TrackingHorScinBarLogical; 
 
+    G4LogicalVolume* FASERnu2EmulsionLogical;
+    G4LogicalVolume* FASERnu2VetoInterfaceLogical;
+
     DetectorConstructionMaterial* LArBoxMaterials;
     FLArEDetectorConstructionMessenger* messenger;
 

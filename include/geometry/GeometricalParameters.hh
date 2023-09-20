@@ -63,6 +63,10 @@ class GeometricalParameters  {
     void SetTrackingStationGap(G4double val) { fTrackingStationGap = val; }
     G4double GetTrackingStationGap() { return fTrackingStationGap; }  
 
+    //FASERnu2 Emulsion detector
+    void SetFASERnu2TotalSizeZ(G4double val) { fFASERnu2TotalSizeZ = val; }
+    G4double GetFASERnu2TotalSizeZ() { return fFASERnu2TotalSizeZ; }
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -91,6 +95,9 @@ class GeometricalParameters  {
     G4int fNScintillatorBarsX;
     G4double fScintillatorThickness;
     G4double fTrackingStationGap;
+
+    // FASERnu2 Emulsion detector
+    G4double fFASERnu2TotalSizeZ;
 };
 
 #endif 

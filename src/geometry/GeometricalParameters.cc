@@ -31,6 +31,9 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
+
+  // FASERnu2 emulsion detector
+  fFASERnu2TotalSizeZ = 8.5*m;
 }
 
 GeometricalParameters* GeometricalParameters::Get()

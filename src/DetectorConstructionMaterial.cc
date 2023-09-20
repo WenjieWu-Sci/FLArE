@@ -225,6 +225,12 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   R_PUF = new G4Material("R_PUF", density, 2);
   R_PUF->AddMaterial(polyurethane_foam, 0.95);
   R_PUF->AddMaterial(fibrous_glass    , 0.05);
+
+  // Placeholder for AgBr emulsion
+  // currently something similar (?) straight out of NIST database
+  G4NistManager* nist = G4NistManager::Instance(); 
+  Emulsion = nist->FindOrBuildMaterial("G4_PHOTO_EMULSION");
+
 }
 
 DetectorConstructionMaterial* DetectorConstructionMaterial::GetInstance() {
@@ -252,6 +258,7 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "LiquidScintillator") material = LS;
   if(what == "Polystyrene")        material = polystyrene;
   if(what == "R_PUF")              material = R_PUF;
+  if(what == "Emulsion")           material = Emulsion;
 
   return material;
 }
