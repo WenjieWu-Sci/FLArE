@@ -18,14 +18,14 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
 
   G4cout << "Building FASERnu2 Emulsion Detector" << G4endl;
  
-  fNEmulsionTungstenLayers = 3300;
-  fTungstenThickness = 2*mm;
-  fEmulsionThickness = 0.420*mm;
-  fEmulsionTungstenSizeX = 40*cm;
-  fEmulsionTungstenSizeY = 40*cm;
-  fVetoInterfaceSizeZ = 20*cm;
-  fVetoInterfaceSizeX = 80*cm;
-  fVetoInterfaceSizeY = 80*cm;
+  fNEmulsionTungstenLayers = GeometricalParameters::Get()->GetNEmulsionTungstenLayers();
+  fTungstenThickness = GeometricalParameters::Get()->GetTungstenThickness();
+  fEmulsionThickness = GeometricalParameters::Get()->GetEmulsionThickness();
+  fEmulsionTungstenSizeX = GeometricalParameters::Get()->GetEmulsionTungstenSizeX();
+  fEmulsionTungstenSizeY = GeometricalParameters::Get()->GetEmulsionTungstenSizeY();
+  fVetoInterfaceSizeZ = GeometricalParameters::Get()->GetVetoInterfaceSizeZ();
+  fVetoInterfaceSizeX = GeometricalParameters::Get()->GetVetoInterfaceSizeX();
+  fVetoInterfaceSizeY = GeometricalParameters::Get()->GetVetoInterfaceSizeY();
 
   fModuleThickness = (fNEmulsionTungstenLayers/2.)*(fEmulsionThickness+fTungstenThickness);
   G4double totLengthZ = 2*fModuleThickness + 3*fVetoInterfaceSizeZ;
