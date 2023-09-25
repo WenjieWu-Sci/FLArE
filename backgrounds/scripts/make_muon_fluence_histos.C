@@ -105,7 +105,7 @@ void build_zx_projection(double miny, double maxy, std::string ts=""){
   h_zx->SetMinimum(0.001);
   h_zx->GetXaxis()->SetTitle("z [cm]");
   h_zx->GetYaxis()->SetTitle("x [cm]");
-  h_zx->GetZaxis()->SetTitle("Fluence per 5L_{0} [cm^{-2}s^{-1}]");
+  h_zx->GetZaxis()->SetTitle("Fluence rate per 5L_{0} [cm^{-2}s^{-1}]");
   h_zx->SetStats(0);
 
   TCanvas *c0 = new TCanvas();
@@ -163,7 +163,7 @@ void build_zy_projection(double minx, double maxx, std::string ts=""){
   h_zy->SetMinimum(0.001);
   h_zy->GetXaxis()->SetTitle("z [cm]");
   h_zy->GetYaxis()->SetTitle("y [cm]");
-  h_zy->GetZaxis()->SetTitle("Fluence per 5L_{0} [cm^{-2}s^{-1}]");
+  h_zy->GetZaxis()->SetTitle("Fluence rate per 5L_{0} [cm^{-2}s^{-1}]");
   h_zy->SetStats(0);
 
   TCanvas *c0 = new TCanvas();
@@ -222,7 +222,7 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
   h_xy->GetXaxis()->SetTitle("x [cm]");
   h_xy->GetYaxis()->SetTitle("y [cm]");
   h_xy->GetYaxis()->SetTitleOffset(1.3);
-  h_xy->GetZaxis()->SetTitle("Fluence per 5L_{0} [cm^{-2}s^{-1}]");
+  h_xy->GetZaxis()->SetTitle("Fluence rate per 5L_{0} [cm^{-2}s^{-1}]");
   h_xy->SetStats(0);
 
   TCanvas *c0 = new TCanvas();
@@ -245,7 +245,7 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
 
 // ----------------------------------------------------------------
 
-void make_fluence_histos(){
+void make_muon_fluence_histos(){
 
   //input
   f = new TFile("/dune/data/users/mvicenzi/FPF_backgrounds/muons/fluence/mu_fluence.root", "READ");
