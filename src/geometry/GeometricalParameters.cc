@@ -42,6 +42,9 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeZ = 20*cm;
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
+
+  // FORMOSA
+  fFORMOSATotalSizeZ = 5*m; //updates during construction
 }
 
 GeometricalParameters* GeometricalParameters::Get()

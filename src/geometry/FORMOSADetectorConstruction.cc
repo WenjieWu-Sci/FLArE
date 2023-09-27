@@ -1,0 +1,124 @@
+#include "geometry/FORMOSADetectorConstruction.hh"
+#include "geometry/GeometricalParameters.hh"
+#include "DetectorConstructionMaterial.hh"
+
+#include "G4AssemblyVolume.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Box.hh"
+#include "G4ThreeVector.hh"
+#include "G4VisAttributes.hh"
+#include "G4Colour.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4PVReplica.hh"
+
+FORMOSADetectorConstruction::FORMOSADetectorConstruction()
+{
+  // load materials
+  fMaterials = DetectorConstructionMaterial::GetInstance();
+
+  G4cout << "Building FORMOSA Detector" << G4endl;
+
+  fNScintillatorBarsX = 20;
+  fNScintillatorBarsY = 20;
+  fScintillatorBarSizeX = 5*cm;
+  fScintillatorBarSizeY = 5*cm;
+  fScintillatorBarSizeZ = 1*m;
+
+  G4int NScintillatorModules = 4;
+  fPMTSizeSpacing = 33*cm;
+
+  G4double totLengthZ = NScintillatorModules*(fScintillatorBarSizeZ+fPMTSizeSpacing);
+  GeometricalParameters::Get()->SetFORMOSATotalSizeZ(totLengthZ);
+
+  BuildScintillatorAssembly();
+//  BuildVetoDetector(); 
+    
+  fFORMOSAAssembly = new G4AssemblyVolume();
+  G4RotationMatrix *noRot = new G4RotationMatrix();
+
+  // center of the assembly is the center of middle PMT box
+  G4ThreeVector FORMOSACenter(0.,0.,0.);
+
+  // placing the scintillator blocks: note that the center of each scintillator assembly
+  // is in the middle of the scintillator, not in the geometrical baricenter
+  for( int i=0; i<NScintillatorModules; i++ ){
+    G4double offset = -0.5*(3.*fScintillatorBarSizeZ+4.*fPMTSizeSpacing)+i*(fScintillatorBarSizeZ+fPMTSizeSpacing);
+    G4ThreeVector pos = FORMOSACenter + G4ThreeVector(0.,0., offset);
+    fFORMOSAAssembly->AddPlacedAssembly(fScintillatorAssembly,pos,noRot);
+  }
+
+  // placing the outer interface detectors
+  //for( int i=-1; i<=1; i=i+2 ){
+  //  G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.5*fVetoInterfaceSizeZ);
+  //  fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,pos,noRot);
+  //}
+
+  // visibility
+  //G4VisAttributes* vetoVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
+  //vetoVis->SetVisibility(true);
+  //fVetoDetector->SetVisAttributes(vetoVis);
+  
+  G4VisAttributes* scinVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+  scinVis->SetVisibility(true);
+  fScintillatorBar->SetVisAttributes(scinVis);  
+
+  G4VisAttributes* pmtVis = new G4VisAttributes(G4Colour(128./255, 128./255, 128./255, 0.8));
+  pmtVis->SetVisibility(true);
+  fScintillatorPMT->SetVisAttributes(pmtVis);  
+
+}
+
+FORMOSADetectorConstruction::~FORMOSADetectorConstruction()
+{ 
+  delete fFORMOSAAssembly;
+  delete fScintillatorBar;
+  delete fScintillatorAssembly;
+}
+
+void FORMOSADetectorConstruction::BuildScintillatorAssembly()
+{
+  fScintillatorAssembly = new G4AssemblyVolume();
+  
+  // build scintillator bar
+  auto scintillatorBarSolid = new G4Box("scintillatorBarSolid", fScintillatorBarSizeX/2., fScintillatorBarSizeY/2., fScintillatorBarSizeZ/2.);
+  fScintillatorBar = new G4LogicalVolume(scintillatorBarSolid, fMaterials->Material("Polystyrene"), "scintillatorBarLogical");
+
+  // build scintillator block
+  auto scinBlockSolid = new G4Box("scinBlockSolid",
+                               (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
+                               (fNScintillatorBarsY*fScintillatorBarSizeY)/2.,
+                               fScintillatorBarSizeZ/2.);
+  auto scinBlockLogical = new G4LogicalVolume(scinBlockSolid, fMaterials->Material("Polystyrene"), "scinBlockLogical");
+  auto scinBlockYLayerSolid = new G4Box("scinBlockYLayerSolid",
+                               (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
+                               fScintillatorBarSizeY/2.,
+                               fScintillatorBarSizeZ/2.);
+  auto scinBlockYLayerLogical = new G4LogicalVolume(scinBlockYLayerSolid, fMaterials->Material("Polystyrene"), "scinBlockYLayerLogical");
+  // replicate along x to build one Y layer of the block
+  new G4PVReplica("scinBlockYLayerPhysical", fScintillatorBar,
+                  scinBlockYLayerLogical, kXAxis, fNScintillatorBarsX, fScintillatorBarSizeX);
+  // replicate along y to fill entire block
+  new G4PVReplica("scinBlockPhysical", scinBlockYLayerLogical,
+                  scinBlockLogical, kYAxis, fNScintillatorBarsY, fScintillatorBarSizeY);
+ 
+  // build PMT "box"
+  auto PMTBoxSolid = new G4Box("PMTBoxSolid", 
+                              (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
+                              (fNScintillatorBarsY*fScintillatorBarSizeY)/2.,
+                               fPMTSizeSpacing/2.);
+  fScintillatorPMT = new G4LogicalVolume(PMTBoxSolid, fMaterials->Material("Air"), "PMTBoxLogical");
+
+  //put the assembly together
+  G4RotationMatrix *rot = new G4RotationMatrix();
+  G4ThreeVector pos_block(0, 0, 0.);
+  G4ThreeVector pos_pmtbox(0, 0, (fScintillatorBarSizeZ+fPMTSizeSpacing)/2.);
+  fScintillatorAssembly->AddPlacedVolume(scinBlockLogical,pos_block,rot);
+  fScintillatorAssembly->AddPlacedVolume(fScintillatorPMT,pos_pmtbox,rot);
+
+}
+
+void FORMOSADetectorConstruction::BuildVetoDetector()
+{
+ // auto interfaceDetectorSolid = new G4Box("VetoBox", fVetoInterfaceSizeX/2., fVetoInterfaceSizeY/2., fVetoInterfaceSizeZ/2.);
+ // fInterfaceDetector = new G4LogicalVolume(interfaceDetectorSolid, fMaterials->Material("Polystyrene"), "VetoInterfaceLogical");
+}

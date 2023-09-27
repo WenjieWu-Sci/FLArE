@@ -84,6 +84,10 @@ class GeometricalParameters  {
     G4double GetVetoInterfaceSizeY() { return fVetoInterfaceSizeY; }  
     void SetVetoInterfaceSizeZ(G4double val) { fVetoInterfaceSizeZ = val; }
     G4double GetVetoInterfaceSizeZ() { return fVetoInterfaceSizeZ; }  
+    
+    // FORMOSA
+    void SetFORMOSATotalSizeZ(G4double val) { fFORMOSATotalSizeZ = val; }
+    G4double GetFORMOSATotalSizeZ() { return fFORMOSATotalSizeZ; }
 
   private:
     //the singleton
@@ -127,6 +131,9 @@ class GeometricalParameters  {
     G4double fVetoInterfaceSizeZ;
     G4double fVetoInterfaceSizeX;
     G4double fVetoInterfaceSizeY;
+
+    // FORMOSA
+    G4double fFORMOSATotalSizeZ;
 };
 
 #endif 
