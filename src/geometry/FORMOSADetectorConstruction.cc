@@ -18,20 +18,20 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
 
   G4cout << "Building FORMOSA Detector" << G4endl;
 
-  fNScintillatorBarsX = 20;
-  fNScintillatorBarsY = 20;
-  fScintillatorBarSizeX = 5*cm;
-  fScintillatorBarSizeY = 5*cm;
-  fScintillatorBarSizeZ = 1*m;
+  fNScintillatorBarsX = GeometricalParameters::Get()->GetNScinBarsX();
+  fNScintillatorBarsY = GeometricalParameters::Get()->GetNScinBarsY();
+  fScintillatorBarSizeX = GeometricalParameters::Get()->GetScintillatorBarSizeX();
+  fScintillatorBarSizeY = GeometricalParameters::Get()->GetScintillatorBarSizeY();
+  fScintillatorBarSizeZ = GeometricalParameters::Get()->GetScintillatorBarSizeZ();
 
-  G4int NScintillatorModules = 4;
-  fPMTSizeSpacing = 33*cm;
+  G4int NScintillatorModules = GeometricalParameters::Get()->GetNScintillatorModules();
+  fPMTSizeSpacing = GeometricalParameters::Get()->GetPMTSizeSpacing();
 
   G4double totLengthZ = NScintillatorModules*(fScintillatorBarSizeZ+fPMTSizeSpacing);
   GeometricalParameters::Get()->SetFORMOSATotalSizeZ(totLengthZ);
 
   BuildScintillatorAssembly();
-//  BuildVetoDetector(); 
+  //BuildVetoDetector(); 
     
   fFORMOSAAssembly = new G4AssemblyVolume();
   G4RotationMatrix *noRot = new G4RotationMatrix();
@@ -47,17 +47,12 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
     fFORMOSAAssembly->AddPlacedAssembly(fScintillatorAssembly,pos,noRot);
   }
 
-  // placing the outer interface detectors
+  // placing the outer veto detectors
   //for( int i=-1; i<=1; i=i+2 ){
-  //  G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.5*fVetoInterfaceSizeZ);
-  //  fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,pos,noRot);
+  // TODO
   //}
 
   // visibility
-  //G4VisAttributes* vetoVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
-  //vetoVis->SetVisibility(true);
-  //fVetoDetector->SetVisAttributes(vetoVis);
-  
   G4VisAttributes* scinVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
   scinVis->SetVisibility(true);
   fScintillatorBar->SetVisAttributes(scinVis);  
@@ -66,6 +61,10 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
   pmtVis->SetVisibility(true);
   fScintillatorPMT->SetVisAttributes(pmtVis);  
 
+  //G4VisAttributes* vetoVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
+  //vetoVis->SetVisibility(true);
+  //fVetoDetector->SetVisAttributes(vetoVis);
+  
 }
 
 FORMOSADetectorConstruction::~FORMOSADetectorConstruction()
@@ -119,6 +118,5 @@ void FORMOSADetectorConstruction::BuildScintillatorAssembly()
 
 void FORMOSADetectorConstruction::BuildVetoDetector()
 {
- // auto interfaceDetectorSolid = new G4Box("VetoBox", fVetoInterfaceSizeX/2., fVetoInterfaceSizeY/2., fVetoInterfaceSizeZ/2.);
- // fInterfaceDetector = new G4LogicalVolume(interfaceDetectorSolid, fMaterials->Material("Polystyrene"), "VetoInterfaceLogical");
+ //TODO
 }

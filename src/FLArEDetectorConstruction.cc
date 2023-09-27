@@ -331,6 +331,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
 
   FORMOSADetectorConstruction *FORMOSAAssembler = new FORMOSADetectorConstruction();
   G4AssemblyVolume* FORMOSAAssembly = FORMOSAAssembler->GetFORMOSAAssembly();
+  FORMOSAScintillatorBarLogical = FORMOSAAssembler->GetScintillatorBar();
 
   // positioning
   G4double lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
@@ -450,6 +451,10 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
   MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
   sdManager->AddNewDetector(MuonFinderAbsorbSD);
+
+  LArBoxSD* ScintillatorBarSD = new LArBoxSD("FORMOSAScinBarSD");
+  FORMOSAScintillatorBarLogical->SetSensitiveDetector(ScintillatorBarSD);
+  sdManager->AddNewDetector(ScintillatorBarSD);
 
   LArBoxSD* EmulsionFilmSD = new LArBoxSD("FASERnu2EmulsionSD");
   FASERnu2EmulsionLogical->SetSensitiveDetector(EmulsionFilmSD);

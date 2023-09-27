@@ -371,8 +371,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   if (!hcofEvent) return;
 
   // loop over all sensitive detectors
-  const G4int nsds = 11;
-  G4int sdids[nsds] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+  const G4int nsds = 12;
+  G4int sdids[nsds] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
   std::string sds[nsds] = {"lArBoxSD/lar_box",
                            "HadCalXSD/lar_box",
                            "HadCalYSD/lar_box",
@@ -380,6 +380,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                            "MuonFinderYSD/lar_box",
                            "HadAbsorbSD/lar_box",
                            "MuonFinderAbsorbSD/lar_box",
+                           "FORMOSAScinBarSD/lar_box",
                            "FASERnu2EmulsionSD/lar_box",
                            "FASERnu2VetoInterfaceSD/lar_box",
                            "TrkHorScinSD/lar_box",
@@ -590,10 +591,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           {"MuonFinderYSD/lar_box",           [&](){ detID = 5; }},
           {"HadAbsorbSD/lar_box",             [&](){ detID = 6; }},
           {"MuonFinderAbsorbSD/lar_box",      [&](){ detID = 7; }},
-          {"FASERnu2EmulsionSD/lar_box",      [&](){ detID = 8; }},
-          {"FASERnu2VetoInterfaceSD/lar_box", [&](){ detID = 9; }},
-          {"TrkHorScinSD/lar_box",            [&](){ detID = 10; }},
-          {"TrkVerScinSD/lar_box",            [&](){ detID = 11; }},
+          {"FORMOSAScinBarSD/lar_box",        [&](){ detID = 8; }},
+          {"FASERnu2EmulsionSD/lar_box",      [&](){ detID = 9; }},
+          {"FASERnu2VetoInterfaceSD/lar_box", [&](){ detID = 10; }},
+          {"TrkHorScinSD/lar_box",            [&](){ detID = 11; }},
+          {"TrkVerScinSD/lar_box",            [&](){ detID = 12; }},
   };
   detIDs.find(sdName)->second();
 
@@ -710,13 +712,13 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) {
           hitZFSL.push_back(post_z);
           hitPFSL.push_back(p_perp);
         }
-        else if( detID > 9 && post_z < GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
+        else if( detID > 10 && post_z < GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
           preTrkXFSL.push_back(post_x);
           preTrkYFSL.push_back(post_y);
           preTrkZFSL.push_back(post_z);
           preTrkPFSL.push_back(p_perp);
         }
-        else if ( detID > 9 && post_z > GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
+        else if ( detID > 10 && post_z > GeometricalParameters::Get()->GetMagnetZPosition()+3500*mm){
           postTrkXFSL.push_back(post_x);
           postTrkYFSL.push_back(post_y);
           postTrkZFSL.push_back(post_z);
@@ -820,10 +822,11 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
           {"MuonFinderYSD/lar_box",           [&](){ detID = 5; }},
           {"HadAbsorbSD/lar_box",             [&](){ detID = 6; }},
           {"MuonFinderAbsorbSD/lar_box",      [&](){ detID = 7; }},
-          {"FASERnu2EmulsionSD/lar_box",      [&](){ detID = 8; }},
-          {"FASERnu2VetoInterfaceSD/lar_box", [&](){ detID = 9; }},
-          {"TrkHorScinSD/lar_box",            [&](){ detID = 10; }},
-          {"TrkVerScinSD/lar_box",            [&](){ detID = 11; }},
+          {"FORMOSAScinBarSD/lar_box",        [&](){ detID = 8; }},
+          {"FASERnu2EmulsionSD/lar_box",      [&](){ detID = 9; }},
+          {"FASERnu2VetoInterfaceSD/lar_box", [&](){ detID = 10; }},
+          {"TrkHorScinSD/lar_box",            [&](){ detID = 11; }},
+          {"TrkVerScinSD/lar_box",            [&](){ detID = 12; }},
   };
   detIDs.find(sdName)->second();
 
