@@ -63,6 +63,28 @@ class GeometricalParameters  {
     void SetTrackingStationGap(G4double val) { fTrackingStationGap = val; }
     G4double GetTrackingStationGap() { return fTrackingStationGap; }  
 
+    //FASERnu2 Emulsion detector
+    void SetFASERnu2TotalSizeZ(G4double val) { fFASERnu2TotalSizeZ = val; }
+    G4double GetFASERnu2TotalSizeZ() { return fFASERnu2TotalSizeZ; }
+    //Emulsion/Tungsten
+    void SetNEmulsionTungstenLayers(G4int val) { fNEmulsionTungstenLayers = val; }
+    G4int GetNEmulsionTungstenLayers() { return fNEmulsionTungstenLayers; }  
+    void SetTungstenThickness(G4double val) { fTungstenThickness = val; }
+    G4double GetTungstenThickness() { return fTungstenThickness; }  
+    void SetEmulsionThickness(G4double val) { fEmulsionThickness = val; }
+    G4double GetEmulsionThickness() { return fEmulsionThickness; }  
+    void SetEmulsionTungstenSizeX(G4double val) { fEmulsionTungstenSizeX = val; }
+    G4double GetEmulsionTungstenSizeX() { return fEmulsionTungstenSizeX; }  
+    void SetEmulsionTungstenSizeY(G4double val) { fEmulsionTungstenSizeY = val; }
+    G4double GetEmulsionTungstenSizeY() { return fEmulsionTungstenSizeY; }  
+    // Veto/Interface detectors
+    void SetVetoInterfaceSizeX(G4double val) { fVetoInterfaceSizeX = val; }
+    G4double GetVetoInterfaceSizeX() { return fVetoInterfaceSizeX; }  
+    void SetVetoInterfaceSizeY(G4double val) { fVetoInterfaceSizeY = val; }
+    G4double GetVetoInterfaceSizeY() { return fVetoInterfaceSizeY; }  
+    void SetVetoInterfaceSizeZ(G4double val) { fVetoInterfaceSizeZ = val; }
+    G4double GetVetoInterfaceSizeZ() { return fVetoInterfaceSizeZ; }  
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -91,6 +113,20 @@ class GeometricalParameters  {
     G4int fNScintillatorBarsX;
     G4double fScintillatorThickness;
     G4double fTrackingStationGap;
+
+    // FASERnu2 Emulsion detector
+    G4double fFASERnu2TotalSizeZ;
+    // Emulsion/Tungsten
+    G4int fNEmulsionTungstenLayers;
+    G4double fTungstenThickness;
+    G4double fEmulsionThickness;
+    G4double fEmulsionTungstenSizeX;
+    G4double fEmulsionTungstenSizeY;
+    G4double fModuleThickness;
+    // Veto/Interface detectors
+    G4double fVetoInterfaceSizeZ;
+    G4double fVetoInterfaceSizeX;
+    G4double fVetoInterfaceSizeY;
 };
 
 #endif 

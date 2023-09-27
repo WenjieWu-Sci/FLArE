@@ -3,16 +3,12 @@
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
-#include "G4UniformMagField.hh"
-#include "G4FieldManager.hh"
 
 #include "DetectorConstructionMaterial.hh"
 
-/// \class SpectrometerMagnetDetectorConstruction
+/// \class SpectrometerMagnetConstruction
 /// This class builds the FASER2 spectrometer magnet, using either the SAMURAI design
 /// or multiple crystal-pulling magnets from Toshiba.  
-
-class SpectrometerMagnetConstructionMessenger;
 
 class SpectrometerMagnetConstruction {
   public:

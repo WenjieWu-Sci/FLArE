@@ -10,9 +10,9 @@ GeometricalParameters::GeometricalParameters()
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
-  fMagnetTotalSizeZ = 4*m;
-  fTrackingStationTotalSizeZ = 3.12*m;
-  fMagnetZPos = 40*m;
+  fMagnetTotalSizeZ = 4*m; //updates during construction
+  fTrackingStationTotalSizeZ = 3.12*m; //updates during construction
+  fMagnetZPos = 40*m; //updates during construction
   // SAMURAI design
   fSpectrometerMagnetWindowX = 3.0*m;
   fSpectrometerMagnetWindowY = 1.0*m;
@@ -31,6 +31,17 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
+
+  // FASERnu2 emulsion detector
+  fFASERnu2TotalSizeZ = 8.5*m; //updates during construction
+  fNEmulsionTungstenLayers = 3300;
+  fTungstenThickness = 2*mm;
+  fEmulsionThickness = 0.420*mm;
+  fEmulsionTungstenSizeX = 40*cm;
+  fEmulsionTungstenSizeY = 40*cm;
+  fVetoInterfaceSizeZ = 20*cm;
+  fVetoInterfaceSizeX = 80*cm;
+  fVetoInterfaceSizeY = 80*cm;
 }
 
 GeometricalParameters* GeometricalParameters::Get()
