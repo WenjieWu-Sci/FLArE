@@ -95,7 +95,7 @@ void build_zx_projection(double miny, double maxy, std::string ts=""){
   // define the histogram
   std::string id = "h_zx_" + ts;
   std::ostringstream s;
-  s <<  ts << " fluence in ZY averaged over y=(" << miny << "," << maxy << ")cm";
+  s <<  ts << " fluence in ZX averaged over y=(" << miny << "," << maxy << ")cm";
   TH2D *h_zx = new TH2D(id.c_str(),s.str().c_str(),zbins,zmin,zmax,xbins,xmin,xmax);
   
   for( auto it = zx_proj.begin(); it != zx_proj.end(); it++)
@@ -223,6 +223,7 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
   h_xy->GetYaxis()->SetTitle("y [cm]");
   h_xy->GetYaxis()->SetTitleOffset(1.3);
   h_xy->GetZaxis()->SetTitle("Fluence rate per 5L_{0} [cm^{-2}s^{-1}]");
+  h_xy->GetZaxis()->SetTitleOffset(1.3);
   h_xy->SetStats(0);
 
   TCanvas *c0 = new TCanvas();

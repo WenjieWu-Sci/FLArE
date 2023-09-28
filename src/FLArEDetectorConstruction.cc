@@ -6,6 +6,7 @@
 #include "geometry/SpectrometerMagnetConstruction.hh"
 #include "geometry/GeometricalParameters.hh"
 #include "geometry/FASERnu2DetectorConstruction.hh"
+#include "geometry/FORMOSADetectorConstruction.hh"
 
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -325,10 +326,22 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   }
 
   //-----------------------------------
-  // FASERnu2 Emulsion Detector
+  // FORMOSA
   G4double detectorGapLength = 1.2*m;
-  G4double lengthFORMOSA = 4.0*m;
 
+  FORMOSADetectorConstruction *FORMOSAAssembler = new FORMOSADetectorConstruction();
+  G4AssemblyVolume* FORMOSAAssembly = FORMOSAAssembler->GetFORMOSAAssembly();
+  FORMOSAScintillatorBarLogical = FORMOSAAssembler->GetScintillatorBar();
+
+  // positioning
+  G4double lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
+  G4double FORMOSAPosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) +
+                          detectorGapLength + lengthFORMOSA/2.;
+  G4ThreeVector FORMOSAPos(0.,0.,FORMOSAPosZ); 
+  FORMOSAAssembly->MakeImprint(worldLog, FORMOSAPos, nullptr, 0, true);
+                         
+  //-----------------------------------
+  // FASERnu2 Emulsion Detector
   FASERnu2DetectorConstruction *FASERnu2Assembler = new FASERnu2DetectorConstruction();
   FASERnu2EmulsionLogical = FASERnu2Assembler->GetEmulsionFilm();
   FASERnu2VetoInterfaceLogical = FASERnu2Assembler->GetVetoInterfaceDetector();
@@ -336,8 +349,7 @@ G4VPhysicalVolume* FLArEDetectorConstruction::Construct()
   
   // positioning
   G4double lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
-  G4double FASERnu2PosZ = (lArSizeZ/2. + GapToHadCatcher + HadCatcherLength + MuonFinderLength) + 
-			detectorGapLength + lengthFORMOSA + detectorGapLength + lengthFASERnu2/2;
+  G4double FASERnu2PosZ = FORMOSAPosZ + lengthFORMOSA/2. + detectorGapLength + lengthFASERnu2/2;
   G4ThreeVector FASERnu2Pos(0.,0.,FASERnu2PosZ); 
   FASERnu2Assembly->MakeImprint(worldLog, FASERnu2Pos, nullptr, 0, true);
   
@@ -439,6 +451,10 @@ void FLArEDetectorConstruction::ConstructSDandField() {
   LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
   MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
   sdManager->AddNewDetector(MuonFinderAbsorbSD);
+
+  LArBoxSD* ScintillatorBarSD = new LArBoxSD("FORMOSAScinBarSD");
+  FORMOSAScintillatorBarLogical->SetSensitiveDetector(ScintillatorBarSD);
+  sdManager->AddNewDetector(ScintillatorBarSD);
 
   LArBoxSD* EmulsionFilmSD = new LArBoxSD("FASERnu2EmulsionSD");
   FASERnu2EmulsionLogical->SetSensitiveDetector(EmulsionFilmSD);

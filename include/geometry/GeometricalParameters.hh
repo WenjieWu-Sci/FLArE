@@ -84,6 +84,25 @@ class GeometricalParameters  {
     G4double GetVetoInterfaceSizeY() { return fVetoInterfaceSizeY; }  
     void SetVetoInterfaceSizeZ(G4double val) { fVetoInterfaceSizeZ = val; }
     G4double GetVetoInterfaceSizeZ() { return fVetoInterfaceSizeZ; }  
+    
+    // FORMOSA
+    void SetFORMOSATotalSizeZ(G4double val) { fFORMOSATotalSizeZ = val; }
+    G4double GetFORMOSATotalSizeZ() { return fFORMOSATotalSizeZ; }
+    // Scintillator blocks
+    void SetNScinBarsX(G4int val) { fNScintillatorBarsX = val; }
+    G4int GetNScinBarsX() {return fNScintillatorBarsX; }
+    void SetNScinBarsY(G4int val) { fNScintillatorBarsY = val; }
+    G4int GetNScinBarsY() {return fNScintillatorBarsY; }
+    void SetScintillatorBarSizeX(G4double val) { fScintillatorBarSizeX = val; }
+    G4double GetScintillatorBarSizeX() {return fScintillatorBarSizeX; }
+    void SetScintillatorBarSizeY(G4double val) { fScintillatorBarSizeY = val; }
+    G4double GetScintillatorBarSizeY() {return fScintillatorBarSizeY; }
+    void SetScintillatorBarSizeZ(G4double val) { fScintillatorBarSizeZ = val; }
+    G4double GetScintillatorBarSizeZ() {return fScintillatorBarSizeZ; }
+    void SetNScintillatorModules(G4int val) { fNScintillatorModules = val; }
+    G4int GetNScintillatorModules() {return fNScintillatorModules; }
+    void SetPMTSizeSpacing(G4double val) { fPMTSizeSpacing = val; }
+    G4double GetPMTSizeSpacing() {return fPMTSizeSpacing; }
 
   private:
     //the singleton
@@ -127,6 +146,17 @@ class GeometricalParameters  {
     G4double fVetoInterfaceSizeZ;
     G4double fVetoInterfaceSizeX;
     G4double fVetoInterfaceSizeY;
+
+    // FORMOSA
+    G4double fFORMOSATotalSizeZ;
+    // Scintillator blocks
+    G4int fNScinBarsX;
+    G4int fNScinBarsY;
+    G4double fScintillatorBarSizeX;
+    G4double fScintillatorBarSizeY;
+    G4double fScintillatorBarSizeZ;
+    G4int fNScintillatorModules;
+    G4double fPMTSizeSpacing;
 };
 
 #endif 

@@ -42,6 +42,16 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeZ = 20*cm;
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
+
+  // FORMOSA
+  fFORMOSATotalSizeZ = 5*m; //updates during construction
+  fNScintillatorBarsX = 20;
+  fNScintillatorBarsY = 20;
+  fScintillatorBarSizeX = 5*cm;
+  fScintillatorBarSizeY = 5*cm;
+  fScintillatorBarSizeZ = 1*m;
+  fNScintillatorModules = 4;
+  fPMTSizeSpacing = 33*cm;
 }
 
 GeometricalParameters* GeometricalParameters::Get()
