@@ -31,11 +31,6 @@ class FLArEDetectorConstruction {
     G4LogicalVolume* GetMuonCatcherXVolume()      { return MuonFinderXCellLogical; }
     G4LogicalVolume* GetMuonCatcherYVolume()      { return MuonFinderYCellLogical; }
 
-    // Return detector size
-    G4double GetLengthTPC()              { return fLArSizeZ; }
-    G4double GetTPCInsulationThickness() { return fThicknessInsulation; }
-    G4double GetLengthHadCal()           { return fHadCalLength; }
-    G4double GetLengthMuonCatcher()      { return fMuonCatcherLength; }
 
     // Construction methods
     void BuildFLArETPC();
