@@ -22,10 +22,14 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 ### Geometry
 |Command |Description | Default |
 |:--|:--|:--|
+|/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
+|/det/addFLArE          | option for adding the FLArE detector, run before `/run/initialize`                   |`true`|
 |/det/material          | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|
 |/det/module            | option for tpc module option, choose `single` or `3x7`, run before `/run/initialize` |`single`|
-|/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
 |/det/field             | option for setting the magnetic field value in FLArE HadCather and Muon Finder       |`1 T`|
+|/det/addFORMOSA        | option for adding the FORMOSA detector, run before `/run/initialize`                 |`true`|
+|/det/addFASERnu2       | option for adding the FASERnu2 detector, run before `/run/initialize`                |`true`|
+|/det/addFASER2         | option for adding the FASER2 detector, run before `/run/initialize`                  |`true`|
 |/det/magnetGeom        | option for FASER2 magnet geometry, choose `SAMURAI` or `CrystalPulling`              |`SAMURAI`|
 |/det/magnetField       | option for setting the FASER2 magnetic field value                                   |`1 T`|
 |/det/magnetWinX        | option for SAMURAI magnet window size along X axis                                   |`3.0 m`|
@@ -57,10 +61,17 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |/histo/saveEvd      | if `true` save spatial distribution of energy deposition, `false` in default to save space|
 |/histo/circleFit    | if `true` run circle fitting and save information in output, `false` in default to save space|
 |/histo/addDiffusion | if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion|
+
 ## Run simulation of leptons
 There are six `.mac` macros in `macros` directory: LAr_e-.mac, LAr_mu-.mac, LAr_tau-.mac, LKr_e-.mac, LKr_mu-.mac, LKr_tau-.mac.
 As denoted by the name, they're used to simulate e-/mu-/tau- leptons in a LAr or LKr detector. To run a simulation, just do `./FLArE macros/LAr_e-.mac`.
 If you want to modify the lepton energy you intend to simulate, modify the parameters inside the mac scripts.
+
+## How to save an event display with high resolution using the DAWN Event Display
+There is [this tutorial](https://conferences.fnal.gov/g4tutorial/g4cd/Documentation/Visualization/G4DAWNTutorial/G4DAWNTutorial.html) for use at the October 2003 Fermilab Geant4 Tutorial.
+* Add `/vis/open DAWNFILE` to the mac file, after running a pass of simulation you'll find a ".prim" files suitable for viewing in DAWN.
+* Run `~/dune_data/app/dawn_3_91a/dawn -d filename.prim`, and it will generate a high resolution picture with the format of EPS.
+
 
 ## Submit grid jobs on DUNEGPVMs
 

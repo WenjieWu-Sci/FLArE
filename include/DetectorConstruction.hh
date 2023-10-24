@@ -25,16 +25,22 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4VPhysicalVolume* Construct() override;
 
     void ConstructSDandField() override;
-    void saveGDML(G4bool i) { m_saveGdml = i; };
+    void SaveGDML(G4bool i) { m_saveGdml = i; }
+    void AddFLArE(G4bool i) { m_addFLArE = i; }
     void SetFieldValue(G4double val) { fFieldValue = val; }
+    void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
+    void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
+    void AddFASER2(G4bool i) { m_addFASER2 = i; }
     void UpdateGeometry();
 
   private:
     void DefineMaterial();
 
     G4LogicalVolume* worldLog;
-    //G4LogicalVolume* lArBoxLog;
-    //G4LogicalVolume* cryoInsulationLog;
+    G4bool m_saveGdml;
+
+    G4bool m_addFLArE;
+    G4LogicalVolume* TPCModuleLogical;
     G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
@@ -43,10 +49,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderYCellLogical;
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
-    G4LogicalVolume* TPCModuleLogical;
     G4double fFieldValue;
-    G4bool m_saveGdml;
 
+    G4bool m_addFORMOSA;
+
+    G4bool m_addFASERnu2;
+
+    G4bool m_addFASER2;
     G4LogicalVolume* FASER2MagnetLogical;
     G4LogicalVolume* TrackingVerScinBarLogical;
     G4LogicalVolume* TrackingHorScinBarLogical; 

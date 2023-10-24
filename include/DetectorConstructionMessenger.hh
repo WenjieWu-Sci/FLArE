@@ -27,13 +27,18 @@ class DetectorConstructionMessenger: public G4UImessenger {
     DetectorConstruction* det;
     G4UIdirectory* detDir;
     
-    // GENERAL OPTIONS
+    // FLArE
+    G4UIcmdWithABool* detGdmlCmd;
+    G4UIcmdWithABool* detAddFLArECmd;
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithAString* detGeomCmd;
-    G4UIcmdWithABool* detGdmlCmd;
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
-
+    // FORMOSA
+    G4UIcmdWithABool* detAddFormosaCmd;
+    // FASERnu2
+    G4UIcmdWithABool* detAddFASERnu2Cmd;
     // FASER2 SPECTROMETER MAGNET
+    G4UIcmdWithABool* detAddFASER2Cmd;
     // SAMURAI
     G4UIcmdWithAString* magnetGeomCmd;
     G4UIcmdWithADoubleAndUnit* magnetFieldCmd;

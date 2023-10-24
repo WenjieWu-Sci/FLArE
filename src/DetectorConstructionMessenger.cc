@@ -21,20 +21,31 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detGdmlCmd->SetParameterName("saveGdml", true);
     detGdmlCmd->SetDefaultValue(false);
     
-    // FLARE 
+    // FLArE 
+    detAddFLArECmd = new G4UIcmdWithABool("/det/addFLArE", this);
+    detAddFLArECmd->SetParameterName("Add FLArE detector", true);
+    detAddFLArECmd->SetDefaultValue(true);
     detMatCmd = new G4UIcmdWithAString("/det/material", this);
     detMatCmd->SetGuidance("set material of the detector: LAr, LKr");
-
     detGeomCmd = new G4UIcmdWithAString("/det/module", this);
     detGeomCmd->SetGuidance("set module option of the detector: single, 3x7");
-
     detFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/field", this);
     detFieldCmd->SetUnitCategory("Magnetic flux density");
     detFieldCmd->SetDefaultUnit("tesla");
     detFieldCmd->SetUnitCandidates("tesla kG G");
     detFieldCmd->SetDefaultValue(1.0);
-
+    // FORMOSA
+    detAddFormosaCmd = new G4UIcmdWithABool("/det/addFORMOSA", this);
+    detAddFormosaCmd->SetParameterName("Add FORMOSA detector", true);
+    detAddFormosaCmd->SetDefaultValue(true);
+    // FASERnu2
+    detAddFASERnu2Cmd = new G4UIcmdWithABool("/det/addFASERnu2", this);
+    detAddFASERnu2Cmd->SetParameterName("Add FASERnu2 detector", true);
+    detAddFASERnu2Cmd->SetDefaultValue(true);
     // FASER2 SPECTROMETER MAGNET
+    detAddFASER2Cmd = new G4UIcmdWithABool("/det/addFASER2", this);
+    detAddFASER2Cmd->SetParameterName("Add FASER2 Spectrometer", true);
+    detAddFASER2Cmd->SetDefaultValue(true);
     magnetGeomCmd = new G4UIcmdWithAString("/det/magnetGeom", this);
     magnetGeomCmd->SetGuidance("Set the magnet design option");
     magnetGeomCmd->SetCandidates("SAMURAI CrystalPulling");
@@ -115,10 +126,13 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstructionMessenger::~DetectorConstructionMessenger() {
+  delete detGdmlCmd;
+  delete detAddFLArECmd;
   delete detMatCmd;
   delete detGeomCmd;
-  delete detGdmlCmd;
   delete detFieldCmd;
+
+  delete detAddFormosaCmd;
 
   delete magnetGeomCmd;
   delete magnetFieldCmd;
@@ -148,16 +162,21 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
 void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
   
   // flare
-  if (command == detGeomCmd) {
+  if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
+  else if (command == detGeomCmd) {
     GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
   }
   else if (command == detMatCmd)  {
     GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
   }
-  else if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
   else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
-
+  // FORMOSA
+  else if (command == detAddFormosaCmd) det->AddFORMOSA(detAddFormosaCmd->GetNewBoolValue(newValues));
+  // FASERnu2
+  else if (command == detAddFASERnu2Cmd) det->AddFASERnu2(detAddFASERnu2Cmd->GetNewBoolValue(newValues));
   // faser2 magnet
+  else if (command == detAddFASER2Cmd) det->AddFASER2(detAddFASER2Cmd->GetNewBoolValue(newValues));
   else if (command == magnetGeomCmd)  
     GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
   else if (command == magnetFieldCmd) 
