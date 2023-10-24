@@ -172,6 +172,7 @@ void FLArEDetectorConstruction::BuildFLArEHadCal()
 
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
   fHadCalLength  = fNbOfAbsor*thicknessOneLayer;
+  GeometricalParameters::Get()->SetHadCalLength(fHadCalLength);
 
   auto hadCatcherSolid
     = new G4Box("HadCatcherBox", fLArSizeX/2, fLArSizeY/2, fHadCalLength/2);
