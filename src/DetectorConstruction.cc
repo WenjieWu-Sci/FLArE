@@ -105,10 +105,10 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4ThreeVector FLArEPos(0.,0.,0.); 
   FLArEAssembly->MakeImprint(worldLog, FLArEPos, nullptr, 0, fCheckOverlap);
   
-  double lArSizeZ         = FLArEAssembler->GetLengthTPC();
-  double GapToHadCatcher  = FLArEAssembler->GetTPCInsulationThickness();
-  double HadCatcherLength = FLArEAssembler->GetLengthHadCal();
-  double MuonFinderLength = FLArEAssembler->GetLengthMuonCatcher();
+  double lArSizeZ         = GeometricalParameters::Get()->GetTPCSizeZ();
+  double GapToHadCatcher  = GeometricalParameters::Get()->GetTPCInsulationThickness();
+  double HadCatcherLength = GeometricalParameters::Get()->GetHadCalLength();
+  double MuonFinderLength = GeometricalParameters::Get()->GetMuonCatcherLength();
 
   //-----------------------------------
   // FORMOSA
