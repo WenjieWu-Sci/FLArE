@@ -29,6 +29,11 @@ class GeometricalParameters  {
     G4double GetTPCSizeY() { return fTPCSizeY; }
     G4double GetTPCSizeZ() { return fTPCSizeZ; }
     G4double GetTPCInsulationThickness() { return fInsulationThickness; }
+    G4double GetHadCalLength() { return fHadCalLength; }
+    void SetHadCalLength(G4double val) { fHadCalLength = val; }
+    G4double GetMuonCatcherLength() { return fMuonCatcherLength; }
+    void SetMuonCatcherLength(G4double val) { fMuonCatcherLength = val; }
+
 
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
