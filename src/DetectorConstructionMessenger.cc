@@ -1,5 +1,5 @@
-#include "FLArEDetectorConstructionMessenger.hh"
-#include "FLArEDetectorConstruction.hh"
+#include "DetectorConstructionMessenger.hh"
+#include "DetectorConstruction.hh"
 #include "geometry/GeometricalParameters.hh"
 
 #include "G4UIdirectory.hh"
@@ -11,7 +11,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDetectorConstruction* manager) 
+DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstruction* manager) 
   : det(manager) {
     detDir = new G4UIdirectory("/det/");
     detDir->SetGuidance("detector control");
@@ -114,7 +114,7 @@ FLArEDetectorConstructionMessenger::FLArEDetectorConstructionMessenger(FLArEDete
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
+DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete detMatCmd;
   delete detGeomCmd;
   delete detGdmlCmd;
@@ -145,13 +145,15 @@ FLArEDetectorConstructionMessenger::~FLArEDetectorConstructionMessenger() {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void FLArEDetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
-  
-  // general
-  if (command == detGeomCmd) det->SetGeomOption(newValues);
+void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
   
   // flare
-  else if (command == detMatCmd)  det->SetDetMaterial(newValues);
+  if (command == detGeomCmd) {
+    GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
+  }
+  else if (command == detMatCmd)  {
+    GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
+  }
   else if (command == detGdmlCmd) det->saveGDML(detGdmlCmd->GetNewBoolValue(newValues));
   else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
 

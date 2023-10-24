@@ -7,6 +7,14 @@ GeometricalParameters::GeometricalParameters()
 {
   // **** DEFAULT VALUES ***
   
+  // FLArE TPC volume
+  fFLArETPCMaterialOption = tpcMaterialOption::LiquidArgon;
+  fFLArETPCConfigOption   = tpcConfigOption::ThreeBySeven;
+  fTPCSizeX = 1.8*m;  // optimized by energy containment  
+  fTPCSizeY = 1.8*m;  // optimized by energy containment
+  fTPCSizeZ = 7.0*m;  // optimized by energy containment
+  fInsulationThickness = 80 * cm;
+
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
@@ -59,6 +67,30 @@ GeometricalParameters* GeometricalParameters::Get()
   if (!me)
     me = new GeometricalParameters();
   return me; 
+}
+
+GeometricalParameters::tpcMaterialOption GeometricalParameters::ConvertStringToTPCMaterialOption(G4String val)
+{
+  if (val == "LAr") {
+    return tpcMaterialOption::LiquidArgon;
+  } else if (val == "LKr") {
+    return tpcMaterialOption::LiquidKrypton;
+  } else {
+    G4cout<<"WARNING: unknow material for the TPC volume! Set it to default."<<G4endl;
+    return tpcMaterialOption::LiquidArgon;
+  }
+}
+
+GeometricalParameters::tpcConfigOption GeometricalParameters::ConvertStringToTPCConfigOption(G4String val)
+{
+  if (val == "single") {
+    return tpcConfigOption::Single;
+  } else if (val == "3x7") {
+    return tpcConfigOption::ThreeBySeven;
+  } else {
+    G4cout<<"WARNING: unknow configuration for the TPC volume! Set it to default."<<G4endl;
+    return tpcConfigOption::Single;
+  }
 }
 
 GeometricalParameters::magnetOption GeometricalParameters::ConvertStringToMagnetOption(G4String val)

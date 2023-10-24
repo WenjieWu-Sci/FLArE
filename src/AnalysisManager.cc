@@ -972,13 +972,13 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
       if (detID==4 || detID==5 || detID==7) {
         EInMuonFinder[whichPrim] += hit->GetEdep();
         if (detID==4) {
-          if (pos_z < 8500) {
+          if (pos_z < 9030) {
             EInMuonFinderLayer1X[whichPrim] += hit->GetEdep();
           } else {
             EInMuonFinderLayer2X[whichPrim] += hit->GetEdep();
           }
         } else if (detID==5) {
-          if (pos_z < 8500) {
+          if (pos_z < 9030) {
             EInMuonFinderLayer1Y[whichPrim] += hit->GetEdep();
           } else {
             EInMuonFinderLayer2Y[whichPrim] += hit->GetEdep();
@@ -1003,7 +1003,7 @@ void AnalysisManager::InitializeEvd() {
 
   int res_cal_z = 10; // mm
   //int len_cal_z = 9400-len_tpc[2]; // 50cm steel for muon finder
-  int len_cal_z = 8700-len_tpc[2]; // 16cm steel for muon finder
+  int len_cal_z = 9250-len_tpc[2]; // 16cm steel for muon finder
 
   // binning definition
   // x: drift direction on the transverse plane
