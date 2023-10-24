@@ -134,6 +134,8 @@ class GeometricalParameters  {
     G4double fTPCSizeY;
     G4double fTPCSizeZ;
     G4double fInsulationThickness;
+    G4double fHadCalLength;
+    G4double fMuonCatcherLength;
     
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;
