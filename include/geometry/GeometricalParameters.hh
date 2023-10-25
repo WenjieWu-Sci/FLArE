@@ -16,6 +16,25 @@ class GeometricalParameters  {
     static GeometricalParameters* Get();
     virtual ~GeometricalParameters() {}
 
+    // FLArE TPC volume
+    enum tpcMaterialOption { LiquidArgon, LiquidKrypton};
+    tpcMaterialOption ConvertStringToTPCMaterialOption(G4String val);
+    void SetTPCMaterialOption(tpcMaterialOption val) { fFLArETPCMaterialOption = val; }
+    tpcMaterialOption GetTPCMaterialOption() { return fFLArETPCMaterialOption; }
+    enum tpcConfigOption { Single, ThreeBySeven};
+    tpcConfigOption ConvertStringToTPCConfigOption(G4String val);
+    void SetTPCConfigOption(tpcConfigOption val) { fFLArETPCConfigOption = val; }
+    tpcConfigOption GetTPCConfigOption() { return fFLArETPCConfigOption; }
+    G4double GetTPCSizeX() { return fTPCSizeX; }
+    G4double GetTPCSizeY() { return fTPCSizeY; }
+    G4double GetTPCSizeZ() { return fTPCSizeZ; }
+    G4double GetTPCInsulationThickness() { return fInsulationThickness; }
+    G4double GetHadCalLength() { return fHadCalLength; }
+    void SetHadCalLength(G4double val) { fHadCalLength = val; }
+    G4double GetMuonCatcherLength() { return fMuonCatcherLength; }
+    void SetMuonCatcherLength(G4double val) { fMuonCatcherLength = val; }
+
+
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
     magnetOption ConvertStringToMagnetOption(G4String val);
@@ -107,6 +126,16 @@ class GeometricalParameters  {
   private:
     //the singleton
     static GeometricalParameters *me;
+
+    // FLArE TPC volume
+    tpcMaterialOption fFLArETPCMaterialOption;
+    tpcConfigOption   fFLArETPCConfigOption;
+    G4double fTPCSizeX;
+    G4double fTPCSizeY;
+    G4double fTPCSizeZ;
+    G4double fInsulationThickness;
+    G4double fHadCalLength;
+    G4double fMuonCatcherLength;
     
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;

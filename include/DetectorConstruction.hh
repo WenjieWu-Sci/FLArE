@@ -1,5 +1,5 @@
-#ifndef FLAREDETECTORCONSTRUCTION_HH
-#define FLAREDETECTORCONSTRUCTION_HH
+#ifndef DETECTORCONSTRUCTION_HH
+#define DETECTORCONSTRUCTION_HH
 
 #include <G4VUserDetectorConstruction.hh>
 #include <G4String.hh>
@@ -8,7 +8,7 @@
 #include <G4AssemblyVolume.hh>
 
 class G4LogicalVolume;
-class FLArEDetectorConstructionMessenger;
+class DetectorConstructionMessenger;
 class DetectorConstructionMaterial;
 
 /**
@@ -17,16 +17,14 @@ class DetectorConstructionMaterial;
  *
  */
 
-class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
+class DetectorConstruction : public G4VUserDetectorConstruction {
   public:
     // Main method that has to be override in all detectors
-    FLArEDetectorConstruction();
-    ~FLArEDetectorConstruction();
+    DetectorConstruction();
+    ~DetectorConstruction();
     G4VPhysicalVolume* Construct() override;
 
     void ConstructSDandField() override;
-    void SetDetMaterial(G4String detMaterial);
-    void SetGeomOption(G4String detGeomOption);
     void saveGDML(G4bool i) { m_saveGdml = i; };
     void SetFieldValue(G4double val) { fFieldValue = val; }
     void UpdateGeometry();
@@ -35,8 +33,8 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     void DefineMaterial();
 
     G4LogicalVolume* worldLog;
-    G4LogicalVolume* lArBoxLog;
-    G4LogicalVolume* cryoInsulationLog;
+    //G4LogicalVolume* lArBoxLog;
+    //G4LogicalVolume* cryoInsulationLog;
     G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
@@ -46,8 +44,6 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* TPCModuleLogical;
-    G4String fDetMaterialName;
-    G4String fDetGeomOption;
     G4double fFieldValue;
     G4bool m_saveGdml;
 
@@ -61,7 +57,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume *FORMOSAScintillatorBarLogical;
 
     DetectorConstructionMaterial* LArBoxMaterials;
-    FLArEDetectorConstructionMessenger* messenger;
+    DetectorConstructionMessenger* messenger;
 
     static G4ThreadLocal G4UniformMagField* magField;
     static G4ThreadLocal G4FieldManager* fieldMgr;

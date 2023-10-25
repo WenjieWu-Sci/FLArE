@@ -7,7 +7,7 @@
 
 #include <G4String.hh>
 #include "ActionInitialization.hh"
-#include "FLArEDetectorConstruction.hh"
+#include "DetectorConstruction.hh"
 #include "AnalysisManager.hh"
 #include "FLArEPhysicsList.hh"
 
@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   runManager->SetVerboseLevel(1);
 
   // Set mandatory initialization classes
-  runManager->SetUserInitialization(new FLArEDetectorConstruction());
+  runManager->SetUserInitialization(new DetectorConstruction());
   runManager->SetUserInitialization(new FLArEPhysicsList());
 
   // Set user action classes

@@ -1,5 +1,5 @@
-#ifndef FLAREDETECTORCONSTRUCTIONMESSENGER_HH
-#define FLAREDETECTORCONSTRUCTIONMESSENGER_HH
+#ifndef DETECTORCONSTRUCTIONMESSENGER_HH
+#define DETECTORCONSTRUCTIONMESSENGER_HH
 
 #include "G4UImessenger.hh"
 #include "G4UIcommand.hh"
@@ -12,19 +12,19 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class FLArEDetectorConstruction;
+class DetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class FLArEDetectorConstructionMessenger: public G4UImessenger {
+class DetectorConstructionMessenger: public G4UImessenger {
   public:
-    FLArEDetectorConstructionMessenger(FLArEDetectorConstruction*);
-    ~FLArEDetectorConstructionMessenger();
+    DetectorConstructionMessenger(DetectorConstruction*);
+    ~DetectorConstructionMessenger();
 
     void SetNewValue(G4UIcommand*, G4String);
 
   private:
-    FLArEDetectorConstruction* det;
+    DetectorConstruction* det;
     G4UIdirectory* detDir;
     
     // GENERAL OPTIONS
