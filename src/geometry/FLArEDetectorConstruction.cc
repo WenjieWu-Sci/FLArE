@@ -172,6 +172,7 @@ void FLArEDetectorConstruction::BuildFLArEHadCal()
 
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
   fHadCalLength  = fNbOfAbsor*thicknessOneLayer;
+  GeometricalParameters::Get()->SetHadCalLength(fHadCalLength);
 
   auto hadCatcherSolid
     = new G4Box("HadCatcherBox", fLArSizeX/2, fLArSizeY/2, fHadCalLength/2);
@@ -235,6 +236,8 @@ void FLArEDetectorConstruction::BuildFLArEMuonCatcher() {
   G4int    fNbOfAbsor = 2;
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
   fMuonCatcherLength  = fNbOfAbsor*thicknessOneLayer;
+  GeometricalParameters::Get()->SetMuonCatcherLength(fMuonCatcherLength);
+  
 
   auto muonFinderSolid
     = new G4Box("MuonFinderBox", fLArSizeX/2, fLArSizeY/2, fMuonCatcherLength/2);

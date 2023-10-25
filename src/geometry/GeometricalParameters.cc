@@ -14,6 +14,9 @@ GeometricalParameters::GeometricalParameters()
   fTPCSizeY = 1.8*m;  // optimized by energy containment
   fTPCSizeZ = 7.0*m;  // optimized by energy containment
   fInsulationThickness = 80 * cm;
+  fMuonCatcherLength = 36*cm; //updates during construction
+  fHadCalLength = 120*cm; //updates during construction
+  
 
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
