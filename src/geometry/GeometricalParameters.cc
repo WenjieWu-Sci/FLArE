@@ -15,9 +15,9 @@ GeometricalParameters::GeometricalParameters()
   fTPCSizeZ = 7.0*m;  // optimized by energy containment
   fInsulationThickness = 80 * cm;
   fMuonCatcherLength = 36*cm; //updates during construction
-  fHadCalLength = 120*cm; //updates during construction
+  fHadCalLength = 120*cm;     //updates during construction
+  fFLArEPos = G4ThreeVector(0., 0., 4300.*mm); 
   
-
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
@@ -42,6 +42,7 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
+  fFASER2Pos = G4ThreeVector(0., 0., 43036.*mm);
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction
@@ -53,6 +54,7 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeZ = 20*cm;
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
+  fFASERnu2Pos = G4ThreeVector(0., 0., 22123.*mm);
 
   // FORMOSA
   fFORMOSATotalSizeZ = 5*m; //updates during construction
@@ -63,6 +65,7 @@ GeometricalParameters::GeometricalParameters()
   fScintillatorBarSizeZ = 1*m;
   fNScintillatorModules = 4;
   fPMTSizeSpacing = 33*cm;
+  fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
 }
 
 GeometricalParameters* GeometricalParameters::Get()

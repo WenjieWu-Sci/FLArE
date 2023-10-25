@@ -34,6 +34,8 @@ class GeometricalParameters  {
     G4double GetMuonCatcherLength() { return fMuonCatcherLength; }
     void SetMuonCatcherLength(G4double val) { fMuonCatcherLength = val; }
 
+    G4ThreeVector GetFLArEPosition() { return fFLArEPos; }
+    void SetFLArEPosition(G4ThreeVector val) { fFLArEPos = val; }
 
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
@@ -81,6 +83,9 @@ class GeometricalParameters  {
     G4double GetScintillatorThickness() { return fScintillatorThickness; }  
     void SetTrackingStationGap(G4double val) { fTrackingStationGap = val; }
     G4double GetTrackingStationGap() { return fTrackingStationGap; }  
+    
+    G4ThreeVector GetFASER2Position() { return fFASER2Pos; }
+    void SetFASER2Position(G4ThreeVector val) { fFASER2Pos = val; }
 
     //FASERnu2 Emulsion detector
     void SetFASERnu2TotalSizeZ(G4double val) { fFASERnu2TotalSizeZ = val; }
@@ -103,6 +108,9 @@ class GeometricalParameters  {
     G4double GetVetoInterfaceSizeY() { return fVetoInterfaceSizeY; }  
     void SetVetoInterfaceSizeZ(G4double val) { fVetoInterfaceSizeZ = val; }
     G4double GetVetoInterfaceSizeZ() { return fVetoInterfaceSizeZ; }  
+
+    G4ThreeVector GetFASERnu2Position() { return fFASERnu2Pos; }
+    void SetFASERnu2Position(G4ThreeVector val) { fFASERnu2Pos = val; }
     
     // FORMOSA
     void SetFORMOSATotalSizeZ(G4double val) { fFORMOSATotalSizeZ = val; }
@@ -123,6 +131,9 @@ class GeometricalParameters  {
     void SetPMTSizeSpacing(G4double val) { fPMTSizeSpacing = val; }
     G4double GetPMTSizeSpacing() {return fPMTSizeSpacing; }
 
+    G4ThreeVector GetFORMOSAPosition() { return fFORMOSAPos; }
+    void SetFORMOSAPosition(G4ThreeVector val) { fFORMOSAPos = val; }
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -136,6 +147,7 @@ class GeometricalParameters  {
     G4double fInsulationThickness;
     G4double fHadCalLength;
     G4double fMuonCatcherLength;
+    G4ThreeVector fFLArEPos;
     
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;
@@ -161,6 +173,7 @@ class GeometricalParameters  {
     G4int fNScintillatorBarsX;
     G4double fScintillatorThickness;
     G4double fTrackingStationGap;
+    G4ThreeVector fFASER2Pos;
 
     // FASERnu2 Emulsion detector
     G4double fFASERnu2TotalSizeZ;
@@ -175,6 +188,7 @@ class GeometricalParameters  {
     G4double fVetoInterfaceSizeZ;
     G4double fVetoInterfaceSizeX;
     G4double fVetoInterfaceSizeY;
+    G4ThreeVector fFASERnu2Pos;
 
     // FORMOSA
     G4double fFORMOSATotalSizeZ;
@@ -186,6 +200,7 @@ class GeometricalParameters  {
     G4double fScintillatorBarSizeZ;
     G4int fNScintillatorModules;
     G4double fPMTSizeSpacing;
+    G4ThreeVector fFORMOSAPos;
 };
 
 #endif 

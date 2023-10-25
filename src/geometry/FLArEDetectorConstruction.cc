@@ -53,6 +53,8 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
     fFLArETPCAssembly->AddPlacedVolume(fFLArETPCLog, tpcCenter, noRot);
   } else if (fDetGeomOption == GeometricalParameters::tpcConfigOption::ThreeBySeven) {
     fFLArETPCAssembly->AddPlacedVolume(lArBoxLog, tpcCenter, noRot);
+  } else {
+    G4cout << "ERROR: undefined TPC configuration!" << G4endl;  
   }
   fFLArETPCAssembly->AddPlacedVolume(cryoInsulationLog, tpcCenter, noRot);
 
@@ -171,7 +173,7 @@ void FLArEDetectorConstruction::BuildFLArEHadCal()
   G4int fNbOfAbsor = 15;
 
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
-  fHadCalLength  = fNbOfAbsor*thicknessOneLayer;
+  fHadCalLength = fNbOfAbsor*thicknessOneLayer;
   GeometricalParameters::Get()->SetHadCalLength(fHadCalLength);
 
   auto hadCatcherSolid
@@ -235,7 +237,7 @@ void FLArEDetectorConstruction::BuildFLArEMuonCatcher() {
   G4double thicknessCaloY    = 1 * cm;
   G4int    fNbOfAbsor = 2;
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
-  fMuonCatcherLength  = fNbOfAbsor*thicknessOneLayer;
+  fMuonCatcherLength = fNbOfAbsor*thicknessOneLayer;
   GeometricalParameters::Get()->SetMuonCatcherLength(fMuonCatcherLength);
   
 

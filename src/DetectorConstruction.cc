@@ -90,24 +90,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //-----------------------------------
   // FLArE TPC volume, HadCal, and MuonCatcher
 
-  G4double lArSizeZ               = 0;        
-  G4double TPCInsulationThickness = 0;
-  G4double GapToHadCatcher        = 0;
-  G4double HadCatcherLength       = 0;
-  G4double MuonFinderLength       = 0;
-  G4double detectorGapLength      = 0;
-  G4double lengthFLArE            = 0;
-  G4double FLArEPosZ              = 0;
-
   if (m_addFLArE) {
     FLArEDetectorConstruction *FLArEAssembler = new FLArEDetectorConstruction();
-    lArSizeZ               = FLArEAssembler->GetLengthTPC();
-    TPCInsulationThickness = FLArEAssembler->GetTPCInsulationThickness();
-    GapToHadCatcher        = TPCInsulationThickness;
-    HadCatcherLength       = FLArEAssembler->GetLengthHadCal();
-    MuonFinderLength       = FLArEAssembler->GetLengthMuonCatcher();
-    lengthFLArE            = TPCInsulationThickness + lArSizeZ + GapToHadCatcher + 
-                             HadCatcherLength + MuonFinderLength;
+    G4double lArSizeZ               = GeometricalParameters::Get()->GetTPCSizeZ();
+    G4double TPCInsulationThickness = GeometricalParameters::Get()->GetTPCInsulationThickness();
+    G4double GapToHadCatcher        = TPCInsulationThickness;
+    G4double HadCatcherLength       = GeometricalParameters::Get()->GetHadCalLength();
+    G4double MuonFinderLength       = GeometricalParameters::Get()->GetMuonCatcherLength();
+    G4double lengthFLArE            = TPCInsulationThickness + lArSizeZ + GapToHadCatcher + 
+                                      HadCatcherLength + MuonFinderLength;
 
     G4AssemblyVolume* FLArEAssembly = FLArEAssembler->GetFLArEAssembly();
     TPCModuleLogical            = FLArEAssembler->GetFLArETPCVolume();
@@ -121,19 +112,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     MuonFinderAbsorLayersLogical= FLArEAssembler->GetMuonCatcherAbsorbVolume();
 
     // positioning
-    FLArEPosZ = TPCInsulationThickness + lArSizeZ/2.;
-    G4ThreeVector FLArEPos(0.,0.,FLArEPosZ); 
+    G4ThreeVector FLArEPos = GeometricalParameters::Get()->GetFLArEPosition();
     FLArEAssembly->MakeImprint(worldLog, FLArEPos, nullptr, 0, fCheckOverlap);
 
-    detectorGapLength = 1.2*m;
-    G4cout<<"Length of FLArE : "<<lengthFLArE<<" mm"<<G4endl;
+    G4cout<<"Length of FLArE     : "<<lengthFLArE<<G4endl;
+    G4cout<<"Center of FLArE TPC : "<<FLArEPos<<G4endl;
   }
 
   //-----------------------------------
   // FORMOSA
-
-  G4double lengthFORMOSA = 0;
-  G4double FORMOSAPosZ   = 0;
 
   if (m_addFORMOSA) {
     FORMOSADetectorConstruction *FORMOSAAssembler = new FORMOSADetectorConstruction();
@@ -141,23 +128,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     FORMOSAScintillatorBarLogical = FORMOSAAssembler->GetScintillatorBar();
 
     // positioning
-    lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
-    //FORMOSAPosZ = (lArSizeZ + GapToHadCatcher + HadCatcherLength + MuonFinderLength) +
-    //                        detectorGapLength + lengthFORMOSA/2.;
-    FORMOSAPosZ = lengthFLArE + detectorGapLength + lengthFORMOSA/2.;
-    G4ThreeVector FORMOSAPos(0.,0.,FORMOSAPosZ); 
+    G4double lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
+    G4ThreeVector FORMOSAPos = GeometricalParameters::Get()->GetFORMOSAPosition();
     FORMOSAAssembly->MakeImprint(worldLog, FORMOSAPos, nullptr, 0, fCheckOverlap);
 
-    detectorGapLength = 1.2*m;
-    G4cout<<"Length of FORMOSA                        : "<<lengthFORMOSA<<G4endl;
-    G4cout<<"Empty distance between FLArE and FORMOSA : "<<FORMOSAPosZ - lengthFLArE - lengthFORMOSA/2.<<G4endl;
+    G4cout<<"Length of FORMOSA : "<<lengthFORMOSA<<G4endl;
+    G4cout<<"Center of FORMOSA : "<<FORMOSAPos<<G4endl;
   }
                          
   //-----------------------------------
   // FASERnu2 Emulsion Detector
-  //
-  G4double lengthFASERnu2 = 0;
-  G4double FASERnu2PosZ   = 0;
 
   if (m_addFASERnu2) {
     FASERnu2DetectorConstruction *FASERnu2Assembler = new FASERnu2DetectorConstruction();
@@ -166,21 +146,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4AssemblyVolume* FASERnu2Assembly = FASERnu2Assembler->GetFASERnu2Assembly();
     
     // positioning
-    lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
-    FASERnu2PosZ = FORMOSAPosZ + lengthFORMOSA/2. + detectorGapLength + lengthFASERnu2/2;
-    G4ThreeVector FASERnu2Pos(0.,0.,FASERnu2PosZ); 
+    G4double lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
+    G4ThreeVector FASERnu2Pos = GeometricalParameters::Get()->GetFASERnu2Position();
     FASERnu2Assembly->MakeImprint(worldLog, FASERnu2Pos, nullptr, 0, fCheckOverlap);
 
-    detectorGapLength = 1.2*m;
-    G4cout<<"Length of FASERnu2                         : "<<lengthFASERnu2<<G4endl;
-    G4cout<<"Empty distance between FORMOSA and FASERnu2: "<<FASERnu2PosZ - FORMOSAPosZ - lengthFORMOSA/2. - lengthFASERnu2/2.<<G4endl;
+    G4cout<<"Length of FASERnu2 : "<<lengthFASERnu2<<G4endl;
+    G4cout<<"Center of FASERnu2 : "<<FASERnu2Pos<<G4endl;
   }
 
   //-----------------------------------
   // FASER2 Magnet + Tracking stations
 
-  G4double lengthSpectrometerMagnetAssembly = 0;
-  G4double magnetPosZ = 0;
   if (m_addFASER2) {
     SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
@@ -189,20 +165,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
 
     // positioning
-    G4double lengthDecayTunnelFASER2 = 10*m;
-    G4double lengthVetoStationFASER2 = 20.*cm; //guesses (including gaps)
-    lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetMagnetTotalSizeZ() 
-                                     + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
-    magnetPosZ = FASERnu2PosZ + lengthFASERnu2/2. + detectorGapLength + 
-                 lengthVetoStationFASER2 + lengthDecayTunnelFASER2 + lengthSpectrometerMagnetAssembly/2.;  
-    GeometricalParameters::Get()->SetMagnetZPosition(magnetPosZ); // save for momentum analysis
-
-    G4ThreeVector magPos(0.,0.,magnetPosZ); 
+    G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetMagnetTotalSizeZ() 
+                                                + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
+    G4ThreeVector magPos = GeometricalParameters::Get()->GetFASER2Position();
+    GeometricalParameters::Get()->SetMagnetZPosition(magPos.z()); // save for momentum analysis
     magnetAssembly->MakeImprint(worldLog, magPos, nullptr, 0, fCheckOverlap);
 
-    detectorGapLength = 1.2*m;
-    G4cout<<"Length of FASER2 Spectrometer              : "<<lengthSpectrometerMagnetAssembly<<G4endl;
-    G4cout<<"Empty distance between FASERnu2 and FASER2 : "<<magnetPosZ - FASERnu2PosZ - lengthFASERnu2/2. - lengthSpectrometerMagnetAssembly/2.<<G4endl;
+    //detectorGapLength = 1.2*m;
+    G4cout<<"Length of FASER2 Spectrometer : "<<lengthSpectrometerMagnetAssembly<<G4endl;
+    G4cout<<"Center of FASER2 Spectrometer : "<<magPos<<G4endl;
   }
   
   //-------------------------------------------------------------------
