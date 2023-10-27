@@ -28,7 +28,7 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
   fVetoInterfaceSizeY = GeometricalParameters::Get()->GetVetoInterfaceSizeY();
 
   fModuleThickness = (fNEmulsionTungstenLayers/2.)*(fEmulsionThickness+fTungstenThickness);
-  G4double totLengthZ = 2*fModuleThickness + 3*fVetoInterfaceSizeZ;
+  G4double totLengthZ = 2*fModuleThickness + 4*fVetoInterfaceSizeZ;
    
   GeometricalParameters::Get()->SetFASERnu2TotalSizeZ(totLengthZ);
 

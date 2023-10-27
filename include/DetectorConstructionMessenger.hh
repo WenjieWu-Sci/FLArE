@@ -8,6 +8,7 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -27,13 +28,23 @@ class DetectorConstructionMessenger: public G4UImessenger {
     DetectorConstruction* det;
     G4UIdirectory* detDir;
     
-    // GENERAL OPTIONS
+    G4UIcmdWithABool* detGdmlCmd;
+
+    // FLArE
+    G4UIcmdWithABool* detAddFLArECmd;
+    G4UIcmdWith3VectorAndUnit* detFLArEPosCmd;
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithAString* detGeomCmd;
-    G4UIcmdWithABool* detGdmlCmd;
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
-
+    // FORMOSA
+    G4UIcmdWithABool* detAddFORMOSACmd;
+    G4UIcmdWith3VectorAndUnit* detFORMOSAPosCmd;
+    // FASERnu2
+    G4UIcmdWithABool* detAddFASERnu2Cmd;
+    G4UIcmdWith3VectorAndUnit* detFASERnu2PosCmd;
     // FASER2 SPECTROMETER MAGNET
+    G4UIcmdWithABool* detAddFASER2Cmd;
+    G4UIcmdWith3VectorAndUnit* detFASER2PosCmd;
     // SAMURAI
     G4UIcmdWithAString* magnetGeomCmd;
     G4UIcmdWithADoubleAndUnit* magnetFieldCmd;
