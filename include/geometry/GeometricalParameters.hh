@@ -134,6 +134,10 @@ class GeometricalParameters  {
     G4ThreeVector GetFORMOSAPosition() { return fFORMOSAPos; }
     void SetFORMOSAPosition(G4ThreeVector val) { fFORMOSAPos = val; }
 
+    // DUNE ND-LAr
+    G4String GetNDLArGDMLName() { return fGeoGDMLName; }
+    void SetNDLArGDMLName(G4String val) { fGeoGDMLName = val; }
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -201,6 +205,9 @@ class GeometricalParameters  {
     G4int fNScintillatorModules;
     G4double fPMTSizeSpacing;
     G4ThreeVector fFORMOSAPos;
+
+    // DUNE ND-LAr
+    G4String fGeoGDMLName;
 };
 
 #endif 

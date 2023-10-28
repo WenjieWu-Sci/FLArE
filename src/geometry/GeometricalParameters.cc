@@ -66,6 +66,9 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorModules = 4;
   fPMTSizeSpacing = 33*cm;
   fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
+
+  // DUNE ND-LAr
+  fGeoGDMLName = "/dune/app/users/wenjiewu/FLArE_Dev/FLArE/analysis/gdml/nd_hall_only_lar.gdml";
 }
 
 GeometricalParameters* GeometricalParameters::Get()

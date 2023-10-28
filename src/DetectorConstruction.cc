@@ -8,6 +8,7 @@
 #include "geometry/FASERnu2DetectorConstruction.hh"
 #include "geometry/FORMOSADetectorConstruction.hh"
 #include "geometry/FLArEDetectorConstruction.hh"
+#include "geometry/DUNENDLArDetectorConstruction.hh"
 
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -46,7 +47,8 @@ G4ThreadLocal G4FieldManager* DetectorConstruction::fieldMgrFASER2 = 0;
 
 DetectorConstruction::DetectorConstruction()
   : G4VUserDetectorConstruction(), 
-    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true)
+    m_addFLArE(true), m_addFASERnu2(true), m_addFASER2(true), m_addFORMOSA(true),
+    m_addNDLAr(false)
 {
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
@@ -71,26 +73,30 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4bool fCheckOverlap = true;
 
-  // create an experimental hall with size 20*20*130 m, but only use half of the hall
-  G4double worldSizeX = 20 * m;
-  G4double worldSizeY = 20 * m;
-  G4double worldSizeZ = 130 * m;
+  // NDLAr is exclusive with all other components
+  // A working case based on studies of DUNE NDLAr
+  if (!m_addNDLAr) {
+    // create an experimental hall with size 20*20*130 m, but only use half of the hall
+    G4double worldSizeX = 20 * m;
+    G4double worldSizeY = 20 * m;
+    G4double worldSizeZ = 130 * m;
 
-  // Experimental hall
-  G4VSolid* worldBox = new G4Box("world", worldSizeX / 2, worldSizeY / 2, worldSizeZ / 2);
-  worldLog = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Air"), "world");
-  G4VPhysicalVolume* worldPhys = new G4PVPlacement(nullptr,
-                                                   {},
-                                                   worldLog,
-                                                   "world",
-                                                   nullptr,
-                                                   false, 
-                                                   0);
+    // Experimental hall
+    G4VSolid* worldBox = new G4Box("world", worldSizeX / 2, worldSizeY / 2, worldSizeZ / 2);
+    worldLog = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Air"), "world");
+    worldPhys = new G4PVPlacement(nullptr,
+                                  {},
+                                  worldLog,
+                                  "world",
+                                  nullptr,
+                                  false, 
+                                  0);
+  }
 
   //-----------------------------------
   // FLArE TPC volume, HadCal, and MuonCatcher
 
-  if (m_addFLArE) {
+  if (!m_addNDLAr && m_addFLArE) {
     FLArEDetectorConstruction *FLArEAssembler = new FLArEDetectorConstruction();
     G4double lArSizeZ               = GeometricalParameters::Get()->GetTPCSizeZ();
     G4double TPCInsulationThickness = GeometricalParameters::Get()->GetTPCInsulationThickness();
@@ -122,7 +128,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //-----------------------------------
   // FORMOSA
 
-  if (m_addFORMOSA) {
+  if (!m_addNDLAr && m_addFORMOSA) {
     FORMOSADetectorConstruction *FORMOSAAssembler = new FORMOSADetectorConstruction();
     G4AssemblyVolume* FORMOSAAssembly = FORMOSAAssembler->GetFORMOSAAssembly();
     FORMOSAScintillatorBarLogical = FORMOSAAssembler->GetScintillatorBar();
@@ -139,7 +145,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //-----------------------------------
   // FASERnu2 Emulsion Detector
 
-  if (m_addFASERnu2) {
+  if (!m_addNDLAr && m_addFASERnu2) {
     FASERnu2DetectorConstruction *FASERnu2Assembler = new FASERnu2DetectorConstruction();
     FASERnu2EmulsionLogical = FASERnu2Assembler->GetEmulsionFilm();
     FASERnu2VetoInterfaceLogical = FASERnu2Assembler->GetVetoInterfaceDetector();
@@ -157,7 +163,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //-----------------------------------
   // FASER2 Magnet + Tracking stations
 
-  if (m_addFASER2) {
+  if (!m_addNDLAr && m_addFASER2) {
     SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
     TrackingVerScinBarLogical = magnetAssembler->GetVerTrackingScinBar(); //need to assign SD
@@ -176,6 +182,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4cout<<"Center of FASER2 Spectrometer : "<<magPos<<G4endl;
   }
   
+  //-----------------------------------
+  // ND-LAr
+  if (m_addNDLAr) {
+    DUNENDLArDetectorConstruction* NDLArAssembler = new DUNENDLArDetectorConstruction();
+    worldPhys = NDLArAssembler->GetWorldPhysVol();
+    worldLog = worldPhys->GetLogicalVolume();
+  }
+
   //-------------------------------------------------------------------
 
   // visualization
@@ -195,7 +209,7 @@ void DetectorConstruction::ConstructSDandField() {
   G4SDManager* sdManager = G4SDManager::GetSDMpointer();
   sdManager->SetVerboseLevel(2);
 
-  if (m_addFLArE) {
+  if (!m_addNDLAr && m_addFLArE) {
     LArBoxSD* TPCModuleSD = new LArBoxSD("lArBoxSD");
     TPCModuleLogical->SetSensitiveDetector(TPCModuleSD);
     sdManager->AddNewDetector(TPCModuleSD);
@@ -234,13 +248,13 @@ void DetectorConstruction::ConstructSDandField() {
     muonFinderLogical->SetFieldManager(fieldMgr, true);
   }
 
-  if (m_addFORMOSA) {
+  if (!m_addNDLAr && m_addFORMOSA) {
     LArBoxSD* ScintillatorBarSD = new LArBoxSD("FORMOSAScinBarSD");
     FORMOSAScintillatorBarLogical->SetSensitiveDetector(ScintillatorBarSD);
     sdManager->AddNewDetector(ScintillatorBarSD);
   }
 
-  if (m_addFASERnu2) {
+  if (!m_addNDLAr && m_addFASERnu2) {
     LArBoxSD* EmulsionFilmSD = new LArBoxSD("FASERnu2EmulsionSD");
     FASERnu2EmulsionLogical->SetSensitiveDetector(EmulsionFilmSD);
     sdManager->AddNewDetector(EmulsionFilmSD);
@@ -250,7 +264,7 @@ void DetectorConstruction::ConstructSDandField() {
     sdManager->AddNewDetector(VetoInterfaceSD);
   }
 
-  if (m_addFASER2) {
+  if (!m_addNDLAr && m_addFASER2) {
     LArBoxSD* TrkHorScinSD = new LArBoxSD("TrkHorScinSD");
     TrackingHorScinBarLogical->SetSensitiveDetector(TrkHorScinSD);
     sdManager->AddNewDetector(TrkHorScinSD);

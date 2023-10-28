@@ -31,12 +31,14 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
     void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
     void AddFASER2(G4bool i) { m_addFASER2 = i; }
+    void AddNDLAr(G4bool i) { m_addNDLAr = i; }
     void UpdateGeometry();
 
   private:
     void DefineMaterial();
 
     G4LogicalVolume* worldLog;
+    G4VPhysicalVolume* worldPhys;
     G4bool m_saveGdml;
 
     G4bool m_addFLArE;
@@ -51,8 +53,6 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4double fFieldValue;
 
-    G4bool m_addFORMOSA;
-
     G4bool m_addFASERnu2;
 
     G4bool m_addFASER2;
@@ -63,7 +63,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* FASERnu2EmulsionLogical;
     G4LogicalVolume* FASERnu2VetoInterfaceLogical;
 
+    G4bool m_addFORMOSA;
     G4LogicalVolume *FORMOSAScintillatorBarLogical;
+
+    G4bool m_addNDLAr;
 
     DetectorConstructionMaterial* LArBoxMaterials;
     DetectorConstructionMessenger* messenger;

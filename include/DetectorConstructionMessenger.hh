@@ -65,6 +65,9 @@ class DetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithAnInteger* trackingNBarsXCmd;
     G4UIcmdWithADoubleAndUnit* trackingScinThickCmd;
     G4UIcmdWithADoubleAndUnit* trackingGapCmd;
+    // DUNE ND-LAr
+    G4UIcmdWithABool* detAddNDLArCmd;
+    G4UIcmdWithAString* detNDLArGDMLCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

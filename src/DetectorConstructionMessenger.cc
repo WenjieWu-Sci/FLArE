@@ -143,6 +143,16 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     trackingGapCmd->SetDefaultUnit("m");
     trackingGapCmd->SetUnitCandidates("cm m mm");
     trackingGapCmd->SetDefaultValue(0.5);
+    
+    // DUNE ND-LAr
+    detAddNDLArCmd = new G4UIcmdWithABool("/det/addNDLAr", this);
+    detAddNDLArCmd->SetParameterName("Add DUNE NDLAr", true);
+    detAddNDLArCmd->SetDefaultValue(false);
+    detNDLArGDMLCmd = new G4UIcmdWithAString("/det/NDLArGDML", this);
+    detNDLArGDMLCmd->SetParameterName("GDML filename", true);
+    detNDLArGDMLCmd->SetGuidance("Full path to the GDML file of NDLAr");
+    detNDLArGDMLCmd->SetDefaultValue("/dune/app/users/wenjiewu/FLArE_Dev/FLArE/analysis/gdml/nd_hall_only_lar.gdml");
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -176,6 +186,9 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete trackingScinThickCmd;
   delete trackingGapCmd;
 
+  delete detAddNDLArCmd;
+  delete detNDLArGDMLCmd;
+
   delete detDir;
 }
 
@@ -184,25 +197,33 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
 void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
   
   // flare
-  if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
-  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
-  else if (command == detFLArEPosCmd) GeometricalParameters::Get()->SetFLArEPosition(detFLArEPosCmd->GetNew3VectorValue(newValues));
-  else if (command == detGeomCmd) {
+  if (command == detGdmlCmd) 
+    det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  else if (command == detAddFLArECmd) 
+    det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
+  else if (command == detFLArEPosCmd) 
+    GeometricalParameters::Get()->SetFLArEPosition(detFLArEPosCmd->GetNew3VectorValue(newValues));
+  else if (command == detGeomCmd) 
     GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
-  }
-  else if (command == detMatCmd)  {
+  else if (command == detMatCmd)
     GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
-  }
-  else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == detFieldCmd) 
+    det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
   // FORMOSA
-  else if (command == detAddFORMOSACmd) det->AddFORMOSA(detAddFORMOSACmd->GetNewBoolValue(newValues));
-  else if (command == detFORMOSAPosCmd) GeometricalParameters::Get()->SetFORMOSAPosition(detFORMOSAPosCmd->GetNew3VectorValue(newValues));
+  else if (command == detAddFORMOSACmd) 
+    det->AddFORMOSA(detAddFORMOSACmd->GetNewBoolValue(newValues));
+  else if (command == detFORMOSAPosCmd) 
+    GeometricalParameters::Get()->SetFORMOSAPosition(detFORMOSAPosCmd->GetNew3VectorValue(newValues));
   // FASERnu2
-  else if (command == detAddFASERnu2Cmd) det->AddFASERnu2(detAddFASERnu2Cmd->GetNewBoolValue(newValues));
-  else if (command == detFASERnu2PosCmd) GeometricalParameters::Get()->SetFASERnu2Position(detFASERnu2PosCmd->GetNew3VectorValue(newValues));
+  else if (command == detAddFASERnu2Cmd) 
+    det->AddFASERnu2(detAddFASERnu2Cmd->GetNewBoolValue(newValues));
+  else if (command == detFASERnu2PosCmd)
+    GeometricalParameters::Get()->SetFASERnu2Position(detFASERnu2PosCmd->GetNew3VectorValue(newValues));
   // faser2 magnet
-  else if (command == detAddFASER2Cmd) det->AddFASER2(detAddFASER2Cmd->GetNewBoolValue(newValues));
-  else if (command == detFASER2PosCmd) GeometricalParameters::Get()->SetFASER2Position(detFASER2PosCmd->GetNew3VectorValue(newValues));
+  else if (command == detAddFASER2Cmd) 
+    det->AddFASER2(detAddFASER2Cmd->GetNewBoolValue(newValues));
+  else if (command == detFASER2PosCmd) 
+    GeometricalParameters::Get()->SetFASER2Position(detFASER2PosCmd->GetNew3VectorValue(newValues));
   else if (command == magnetGeomCmd)  
     GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
   else if (command == magnetFieldCmd) 
@@ -239,6 +260,9 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
     GeometricalParameters::Get()->SetScintillatorThickness(trackingScinThickCmd->ConvertToDimensionedDouble(newValues));
   else if (command == trackingGapCmd) 
     GeometricalParameters::Get()->SetTrackingStationGap(trackingGapCmd->ConvertToDimensionedDouble(newValues));
-}
-
+  else if (command == detAddNDLArCmd)
+    det->AddNDLAr(detAddNDLArCmd->GetNewBoolValue(newValues));
+  else if (command == detNDLArGDMLCmd)
+    GeometricalParameters::Get()->SetNDLArGDMLName(newValues);
+} 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
