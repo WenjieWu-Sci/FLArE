@@ -65,19 +65,36 @@ void DUNENDLArDetectorConstruction::BuildVolumes()
     }
   }
 
+  // define visibility
   std::map<G4String,G4Colour> Kolor;
-  Kolor["Steel"]        = G4Colour::Red();
+  Kolor["Steel"]        = G4Colour::Grey();
   Kolor["Copper"]       = G4Colour::Yellow();
   Kolor["PVT"]          = G4Colour::Green();
   Kolor["FR4"]          = G4Colour::Gray();
   Kolor["LAr"]          = G4Colour::Cyan();
-  Kolor["Polyurethane"] = G4Colour::Grey();
+  Kolor["Polyurethane"] = G4Colour::Red();
   //Kolor["Rock"]         = G4Colour::Blue();
 
   G4VisAttributes* noVis = new G4VisAttributes();
   noVis->SetVisibility(false);
   for(auto pos=pLVStore->begin(); pos!=pLVStore->end(); pos++) {
     if (G4String((*pos)->GetName()).contains("DetEnclosure")) {
+      (*pos)->SetVisAttributes(noVis);
+      continue;
+    }
+    if (G4String((*pos)->GetName()).contains("elevator")) {
+      (*pos)->SetVisAttributes(noVis);
+      continue;
+    }
+    if (G4String((*pos)->GetName()).contains("cryo")) {
+      (*pos)->SetVisAttributes(noVis);
+      continue;
+    }
+    if (G4String((*pos)->GetName()).contains("crane")) {
+      (*pos)->SetVisAttributes(noVis);
+      continue;
+    }
+    if (G4String((*pos)->GetName()).contains("Hallway")) {
       (*pos)->SetVisAttributes(noVis);
       continue;
     }
@@ -105,6 +122,9 @@ void DUNENDLArDetectorConstruction::BuildVolumes()
         default: vis = new G4VisAttributes(G4Colour(red, green, blue, 0.1));
       }
       vis->SetVisibility(true);
+      //if (G4String((*pos)->GetMaterial()->GetName()).contains("LAr")) {
+        vis->SetForceSolid(true);
+      //}
       (*pos)->SetVisAttributes(vis);
       continue;
     }
