@@ -81,8 +81,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                    false, 
                                    0);
 
-  // create an experimental hall with size 20*20*130 m, but only use half of the hall
-
   // FPF long paper: https://dx.doi.org/10.1088/1361-6471/ac865e
   // section 2.1.1, figure 5, and figure 7
   G4double hallSizeX  = 8.5 * m;

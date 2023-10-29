@@ -31,6 +31,7 @@ class GeometricalParameters  {
     G4double GetTPCSizeX() { return fTPCSizeX; }
     G4double GetTPCSizeY() { return fTPCSizeY; }
     G4double GetTPCSizeZ() { return fTPCSizeZ; }
+    G4ThreeVector GetFLArEFidVolSize() { return fTPCFidVolSize; }
     G4double GetTPCInsulationThickness() { return fInsulationThickness; }
     G4double GetHadCalLength() { return fHadCalLength; }
     void SetHadCalLength(G4double val) { fHadCalLength = val; }
@@ -150,6 +151,7 @@ class GeometricalParameters  {
     G4double fTPCSizeX;
     G4double fTPCSizeY;
     G4double fTPCSizeZ;
+    G4ThreeVector fTPCFidVolSize;
     G4double fInsulationThickness;
     G4double fHadCalLength;
     G4double fMuonCatcherLength;
