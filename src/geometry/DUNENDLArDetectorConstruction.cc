@@ -72,16 +72,20 @@ void DUNENDLArDetectorConstruction::BuildVolumes()
   Kolor["FR4"]          = G4Colour::Gray();
   Kolor["LAr"]          = G4Colour::Cyan();
   Kolor["Polyurethane"] = G4Colour::Grey();
-  Kolor["Rock"]         = G4Colour::Blue();
+  //Kolor["Rock"]         = G4Colour::Blue();
 
   G4VisAttributes* noVis = new G4VisAttributes();
-  noVis->SetVisibility(true);
+  noVis->SetVisibility(false);
   for(auto pos=pLVStore->begin(); pos!=pLVStore->end(); pos++) {
     if (G4String((*pos)->GetName()).contains("DetEnclosure")) {
       (*pos)->SetVisAttributes(noVis);
       continue;
     }
     if (G4String((*pos)->GetMaterial()->GetName()).contains("Air")) {
+      (*pos)->SetVisAttributes(noVis);
+      continue;
+    }
+    if (G4String((*pos)->GetMaterial()->GetName()).contains("Rock")) {
       (*pos)->SetVisAttributes(noVis);
       continue;
     }

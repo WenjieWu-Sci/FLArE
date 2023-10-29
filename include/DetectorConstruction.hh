@@ -37,11 +37,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   private:
     void DefineMaterial();
 
-    G4LogicalVolume* worldLV;
+    G4bool m_saveGdml;
+
     G4VPhysicalVolume* worldPV;
     G4LogicalVolume* hallLV;
-
-    G4bool m_saveGdml;
+    G4ThreeVector hallOffset;
 
     G4bool m_addFLArE;
     G4LogicalVolume* TPCModuleLogical;
@@ -56,14 +56,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4double fFieldValue;
 
     G4bool m_addFASERnu2;
+    G4LogicalVolume* FASERnu2EmulsionLogical;
+    G4LogicalVolume* FASERnu2VetoInterfaceLogical;
 
     G4bool m_addFASER2;
     G4LogicalVolume* FASER2MagnetLogical;
     G4LogicalVolume* TrackingVerScinBarLogical;
     G4LogicalVolume* TrackingHorScinBarLogical; 
-
-    G4LogicalVolume* FASERnu2EmulsionLogical;
-    G4LogicalVolume* FASERnu2VetoInterfaceLogical;
 
     G4bool m_addFORMOSA;
     G4LogicalVolume *FORMOSAScintillatorBarLogical;

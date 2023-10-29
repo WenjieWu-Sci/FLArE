@@ -77,7 +77,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // A working case based on studies of DUNE NDLAr
   if (!m_addNDLAr) {
     auto worldBox = new G4Box("worldBox", 30*m/2, 30*m/2, 150*m/2);
-    worldLV = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Rock"), "worldLV");
+    auto worldLV = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Rock"), "worldLV");
     worldPV = new G4PVPlacement(nullptr,
                                 {},
                                 worldLV,
@@ -91,7 +91,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4double hallSizeX  = 8.5 * m;
     G4double hallSizeY  = 7.2 * m;
     G4double hallSizeZ  = 65. * m;
-    G4ThreeVector hallOffset(0., 0., hallSizeZ/2 -            // this offset accounts for the distance between 
+    hallOffset = G4ThreeVector(0., 0., hallSizeZ/2 -          // this offset accounts for the distance between 
         GeometricalParameters::Get()->GetHallHeadDistance()); // the entrance wall of the hall and the 
                                                               // first detector, so the first detector 
                                                               // starts at the center of the global coordinate
@@ -106,6 +106,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                     false, 
                                     0,
                                     fCheckOverlap);
+
+    // visualization
+    G4VisAttributes* worldVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
+    worldVis->SetVisibility(false);
+    worldLV->SetVisAttributes(worldVis);
+
+    G4VisAttributes* hallVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
+    hallVis->SetVisibility(true);
+    hallLV->SetVisAttributes(hallVis);
   }
 
   //-----------------------------------
@@ -206,19 +215,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   if (m_addNDLAr) {
     DUNENDLArDetectorConstruction* NDLArAssembler = new DUNENDLArDetectorConstruction();
     worldPV = NDLArAssembler->GetWorldPhysVol();
-    worldLV = worldPhys->GetLogicalVolume();
   }
 
   //-------------------------------------------------------------------
-
-  // visualization
-  G4VisAttributes* worldVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
-  worldVis->SetVisibility(false);
-  worldLV->SetVisAttributes(worldVis);
-
-  G4VisAttributes* hallVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
-  hallVis->SetVisibility(true);
-  hallLV->SetVisAttributes(hallVis);
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
