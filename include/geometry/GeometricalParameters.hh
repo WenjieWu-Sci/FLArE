@@ -16,6 +16,9 @@ class GeometricalParameters  {
     static GeometricalParameters* Get();
     virtual ~GeometricalParameters() {}
 
+    // experimental hall
+    G4double GetHallHeadDistance() { return fHallHeadDistance; }
+
     // FLArE TPC volume
     enum tpcMaterialOption { LiquidArgon, LiquidKrypton};
     tpcMaterialOption ConvertStringToTPCMaterialOption(G4String val);
@@ -137,6 +140,9 @@ class GeometricalParameters  {
   private:
     //the singleton
     static GeometricalParameters *me;
+
+    // experimental hall
+    G4double fHallHeadDistance; ///<- distance between the entrance wall and the first detector
 
     // FLArE TPC volume
     tpcMaterialOption fFLArETPCMaterialOption;
