@@ -1,5 +1,6 @@
 #include "SteppingAction.hh"
 #include "RunAction.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include <G4Step.hh>
 #include <G4Electron.hh>
@@ -23,19 +24,20 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
   // if the track is out of the active volumes/area, kill this track
   G4VPhysicalVolume* volume = aStep->GetPostStepPoint()->GetTouchable()->GetVolume();
   
-  if( volume==nullptr ) aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill);
-  else if( volume->GetName() == "world" ){       
-    G4double endFLArE = 4 * m;
-    G4double totYokeX = 4.5 * m;
-    G4double totYokeY = 3 *m;
-	
-    //if before end of FLArE, kill
-    if( post_pos.z() < endFLArE ) aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill); 
-    
-    //if after enf of FLArE, kill if outside FASER magnet cross-section
-    else if ( TMath::Abs(post_pos.x()) > totYokeX/2. || TMath::Abs(post_pos.y()) > totYokeY/2. )
-      aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill);
-  }
+  if( volume->GetName() == "worldPV" ) aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill);
+  //else if( volume->GetName() == "hallPV" ){       
+  //  G4double endFLArE = GeometricalParameters::Get()->GetFLArEPosition()+
+  //                      GeometricalParameters::Get()->GetTPCSizeZ()/2.;
+  //  G4double totYokeX = 4.5 * m; 
+  //  G4double totYokeY = 3 *m;
+	//
+  //  //if before end of FLArE, kill
+  //  if( post_pos.z() < endFLArE ) aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill); 
+  //  
+  //  //if after enf of FLArE, kill if outside FASER magnet cross-section
+  //  else if ( TMath::Abs(post_pos.x()) > totYokeX/2. || TMath::Abs(post_pos.y()) > totYokeY/2. )
+  //    aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill);
+  //}
   
   /*// if the track is out of the active volumes, kill this track
   G4VPhysicalVolume* volume = aStep->GetPostStepPoint()->GetTouchable()->GetVolume();

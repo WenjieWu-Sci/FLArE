@@ -37,8 +37,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   private:
     void DefineMaterial();
 
-    G4LogicalVolume* worldLog;
-    G4VPhysicalVolume* worldPhys;
+    G4LogicalVolume* worldLV;
+    G4VPhysicalVolume* worldPV;
+    G4LogicalVolume* hallLV;
+
     G4bool m_saveGdml;
 
     G4bool m_addFLArE;

@@ -1,9 +1,11 @@
 #include <ostream>
+#include <time.h>
 
 #include "PrimaryGeneratorMessenger.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "GENIEPrimaryGeneratorAction.hh"
 #include "PrimaryParticleInformation.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include <G4ParticleTable.hh>
 #include <G4Event.hh>
@@ -32,11 +34,21 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS->SetParticleDefinition(myParticle);
   fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(5*GeV);  // kinetic energy
   fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
-  G4double x0 = 0. * m;
-  G4double y0 = 0. * m;
-  G4double z0 = 0. * m;
-  G4double dz = 7. * m;
-  z0 += dz*(G4UniformRand()-0.5);
+  G4long seeds[2];
+  time_t systime = time(NULL);
+  seeds[0] = (G4long) systime;
+  seeds[1] = (G4long) (systime*G4UniformRand());
+  G4Random::setTheSeeds(seeds);
+  G4Random::showEngineStatus();
+  G4double x0 = G4UniformRand();
+  G4double y0 = G4UniformRand();
+  G4double z0 = G4UniformRand();
+  x0 = GeometricalParameters::Get()->GetFLArEPosition().x() +
+       (x0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().x();
+  y0 = GeometricalParameters::Get()->GetFLArEPosition().y() +
+       (y0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().y();
+  z0 = GeometricalParameters::Get()->GetFLArEPosition().z() +
+       (z0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().z();;
   fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
   fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
 
@@ -55,7 +67,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   if (useGenie) {
     std::cout<<std::endl;
-    std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===OOO==="<<std::endl;
+    std::cout<<"===oooOOOooo=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===oooOOOooo==="<<std::endl;
     fActionGenie->GeneratePrimaries(anEvent, ghepFileName, ghepEvtStartIdx, 1);
     neuidx          = fActionGenie->NeuIdx();
     neupdg          = fActionGenie->NeuPDG();
@@ -69,7 +81,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     fslx4           = fActionGenie->FSLX4();
   } else {
     std::cout<<std::endl;
-    std::cout<<"===OOO=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===OOO==="<<std::endl;
+    std::cout<<"===oooOOOooo=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===oooOOOooo==="<<std::endl;
     fGPS->GeneratePrimaryVertex(anEvent);
   }
 
