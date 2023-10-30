@@ -8,7 +8,9 @@ void materialDisplay(TString filename,Bool_t checkoverlaps=kFALSE,TString label=
   Kolor["Aluminum"] = kRed;
   Kolor["FR4"] = kGray;
 
-  TGeoManager *geo2 = TGeoManager::Import(filename, "geo2");
+  //TGeoManager *geo2 = TGeoManager::Import(filename, "geo2");
+  TFile* sfile = new TFile("nd_hall_only_lar.root","r");
+  TGeoManager* geo2 = (TGeoManager*)sfile->Get("Default");
   if ( checkoverlaps )
   {
     geo2->CheckOverlaps(1e-5,"d");
