@@ -1,5 +1,5 @@
-#ifndef FLAREDETECTORCONSTRUCTIONMESSENGER_HH
-#define FLAREDETECTORCONSTRUCTIONMESSENGER_HH
+#ifndef DETECTORCONSTRUCTIONMESSENGER_HH
+#define DETECTORCONSTRUCTIONMESSENGER_HH
 
 #include "G4UImessenger.hh"
 #include "G4UIcommand.hh"
@@ -8,32 +8,43 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 #include "globals.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class FLArEDetectorConstruction;
+class DetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class FLArEDetectorConstructionMessenger: public G4UImessenger {
+class DetectorConstructionMessenger: public G4UImessenger {
   public:
-    FLArEDetectorConstructionMessenger(FLArEDetectorConstruction*);
-    ~FLArEDetectorConstructionMessenger();
+    DetectorConstructionMessenger(DetectorConstruction*);
+    ~DetectorConstructionMessenger();
 
     void SetNewValue(G4UIcommand*, G4String);
 
   private:
-    FLArEDetectorConstruction* det;
+    DetectorConstruction* det;
     G4UIdirectory* detDir;
     
-    // GENERAL OPTIONS
+    G4UIcmdWithABool* detGdmlCmd;
+
+    // FLArE
+    G4UIcmdWithABool* detAddFLArECmd;
+    G4UIcmdWith3VectorAndUnit* detFLArEPosCmd;
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithAString* detGeomCmd;
-    G4UIcmdWithABool* detGdmlCmd;
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
-
+    // FORMOSA
+    G4UIcmdWithABool* detAddFORMOSACmd;
+    G4UIcmdWith3VectorAndUnit* detFORMOSAPosCmd;
+    // FASERnu2
+    G4UIcmdWithABool* detAddFASERnu2Cmd;
+    G4UIcmdWith3VectorAndUnit* detFASERnu2PosCmd;
     // FASER2 SPECTROMETER MAGNET
+    G4UIcmdWithABool* detAddFASER2Cmd;
+    G4UIcmdWith3VectorAndUnit* detFASER2PosCmd;
     // SAMURAI
     G4UIcmdWithAString* magnetGeomCmd;
     G4UIcmdWithADoubleAndUnit* magnetFieldCmd;

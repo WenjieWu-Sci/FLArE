@@ -7,6 +7,21 @@ GeometricalParameters::GeometricalParameters()
 {
   // **** DEFAULT VALUES ***
   
+  // experimental hall
+  fHallHeadDistance = 3.1*m;
+
+  // FLArE TPC volume
+  fFLArETPCMaterialOption = tpcMaterialOption::LiquidArgon;
+  fFLArETPCConfigOption   = tpcConfigOption::ThreeBySeven;
+  fTPCSizeX = 1.8*m;  // optimized by energy containment  
+  fTPCSizeY = 1.8*m;  // optimized by energy containment
+  fTPCSizeZ = 7.0*m;  // optimized by energy containment
+  fTPCFidVolSize = G4ThreeVector(1.0*m, 1.0*m, 7.0*m);
+  fInsulationThickness = 80 * cm;
+  fMuonCatcherLength = 36*cm; //updates during construction
+  fHadCalLength = 120*cm;     //updates during construction
+  fFLArEPos = G4ThreeVector(0., 0., 4300.*mm); 
+  
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
@@ -31,6 +46,7 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
+  fFASER2Pos = G4ThreeVector(0., 0., 43036.*mm);
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction
@@ -42,6 +58,7 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeZ = 20*cm;
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
+  fFASERnu2Pos = G4ThreeVector(0., 0., 22123.*mm);
 
   // FORMOSA
   fFORMOSATotalSizeZ = 5*m; //updates during construction
@@ -52,6 +69,7 @@ GeometricalParameters::GeometricalParameters()
   fScintillatorBarSizeZ = 1*m;
   fNScintillatorModules = 4;
   fPMTSizeSpacing = 33*cm;
+  fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
 }
 
 GeometricalParameters* GeometricalParameters::Get()
@@ -59,6 +77,30 @@ GeometricalParameters* GeometricalParameters::Get()
   if (!me)
     me = new GeometricalParameters();
   return me; 
+}
+
+GeometricalParameters::tpcMaterialOption GeometricalParameters::ConvertStringToTPCMaterialOption(G4String val)
+{
+  if (val == "LAr") {
+    return tpcMaterialOption::LiquidArgon;
+  } else if (val == "LKr") {
+    return tpcMaterialOption::LiquidKrypton;
+  } else {
+    G4cout<<"WARNING: unknow material for the TPC volume! Set it to default."<<G4endl;
+    return tpcMaterialOption::LiquidArgon;
+  }
+}
+
+GeometricalParameters::tpcConfigOption GeometricalParameters::ConvertStringToTPCConfigOption(G4String val)
+{
+  if (val == "single") {
+    return tpcConfigOption::Single;
+  } else if (val == "3x7") {
+    return tpcConfigOption::ThreeBySeven;
+  } else {
+    G4cout<<"WARNING: unknow configuration for the TPC volume! Set it to default."<<G4endl;
+    return tpcConfigOption::Single;
+  }
 }
 
 GeometricalParameters::magnetOption GeometricalParameters::ConvertStringToMagnetOption(G4String val)

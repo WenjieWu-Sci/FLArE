@@ -1,5 +1,5 @@
-#ifndef FLAREDETECTORCONSTRUCTION_HH
-#define FLAREDETECTORCONSTRUCTION_HH
+#ifndef DETECTORCONSTRUCTION_HH
+#define DETECTORCONSTRUCTION_HH
 
 #include <G4VUserDetectorConstruction.hh>
 #include <G4String.hh>
@@ -8,7 +8,7 @@
 #include <G4AssemblyVolume.hh>
 
 class G4LogicalVolume;
-class FLArEDetectorConstructionMessenger;
+class DetectorConstructionMessenger;
 class DetectorConstructionMaterial;
 
 /**
@@ -17,26 +17,32 @@ class DetectorConstructionMaterial;
  *
  */
 
-class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
+class DetectorConstruction : public G4VUserDetectorConstruction {
   public:
     // Main method that has to be override in all detectors
-    FLArEDetectorConstruction();
-    ~FLArEDetectorConstruction();
+    DetectorConstruction();
+    ~DetectorConstruction();
     G4VPhysicalVolume* Construct() override;
 
     void ConstructSDandField() override;
-    void SetDetMaterial(G4String detMaterial);
-    void SetGeomOption(G4String detGeomOption);
-    void saveGDML(G4bool i) { m_saveGdml = i; };
+    void SaveGDML(G4bool i) { m_saveGdml = i; }
+    void AddFLArE(G4bool i) { m_addFLArE = i; }
     void SetFieldValue(G4double val) { fFieldValue = val; }
+    void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
+    void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
+    void AddFASER2(G4bool i) { m_addFASER2 = i; }
     void UpdateGeometry();
 
   private:
     void DefineMaterial();
 
-    G4LogicalVolume* worldLog;
-    G4LogicalVolume* lArBoxLog;
-    G4LogicalVolume* cryoInsulationLog;
+    G4LogicalVolume* worldLV;
+    G4LogicalVolume* hallLV;
+
+    G4bool m_saveGdml;
+
+    G4bool m_addFLArE;
+    G4LogicalVolume* TPCModuleLogical;
     G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
@@ -45,12 +51,13 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderYCellLogical;
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
-    G4LogicalVolume* TPCModuleLogical;
-    G4String fDetMaterialName;
-    G4String fDetGeomOption;
     G4double fFieldValue;
-    G4bool m_saveGdml;
 
+    G4bool m_addFORMOSA;
+
+    G4bool m_addFASERnu2;
+
+    G4bool m_addFASER2;
     G4LogicalVolume* FASER2MagnetLogical;
     G4LogicalVolume* TrackingVerScinBarLogical;
     G4LogicalVolume* TrackingHorScinBarLogical; 
@@ -61,7 +68,7 @@ class FLArEDetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume *FORMOSAScintillatorBarLogical;
 
     DetectorConstructionMaterial* LArBoxMaterials;
-    FLArEDetectorConstructionMessenger* messenger;
+    DetectorConstructionMessenger* messenger;
 
     static G4ThreadLocal G4UniformMagField* magField;
     static G4ThreadLocal G4FieldManager* fieldMgr;

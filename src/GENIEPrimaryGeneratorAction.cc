@@ -1,5 +1,6 @@
 #include "GENIEPrimaryGeneratorAction.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include <G4GeneralParticleSource.hh>
 #include <G4ParticleTable.hh>
@@ -90,10 +91,20 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   G4Random::setTheSeed(ghepEvtStartIdx+evtID+1);
   switch(nuVtxOpt) {
     case 0:
-      neuX4.SetXYZT(0 * m, 0 * m, -3.0 * m, 0);
+      neuX4.SetX(0.*m);
+      neuX4.SetY(0.*m);
+      neuX4.SetZ(GeometricalParameters::Get()->GetFLArEPosition().z() -
+                GeometricalParameters::Get()->GetFLArEFidVolSize().z()/2);
+      neuX4.SetT(0.);
       break;
     case 1:
-      neuX4.SetXYZT((G4UniformRand()-0.5)*m, (G4UniformRand()-0.5)*m, G4UniformRand()*7.0*m-3.5*m, 0);
+      neuX4.SetX(GeometricalParameters::Get()->GetFLArEPosition().x() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetFLArEFidVolSize().x());
+      neuX4.SetY(GeometricalParameters::Get()->GetFLArEPosition().y() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetFLArEFidVolSize().y());
+      neuX4.SetZ(GeometricalParameters::Get()->GetFLArEPosition().z() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetFLArEFidVolSize().z());
+      neuX4.SetT(0.);
       break;
   }
 

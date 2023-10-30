@@ -52,7 +52,7 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
 
   // placing the outer interface detectors
   for( int i=-1; i<=1; i=i+2 ){
-    G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.5*fVetoInterfaceSizeZ);
+    G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.0*fVetoInterfaceSizeZ);
     fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,pos,noRot);
   }
 
