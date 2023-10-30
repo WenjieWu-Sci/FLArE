@@ -26,8 +26,9 @@ GeometricalParameters::GeometricalParameters()
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;
   fMagnetTotalSizeZ = 4*m; //updates during construction
-  fTrackingStationTotalSizeZ = 3.12*m; //updates during construction
+  fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
+  fFASER2TotalSizeZ = 10.24*m;
   // SAMURAI design
   fSpectrometerMagnetWindowX = 3.0*m;
   fSpectrometerMagnetWindowY = 1.0*m;
@@ -39,7 +40,7 @@ GeometricalParameters::GeometricalParameters()
   fSpectrometerMagnetInnerR = 0.8*m;
   fSpectrometerMagnetOuterR = 1.2*m;
   fNSpectrometerMagnets = 3;
-  fSpectrometerMagnetGap = 0.5*m;
+  fSpectrometerMagnetGap = 0.25*m;
   // Tracking stations
   fNTrackingStations = 6;
   fNScintillatorBarsY = 3;
