@@ -7,12 +7,16 @@ GeometricalParameters::GeometricalParameters()
 {
   // **** DEFAULT VALUES ***
   
+  // experimental hall
+  fHallHeadDistance = 3.1*m;
+
   // FLArE TPC volume
   fFLArETPCMaterialOption = tpcMaterialOption::LiquidArgon;
   fFLArETPCConfigOption   = tpcConfigOption::ThreeBySeven;
   fTPCSizeX = 1.8*m;  // optimized by energy containment  
   fTPCSizeY = 1.8*m;  // optimized by energy containment
   fTPCSizeZ = 7.0*m;  // optimized by energy containment
+  fTPCFidVolSize = G4ThreeVector(1.0*m, 1.0*m, 7.0*m);
   fInsulationThickness = 80 * cm;
   fMuonCatcherLength = 36*cm; //updates during construction
   fHadCalLength = 120*cm;     //updates during construction

@@ -16,6 +16,9 @@ class GeometricalParameters  {
     static GeometricalParameters* Get();
     virtual ~GeometricalParameters() {}
 
+    // experimental hall
+    G4double GetHallHeadDistance() { return fHallHeadDistance; }
+
     // FLArE TPC volume
     enum tpcMaterialOption { LiquidArgon, LiquidKrypton};
     tpcMaterialOption ConvertStringToTPCMaterialOption(G4String val);
@@ -28,6 +31,7 @@ class GeometricalParameters  {
     G4double GetTPCSizeX() { return fTPCSizeX; }
     G4double GetTPCSizeY() { return fTPCSizeY; }
     G4double GetTPCSizeZ() { return fTPCSizeZ; }
+    G4ThreeVector GetFLArEFidVolSize() { return fTPCFidVolSize; }
     G4double GetTPCInsulationThickness() { return fInsulationThickness; }
     G4double GetHadCalLength() { return fHadCalLength; }
     void SetHadCalLength(G4double val) { fHadCalLength = val; }
@@ -138,12 +142,16 @@ class GeometricalParameters  {
     //the singleton
     static GeometricalParameters *me;
 
+    // experimental hall
+    G4double fHallHeadDistance; ///<- distance between the entrance wall and the first detector
+
     // FLArE TPC volume
     tpcMaterialOption fFLArETPCMaterialOption;
     tpcConfigOption   fFLArETPCConfigOption;
     G4double fTPCSizeX;
     G4double fTPCSizeY;
     G4double fTPCSizeZ;
+    G4ThreeVector fTPCFidVolSize;
     G4double fInsulationThickness;
     G4double fHadCalLength;
     G4double fMuonCatcherLength;

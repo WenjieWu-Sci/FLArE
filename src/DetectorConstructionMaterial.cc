@@ -54,6 +54,9 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
 
   a=28.085*g/mole;
   elSi=new G4Element(name="silicon",symbol="Si",z=14.,a);
+  
+  a=30.973*g/mole;
+  elP= new G4Element(name="phosphorus",symbol="P",z=15.,a);
 
   a=32.06*g/mole;
   elS=new G4Element(name="sulfur",symbol="S",z=16.,a);
@@ -137,10 +140,20 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
 			  kStateGas,temperature,pressure);
   Vacuum->AddMaterial(Air, fractionmass=1.);
 
+  density = 1.977*mg/cm3;
+  CO2 = new G4Material(name="CO2", density, nel=2);
+  CO2->AddElement(elC, 1);
+  CO2->AddElement(elO, 2);
+
   density = 2.2*g/cm3;
   SiO2 = new G4Material(name="SiO2", density, nel=2);
   SiO2->AddElement(elSi, 1);
   SiO2->AddElement(elO, 2);
+
+  density = 1.562*g/cm3;
+  P2O5 = new G4Material(name="P2O5", density, nel=2);
+  P2O5->AddElement(elP, 2);
+  P2O5->AddElement(elO, 5);
 
   density = 3.97*g/cm3;
   Al2O3 = new G4Material(name="Al2O3", density, nel=2);
@@ -151,6 +164,11 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   Fe2O3 = new G4Material(name="Fe2O3", density, nel=2);
   Fe2O3->AddElement(elFe, 2);
   Fe2O3->AddElement(elO, 3);
+
+  density = 5.745*g/cm3;
+  FeO = new G4Material(name="FeO", density, nel=2);
+  FeO->AddElement(elFe, 1);
+  FeO->AddElement(elO, 1);
 
   density = 3.35*g/cm3;
   CaO = new G4Material(name="CaO", density, nel=2);
@@ -226,6 +244,22 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   R_PUF->AddMaterial(polyurethane_foam, 0.95);
   R_PUF->AddMaterial(fibrous_glass    , 0.05);
 
+  // Rock
+  density = 2.82*g/cm3;
+  Rock = new G4Material(name="Rock", density, 11);
+  Rock->AddMaterial(SiO2  , 0.5267);
+  Rock->AddMaterial(FeO   , 0.1174);
+  Rock->AddMaterial(Al2O3 , 0.1025);
+  Rock->AddElement (elO   , 0.0771);
+  Rock->AddMaterial(MgO   , 0.0473);
+  Rock->AddMaterial(CO2   , 0.0422);
+  Rock->AddMaterial(CaO   , 0.0382);
+  Rock->AddElement (elC   , 0.024);
+  Rock->AddElement (elS   , 0.0186);
+  Rock->AddMaterial(Na2O  , 0.0053);
+  Rock->AddMaterial(P2O5  , 0.0007);
+
+
   // Placeholder for AgBr emulsion
   // currently something similar (?) straight out of NIST database
   G4NistManager* nist = G4NistManager::Instance(); 
@@ -258,6 +292,7 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "LiquidScintillator") material = LS;
   if(what == "Polystyrene")        material = polystyrene;
   if(what == "R_PUF")              material = R_PUF;
+  if(what == "Rock")               material = Rock;
   if(what == "Emulsion")           material = Emulsion;
 
   return material;

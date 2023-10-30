@@ -71,21 +71,36 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4bool fCheckOverlap = true;
 
-  // create an experimental hall with size 20*20*130 m, but only use half of the hall
-  G4double worldSizeX = 20 * m;
-  G4double worldSizeY = 20 * m;
-  G4double worldSizeZ = 130 * m;
+  auto worldBox = new G4Box("worldBox", 30*m/2, 30*m/2, 150*m/2);
+  worldLV = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Rock"), "worldLV");
+  auto worldPV = new G4PVPlacement(nullptr,
+                                   {},
+                                   worldLV,
+                                   "worldPV",
+                                   nullptr,
+                                   false, 
+                                   0);
 
-  // Experimental hall
-  G4VSolid* worldBox = new G4Box("world", worldSizeX / 2, worldSizeY / 2, worldSizeZ / 2);
-  worldLog = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Air"), "world");
-  G4VPhysicalVolume* worldPhys = new G4PVPlacement(nullptr,
-                                                   {},
-                                                   worldLog,
-                                                   "world",
-                                                   nullptr,
-                                                   false, 
-                                                   0);
+  // FPF long paper: https://dx.doi.org/10.1088/1361-6471/ac865e
+  // section 2.1.1, figure 5, and figure 7
+  G4double hallSizeX  = 8.5 * m;
+  G4double hallSizeY  = 7.2 * m;
+  G4double hallSizeZ  = 65. * m;
+  G4ThreeVector hallOffset(0., 0., hallSizeZ/2 -            // this offset accounts for the distance between 
+      GeometricalParameters::Get()->GetHallHeadDistance()); // the entrance wall of the hall and the 
+                                                            // first detector, so the first detector 
+                                                            // starts at the center of the global coordinate
+                                                           
+  auto hallBox = new G4Box("hallBox", hallSizeX/2, hallSizeY/2, hallSizeZ/2);
+  hallLV = new G4LogicalVolume(hallBox, LArBoxMaterials->Material("Air"), "hallLV");
+  auto hallPV = new G4PVPlacement(nullptr,
+                                  hallOffset,
+                                  hallLV,
+                                  "hallPV",
+                                  worldLV,
+                                  false, 
+                                  0,
+                                  fCheckOverlap);
 
   //-----------------------------------
   // FLArE TPC volume, HadCal, and MuonCatcher
@@ -113,10 +128,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     // positioning
     G4ThreeVector FLArEPos = GeometricalParameters::Get()->GetFLArEPosition();
-    FLArEAssembly->MakeImprint(worldLog, FLArEPos, nullptr, 0, fCheckOverlap);
+    FLArEPos -= hallOffset;
+    FLArEAssembly->MakeImprint(hallLV, FLArEPos, nullptr, 0, fCheckOverlap);
 
     G4cout<<"Length of FLArE     : "<<lengthFLArE<<G4endl;
-    G4cout<<"Center of FLArE TPC : "<<FLArEPos<<G4endl;
+    G4cout<<"Center of FLArE TPC : "<<FLArEPos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
 
   //-----------------------------------
@@ -130,10 +146,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     // positioning
     G4double lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
     G4ThreeVector FORMOSAPos = GeometricalParameters::Get()->GetFORMOSAPosition();
-    FORMOSAAssembly->MakeImprint(worldLog, FORMOSAPos, nullptr, 0, fCheckOverlap);
+    FORMOSAPos -= hallOffset;
+    FORMOSAAssembly->MakeImprint(hallLV, FORMOSAPos, nullptr, 0, fCheckOverlap);
 
     G4cout<<"Length of FORMOSA : "<<lengthFORMOSA<<G4endl;
-    G4cout<<"Center of FORMOSA : "<<FORMOSAPos<<G4endl;
+    G4cout<<"Center of FORMOSA : "<<FORMOSAPos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
                          
   //-----------------------------------
@@ -148,10 +165,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     // positioning
     G4double lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
     G4ThreeVector FASERnu2Pos = GeometricalParameters::Get()->GetFASERnu2Position();
-    FASERnu2Assembly->MakeImprint(worldLog, FASERnu2Pos, nullptr, 0, fCheckOverlap);
+    FASERnu2Pos -= hallOffset;
+    FASERnu2Assembly->MakeImprint(hallLV, FASERnu2Pos, nullptr, 0, fCheckOverlap);
 
     G4cout<<"Length of FASERnu2 : "<<lengthFASERnu2<<G4endl;
-    G4cout<<"Center of FASERnu2 : "<<FASERnu2Pos<<G4endl;
+    G4cout<<"Center of FASERnu2 : "<<FASERnu2Pos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
 
   //-----------------------------------
@@ -169,26 +187,31 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                                 + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
     G4ThreeVector magPos = GeometricalParameters::Get()->GetFASER2Position();
     GeometricalParameters::Get()->SetMagnetZPosition(magPos.z()); // save for momentum analysis
-    magnetAssembly->MakeImprint(worldLog, magPos, nullptr, 0, fCheckOverlap);
+    magPos -= hallOffset;
+    magnetAssembly->MakeImprint(hallLV, magPos, nullptr, 0, fCheckOverlap);
 
     //detectorGapLength = 1.2*m;
     G4cout<<"Length of FASER2 Spectrometer : "<<lengthSpectrometerMagnetAssembly<<G4endl;
-    G4cout<<"Center of FASER2 Spectrometer : "<<magPos<<G4endl;
+    G4cout<<"Center of FASER2 Spectrometer : "<<magPos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
   
   //-------------------------------------------------------------------
 
   // visualization
-  G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
-  nullVis->SetVisibility(false);
-  worldLog->SetVisAttributes(nullVis);
+  G4VisAttributes* worldVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
+  worldVis->SetVisibility(false);
+  worldLV->SetVisAttributes(worldVis);
+
+  G4VisAttributes* hallVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
+  hallVis->SetVisibility(true);
+  hallLV->SetVisAttributes(hallVis);
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
-    fParser.Write("LArBoxDetGeo.gdml", worldPhys);
+    fParser.Write("LArBoxDetGeo.gdml", worldPV);
   }
 
-  return worldPhys;
+  return worldPV;
 }
 
 void DetectorConstruction::ConstructSDandField() {

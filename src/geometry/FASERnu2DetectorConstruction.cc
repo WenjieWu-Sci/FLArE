@@ -28,7 +28,7 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
   fVetoInterfaceSizeY = GeometricalParameters::Get()->GetVetoInterfaceSizeY();
 
   fModuleThickness = (fNEmulsionTungstenLayers/2.)*(fEmulsionThickness+fTungstenThickness);
-  G4double totLengthZ = 2*fModuleThickness + 4*fVetoInterfaceSizeZ;
+  G4double totLengthZ = 2*fModuleThickness + 3*fVetoInterfaceSizeZ;
    
   GeometricalParameters::Get()->SetFASERnu2TotalSizeZ(totLengthZ);
 
@@ -52,7 +52,7 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
 
   // placing the outer interface detectors
   for( int i=-1; i<=1; i=i+2 ){
-    G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.5*fVetoInterfaceSizeZ);
+    G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.0*fVetoInterfaceSizeZ);
     fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,pos,noRot);
   }
 
