@@ -188,6 +188,8 @@ class AnalysisManager {
     void InitializeEvd();
     void FillPseudoRecoVar();
 
+    G4int NumberOfSDs;
+    std::set<std::pair<int, std::string> > SDNamelist;
     G4HCofThisEvent* hcofEvent;
 
     std::set<std::pair<int, int> > allTracksPTPair;

@@ -1,6 +1,8 @@
 #ifndef GeometricalParameters_hh
 #define GeometricalParameters_hh
 
+#include <set>
+
 #include "G4String.hh"
 #include "G4ThreeVector.hh"
 
@@ -139,6 +141,10 @@ class GeometricalParameters  {
     G4ThreeVector GetFORMOSAPosition() { return fFORMOSAPos; }
     void SetFORMOSAPosition(G4ThreeVector val) { fFORMOSAPos = val; }
 
+    // Sensitive detectors
+    void AddSD2List(int idx, std::string val) { fSDNamelist.insert(std::make_pair(idx, val)); }
+    std::set<std::pair<int, std::string> > GetSDNamelist() { return fSDNamelist; }
+
   private:
     //the singleton
     static GeometricalParameters *me;
@@ -210,6 +216,9 @@ class GeometricalParameters  {
     G4int fNScintillatorModules;
     G4double fPMTSizeSpacing;
     G4ThreeVector fFORMOSAPos;
+
+    // Sensitive detectors
+    std::set<std::pair<int, std::string> > fSDNamelist;
 };
 
 #endif 

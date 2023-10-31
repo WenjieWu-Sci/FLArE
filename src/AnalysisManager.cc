@@ -193,6 +193,13 @@ void AnalysisManager::BeginOfRun() {
   }
   thefile = new TFile(m_filename, "RECREATE");
   bookEvtTree();
+
+  NumberOfSDs = GeometricalParameters::Get()->GetSDNamelist().size();
+  G4cout<<"Number of SDs : "<<NumberOfSDs<<G4endl;
+  for (auto sdname : GeometricalParameters::Get()->GetSDNamelist()) {
+    SDNamelist.insert(sdname);
+    G4cout<<sdname.first<<" "<<sdname.second<<G4endl;
+  }
 }
 
 void AnalysisManager::EndOfRun() {
@@ -326,7 +333,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   /// Branch: evtID
   evtID = event->GetEventID();
 
-  G4int count_particles = 0;
   /// loop over the vertices, and then over primary particles,
   /// primary particle MC truth info from event generator.
   for (G4int ivtx = 0; ivtx < event->GetNumberOfPrimaryVertex(); ++ivtx) {
@@ -343,7 +349,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuE              = primary_particle_info->GetNeuP4().T();
           nuX              = primary_particle_info->GetNeuX4().X();
           nuY              = primary_particle_info->GetNeuX4().Y();
-          nuZ              = primary_particle_info->GetNeuX4().Z() + 3500;
+          nuZ              = primary_particle_info->GetNeuX4().Z();
           nuIntType        = primary_particle_info->GetInteractionTypeId();
           nuScatteringType = primary_particle_info->GetScatteringTypeId();
           nuW              = primary_particle_info->GetW();
@@ -352,13 +358,12 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuFSLPy          = primary_particle_info->GetFSLP4().Y();
           nuFSLPz          = primary_particle_info->GetFSLP4().Z();
           nuFSLE           = primary_particle_info->GetFSLP4().T();
+          continue;
         }
-        count_particles++;
       }
     }
   }
   nPrimaryVertex   = event->GetNumberOfPrimaryVertex();
-  nPrimaryParticle = count_particles;
   std::cout<<"\nnumber of primary vertices  : "<<nPrimaryVertex<<std::endl;
 
   G4SDManager* sdm = G4SDManager::GetSDMpointer();
@@ -388,6 +393,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       sdids[i] = sdm->GetCollectionID(sds[i]);
     }
     if (sdids[i]>=0) {
+      G4cout<<sdids[i]<<" "<<sds[i]<<G4endl;
       FillPrimaryTruthTree(sdids[i], sds[i]);
     }
   }
@@ -399,11 +405,11 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   nFromFSLDecayPizeroParticles = tracksFromFSLDecayPizeroSecondary.size();
 
   // in case this is not a neutrino event
-  if (nuPDG==0) {
-    nuX = VtxX[0];
-    nuY = VtxY[0];
-    nuZ = VtxZ[0];
-  }
+  //if (nuPDG==0) {
+  //  nuX = VtxX[0];
+  //  nuY = VtxY[0];
+  //  nuZ = VtxZ[0];
+  //}
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
   // should only work with neutrino interaction generator
@@ -839,24 +845,36 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) {
       double pos_y = hit->GetEdepPosition().y();
       double pos_z = hit->GetEdepPosition().z();
       double ShowerP = TMath::Sqrt(Px[whichPrim]*Px[whichPrim]+Py[whichPrim]*Py[whichPrim]+Pz[whichPrim]*Pz[whichPrim]);
-      // fill event display
+      double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
+      double vtx_xyz[3];
+      if (nuPDG!=0) {
+        vtx_xyz[0] = nuX; 
+        vtx_xyz[1] = nuY; 
+        vtx_xyz[2] = nuZ;
+      }
+      else {
+        vtx_xyz[0] = VtxX[0]; 
+        vtx_xyz[1] = VtxY[0];
+        vtx_xyz[2] = VtxZ[0];
+      }
+
       if (detID==1 && m_addDiffusion=="toy") {
-        double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
-        double vtx_xyz[3] = {nuX, nuY, nuZ};
-        hist3D->FillEntryWithToyElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        hist3D->FillEntryWithToyElectronTransportation(hit_position_xyz, 
+                                                       vtx_xyz, 
+                                                       hit->GetEdep(), 
+                                                       whichPrim);
       } else if (detID==1 && m_addDiffusion=="single") {
-        double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
-        double vtx_xyz[3] = {nuX, nuY, nuZ};
-        hist3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        hist3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, 
+                                                       vtx_xyz, 
+                                                       hit->GetEdep(), 
+                                                       whichPrim);
       } else {
-        double hit_position_xyz[3] = {pos_x, pos_y, pos_z};
-        double vtx_xyz[3] = {nuX, nuY, nuZ};
         hist3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       }
       if (detID==1) {
         double longitudinal_distance_to_vtx;  // in mm
         if (nuPDG!=0) {
-          longitudinal_distance_to_vtx = (pos_z-nuZ);
+          longitudinal_distance_to_vtx = (pos_z-vtx_xyz[2]);
         } else {
           longitudinal_distance_to_vtx = ((pos_x-VtxX[0])*Px[0]+
                                           (pos_y-VtxY[0])*Py[0]+
