@@ -170,7 +170,7 @@ namespace circularfitter {
         }
       }     
      
-      //if it is no before any magnet
+      //if it is not before any magnet
       if(!assigned)
         hits[hits.size()-1].push_back(h); 
     }
@@ -179,7 +179,7 @@ namespace circularfitter {
   CircleExtractor::CircleExtractor(const std::vector<double> x, const std::vector<double> y, const std::vector<double> z)
   {
    
-    // two cases depeding on the magnet design:
+    // two cases depending on the magnet design:
     // there can be many magnets, so many magnet positions
     // get the magnet position(s) for each geometry (SAMURAI or CrystalPulling design) first
     G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();

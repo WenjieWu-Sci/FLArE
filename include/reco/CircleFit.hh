@@ -73,7 +73,8 @@ namespace circularfitter {
                      std::vector<std::vector<hit>> &hits);
       
       // for a given magnet, compute circle from pre and post hit collections + magnet z limits
-      void computeCircle(std::vector<double> zpre, std::vector<double> xpre, std::vector<double> zpost, std::vector<double> xpost, double Zin, double Zout);
+      void computeCircle(std::vector<double> zpre, std::vector<double> xpre, std::vector<double> zpost,
+                         std::vector<double> xpost, double Zin, double Zout);
       
       // support functions
       double extrapolateLine(double z, line l);
