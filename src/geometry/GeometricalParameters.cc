@@ -41,6 +41,7 @@ GeometricalParameters::GeometricalParameters()
   fSpectrometerMagnetOuterR = 1.2*m;
   fNSpectrometerMagnets = 3;
   fSpectrometerMagnetGap = 0.25*m;
+  fSpectrometerMagnetSpacing = 0.76*m; //updates during construction
   // Tracking stations
   fNTrackingStations = 6;
   fNScintillatorBarsY = 3;

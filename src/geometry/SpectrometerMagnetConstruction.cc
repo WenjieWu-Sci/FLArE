@@ -115,7 +115,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     // each magnet comes with a set of N tracking stations just before it
     // the gap between each magnet is then given by magnetSpacing
     G4double magnetSpacing = 2*fMagnetGap + totThickness;
-    
+    GeometricalParameters::Get()->SetSpectrometerMagnetSpacing(magnetSpacing);    
+
     for(int i=0; i<fNMagnets; i++){
       G4double offset = (i-0.5*(fNMagnets-1))*(magnetSpacing+fMagnetLengthZ);
       G4ThreeVector magPos = magCenter + G4ThreeVector(0.,0.,offset);

@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
+
 #include <TMath.h>
 #include <TGraph.h>
 #include <TF1.h>
@@ -145,31 +147,121 @@ namespace circularfitter {
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 
-  CircleExtractor::CircleExtractor(const std::vector<double> zpre, const std::vector<double> xpre,
-                      const std::vector<double> zpost, const std::vector<double> xpost)
+  void CircleExtractor::splitHits(std::vector<double> magnetZs,
+                                  std::vector<double> x, std::vector<double> y, std::vector<double> z, 
+                                  std::vector<std::vector<hit>> &hits)
   {
-    LineFit lf_pre(zpre,xpre);
-    LineFit lf_post(zpost,xpost);
+    // first step is to sort the separators
+    std::sort(magnetZs.begin(), magnetZs.end());    
+    hits.resize(magnetZs.size()+1);
 
-    fpre = lf_pre.GetLine();
-    fpost = lf_post.GetLine();
-
-    double zpos = GeometricalParameters::Get()->GetMagnetZPosition() + 3500*mm; //offset due to coordinate change in AnalysisManager
-    double size = GeometricalParameters::Get()->GetMagnetTotalSizeZ();
-    fZin = zpos - size/2.;
-    fZout = zpos + size/2.;
-
-    fXin = extrapolateLine(fZin,fpre);
-    fXout = extrapolateLine(fZout,fpost);
-
-    std::pair<double,double> p = getPerpLineIntersection(fZin,fXin,fZout,fXout,fpre,fpost);
-    fXc = p.second;
-    fZc = p.first;
-
-    fR1 = getR(fZin,fXin,fZc,fXc);
-    fR2 = getR(fZout,fXout,fZc,fXc);
+    //scan all recorded hits
+    for(unsigned int i=0; i<z.size(); i++){
+      
+      hit h;
+      h.x = x.at(i); h.y = y.at(i); h.z = z.at(i);
+      
+      bool assigned = false;
+      for(unsigned int j=0; j<magnetZs.size(); j++){  
+        if( h.z < magnetZs[j] ){ //if the hit comes before, save it
+          hits[j].push_back(h);
+          assigned = true;
+          break;   
+        }
+      }     
+     
+      //if it is no before any magnet
+      if(!assigned)
+        hits[hits.size()-1].push_back(h); 
+    }
   }
 
+  CircleExtractor::CircleExtractor(const std::vector<double> x, const std::vector<double> y, const std::vector<double> z)
+  {
+   
+    // two cases depeding on the magnet design:
+    // there can be many magnets, so many magnet positions
+    // get the magnet position(s) for each geometry (SAMURAI or CrystalPulling design) first
+    G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();
+    G4int nmag = 0;
+    std::vector<double> zpos;
+    std::vector<double> zin;
+    std::vector<double> zout;
+    
+    // STEP 1: get the geometry
+    if( opt == GeometricalParameters::magnetOption::SAMURAI ){
+
+      // there is only one magnet, so one magnet position
+      nmag = 1;
+      zpos.push_back(GeometricalParameters::Get()->GetMagnetZPosition());
+      double size = GeometricalParameters::Get()->GetMagnetTotalSizeZ();
+      zin.push_back(zpos[0] - size/2.);  //begin of magnet window
+      zout.push_back(zpos[0] + size/2.); //end of magnet window
+    
+    }else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
+      
+      double zcenter = GeometricalParameters::Get()->GetMagnetZPosition();
+      double size = GeometricalParameters::Get()->GetSpectrometerMagnetLengthZ();
+      double spacing = GeometricalParameters::Get()->GetSpectrometerMagnetSpacing();
+      nmag = GeometricalParameters::Get()->GetNSpectrometerMagnets();
+      for(int i=0; i<nmag; i++){
+	double offset = (i-0.5*(nmag-1))*(spacing+size);
+	zpos.push_back( zcenter + offset );
+        zin.push_back( zcenter + offset - size/2. );  //begin of magnet window
+        zout.push_back( zcenter + offset + size/2. ); //end of magnet window
+        //G4cout << "center zin zout " << zpos[i] << " " << zin[i] << " " << zout[i] <<G4endl;
+      }
+    }
+    else {  G4cout << "ERROR: unknown FASER2 spectrometer magnet option!" << G4endl; }
+
+    // STEP 2: split hits in before/after each magnet
+    std::vector<std::vector<hit>> hits;
+    splitHits( zpos, x, y, z, hits);
+       
+    // STEP 3: apply the procedure for each magnet available
+    // Each magnet uses its own pre and post hits (i and i+1)   
+    // field is along Y: look in z-x plan  (for now: FIXME??)
+    for(int i=0; i<nmag; i++){ 
+
+      std::vector<double> zpre; std::vector<double> xpre;
+      std::vector<double> zpost; std::vector<double> xpost;
+       
+      for( unsigned int j=0; j< hits[i].size(); j++){
+        zpre.push_back( hits[i][j].z );
+        xpre.push_back( hits[i][j].x );
+      }   
+      for( unsigned int j=0; j< hits[i+1].size(); j++){
+        zpost.push_back( hits[i+1][j].z );
+        xpost.push_back( hits[i+1][j].x );
+      }
+      
+      //and now the actual circle extraction 
+      computeCircle( zpre, xpre, zpost, xpost, zin[i], zout[i]);   
+    }
+  }
+
+  void CircleExtractor::computeCircle(std::vector<double> zpre, std::vector<double> xpre, std::vector<double> zpost, std::vector<double> xpost, 
+                                      double Zin, double Zout)
+  {
+      LineFit lf_pre(zpre,xpre);
+      LineFit lf_post(zpost,xpost);
+      line pre = lf_pre.GetLine();
+      line post = lf_post.GetLine();
+      fpre.push_back( pre );
+      fpost.push_back( post );
+    
+      double Xin = extrapolateLine(Zin,pre);
+      double Xout = extrapolateLine(Zout,post);
+      std::pair<double,double> p = getPerpLineIntersection(Zin,Xin,Zout,Xout,pre,post);
+      fXc.push_back( p.second );
+      fZc.push_back( p.first );
+
+      double R1 = getR(Zin,Xin,p.first,p.second);
+      double R2 = getR(Zout,Xout,p.first,p.second);
+      fR1.push_back( R1 );
+      fR2.push_back( R2 );
+  }
+   
   double CircleExtractor::extrapolateLine(double z, line l)
   { 
     return l.q + z*l.m; 
@@ -192,8 +284,21 @@ namespace circularfitter {
     return TMath::Sqrt( (za-zb)*(za-zb) + (xa-xb)*(xa-xb) );
   }
 
+  std::vector<double> CircleExtractor::GetR(){
+    std::vector<double> R;
+    for( unsigned int i=0; i<fR1.size(); i++)
+	R.push_back( (fR1[i]+fR2[i])/2.);
+    return R;
+  }
+
   CircleExtractor::~CircleExtractor() 
   {
+    fpre.clear();
+    fpost.clear();
+    fXc.clear();
+    fZc.clear();
+    fR1.clear();
+    fR2.clear();
   }
 
 // ----------------------------------------------------------------------------------------------

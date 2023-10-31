@@ -78,6 +78,8 @@ class GeometricalParameters  {
     G4int GetNSpectrometerMagnets() { return fNSpectrometerMagnets; }
     void SetSpectrometerMagnetGap(G4double val) { fSpectrometerMagnetGap = val; }
     G4double GetSpectrometerMagnetGap() { return fSpectrometerMagnetGap; }  
+    void SetSpectrometerMagnetSpacing(G4double val) { fSpectrometerMagnetSpacing = val; }
+    G4double GetSpectrometerMagnetSpacing() { return fSpectrometerMagnetSpacing; }  
     // Tracking station
     void SetNTrackingStations(G4int val) { fNTrackingStations = val; }
     G4int GetNTrackingStations() { return fNTrackingStations; }  
@@ -178,6 +180,7 @@ class GeometricalParameters  {
     G4double fSpectrometerMagnetLengthZ;
     G4int fNSpectrometerMagnets;
     G4double fSpectrometerMagnetGap;
+    G4double fSpectrometerMagnetSpacing;
     // Tracking stations
     G4int fNTrackingStations;
     G4int fNScintillatorBarsY;
