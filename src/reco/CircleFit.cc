@@ -240,8 +240,8 @@ namespace circularfitter {
     }
   }
 
-  void CircleExtractor::computeCircle(std::vector<double> zpre, std::vector<double> xpre, std::vector<double> zpost, std::vector<double> xpost, 
-                                      double Zin, double Zout)
+  void CircleExtractor::computeCircle(std::vector<double> zpre, std::vector<double> xpre, std::vector<double> zpost,
+                                      std::vector<double> xpost, double Zin, double Zout)
   {
       LineFit lf_pre(zpre,xpre);
       LineFit lf_post(zpost,xpost);

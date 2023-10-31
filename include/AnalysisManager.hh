@@ -173,9 +173,9 @@ class AnalysisManager {
     std::vector<double> trkxc; //circle fit results
     std::vector<double> trkzc;
     std::vector<double> trkrc; 
-    std::vector<double> trkmIn; // entering lines
+    std::vector<double> trkmIn; // entering track fit
     std::vector<double> trkqIn;
-    std::vector<double> trkmOut; // exiting lines
+    std::vector<double> trkmOut; // exiting track fit
     std::vector<double> trkqOut;
     G4double trkp0, trkp1, trkcosDip; //dip angle fit
     std::vector<double> trkXFSL; // MC truth
