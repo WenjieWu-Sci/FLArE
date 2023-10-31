@@ -24,6 +24,7 @@ class AnalysisManager {
     void BeginOfEvent();
     void EndOfEvent(const G4Event* event);
     TFile* GetOutputFile() { return thefile; }
+    void SetTrackPTPair(G4int PID, G4int TID) { allTracksPTPair.insert(std::make_pair(PID, TID)); }
 
   public:
     // function for controlling from the configuration file
@@ -88,23 +89,23 @@ class AnalysisManager {
                                             ///<- 3: decay products of the primary pizero (dominantely 2gamma)
                                             ///<- 4: decay prodcuts of the tau decay pizero
     // pseudo-reco
-    G4double EInDetector[1000];
-    G4double EInLAr[1000];
-    G4double EInHadCal[1000];
-    G4double EInMuonFinder[1000];
-    G4double EInMuonFinderLayer1X[1000];
-    G4double EInMuonFinderLayer1Y[1000];
-    G4double EInMuonFinderLayer2X[1000];
-    G4double EInMuonFinderLayer2Y[1000];
-    G4double AngleToBeamDir[1000];
+    G4double ProngEInDetector[1000];
+    G4double ProngEInLAr[1000];
+    G4double ProngEInHadCal[1000];
+    G4double ProngEInMuonFinder[1000];
+    G4double ProngEInMuonFinderLayer1X[1000];
+    G4double ProngEInMuonFinderLayer1Y[1000];
+    G4double ProngEInMuonFinderLayer2X[1000];
+    G4double ProngEInMuonFinderLayer2Y[1000];
+    G4double ProngAngleToBeamDir[1000];
     G4double ShowerLength[1000];
     G4double ShowerLengthInLAr[1000];
     G4double ShowerWidth[1000];
     G4double ShowerWidthInLAr[1000];
-    G4double dEdx[1000];
-    G4double dEdxInLAr[1000];
-    G4double dEdxAlongTrack[1000][100];
-    G4int    dEdxTrackLength[1000][100];
+    G4double ProngAvgdEdx[1000];
+    G4double ProngAvgdEdxInLAr[1000];
+    G4double ProngdEdxAlongTrack[1000][100];
+    G4int    ProngdEdxTrackLength[1000][100];
     G4double TotalDedxLongitudinal[3000];
     G4double TrueTotalDedxLongitudinal[3000];
     // reco

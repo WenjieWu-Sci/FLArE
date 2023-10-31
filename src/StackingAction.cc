@@ -3,12 +3,15 @@
 #include "G4VProcess.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
+#include "AnalysisManager.hh"
 
 StackingAction::StackingAction(RunAction* aRunAction, EventAction* aEventAction) :
   G4UserStackingAction(), fRunAction(aRunAction), fEventAction(aEventAction)
 {;}
 
 G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack (const G4Track* aTrack) {
+  AnalysisManager::GetInstance()->SetTrackPTPair(aTrack->GetParentID(), aTrack->GetTrackID());
+
   // Register primary tracks
   if (aTrack->GetParentID()==0) {
     fEventAction->AddPrimaryTrack();
