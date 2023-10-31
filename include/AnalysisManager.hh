@@ -29,7 +29,8 @@ class AnalysisManager {
     // function for controlling from the configuration file
     void setFileName(G4String val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
-    void saveEvd(G4bool val) { m_saveEvd = val; }
+    void save3DEvd(G4bool val) { m_save3DEvd = val; }
+    void save2DEvd(G4bool val) { m_save2DEvd = val; }
     void circleFit(G4bool val) { m_circularFit = val; }
     void addDiffusion(G4String val) { m_addDiffusion = val; }
 
@@ -147,7 +148,8 @@ class AnalysisManager {
     G4double HitEdep[40000000];
 
     G4bool m_saveHit;
-    G4bool m_saveEvd;
+    G4bool m_save3DEvd;
+    G4bool m_save2DEvd;
     G4bool m_circularFit;
     TString m_addDiffusion;
 

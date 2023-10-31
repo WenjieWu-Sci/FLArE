@@ -255,30 +255,34 @@ void PixelMap3D::FillEntryWithToySingleElectronTransportation(const Double_t* po
   }
 }
 
-void PixelMap3D::WriteToFile(TFile* thefile)
+void PixelMap3D::WriteToFile(TFile* thefile, G4bool save3D, G4bool save2D)
 {
-  std::string dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
-  thefile->mkdir(dirname.c_str());
-  thefile->cd(dirname.c_str());
-  hist3DEdep->Write();
-
-  dirname = "edep/evt_"+std::to_string(fEvtID)+"/";
-  thefile->mkdir(dirname.c_str());
-  thefile->cd(dirname.c_str());
-  for (int i=0; i<fNPrim+1; ++i) {
-    if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
-    if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
-    hitClusterZX[i]->Write();
-    hitClusterZY[i]->Write();
+  std::string dirname;
+  if (save3D) {
+    dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    hist3DEdep->Write();
   }
-  dirname = "edepvtx/evt_"+std::to_string(fEvtID)+"/";
-  thefile->mkdir(dirname.c_str());
-  thefile->cd(dirname.c_str());
-  for (int i=0; i<fNPrim+1; ++i) {
-    if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
-    if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
-    vtxHitClusterZX[i]->Write();
-    vtxHitClusterZY[i]->Write();
+  if (save2D) {
+    dirname = "edep2D/evt_"+std::to_string(fEvtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    for (int i=0; i<fNPrim+1; ++i) {
+      if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
+      if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
+      hitClusterZX[i]->Write();
+      hitClusterZY[i]->Write();
+    }
+    dirname = "edep2Dvtx/evt_"+std::to_string(fEvtID)+"/";
+    thefile->mkdir(dirname.c_str());
+    thefile->cd(dirname.c_str());
+    for (int i=0; i<fNPrim+1; ++i) {
+      if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
+      if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
+      vtxHitClusterZX[i]->Write();
+      vtxHitClusterZY[i]->Write();
+    }
   }
 }
 

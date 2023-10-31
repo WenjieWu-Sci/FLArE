@@ -49,7 +49,8 @@ AnalysisManager::AnalysisManager() {
   m_filename = "test.root";
   m_addDiffusion = "false";
   m_saveHit = false;
-  m_saveEvd = false;
+  m_save3DEvd = false;
+  m_save2DEvd = false;
   m_circularFit = false;
 }
 
@@ -535,8 +536,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
   std::cout<<"Total number of hits : "<<nHits<<std::endl;
 
-  if (m_saveEvd) {
-    hist3D->WriteToFile(thefile);
+  if (m_save3DEvd || m_save2DEvd) {
+    hist3D->WriteToFile(thefile, m_save3DEvd, m_save2DEvd);
   }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
