@@ -31,6 +31,7 @@ class GeometricalParameters  {
     G4double GetTPCSizeX() { return fTPCSizeX; }
     G4double GetTPCSizeY() { return fTPCSizeY; }
     G4double GetTPCSizeZ() { return fTPCSizeZ; }
+    G4ThreeVector GetTPCSizeXYZ() { return G4ThreeVector(fTPCSizeX, fTPCSizeY, fTPCSizeZ); }
     G4ThreeVector GetFLArEFidVolSize() { return fTPCFidVolSize; }
     G4double GetTPCInsulationThickness() { return fInsulationThickness; }
     G4double GetHadCalLength() { return fHadCalLength; }

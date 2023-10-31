@@ -9,8 +9,9 @@
 #include <TH2F.h>
 #include <THnSparse.h>
 #include "AnalysisManagerMessenger.hh"
+#include "PixelMap3D.hh"
 //#include <Math/Point3Dfwd.h>
-#include <Math/Point3D.h>
+//#include <Math/Point3D.h>
 
 class AnalysisManager {
   public:
@@ -22,6 +23,7 @@ class AnalysisManager {
     void EndOfRun();
     void BeginOfEvent();
     void EndOfEvent(const G4Event* event);
+    TFile* GetOutputFile() { return thefile; }
 
   public:
     // function for controlling from the configuration file
@@ -149,12 +151,7 @@ class AnalysisManager {
     G4bool m_circularFit;
     TString m_addDiffusion;
 
-    //std::vector<TH2F*> hitClusterXY;
-    std::vector<TH2F*> hitClusterZX;
-    std::vector<TH2F*> hitClusterZY;
-    std::vector<TH2F*> vtxHitClusterZX;
-    std::vector<TH2F*> vtxHitClusterZY;
-    THnSparseF* hist3DEdep;
+    PixelMap3D* hist3D;
     G4double sparseFractionMem;
     G4double sparseFractionBins;
 
@@ -188,9 +185,6 @@ class AnalysisManager {
     double GetTotalEnergy(double px, double py, double pz, double m);
     void InitializeEvd();
     void FillPseudoRecoVar();
-    void ToyElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep);
-    void ToySingleElectronTransportation(int whichPrim, double pos_x, double pos_y, double pos_z, double hitEdep);
-    double DistanceToAnode(double x);
 
     G4HCofThisEvent* hcofEvent;
 
