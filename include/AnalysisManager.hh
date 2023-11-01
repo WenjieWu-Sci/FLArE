@@ -7,11 +7,13 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
-#include <THnSparse.h>
+//#include <THnSparse.h>
 #include "AnalysisManagerMessenger.hh"
 #include "PixelMap3D.hh"
-//#include <Math/Point3Dfwd.h>
-//#include <Math/Point3D.h>
+
+#include "hep_hpc/hdf5/File.hpp"
+//#include "hep_hpc/hdf5/Ntuple.hpp"
+
 
 class AnalysisManager {
   public:
@@ -25,10 +27,11 @@ class AnalysisManager {
     void EndOfEvent(const G4Event* event);
     TFile* GetOutputFile() { return thefile; }
     void SetTrackPTPair(G4int PID, G4int TID) { allTracksPTPair.insert(std::make_pair(PID, TID)); }
+    void AddOnePrimaryTrack() { nTestNPrimaryTrack++; }
 
   public:
     // function for controlling from the configuration file
-    void setFileName(G4String val) { m_filename = val; }
+    void setFileName(std::string val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
     void save3DEvd(G4bool val) { m_save3DEvd = val; }
     void save2DEvd(G4bool val) { m_save2DEvd = val; }
@@ -39,13 +42,13 @@ class AnalysisManager {
     static AnalysisManager* instance;
     AnalysisManagerMessenger* messenger;
 
-    G4int    nPrimaryVertex;
-
     TFile*   thefile;
-    TString  m_filename;
+    std::string  m_filename;
     TTree*   evt;
-    G4int    evtID;
+    std::string  fH5Filename;
+    hep_hpc::hdf5::File fH5file;
 
+    G4int    evtID;
     // Truth information from genie
     G4int    nuIdx;             ///<- neutrino index (for genie neutrino interaction)
     G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)
@@ -62,7 +65,9 @@ class AnalysisManager {
     G4double nuFSLPz;           ///<- Final state lepton Pz
     G4double nuFSLE;            ///<- Final state lepton total energy (GeV)
 
+    G4int    nTestNPrimaryTrack;
     G4int    countPrimaryParticle;
+    G4int    nPrimaryVertex;
     G4int    nPrimaryParticle;  ///<- number of primary particle 
                                 ///<- (in case of genie neutrino interaction, number of stable particle in the final state)
                                 ///<- (in case of the FSL decay, decay products counted as primary particle)
@@ -118,10 +123,6 @@ class AnalysisManager {
     G4double dir_coc_z[1000];
 
     G4double edepInLAr;
-    G4double edepInLArXY2500mm;
-    G4double edepInLArXY2000mm;
-    G4double edepInLArXY1500mm;
-    G4double edepInLArXY1000mm;
     G4double edepInHadCalX;
     G4double edepInHadCalY;
     G4double edepInMuonFinderX;
@@ -154,7 +155,7 @@ class AnalysisManager {
     G4bool m_circularFit;
     TString m_addDiffusion;
 
-    PixelMap3D* hist3D;
+    PixelMap3D* pm3D;
     G4double sparseFractionMem;
     G4double sparseFractionBins;
 
@@ -186,7 +187,6 @@ class AnalysisManager {
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
     double GetTotalEnergy(double px, double py, double pz, double m);
-    void InitializeEvd();
     void FillPseudoRecoVar();
 
     G4int NumberOfSDs;

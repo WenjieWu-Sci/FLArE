@@ -1,6 +1,8 @@
 #include "PixelMap3D.hh"
 #include "geometry/GeometricalParameters.hh"
 
+#include "hep_hpc/hdf5/make_ntuple.hpp"
+
 #include <G4ThreeVector.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4Poisson.hh>
@@ -9,6 +11,8 @@
 #include <Randomize.hh>
 #include <TAxis.h>
 #include <TString.h>
+
+using namespace hep_hpc::hdf5;
 
 PixelMap3D::PixelMap3D(const Int_t evtID, const Int_t nPrim, const Int_t PDG, const Double_t* res) :
   fEvtID(evtID), fNPrim(nPrim), fGeneratorPDG(PDG)
@@ -255,14 +259,45 @@ void PixelMap3D::FillEntryWithToySingleElectronTransportation(const Double_t* po
   }
 }
 
-void PixelMap3D::WriteToFile(TFile* thefile, G4bool save3D, G4bool save2D)
+void PixelMap3D::WriteToFile(TFile* thefile, File &h5file, G4int nupdg, G4int pdg, G4int intType, G4int scatType, G4bool save3D, G4bool save2D)
 {
+  static auto evt_data = 
+    make_ntuple({h5file, "evt_data"},
+                make_scalar_column<int>("evtid"),
+                make_scalar_column<int>("nupdg"), 
+                make_scalar_column<int>("pdg"), 
+                make_scalar_column<int>("intType"),
+                make_scalar_column<int>("mode"));
+
+  evt_data.insert(fEvtID, nupdg, pdg, intType, scatType);
+
+  static auto pm_data = 
+    make_ntuple({h5file, "pm_data"},
+                make_scalar_column<int>("evtid"), 
+                make_scalar_column<int>("hitid"),
+                make_scalar_column<float>("edep"),
+                make_scalar_column<float>("x"),
+                make_scalar_column<float>("y"),
+                make_scalar_column<float>("z"));
   std::string dirname;
   if (save3D) {
-    dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
-    thefile->mkdir(dirname.c_str());
-    thefile->cd(dirname.c_str());
-    hist3DEdep->Write();
+    Int_t dim = hist3DEdep->GetNdimensions();
+    Double_t* x = new Double_t[dim + 1];
+    memset(x, 0, sizeof(Double_t) * (dim +1));
+    Int_t *bins = new Int_t[dim];
+
+    for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
+      x[dim] = hist3DEdep->GetBinContent(i, bins);
+      for (Int_t d = 0; d < dim; ++d) {
+        x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
+      }
+      pm_data.insert(fEvtID, i, x[3], x[0], x[1], x[2]);
+    }
+
+    //dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
+    //thefile->mkdir(dirname.c_str());
+    //thefile->cd(dirname.c_str());
+    //hist3DEdep->Write();
   }
   if (save2D) {
     dirname = "edep2D/evt_"+std::to_string(fEvtID)+"/";

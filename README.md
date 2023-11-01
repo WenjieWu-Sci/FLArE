@@ -23,6 +23,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |Command |Description | Default |
 |:--|:--|:--|
 |/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
+|/det/checkOverlap      | check overlap of volumns during detector construction, run before `/run/initialize`  |`false`|
 |/det/addFLArE          | option for adding the FLArE detector, run before `/run/initialize`                   |`true`|
 |/det/addFLArEPos       | position of the FLArE detector, run before `/run/initialize`                         |`0 0 4300 mm`|
 |/det/material          | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|

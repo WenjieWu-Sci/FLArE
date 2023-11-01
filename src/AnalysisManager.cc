@@ -7,7 +7,6 @@
 #include <random>
 
 #include "AnalysisManager.hh"
-#include "PixelMap3D.hh"
 #include "geometry/GeometricalParameters.hh"
 #include "LArBoxSD.hh"
 #include "LArBoxHit.hh"
@@ -30,8 +29,8 @@
 #include <THnSparse.h>
 #include <TString.h>
 #include <Math/ProbFunc.h>
-//#include <Math/Point3Dfwd.h>
-//#include <Math/Point3D.h>
+
+using namespace hep_hpc::hdf5;
 
 AnalysisManager* AnalysisManager::instance = 0;
 
@@ -52,6 +51,8 @@ AnalysisManager::AnalysisManager() {
   m_save3DEvd = false;
   m_save2DEvd = false;
   m_circularFit = false;
+
+  fH5Filename = "test.h5";
 }
 
 AnalysisManager::~AnalysisManager() {;}
@@ -133,10 +134,6 @@ void AnalysisManager::bookEvtTree() {
   }
 
   evt->Branch("edepInLAr"                 , &edepInLAr                 , "edepInLAr/D");
-  evt->Branch("edepInLArXY2500mm"         , &edepInLArXY2500mm         , "edepInLArXY2500mm/D");
-  evt->Branch("edepInLArXY2000mm"         , &edepInLArXY2000mm         , "edepInLArXY2000mm/D");
-  evt->Branch("edepInLArXY1500mm"         , &edepInLArXY1500mm         , "edepInLArXY1500mm/D");
-  evt->Branch("edepInLArXY1000mm"         , &edepInLArXY1000mm         , "edepInLArXY1000mm/D");
   evt->Branch("edepInHadCalX"             , &edepInHadCalX             , "edepInHadCalX/D");
   evt->Branch("edepInHadCalY"             , &edepInHadCalY             , "edepInHadCalY/D");
   evt->Branch("edepInMuonFinderX"         , &edepInMuonFinderX         , "edepInMuonFinderX/D");
@@ -191,8 +188,17 @@ void AnalysisManager::BeginOfRun() {
   if (thefile) {
     delete thefile;
   }
-  thefile = new TFile(m_filename, "RECREATE");
+  thefile = new TFile(m_filename.c_str(), "RECREATE");
   bookEvtTree();
+
+  fH5Filename = m_filename;
+  if(fH5Filename.find(".root") != std::string::npos) {
+    const size_t pos = fH5Filename.find(".root");
+    fH5Filename.resize(pos);
+  }
+  fH5Filename += ".h5";
+
+  fH5file = hep_hpc::hdf5::File(fH5Filename, H5F_ACC_TRUNC);
 
   SDNamelist = GeometricalParameters::Get()->GetSDNamelist();
   NumberOfSDs = SDNamelist.size();
@@ -205,6 +211,7 @@ void AnalysisManager::EndOfRun() {
   thefile->cd();
   evt->Write();
   thefile->Close();
+  fH5file.close();
 }
 
 void AnalysisManager::BeginOfEvent() {
@@ -226,10 +233,6 @@ void AnalysisManager::BeginOfEvent() {
   sparseFractionMem            = -1;
   sparseFractionBins           = -1;
   edepInLAr                    = 0;
-  edepInLArXY2500mm            = 0;
-  edepInLArXY2000mm            = 0;
-  edepInLArXY1500mm            = 0;
-  edepInLArXY1000mm            = 0;
   edepInHadCalX                = 0;
   edepInHadCalY                = 0;
   edepInMuonFinderX            = 0;
@@ -238,6 +241,7 @@ void AnalysisManager::BeginOfEvent() {
   edepInMuonFinderAbsorb       = 0;
   missCountedEnergy            = 0;
   nPrimaryParticle             = 0;
+  nTestNPrimaryTrack           = 0;
   nFromFSLParticles            = 0;
   nFromFSPizeroParticles       = 0;
   nFromFSLDecayPizeroParticles = 0;
@@ -377,11 +381,10 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   }
   // update number of primary particles after FillPrimaryTruthTree
   // including decay products from primary tau and pizero
-  nPrimaryParticle = countPrimaryParticle;
+  nPrimaryParticle = countPrimaryParticle; // TODO: they're equivalent, should only store one of them
   nFromFSLParticles = tracksFromFSLSecondary.size();
   nFromFSPizeroParticles = tracksFromFSPizeroSecondary.size();
   nFromFSLDecayPizeroParticles = tracksFromFSLDecayPizeroSecondary.size();
-
 
   // find all the tracks originate from the final state lepton, include FSL itself (TID=1)
   // should only work with neutrino interaction generator
@@ -401,6 +404,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   std::cout<<"Tracks from FSL (2nd) : "<<tracksFromFSLSecondary.size()<<std::endl;
   std::cout<<"number of primary particles : "<<nPrimaryParticle
     <<" , in which number of particles from fsl : "<<nFromFSLParticles<<std::endl;
+  //std::cout<<"Test nTestNPrimaryTrack : "<<nTestNPrimaryTrack<<std::endl;
 
   //- cluster all tracks to primary particles
   //- mark the index of the final state lepton from the neutrino interaction
@@ -433,26 +437,41 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
-  InitializeEvd();
+  const Double_t res_tpc[3] = {1, 5, 5}; // mm
+  if (nuPDG!=0) {
+    pm3D = new PixelMap3D(evtID, nPrimaryParticle, nuPDG, res_tpc);
+  } else {
+    pm3D = new PixelMap3D(evtID, nPrimaryParticle, primaryTrackPDG[0], res_tpc);
+  }
+  // boundary in global coord.
+  pm3D->SetPMBoundary(GeometricalParameters::Get()->GetFLArEPosition()/mm -
+                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2,
+                        GeometricalParameters::Get()->GetFLArEPosition()/mm +
+                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
+  pm3D->InitializePM();
 
   /// FillTrueEdep must run after FillPrimaryTruthTree, 
   /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  /// Pixel map is also filled here
   for (auto sdname : SDNamelist) {
     FillTrueEdep(sdname.first, sdname.second);
   }
 
-  sparseFractionMem = hist3D->GetSparseFractionMem();
-  sparseFractionBins = hist3D->GetSparseFractionBins();
-
-
-  //slid::ShowerLID* shwlid = new slid::ShowerLID(hist3DEdep, nuX, nuY, nuZ, 0., 0., 1.); 
-  //Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
-  //std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
+  sparseFractionMem = pm3D->GetSparseFractionMem();
+  sparseFractionBins = pm3D->GetSparseFractionBins();
 
   /*
+  slid::ShowerLID* shwlid = new slid::ShowerLID(pm3D->Get3DPixelMap, nuX, nuY, nuZ, 0., 0., 1.); 
+  Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
+  std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
+
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
-    directionfitter::LinearFit* linFit = new directionfitter::LinearFit(hitClusterZX[iPrim+1], hitClusterZY[iPrim+1],
-        vtxHitClusterZX[iPrim+1], vtxHitClusterZY[iPrim+1], nuX, nuY, nuZ, VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
+    directionfitter::LinearFit* linFit = new directionfitter::LinearFit(
+        pm3D->Get2DPixelMapZX()[iPrim+1], 
+        pm3D->Get2DPixelMapZY()[iPrim+1],
+        pm3D->Get2DVtxPixelMapZX()[iPrim+1], 
+        pm3D->Get2DVtxPixelMapZY()[iPrim+1], 
+        nuX, nuY, nuZ, VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
     dir_pol_x[iPrim] = linFit->GetDir().X();
     dir_pol_y[iPrim] = linFit->GetDir().Y();
     dir_pol_z[iPrim] = linFit->GetDir().Z();
@@ -512,10 +531,11 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
   evt->Fill();
 
-  std::cout<<"Total number of hits : "<<nHits<<std::endl;
+  std::cout<<"Total number of recorded hits : "<<nHits<<std::endl;
 
   if (m_save3DEvd || m_save2DEvd) {
-    hist3D->WriteToFile(thefile, m_save3DEvd, m_save2DEvd);
+    // FIXME: the way to pass along the information could be nicer
+    pm3D->WriteToFile(thefile, fH5file, nuPDG, primaryTrackPDG[0], nuIntType, nuScatteringType, m_save3DEvd, m_save2DEvd);
   }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
@@ -524,7 +544,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   trackClusters.clear();
   trackClusters.shrink_to_fit();
 
-  delete hist3D;
+  delete pm3D;
 }
 
 void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) 
@@ -749,11 +769,11 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       }
 
       if ((sdName == "lArBoxSD/lar_box") && (m_addDiffusion == "toy")) {
-        hist3D->FillEntryWithToyElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntryWithToyElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if ((sdName == "lArBoxSD/lar_box") && (m_addDiffusion == "single")) {
-        hist3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if (sdName == "lArBoxSD/lar_box") {
-        hist3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       }
 
       if (sdName == "lArBoxSD/lar_box") {
@@ -818,23 +838,19 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       double width_hit = TMath::Sqrt((dsquare_hit_vtx - product_hit_p*product_hit_p/ShowerP/ShowerP));
       // exclude zero hit when calculating showerlength of the primary particle
       // exclude hits from the cryo gap (detID=8)
-      //if (hit->GetEdep()>0 && sdName=="lArBoxSD/lar_box") {
-      //  ProngEInDetector[whichPrim] += hit->GetEdep();
-      //  ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});
-      //  //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
-      //  double weighted_width_hit = width_hit*hit->GetEdep();
-      //  if (!std::isnan(weighted_width_hit)) ShowerWidth[whichPrim] += weighted_width_hit;
-      //}
-      if (sdName=="lArBoxSD/lar_box") { 
-        if (hit->GetEdep()>0) {
+      if (hit->GetEdep()>0 && 
+          (sdName=="lArBoxSD/lar_box" || sdName=="HadAbsorbSD/lar_box" || sdName=="MuonFinderAbsorbSD/lar_box")) {
+        ProngEInDetector[whichPrim] += hit->GetEdep();
+        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});
+        //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
+        double weighted_width_hit = width_hit*hit->GetEdep();
+        if (!std::isnan(weighted_width_hit)) ShowerWidth[whichPrim] += weighted_width_hit;
+        if (sdName=="lArBoxSD/lar_box") {
           ProngEInLAr[whichPrim] += hit->GetEdep();
           ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_hit});
-          //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
-          double weighted_width_hit = width_hit*hit->GetEdep();
           if (!std::isnan(weighted_width_hit)) ShowerWidthInLAr[whichPrim] += weighted_width_hit;
         }
       }
-
       if ((sdName=="HadCalXSD/lar_box") || 
           (sdName=="HadCalYSD/lar_box") || 
           (sdName=="HadAbsorbSD/lar_box")) {
@@ -871,21 +887,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
 
 double AnalysisManager::GetTotalEnergy(double px, double py, double pz, double m) {
   return TMath::Sqrt(px*px+py*py+pz*pz+m*m);
-}
-
-void AnalysisManager::InitializeEvd() {
-  const Double_t res_tpc2[3] = {1, 5, 5}; // mm
-  if (nuPDG!=0) {
-    hist3D = new PixelMap3D(evtID, nPrimaryParticle, nuPDG, res_tpc2);
-  } else {
-    hist3D = new PixelMap3D(evtID, nPrimaryParticle, primaryTrackPDG[0], res_tpc2);
-  }
-  // boundary in global coord.
-  hist3D->SetPMBoundary(GeometricalParameters::Get()->GetFLArEPosition()/mm -
-                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2,
-                        GeometricalParameters::Get()->GetFLArEPosition()/mm +
-                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
-  hist3D->InitializePM();
 }
 
 void AnalysisManager::FillPseudoRecoVar() {
@@ -930,4 +931,26 @@ void AnalysisManager::FillPseudoRecoVar() {
     std::cout<<std::setw(10)<<prongType[iPrim];
     std::cout<<std::setw(12)<<Pz[iPrim]<<std::endl;
   }
+
+  slid::ShowerLID* shwlid = new slid::ShowerLID(pm3D->Get3DPixelMap(), nuX, nuY, nuZ, 0., 0., 1.); 
+  Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
+  std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
+
+  for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
+    directionfitter::LinearFit* linFit = new directionfitter::LinearFit(
+        pm3D->Get2DPixelMapZX(iPrim+1), 
+        pm3D->Get2DPixelMapZY(iPrim+1),
+        pm3D->Get2DVtxPixelMapZX(iPrim+1), 
+        pm3D->Get2DVtxPixelMapZY(iPrim+1), 
+        nuX, nuY, nuZ, VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
+    dir_pol_x[iPrim] = linFit->GetDir().X();
+    dir_pol_y[iPrim] = linFit->GetDir().Y();
+    dir_pol_z[iPrim] = linFit->GetDir().Z();
+    dir_coc_x[iPrim] = linFit->GetCOCDir().X();
+    dir_coc_y[iPrim] = linFit->GetCOCDir().Y();
+    dir_coc_z[iPrim] = linFit->GetCOCDir().Z();
+    delete linFit;
+  }
+
+  delete shwlid;
 }

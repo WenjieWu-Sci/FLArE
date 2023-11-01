@@ -29,6 +29,7 @@ class DetectorConstructionMessenger: public G4UImessenger {
     G4UIdirectory* detDir;
     
     G4UIcmdWithABool* detGdmlCmd;
+    G4UIcmdWithABool* detCheckOverlapCmd;
 
     // FLArE
     G4UIcmdWithABool* detAddFLArECmd;

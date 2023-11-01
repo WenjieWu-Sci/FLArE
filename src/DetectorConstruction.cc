@@ -51,6 +51,7 @@ DetectorConstruction::DetectorConstruction()
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
   m_saveGdml = false;
+  fCheckOverlap = false;
 }
 
 DetectorConstruction::~DetectorConstruction() 
@@ -68,9 +69,6 @@ void DetectorConstruction::DefineMaterial() {
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-
-  G4bool fCheckOverlap = false;
-
   auto worldBox = new G4Box("worldBox", 30*m/2, 30*m/2, 150*m/2);
   worldLV = new G4LogicalVolume(worldBox, LArBoxMaterials->Material("Rock"), "worldLV");
   auto worldPV = new G4PVPlacement(nullptr,
