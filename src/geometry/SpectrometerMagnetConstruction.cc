@@ -41,7 +41,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
    
     GeometricalParameters::Get()->SetMagnetTotalSizeZ(fMagnetWindowZ);
-    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness+gapToMagnet);
+    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness);
+    GeometricalParameters::Get()->SetFASER2TotalSizeZ(fMagnetWindowZ+2*gapToMagnet+2*totThickness);
 
     BuildSAMURAIDesign(); //sets logical volumes
     BuildTrackingStation(); //sets assembly volume
@@ -86,14 +87,21 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
     fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
-    G4double gapToMagnet = fTrackingStationGap;
     G4double stationThickness = 2*fScinThickness;
-    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
-    G4double magnetsLengthZ = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*fMagnetGap;
 
-    GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetsLengthZ);
-    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness+gapToMagnet);
+    // length of a tracking station set (tracking stations + gaps between them)
+    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap; 
+    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness);
     
+    // length of magnet assembly (includes all magnets and tracking stations sets between them + gaps);
+    // it differs from the total length for the two external tracking stations sets
+    G4double magnetsLengthZ = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*(2*fMagnetGap+totThickness);
+    GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetsLengthZ);
+     
+    // total length (all magnets, all tracking stations sets, all gaps)
+    G4double totalLengthZ = 2*(totThickness+fMagnetGap) + magnetsLengthZ;
+    GeometricalParameters::Get()->SetFASER2TotalSizeZ(totalLengthZ);    
+
     BuildCrystalPullingDesign(); //sets logical volumes
     BuildTrackingStation();
     
@@ -104,25 +112,34 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     // if fNMagnets is even, it falls in the gap between the two middle magnets
     G4ThreeVector magCenter(0.,0.,0.);
    
+    // each magnet comes with a set of N tracking stations just before it
+    // the gap between each magnet is then given by magnetSpacing
+    G4double magnetSpacing = 2*fMagnetGap + totThickness;
+    GeometricalParameters::Get()->SetSpectrometerMagnetSpacing(magnetSpacing);    
+
     for(int i=0; i<fNMagnets; i++){
-      G4double offset = (i-0.5*(fNMagnets-1))*(fMagnetGap+fMagnetLengthZ);
+      G4double offset = (i-0.5*(fNMagnets-1))*(magnetSpacing+fMagnetLengthZ);
       G4ThreeVector magPos = magCenter + G4ThreeVector(0.,0.,offset);
       fMagnetAssembly->AddPlacedVolume(fMagnetWindow,magPos,noRot);
       fMagnetAssembly->AddPlacedVolume(fMagnetYoke,magPos,noRot);
+
+      // placing tracking stations (before each magnet)
+      G4double trackingStationOffset = -fMagnetGap-0.5*fMagnetLengthZ;
+      for (int j= 0; j<fNTrackingStations; ++j) { 
+        G4ThreeVector T(0., 0., trackingStationOffset-j*fTrackingStationGap-0.5*(i+1)*stationThickness);
+        G4ThreeVector Tpos = magPos + T; 
+        fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tpos, noRot);
+      }
     }
     
-    // middle position of pre-magnet and post-magnet tracking stations
-    G4ThreeVector offset(0, 0, magnetsLengthZ/2.+ gapToMagnet + totThickness/2.);
-    G4ThreeVector preStationsCenter = magCenter - offset;
+    // placing last set of tracking stations (after last magnet)
+    G4ThreeVector offset(0, 0, magnetsLengthZ/2.+ fMagnetGap + totThickness/2.);
     G4ThreeVector postStationsCenter = magCenter + offset;
-  
-    // placing tracking stations (before/after magnet)
+
     for (int i= 0; i<fNTrackingStations; ++i) { 
       G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
       G4ThreeVector Tp = postStationsCenter + T;
-      G4ThreeVector Tm = preStationsCenter + T;
-      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tm, noRot); //place before magnet
-      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tp, noRot); //place after magnet
+      fMagnetAssembly->AddPlacedAssembly(fTrackingStation, Tp, noRot);
     }
    
   } else {

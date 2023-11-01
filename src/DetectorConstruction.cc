@@ -183,8 +183,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
 
     // positioning
-    G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetMagnetTotalSizeZ() 
-                                                + 2*GeometricalParameters::Get()->GetTrackingStationTotalSizeZ();
+    G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetFASER2TotalSizeZ();
     G4ThreeVector magPos = GeometricalParameters::Get()->GetFASER2Position();
     GeometricalParameters::Get()->SetMagnetZPosition(magPos.z()); // save for momentum analysis
     magPos -= hallOffset;
