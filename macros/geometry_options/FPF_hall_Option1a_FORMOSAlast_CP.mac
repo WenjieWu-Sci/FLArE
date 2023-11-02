@@ -11,7 +11,7 @@
 /det/addFLArE true
 /det/addFLArEPos 0 0 4300 mm
 /det/material LAr
-/det/module single
+/det/module 3x7
 /det/field 1. tesla
 
 # Configuring FASERnu2
