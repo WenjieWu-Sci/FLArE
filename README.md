@@ -32,9 +32,9 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |/det/addFORMOSA        | option for adding the FORMOSA detector, run before `/run/initialize`                 |`true`|
 |/det/addFORMOSAPos     | position of the FORMOSA detector, run before `/run/initialize`                       |`0 0 13870 mm`|
 |/det/addFASERnu2       | option for adding the FASERnu2 detector, run before `/run/initialize`                |`true`|
-|/det/addFASERnu2Pos    | position of the FASERnu2 detector, run before `/run/initialize`                      |`0 0 22123 mm`|
+|/det/addFASERnu2Pos    | position of the FASERnu2 detector, run before `/run/initialize`                      |`0 0 22023 mm`|
 |/det/addFASER2         | option for adding the FASER2 detector, run before `/run/initialize`                  |`true`|
-|/det/addFASER2Pos      | position of the FASER2 detector, run before `/run/initialize`                        |`0 0 43036 mm`|
+|/det/addFASER2Pos      | position of the FASER2 detector, run before `/run/initialize`                        |`0 0 42636 mm`|
 |/det/magnetGeom        | option for FASER2 magnet geometry, choose `SAMURAI` or `CrystalPulling`              |`SAMURAI`|
 |/det/magnetField       | option for setting the FASER2 magnetic field value                                   |`1 T`|
 |/det/magnetWinX        | option for SAMURAI magnet window size along X axis                                   |`3.0 m`|

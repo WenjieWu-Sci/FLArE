@@ -1,0 +1,42 @@
+# This file defines the standard configuration for the FPF reference hall
+# The geometry contains:
+# - FLArE (TPC + HadCather + MuonFinder)
+# - FORMOSA
+# - FASERnu2
+# - FASER2 (SAMURAI magnet)
+
+# Configuring FLArE
+/det/addFLArE true
+/det/addFLArEPos 0 0 4300 mm
+/det/material LAr
+/det/module 3x7
+/det/field 1. tesla
+
+# Configuring FORMOSA
+# assuming 1.2m gap from FLArE
+/det/addFORMOSA true
+/det/addFORMOSAPos 0 0 13870 mm
+
+# Configuring FASERnu2
+# assuming 1.2m gap from FORMOSA
+/det/addFASERnu2 true
+/det/addFASERnu2Pos 0 0 22023 mm
+
+# Configuring FASER2
+# assuming 1.2m gap from FASERnu2
+# (which include veto stations)
+# + 10m decay tunnel
+/det/addFASER2 true
+/det/addFASER2Pos 0 0 42636 mm
+/det/magnetGeom SAMURAI
+/det/magnetField 1. tesla
+/det/magnetWinX 3.0 m
+/det/magnetWinY 1.0 m
+/det/magnetWinZ 4.0 m
+/det/yokeThickX 1.5 m
+/det/yokeThickY 2.0 m
+/det/trackingNumber 6
+/det/trackingGap 0.5 m
+/det/trackingNBarsX 7
+/det/trackingNBarsY 7
+/det/trackingScinThick 1.0 cm
