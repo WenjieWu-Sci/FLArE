@@ -10,6 +10,7 @@
 #include <cstring>
 
 #include "reco/ShowerLID.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include <THnSparse.h>
 #include <TAxis.h>
@@ -28,7 +29,7 @@ namespace slid {
       for (Int_t d= 0; d< dim; ++d) {
         x[d] = aHist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
       }
-      if (x[2]>7000) continue;
+      if (x[2]>GeometricalParameters::Get()->GetTPCSizeZ()) continue;
       Double_t longitudinal_distance_to_vtx = ((x[0] - aVtxX) * aPx +
         (x[1] - aVtxY) * aPy + (x[2] - aVtxZ) * aPz) / TMath::Sqrt(aPx*aPx+aPy*aPy+aPz*aPz);
       if (Int_t(longitudinal_distance_to_vtx)>=0 && 
@@ -37,5 +38,9 @@ namespace slid {
       }
     }
     delete [] bins;
+  }
+
+  ShowerLID::~ShowerLID()
+  {
   }
 }

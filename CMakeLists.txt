@@ -84,6 +84,16 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 include(${EIGEN3_USE_FILE})
 message(STATUS "Eigen3 : ${EIGEN3_USE_FILE}")
 
+## hep_hpc and hdf5
+find_package(hdf5 REQUIRED EXPORT) 
+include_directories($ENV{HDF5_INC})
+set(HDF5_LIBRARIES "$ENV{HDF5_LIB}/libhdf5.so")
+message(STATUS "HDF5 inc: $ENV{HDF5_INC}")
+include_directories($ENV{HEP_HPC_INC})
+link_directories("$ENV{HEP_HPC_LIB}")
+set(HEP_HPC_LIBRARIES "$ENV{HEP_HPC_LIB}/libhep_hpc_hdf5.so;$ENV{HEP_HPC_LIB}/libhep_hpc_Utilities.so;$ENV{HEP_HPC_LIB}/libhep_hpc_concat_hdf5.so")
+message(STATUS "hep_hpc inc: $ENV{HEP_HPC_INC}")
+
 # Locate sources and headers for this project
 # We presume the existence of three directories
 include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
@@ -127,6 +137,8 @@ target_link_libraries(FLArE
   ${LIBXML2_LIBRARIES}
   ${PYTHIA_LIRARIES}
   ${GENIE_LIBRARIES}
+  ${HDF5_LIBRARIES}
+  ${HEP_HPC_LIBRARIES}
   )
 
 #----------------------------------------------------------------------------

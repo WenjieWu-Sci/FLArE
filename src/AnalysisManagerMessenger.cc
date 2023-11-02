@@ -54,10 +54,15 @@
   saveHitCmd->SetParameterName("saveHit", true);
   saveHitCmd->SetDefaultValue(false);
 
-  saveEvdCmd = new G4UIcmdWithABool("/histo/saveEvd", this);
-  saveEvdCmd->SetGuidance("whether save event display");
-  saveEvdCmd->SetParameterName("saveEvd", true);
-  saveEvdCmd->SetDefaultValue(false);
+  save3DEvdCmd = new G4UIcmdWithABool("/histo/save3DEvd", this);
+  save3DEvdCmd->SetGuidance("whether save 3D Pixel Map");
+  save3DEvdCmd->SetParameterName("save3DEvd", true);
+  save3DEvdCmd->SetDefaultValue(false);
+
+  save2DEvdCmd = new G4UIcmdWithABool("/histo/save2DEvd", this);
+  save2DEvdCmd->SetGuidance("whether save 2D Pixel Map");
+  save2DEvdCmd->SetParameterName("save2DEvd", true);
+  save2DEvdCmd->SetDefaultValue(false);
 
   circleFitCmd = new G4UIcmdWithABool("/histo/circleFit", this);
   circleFitCmd->SetGuidance("perform circular fit");
@@ -79,7 +84,8 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
 {
   delete factoryCmd;
   delete saveHitCmd;
-  delete saveEvdCmd;
+  delete save3DEvdCmd;
+  delete save2DEvdCmd;
   delete circleFitCmd;
   delete addDiffusionCmd;
   delete histoDir;
@@ -91,7 +97,8 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
 {
   if (command == factoryCmd) anamanager->setFileName(newValues);
   if (command == saveHitCmd) anamanager->saveHit(saveHitCmd->GetNewBoolValue(newValues));
-  if (command == saveEvdCmd) anamanager->saveEvd(saveEvdCmd->GetNewBoolValue(newValues));
+  if (command == save3DEvdCmd) anamanager->save3DEvd(save3DEvdCmd->GetNewBoolValue(newValues));
+  if (command == save2DEvdCmd) anamanager->save2DEvd(save2DEvdCmd->GetNewBoolValue(newValues));
   if (command == circleFitCmd) anamanager->circleFit(circleFitCmd->GetNewBoolValue(newValues));
   if (command == addDiffusionCmd) anamanager->addDiffusion(newValues);
 
