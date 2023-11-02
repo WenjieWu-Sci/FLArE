@@ -26,6 +26,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     void ConstructSDandField() override;
     void SaveGDML(G4bool i) { m_saveGdml = i; }
+    void CheckDetOverlap(G4bool i) { fCheckOverlap = i; }
     void AddFLArE(G4bool i) { m_addFLArE = i; }
     void SetFieldValue(G4double val) { fFieldValue = val; }
     void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
@@ -40,6 +41,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* hallLV;
 
     G4bool m_saveGdml;
+    G4bool fCheckOverlap;
 
     G4bool m_addFLArE;
     G4LogicalVolume* TPCModuleLogical;

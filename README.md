@@ -23,6 +23,7 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |Command |Description | Default |
 |:--|:--|:--|
 |/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
+|/det/checkOverlap      | check overlap of volumns during detector construction, run before `/run/initialize`  |`false`|
 |/det/addFLArE          | option for adding the FLArE detector, run before `/run/initialize`                   |`true`|
 |/det/addFLArEPos       | position of the FLArE detector, run before `/run/initialize`                         |`0 0 4300 mm`|
 |/det/material          | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|
@@ -62,7 +63,8 @@ Things get complicated with importing GENIE results to the Geant4 Application. W
 |:--|:--|
 |/histo/fileName     | option for AnalysisManagerMessenger, set name of the file saving all analysis variables|
 |/histo/saveHit      | if `true` save information for all hits, `false` in default to save space|
-|/histo/saveEvd      | if `true` save spatial distribution of energy deposition, `false` in default to save space|
+|/histo/save3DEvd    | if `true` save 3D spatial distribution of energy deposition, `false` in default|
+|/histo/save2DEvd    | if `true` save 2D spatial distribution of energy deposition, `false` in default|
 |/histo/circleFit    | if `true` run circle fitting and save information in output, `false` in default to save space|
 |/histo/addDiffusion | if `toy` diffuse energy, if `single` diffuse single electron, `false` in default without diffusion|
 

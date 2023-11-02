@@ -22,6 +22,9 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detGdmlCmd = new G4UIcmdWithABool("/det/saveGdml", this);
     detGdmlCmd->SetParameterName("saveGdml", true);
     detGdmlCmd->SetDefaultValue(false);
+    detCheckOverlapCmd = new G4UIcmdWithABool("/det/checkOverlap", this);
+    detCheckOverlapCmd->SetParameterName("checkOverlap", true);
+    detCheckOverlapCmd->SetDefaultValue(false);
     
     // FLArE 
     detAddFLArECmd = new G4UIcmdWithABool("/det/addFLArE", this);
@@ -149,6 +152,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
 
 DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete detGdmlCmd;
+  delete detCheckOverlapCmd;
   delete detAddFLArECmd;
   delete detMatCmd;
   delete detGeomCmd;
@@ -185,6 +189,7 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
   
   // flare
   if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  else if (command == detCheckOverlapCmd) det->CheckDetOverlap(detCheckOverlapCmd->GetNewBoolValue(newValues));
   else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
   else if (command == detFLArEPosCmd) GeometricalParameters::Get()->SetFLArEPosition(detFLArEPosCmd->GetNew3VectorValue(newValues));
   else if (command == detGeomCmd) {
