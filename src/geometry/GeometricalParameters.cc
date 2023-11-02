@@ -48,7 +48,7 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
-  fFASER2Pos = G4ThreeVector(0., 0., 43036.*mm);
+  fFASER2Pos = G4ThreeVector(0., 0., 42636.*mm);
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction
@@ -60,7 +60,7 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeZ = 20*cm;
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
-  fFASERnu2Pos = G4ThreeVector(0., 0., 22123.*mm);
+  fFASERnu2Pos = G4ThreeVector(0., 0., 22023.*mm);
 
   // FORMOSA
   fFORMOSATotalSizeZ = 5*m; //updates during construction

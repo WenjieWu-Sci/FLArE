@@ -56,7 +56,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detAddFASERnu2Cmd->SetDefaultValue(true);
     detFASERnu2PosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFASERnu2Pos", this);
     detFASERnu2PosCmd->SetParameterName("x", "y", "z", false, false);
-    detFASERnu2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 22123.));
+    detFASERnu2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 22023.));
     detFASERnu2PosCmd->SetDefaultUnit("mm");
     detFASERnu2PosCmd->SetUnitCandidates("mm m");
     // FASER2 SPECTROMETER MAGNET
@@ -65,7 +65,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detAddFASER2Cmd->SetDefaultValue(true);
     detFASER2PosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFASER2Pos", this);
     detFASER2PosCmd->SetParameterName("x", "y", "z", false, false);
-    detFASER2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 43036.));
+    detFASER2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 42636.));
     detFASER2PosCmd->SetDefaultUnit("mm");
     detFASER2PosCmd->SetUnitCandidates("mm m");
     magnetGeomCmd = new G4UIcmdWithAString("/det/magnetGeom", this);
