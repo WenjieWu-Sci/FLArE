@@ -82,6 +82,7 @@ namespace circularfitter {
       double getR(double za, double xa, double zb, double xb);
       
       // return methods
+      std::vector<double> GetMagnetZs() { return fzpos; };
       std::vector<double> GetXc() { return fXc; };
       std::vector<double> GetZc() { return fZc; };
       std::vector<double> GetR();
@@ -93,6 +94,7 @@ namespace circularfitter {
     private:
       std::vector<line> fpre;
       std::vector<line> fpost;
+      std::vector<double> fzpos;
       std::vector<double> fZc;
       std::vector<double> fXc;
       std::vector<double> fR1;
