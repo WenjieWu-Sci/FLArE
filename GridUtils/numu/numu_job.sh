@@ -1,31 +1,30 @@
 #!/bin/bash
 
-function gen_single_macro {
-  field=$1; shift
+function genenerate_macros {
   num_evt_per_file=$1; shift
   num_file=$1; shift
   loc_list=$1; shift  
-  macro=$1; shift
+  geomacro=$1; shift
   
+  geoname=${geomacro%%.*}
+  echo $geoname
+
   for i in `seq 1 1 ${num_file}`
   do
     seed1=$((42+i))
     seed2=$((47+i))
 
     istart=$((num_evt_per_file*i-num_evt_per_file))
-    filename="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/numu/FLArE_numu_B_${field}T_${i}.mac"
-    outputfile="FLArE_numu_B_${field}T_${i}.root"
+    filename="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/numu/${geoname}_Fid_${i}.mac"
+    outputfile="${geoname}_fid_${i}.root"
     if [ -f ${filename} ]; then
       echo "${filename} exists, delete file first"
       ifdh rm ${filename}
-      #rm ${filename}
     fi
     echo $filename >> $loc_list
     rm temp.mac
 cat << EOF >> temp.mac
-/det/material LAr
-/det/saveGdml false
-/det/field ${field} tesla
+/control/execute ${geomacro}
 
 /random/setSeeds ${seed1} ${seed2}
 /run/initialize
@@ -34,7 +33,6 @@ cat << EOF >> temp.mac
 /genie/genieInput numu_kling_ar40_e5000.ghep.root
 /genie/genieIStart ${istart}
 
-/histo/saveEvd false
 /histo/saveHit false
 /histo/circleFit true
 /histo/fileName ${outputfile}
@@ -43,22 +41,25 @@ cat << EOF >> temp.mac
 EOF
  
   ifdh cp --cp_maxretries=1 temp.mac ${filename}
-  #cp temp.mac ${filename}
   done
 }
 
-n_evt_per_file=100
-n_files=200
-list=/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/numu/macros_list.txt
-exe=/pnfs/dune/scratch/users/mvicenzi/job_sub/FLArE 
-out=/pnfs/dune/scratch/users/mvicenzi/FLArE_numu
+n_evt_per_file=200
+n_files=500
+geomacro="FPF_hall_Reference.mac"
+geoname=${geomacro%%.*}
+geofile="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/numu/${geomacro}"
+list="/pnfs/dune/scratch/users/mvicenzi/job_sub/macros/numu/${geoname}_macros_list.txt"
+exe="/pnfs/dune/scratch/users/mvicenzi/job_sub/FLArE"
+out="/pnfs/dune/scratch/users/mvicenzi/muon_studies/${geoname}"
 
-ifdh rm ${exe}
+ifdh rm ${exe} 
+ifdh rm ${geofile}
 ifdh cp ../../FLArE ${exe}
-
+ifdh cp ../../macros/geometry_options/${geomacro} ${geofile}
+mkdir -p ${out}
 rm ${out}/*
 
-list_fields=(0)
 local_list="temp.txt"
 
 if [ -f ${list} ]; then
@@ -69,16 +70,10 @@ if [ -f ${local_list} ]; then
 fi
 touch $list
   
-for i in "${!list_fields[@]}"; do
-  
-  echo "for B field of ${list_fields[i]} ..."
-  field=${list_fields[i]}
-  gen_single_macro $field $n_evt_per_file $n_files $local_list
-
-done
+genenerate_macros $n_evt_per_file $n_files $local_list $geomacro
 
 ifdh rm $list
 ifdh cp $local_list $list
-source submit.sh $list $exe $out
+source submit.sh $list $geofile $exe $out
 
 
