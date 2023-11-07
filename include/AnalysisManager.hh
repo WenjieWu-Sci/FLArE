@@ -10,6 +10,8 @@
 //#include <THnSparse.h>
 #include "AnalysisManagerMessenger.hh"
 #include "PixelMap3D.hh"
+#include "FPFParticle.hh"
+#include "FPFNeutrino.hh"
 
 #include "hep_hpc/hdf5/File.hpp"
 //#include "hep_hpc/hdf5/Ntuple.hpp"
@@ -49,6 +51,8 @@ class AnalysisManager {
     hep_hpc::hdf5::File fH5file;
 
     G4int    evtID;
+    FPFNeutrino neutrino;
+    std::vector<FPFParticle> primaries;
     // Truth information from genie
     G4int    nuIdx;             ///<- neutrino index (for genie neutrino interaction)
     G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)

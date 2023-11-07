@@ -16,6 +16,8 @@
 #include "reco/LinearFit.hh"
 #include "reco/ShowerLID.hh"
 #include "reco/CircleFit.hh"
+#include "FPFParticle.hh"
+#include "FPFNeutrino.hh"
 
 #include <G4Event.hh>
 #include <G4SDManager.hh>
@@ -173,6 +175,9 @@ void AnalysisManager::bookEvtTree() {
     evt->Branch("trkHitZFSL"              , &trkZFSL);        
     evt->Branch("trkHitPFSL"              , &trkPFSL);        
   }
+
+  evt->Branch("FPFNeutrino"                , &neutrino, 96000, 0);
+  evt->Branch("FPFParticle"                , &primaries, 96000, 0);
 }
 
 void AnalysisManager::BeginOfRun() {
@@ -207,6 +212,8 @@ void AnalysisManager::EndOfRun() {
 }
 
 void AnalysisManager::BeginOfEvent() {
+  neutrino = FPFNeutrino();
+  primaries.clear();
   nuIdx                        = -1;
   nuPDG                        = 0;
   nuE                          = -999;
@@ -326,6 +333,7 @@ void AnalysisManager::BeginOfEvent() {
   trkYFSL.clear();
   trkZFSL.clear();
   trkPFSL.clear();
+
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -357,6 +365,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
           nuFSLPy          = primary_particle_info->GetFSLP4().Y();
           nuFSLPz          = primary_particle_info->GetFSLP4().Z();
           nuFSLE           = primary_particle_info->GetFSLP4().T();
+          neutrino = FPFNeutrino(nuPDG, nuX, nuY, nuZ, 0, 0, 0, 0, nuE, 
+              nuIdx, nuIntType, nuScatteringType, nuW, nuFSLPDG, nuFSLPx, nuFSLPy, nuFSLPz, nuFSLE);
           continue;
         }
       }
@@ -364,6 +374,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   }
   nPrimaryVertex   = event->GetNumberOfPrimaryVertex();
   std::cout<<"\nnumber of primary vertices  : "<<nPrimaryVertex<<std::endl;
+  std::cout<<"=============>"<<neutrino.NuPDG()<<" "<<neutrino.NuFSLPDG()<<std::endl;
 
   // Get the hit collections
   // If there is no hit collection, there is nothing to be done
@@ -453,20 +464,22 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     FillTrueEdep(sdname.first, sdname.second);
   }
 
+  if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
+
+  pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
   sparseFractionMem = pm3D->GetSparseFractionMem();
   sparseFractionBins = pm3D->GetSparseFractionBins();
 
-  /*
-  slid::ShowerLID* shwlid = new slid::ShowerLID(pm3D->Get3DPixelMap, nuX, nuY, nuZ, 0., 0., 1.); 
+  slid::ShowerLID* shwlid = new slid::ShowerLID(pm3D->Get3DPixelMap(), nuX, nuY, nuZ, 0., 0., 1.); 
   Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
   std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
 
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     directionfitter::LinearFit* linFit = new directionfitter::LinearFit(
-        pm3D->Get2DPixelMapZX()[iPrim+1], 
-        pm3D->Get2DPixelMapZY()[iPrim+1],
-        pm3D->Get2DVtxPixelMapZX()[iPrim+1], 
-        pm3D->Get2DVtxPixelMapZY()[iPrim+1], 
+        pm3D->Get2DPixelMapZX(iPrim+1), 
+        pm3D->Get2DPixelMapZY(iPrim+1),
+        pm3D->Get2DVtxPixelMapZX(iPrim+1), 
+        pm3D->Get2DVtxPixelMapZY(iPrim+1), 
         nuX, nuY, nuZ, VtxX[iPrim], VtxY[iPrim], VtxZ[iPrim]);
     dir_pol_x[iPrim] = linFit->GetDir().X();
     dir_pol_y[iPrim] = linFit->GetDir().Y();
@@ -476,7 +489,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     dir_coc_z[iPrim] = linFit->GetCOCDir().Z();
     delete linFit;
   }
-  */
 
   if (m_circularFit){
     
@@ -527,14 +539,11 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
   FillPseudoRecoVar();
 
+  std::cout<<"HELLO 1"<<std::endl;
+
   evt->Fill();
 
   std::cout<<"Total number of recorded hits : "<<nHits<<std::endl;
-
-  if (m_save3DEvd || m_save2DEvd) {
-    // FIXME: the way to pass along the information could be nicer
-    pm3D->WriteToFile(thefile, fH5file, nuPDG, primaryTrackPDG[0], nuIntType, nuScatteringType, m_save3DEvd, m_save2DEvd);
-  }
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     trackClusters[iPrim].clear();
@@ -635,6 +644,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
           prongType[countPrimaryParticle-1]       = 1;
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+          primaries.push_back(FPFParticle(hit->GetParticle(), hit->GetTrackVertex().x(),
+                hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, hit->GetInitMomentum().x(), 
+                hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
         }
       }
       // in case of the fsl decay, the decay products are counted as primary particles
@@ -657,6 +671,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
           prongType[countPrimaryParticle-1]       = 2;
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+          primaries.push_back(FPFParticle(hit->GetParticle(), hit->GetTrackVertex().x(),
+                hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, hit->GetInitMomentum().x(), 
+                hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
         }
       }
       // in case of pizero in the list of primary track
@@ -677,6 +696,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
           prongType[countPrimaryParticle-1]       = 3;
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+          primaries.push_back(FPFParticle(hit->GetParticle(), hit->GetTrackVertex().x(),
+                hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, hit->GetInitMomentum().x(), 
+                hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
         }
       }
       // in case of tau decay pizero
@@ -697,6 +721,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
           Pmass[countPrimaryParticle-1]           = hit->GetParticleMass();
           prongType[countPrimaryParticle-1]       = 4;
           prongIndex[countPrimaryParticle-1]      = countPrimaryParticle-1;
+          primaries.push_back(FPFParticle(hit->GetParticle(), hit->GetTrackVertex().x(),
+                hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, hit->GetInitMomentum().x(), 
+                hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
         }
       }
     } // end of hit loop

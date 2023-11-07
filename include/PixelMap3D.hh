@@ -9,7 +9,7 @@
 
 #include <G4ThreeVector.hh>
 
-//#include "AnalysisManager.hh"
+#include "FPFNeutrino.hh"
 
 #include "hep_hpc/hdf5/File.hpp"
 //#include "hep_hpc/hdf5/Ntuple.hpp"
@@ -25,7 +25,8 @@ class PixelMap3D {
     void FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim);
     void FillEntryWithToyElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void FillEntryWithToySingleElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
-    void WriteToFile(TFile* thefile, hep_hpc::hdf5::File &h5file, G4int nupdg, G4int pdg, G4int intType, G4int scatType, G4bool save3D, G4bool save2D);
+    void Write2DPMToFile(TFile* thefile);
+    void Process3DPM(hep_hpc::hdf5::File &h5file, FPFNeutrino neutrino, G4bool save3D);
 
     // this should go to a Geometry Service class
     G4double DistanceToAnode(G4double x);
@@ -37,6 +38,7 @@ class PixelMap3D {
     TH2F* Get2DPixelMapZY(G4int idx) { return hitClusterZY[idx]; }
     TH2F* Get2DVtxPixelMapZX(G4int idx) { return vtxHitClusterZX[idx]; }
     TH2F* Get2DVtxPixelMapZY(G4int idx) { return vtxHitClusterZY[idx]; }
+    G4double* GetTotalDedxLongitudinal() { return TotalDedxLongitudinal; }
 
     void SetEventID(G4int val) { fEvtID = val; }
 
@@ -55,6 +57,8 @@ class PixelMap3D {
     std::vector<TH2F*> vtxHitClusterZX;
     std::vector<TH2F*> vtxHitClusterZY;
     THnSparseF* hist3DEdep;
+
+    G4double TotalDedxLongitudinal[3000];
 };
 
 #endif
