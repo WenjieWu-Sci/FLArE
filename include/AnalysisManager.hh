@@ -7,15 +7,12 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH2F.h>
-//#include <THnSparse.h>
 #include "AnalysisManagerMessenger.hh"
 #include "PixelMap3D.hh"
 #include "FPFParticle.hh"
 #include "FPFNeutrino.hh"
 
 #include "hep_hpc/hdf5/File.hpp"
-//#include "hep_hpc/hdf5/Ntuple.hpp"
-
 
 class AnalysisManager {
   public:
@@ -76,27 +73,11 @@ class AnalysisManager {
                                 ///<- (in case of genie neutrino interaction, number of stable particle in the final state)
                                 ///<- (in case of the FSL decay, decay products counted as primary particle)
                                 ///<- (in case of the final state pizero, decay products counted as primary particle)
-    G4double Px[1000];          ///<- Px of primary particles
-    G4double Py[1000];          ///<- Py of primary particles
-    G4double Pz[1000];          ///<- Pz of primary particles
-    G4double Pmass[1000];       ///<- mass of primary particles
-    G4double VtxX[1000];        ///<- Px of primary particles
-    G4double VtxY[1000];        ///<- Py of primary particles
-    G4double VtxZ[1000];        ///<- Pz of primary particles
-    // Geant4 truth
-    G4int    primaryParentID[1000];         ///<- parent ID of primary particles
+    //// Geant4 truth
     G4int    primaryParentPDG[1000];        ///<- parent PDG of primary particles
-    G4int    primaryTrackID[1000];          ///<- track ID of primary particles
-    G4int    primaryTrackPDG[1000];         ///<- PDG of primary particles, for G4 use
     G4double primaryTrackLength[1000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[1000]; ///<- track length of primary particles in TPC region
-    G4int    prongIndex[1000];
-    G4int    prongType[1000];               ///<- 0: final state lepton
-                                            ///<- 1: original primary particle
-                                            ///<- 2: decay products of the short lived final state lepton (namely tau-,
-                                            ///<-    could also be a michel electron from muon decay)
-                                            ///<- 3: decay products of the primary pizero (dominantely 2gamma)
-                                            ///<- 4: decay prodcuts of the tau decay pizero
+
     // pseudo-reco
     G4double ProngEInDetector[1000];
     G4double ProngEInLAr[1000];
