@@ -467,8 +467,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
   FillPseudoRecoVar();
 
-  std::cout<<"HELLO 1"<<std::endl;
-
   evt->Fill();
 
   std::cout<<"Total number of recorded hits : "<<nHits<<std::endl;
