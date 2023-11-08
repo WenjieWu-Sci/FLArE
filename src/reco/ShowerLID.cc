@@ -11,6 +11,7 @@
 
 #include "reco/ShowerLID.hh"
 #include "geometry/GeometricalParameters.hh"
+#include "PixelMap3D.hh"
 
 #include <THnSparse.h>
 #include <TAxis.h>

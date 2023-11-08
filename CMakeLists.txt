@@ -34,7 +34,7 @@ option(WITH_ANALYSIS_USE "Build example with analysis objects" ON)
 #----------------------------------------------------------------------------
 # Find ROOT (required package)
 #
-find_package(ROOT REQUIRED COMPONENTS Geom EG EGPythia6)
+find_package(ROOT REQUIRED COMPONENTS Geom EG EGPythia6 RIO)
 include(${ROOT_USE_FILE})
 #include_directories(${ROOT_INCLUDE_DIRS})
 message(STATUS "Set ROOT : ${ROOT_USE_FILE}")
@@ -140,6 +140,13 @@ target_link_libraries(FLArE
   ${HDF5_LIBRARIES}
   ${HEP_HPC_LIBRARIES}
   )
+
+# attach dictionaries to the executable. first, tell it where to look for headers required by the dictionaries:
+target_include_directories(FLArE PRIVATE ${PROJECT_SOURCE_DIR}/include)
+# then generate dictionaries and add them as a dependency of the executable (via the MODULE parameter):
+ROOT_GENERATE_DICTIONARY(DictOutput ${PROJECT_SOURCE_DIR}/include/FPFNeutrino.hh 
+                                    ${PROJECT_SOURCE_DIR}/include/FPFParticle.hh 
+                                    MODULE FLArE LINKDEF ${PROJECT_SOURCE_DIR}/include/LinkDef.h)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX

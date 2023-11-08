@@ -259,7 +259,7 @@ void PixelMap3D::FillEntryWithToySingleElectronTransportation(const Double_t* po
   }
 }
 
-void PixelMap3D::WriteToFile(TFile* thefile, File &h5file, G4int nupdg, G4int pdg, G4int intType, G4int scatType, G4bool save3D, G4bool save2D)
+void PixelMap3D::Process3DPM(File &h5file, FPFNeutrino nu, G4bool save3D)
 {
   static auto evt_data = 
     make_ntuple({h5file, "evt_data"},
@@ -267,9 +267,11 @@ void PixelMap3D::WriteToFile(TFile* thefile, File &h5file, G4int nupdg, G4int pd
                 make_scalar_column<int>("nupdg"), 
                 make_scalar_column<int>("pdg"), 
                 make_scalar_column<int>("intType"),
-                make_scalar_column<int>("mode"));
+                make_scalar_column<int>("mode"),
+                make_scalar_column<float>("nuE"));
 
-  evt_data.insert(fEvtID, nupdg, pdg, intType, scatType);
+  evt_data.insert(fEvtID, nu.NuPDG(), nu.NuFSLPDG(),
+                  nu.NuIntType(), nu.NuScatteringType(), nu.NuE());
 
   static auto pm_data = 
     make_ntuple({h5file, "pm_data"},
@@ -279,45 +281,38 @@ void PixelMap3D::WriteToFile(TFile* thefile, File &h5file, G4int nupdg, G4int pd
                 make_scalar_column<float>("x"),
                 make_scalar_column<float>("y"),
                 make_scalar_column<float>("z"));
-  std::string dirname;
-  if (save3D) {
-    Int_t dim = hist3DEdep->GetNdimensions();
-    Double_t* x = new Double_t[dim + 1];
-    memset(x, 0, sizeof(Double_t) * (dim +1));
-    Int_t *bins = new Int_t[dim];
-
-    for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
-      x[dim] = hist3DEdep->GetBinContent(i, bins);
-      for (Int_t d = 0; d < dim; ++d) {
-        x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
-      }
-      pm_data.insert(fEvtID, i, x[3], x[0], x[1], x[2]);
+  Int_t dim = hist3DEdep->GetNdimensions();
+  Double_t* x = new Double_t[dim + 1];
+  memset(x, 0, sizeof(Double_t) * (dim +1));
+  Int_t *bins = new Int_t[dim];
+  for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
+    x[dim] = hist3DEdep->GetBinContent(i, bins);
+    for (Int_t d = 0; d < dim; ++d) {
+      x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
     }
-
-    //dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
-    //thefile->mkdir(dirname.c_str());
-    //thefile->cd(dirname.c_str());
-    //hist3DEdep->Write();
+    if (save3D) pm_data.insert(fEvtID, i, x[3], x[0], x[1], x[2]);
   }
-  if (save2D) {
-    dirname = "edep2D/evt_"+std::to_string(fEvtID)+"/";
-    thefile->mkdir(dirname.c_str());
-    thefile->cd(dirname.c_str());
-    for (int i=0; i<fNPrim+1; ++i) {
-      if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
-      if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
-      hitClusterZX[i]->Write();
-      hitClusterZY[i]->Write();
-    }
-    dirname = "edep2Dvtx/evt_"+std::to_string(fEvtID)+"/";
-    thefile->mkdir(dirname.c_str());
-    thefile->cd(dirname.c_str());
-    for (int i=0; i<fNPrim+1; ++i) {
-      if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
-      if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
-      vtxHitClusterZX[i]->Write();
-      vtxHitClusterZY[i]->Write();
-    }
+}
+
+void PixelMap3D::Write2DPMToFile(TFile* thefile)
+{
+  std::string dirname = "edep2D/evt_"+std::to_string(fEvtID)+"/";
+  thefile->mkdir(dirname.c_str());
+  thefile->cd(dirname.c_str());
+  for (int i=0; i<fNPrim+1; ++i) {
+    if (hitClusterZX[i]->GetEntries()==0) hitClusterZX[i]->SetEntries(1);
+    if (hitClusterZY[i]->GetEntries()==0) hitClusterZY[i]->SetEntries(1);
+    hitClusterZX[i]->Write();
+    hitClusterZY[i]->Write();
+  }
+  dirname = "edep2Dvtx/evt_"+std::to_string(fEvtID)+"/";
+  thefile->mkdir(dirname.c_str());
+  thefile->cd(dirname.c_str());
+  for (int i=0; i<fNPrim+1; ++i) {
+    if (vtxHitClusterZX[i]->GetEntries()==0) vtxHitClusterZX[i]->SetEntries(1);
+    if (vtxHitClusterZY[i]->GetEntries()==0) vtxHitClusterZY[i]->SetEntries(1);
+    vtxHitClusterZX[i]->Write();
+    vtxHitClusterZY[i]->Write();
   }
 }
 
