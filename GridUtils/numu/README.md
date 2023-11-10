@@ -1,6 +1,6 @@
 # Description
 
-This directory contains three scripts for submitting batch jobs to simulate numu interactions in FLArE.
+This directory contains scripts for submitting batch jobs to simulate numu interactions in FLArE.
 * `batch_script.sh` is the script that is actually being submitted and executed on the worker nodes. 
    Worker nodes have a limited scope, so the script takes care of:
    1. copying over from `pnfs` all inputs (including the executable);
@@ -15,12 +15,15 @@ This directory contains three scripts for submitting batch jobs to simulate numu
    2. it generates several `.mac` files starting from a template, keeping track of them in a list;
    3. it passes the lists of configuration files and other paths to `submit.sh`.
 
+* `glob_output.sh` is the script that retrieves all the job output files in `/pnfs/dune/scratch`.
+   The files are copied over to `dune\data` for storage.
+
+* `merge_outputs.sh` is the script that merges all the output files into a single one.
+
 ## Instructions:
 * The `.mac` template is 
 ```
-/det/material LAr
-/det/saveGdml false
-/det/field ${field} tesla
+/control/execute ${geomacro}
 
 /random/setSeeds ${seed1} ${seed2}
 /run/initialize
@@ -41,8 +44,7 @@ In order for this file to be visibile on the worker nodes, `batch_script.sh` cop
 ```
 ifdh cp /pnfs/dune/persistent/users/mvicenzi/numu/numu_kling_ar40_e5000.ghep.root numu_kling_ar40_e5000.ghep.root
 ```
+* The current implementation requires the user to provide the name of the geometry macro from `macro\geometry_options` by writing it in `numu_job.sh`. The name of this file is used to create the output directory as well as for the filenames themselves. It is the only argument that is needed by `glob_output.sh` and `merge_outputs.sh`.
 * `${istart}` is set according to the number of files requested and the number of events per file chosen, in order to avoid using the same events.
-* The current implementation allows to scan several values of the magnetic field in FLArE, as the macro generation and submission is repeated for every item of the `list_fields` array.
-Other parameters could be similarly added.
 * Most of the paths are currently hardcoded to point to `/pnfs/dune/scratch/users/mvicenzi` to store (temporary) submission files as well as the output files. They can be changed as necessary, but they need to be on `pnfs` to be accessible by the worker nodes with `ifdh cp`.
   
