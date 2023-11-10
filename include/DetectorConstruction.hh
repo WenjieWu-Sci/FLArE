@@ -45,10 +45,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     G4bool m_addFLArE;
     G4LogicalVolume* TPCModuleLogical;
-    G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
-    G4LogicalVolume* muonFinderLogical;
     G4LogicalVolume* MuonFinderXCellLogical;
     G4LogicalVolume* MuonFinderYCellLogical;
     G4LogicalVolume* HadAbsorLayersLogical;

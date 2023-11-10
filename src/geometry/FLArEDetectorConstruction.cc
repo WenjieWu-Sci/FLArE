@@ -74,10 +74,9 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
 
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
-  hadCatcherLogical->SetVisAttributes(nullVis);
   HadCalXCellLogical->SetVisAttributes(nullVis);
   HadCalYCellLogical->SetVisAttributes(nullVis);
-  muonFinderLogical->SetVisAttributes(nullVis);
+  //muonFinderLogical->SetVisAttributes(nullVis);
   MuonFinderXCellLogical->SetVisAttributes(nullVis);
   MuonFinderYCellLogical->SetVisAttributes(nullVis);
 }
@@ -88,12 +87,10 @@ FLArEDetectorConstruction::~FLArEDetectorConstruction()
   delete lArBoxLog;
   delete fFLArETPCLog;
   delete cryoInsulationLog;
-  delete hadCatcherLogical;
   delete HadAbsorLayersLogical;
   delete HadCalXCellLogical;
   delete HadCalYCellLogical;
   delete HadCalAssembly;
-  delete muonFinderLogical;
   delete MuonFinderAbsorLayersLogical;
   delete MuonFinderXCellLogical;
   delete MuonFinderYCellLogical;
@@ -176,11 +173,6 @@ void FLArEDetectorConstruction::BuildFLArEHadCal()
   fHadCalLength = fNbOfAbsor*thicknessOneLayer;
   GeometricalParameters::Get()->SetHadCalLength(fHadCalLength);
 
-  auto hadCatcherSolid
-    = new G4Box("HadCatcherBox", fLArSizeX/2, fLArSizeY/2, fHadCalLength/2);
-  hadCatcherLogical
-    = new G4LogicalVolume(hadCatcherSolid, fMaterials->Material("Air"), "HadCatcherLogical");
-
   // Absorber
   auto HadAbsorLayersSolid
     = new G4Box("HadAbsorLayersBox", fLArSizeX/2, fLArSizeY/2, thicknessAbsorber/2);
@@ -240,11 +232,10 @@ void FLArEDetectorConstruction::BuildFLArEMuonCatcher() {
   fMuonCatcherLength = fNbOfAbsor*thicknessOneLayer;
   GeometricalParameters::Get()->SetMuonCatcherLength(fMuonCatcherLength);
   
-
-  auto muonFinderSolid
-    = new G4Box("MuonFinderBox", fLArSizeX/2, fLArSizeY/2, fMuonCatcherLength/2);
-  muonFinderLogical
-    = new G4LogicalVolume(muonFinderSolid, fMaterials->Material("Air"), "MuonFinderLogical");
+  //auto muonFinderSolid
+   // = new G4Box("MuonFinderBox", fLArSizeX/2, fLArSizeY/2, fMuonCatcherLength/2);
+  //muonFinderLogical
+   // = new G4LogicalVolume(muonFinderSolid, fMaterials->Material("Air"), "MuonFinderLogical");
 
   // Absorber
   auto MuonFinderAbsorLayersSolid

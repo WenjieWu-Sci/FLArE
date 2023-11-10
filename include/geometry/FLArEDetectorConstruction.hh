@@ -21,12 +21,10 @@ class FLArEDetectorConstruction {
     // TPC volume
     G4LogicalVolume* GetFLArETPCVolume() { return fFLArETPCLog; }
     // Hadronic calorimetry
-    G4LogicalVolume* GetHadCalVolume()       { return hadCatcherLogical; }
     G4LogicalVolume* GetHadCalAbsorbVolume() { return HadAbsorLayersLogical; }
     G4LogicalVolume* GetHadCalXVolume()      { return HadCalXCellLogical; }
     G4LogicalVolume* GetHadCalYVolume()      { return HadCalYCellLogical; }
     // Muon catcher
-    G4LogicalVolume* GetMuonCatcherVolume()       { return muonFinderLogical; }
     G4LogicalVolume* GetMuonCatcherAbsorbVolume() { return MuonFinderAbsorLayersLogical; }
     G4LogicalVolume* GetMuonCatcherXVolume()      { return MuonFinderXCellLogical; }
     G4LogicalVolume* GetMuonCatcherYVolume()      { return MuonFinderYCellLogical; }
@@ -47,13 +45,11 @@ class FLArEDetectorConstruction {
     G4LogicalVolume* lArBoxLog;
     G4LogicalVolume* cryoInsulationLog;
 
-    G4LogicalVolume* hadCatcherLogical;
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
     G4AssemblyVolume* HadCalAssembly;
 
-    G4LogicalVolume* muonFinderLogical;
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4LogicalVolume* MuonFinderXCellLogical;
     G4LogicalVolume* MuonFinderYCellLogical;
