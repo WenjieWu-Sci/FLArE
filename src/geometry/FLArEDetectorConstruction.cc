@@ -76,7 +76,6 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
   nullVis->SetVisibility(false);
   HadCalXCellLogical->SetVisAttributes(nullVis);
   HadCalYCellLogical->SetVisAttributes(nullVis);
-  //muonFinderLogical->SetVisAttributes(nullVis);
   MuonFinderXCellLogical->SetVisAttributes(nullVis);
   MuonFinderYCellLogical->SetVisAttributes(nullVis);
 }
@@ -232,11 +231,6 @@ void FLArEDetectorConstruction::BuildFLArEMuonCatcher() {
   fMuonCatcherLength = fNbOfAbsor*thicknessOneLayer;
   GeometricalParameters::Get()->SetMuonCatcherLength(fMuonCatcherLength);
   
-  //auto muonFinderSolid
-   // = new G4Box("MuonFinderBox", fLArSizeX/2, fLArSizeY/2, fMuonCatcherLength/2);
-  //muonFinderLogical
-   // = new G4LogicalVolume(muonFinderSolid, fMaterials->Material("Air"), "MuonFinderLogical");
-
   // Absorber
   auto MuonFinderAbsorLayersSolid
     = new G4Box("MuonFinderAbsorLayersBox", fLArSizeX/2, fLArSizeY/2, thicknessAbsorber/2);
