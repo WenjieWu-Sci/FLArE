@@ -15,8 +15,9 @@ setup cmake v3_20_0
 setup gcc v9_3_0
 
 filelist=$1
-mymacro_full=$2
-outputpath=$3
+geofile_full=$2
+mymacro_full=$3
+outputpath=$4
 
 my_condor_work=${_CONDOR_SCRATCH_DIR}/work
 
@@ -27,6 +28,8 @@ ifdh cp /pnfs/dune/persistent/users/mvicenzi/numu/numu_kling_ar40_e5000.ghep.roo
 ifdh cp --cp_maxretries=1 -D $filelist ./
 listname=`basename "$filelist"`
 
+ifdh cp --cp_maxretries=1 -D $geofile_full ./
+
 let num=$PROCESS*1+1
 echo $listname $num
 input=$(tail -n+${num} $listname | head -n1)
@@ -36,10 +39,6 @@ inputpath=`dirname "$input"`
 inputfile=`basename "$input"`
 
 mymacro=`basename "$mymacro_full"`
-
-#search=.$(echo $output_prefix | awk -F'.' '{print $NF}')
-#replace=_$PROCESS$search
-#output="OUTPUTPREFIX_ar40_evtEVTNUM_${startIdx}_${stopIdx}.root"
 
 echo Input: ${inputpath}/${inputfile}
 echo Copy Input file and My Macro
@@ -53,7 +52,6 @@ output_log=log_${output%.root}.log
 echo Ouput: ${output}
 
 echo Run my macro
-#echo root -l -q -b `printf "${mymacro}(\"$inputfile\",$pdg,\"$output\")" ` # make text file with real det. resolution
 #root -l -q -b `printf "${mymacro}(\"$inputfile\",$pdg,\"$output\")" ` | tee ${output_log}
 ./${mymacro} $inputfile | tee ${output_log}
 echo "Done my macro"
@@ -61,8 +59,8 @@ ls -lhrt
 
 echo "Copying out files"
 echo ${output} to ${outputpath}
-ifdh cp --cp_maxretries=1 -D ${output} ${outputpath} || exit 14
-ifdh cp --cp_maxretries=1 -D ${output_log} ${outputpath} || exit 16
+ifdh cp --cp_maxretries=5 -D ${output} ${outputpath} || exit 14
+ifdh cp --cp_maxretries=5 -D ${output_log} ${outputpath} || exit 16
 
 cd ${_CONDOR_SCRATCH_DIR}
 rm -rf *

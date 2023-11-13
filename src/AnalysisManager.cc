@@ -135,6 +135,7 @@ void AnalysisManager::bookEvtTree() {
     evt->Branch("trkp0"                   , &trkp0                     , "trkp0/D"); 
     evt->Branch("trkp1"                   , &trkp1                     , "trkp1/D");
     evt->Branch("trkcosDip"               , &trkcosDip                 , "trkcosDip/D");
+    evt->Branch("magnetZs"                , &magzpos);
     evt->Branch("trkXc"                   , &trkxc); 
     evt->Branch("trkZc"                   , &trkzc);
     evt->Branch("trkRc"                   , &trkrc);
@@ -265,6 +266,7 @@ void AnalysisManager::BeginOfEvent() {
   tracksFromFSLDecayPizeroSecondary.clear();
   fPrimIdxFSL = -1;
 
+  magzpos.clear();
   trkxc.clear(); 
   trkzc.clear();
   trkrc.clear();
@@ -443,6 +445,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       G4cout << "Number of FASER2 magnets: " << Nmagnets << G4endl;
 
       circularfitter::CircleExtractor* circExtract = new circularfitter::CircleExtractor(trkXFSL,trkYFSL,trkZFSL);
+      magzpos = circExtract->GetMagnetZs();
       trkxc = circExtract->GetXc();
       trkzc = circExtract->GetZc();
       trkrc = circExtract->GetR();

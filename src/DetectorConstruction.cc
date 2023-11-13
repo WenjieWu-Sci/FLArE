@@ -115,11 +115,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4AssemblyVolume* FLArEAssembly = FLArEAssembler->GetFLArEAssembly();
     TPCModuleLogical            = FLArEAssembler->GetFLArETPCVolume();
-    hadCatcherLogical           = FLArEAssembler->GetHadCalVolume();
     HadCalXCellLogical          = FLArEAssembler->GetHadCalXVolume();
     HadCalYCellLogical          = FLArEAssembler->GetHadCalYVolume();
     HadAbsorLayersLogical       = FLArEAssembler->GetHadCalAbsorbVolume();
-    muonFinderLogical           = FLArEAssembler->GetMuonCatcherVolume();
     MuonFinderXCellLogical      = FLArEAssembler->GetMuonCatcherXVolume();
     MuonFinderYCellLogical      = FLArEAssembler->GetMuonCatcherYVolume();
     MuonFinderAbsorLayersLogical= FLArEAssembler->GetMuonCatcherAbsorbVolume();
@@ -264,8 +262,12 @@ void DetectorConstruction::ConstructSDandField() {
     fieldMgr = new G4FieldManager();
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
-    hadCatcherLogical->SetFieldManager(fieldMgr, true);
-    muonFinderLogical->SetFieldManager(fieldMgr, true);
+    HadCalXCellLogical->SetFieldManager(fieldMgr, true);
+    HadCalYCellLogical->SetFieldManager(fieldMgr, true);
+    HadAbsorLayersLogical->SetFieldManager(fieldMgr, true);
+    MuonFinderXCellLogical->SetFieldManager(fieldMgr, true);
+    MuonFinderYCellLogical->SetFieldManager(fieldMgr, true);
+    MuonFinderAbsorLayersLogical->SetFieldManager(fieldMgr, true);
   }
 
   if (m_addFORMOSA) {

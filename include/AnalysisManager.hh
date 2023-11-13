@@ -155,6 +155,7 @@ class AnalysisManager {
    
     // Circular fit in FASER magnet(s)
     G4int Nmagnets; // size of output vectors
+    std::vector<double> magzpos;
     G4int trkNhits; // hits in tracking stations
     std::vector<double> trkxc; //circle fit results
     std::vector<double> trkzc;

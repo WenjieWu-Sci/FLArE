@@ -184,7 +184,6 @@ namespace circularfitter {
     // get the magnet position(s) for each geometry (SAMURAI or CrystalPulling design) first
     G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();
     G4int nmag = 0;
-    std::vector<double> zpos;
     std::vector<double> zin;
     std::vector<double> zout;
     
@@ -193,10 +192,10 @@ namespace circularfitter {
 
       // there is only one magnet, so one magnet position
       nmag = 1;
-      zpos.push_back(GeometricalParameters::Get()->GetMagnetZPosition());
+      fzpos.push_back(GeometricalParameters::Get()->GetMagnetZPosition());
       double size = GeometricalParameters::Get()->GetMagnetTotalSizeZ();
-      zin.push_back(zpos[0] - size/2.);  //begin of magnet window
-      zout.push_back(zpos[0] + size/2.); //end of magnet window
+      zin.push_back(fzpos[0] - size/2.);  //begin of magnet window
+      zout.push_back(fzpos[0] + size/2.); //end of magnet window
     
     }else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
       
@@ -206,7 +205,7 @@ namespace circularfitter {
       nmag = GeometricalParameters::Get()->GetNSpectrometerMagnets();
       for(int i=0; i<nmag; i++){
 	double offset = (i-0.5*(nmag-1))*(spacing+size);
-	zpos.push_back( zcenter + offset );
+	fzpos.push_back( zcenter + offset );
         zin.push_back( zcenter + offset - size/2. );  //begin of magnet window
         zout.push_back( zcenter + offset + size/2. ); //end of magnet window
         //G4cout << "center zin zout " << zpos[i] << " " << zin[i] << " " << zout[i] <<G4endl;
@@ -216,7 +215,7 @@ namespace circularfitter {
 
     // STEP 2: split hits in before/after each magnet
     std::vector<std::vector<hit>> hits;
-    splitHits( zpos, x, y, z, hits);
+    splitHits( fzpos, x, y, z, hits);
        
     // STEP 3: apply the procedure for each magnet available
     // Each magnet uses its own pre and post hits (i and i+1)   
