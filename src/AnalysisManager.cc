@@ -520,7 +520,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
         trkmOut.push_back( post[i].m );
       }
 
-      circularfitter::LineFit* lineFit2 = new circularfitter::LineFit(trkZFSL,trkXFSL);
+      circularfitter::LineFit* lineFit2 = new circularfitter::LineFit(trkZFSL,trkYFSL);
       trkp0 = lineFit2->GetP0();
       trkp1 = lineFit2->GetP1();
       trkcosDip = lineFit2->GetCosDip();
