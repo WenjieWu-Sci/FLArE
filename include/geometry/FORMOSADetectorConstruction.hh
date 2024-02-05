@@ -34,8 +34,8 @@ class FORMOSADetectorConstruction {
     G4LogicalVolume* fScintillatorPMT;
 
     // Scintillator bars
-    G4int fNScintillatorBarsX;
-    G4int fNScintillatorBarsY;
+    G4int fNScinBarsX;
+    G4int fNScinBarsY;
     G4double fScintillatorBarSizeX;
     G4double fScintillatorBarSizeY;
     G4double fScintillatorBarSizeZ;

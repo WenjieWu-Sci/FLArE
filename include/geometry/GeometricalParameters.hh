@@ -127,10 +127,10 @@ class GeometricalParameters  {
     void SetFORMOSATotalSizeZ(G4double val) { fFORMOSATotalSizeZ = val; }
     G4double GetFORMOSATotalSizeZ() { return fFORMOSATotalSizeZ; }
     // Scintillator blocks
-    void SetNScinBarsX(G4int val) { fNScintillatorBarsX = val; }
-    G4int GetNScinBarsX() {return fNScintillatorBarsX; }
-    void SetNScinBarsY(G4int val) { fNScintillatorBarsY = val; }
-    G4int GetNScinBarsY() {return fNScintillatorBarsY; }
+    void SetNScinBarsX(G4int val) { fNScinBarsX = val; }
+    G4int GetNScinBarsX() {return fNScinBarsX; }
+    void SetNScinBarsY(G4int val) { fNScinBarsY = val; }
+    G4int GetNScinBarsY() {return fNScinBarsY; }
     void SetScintillatorBarSizeX(G4double val) { fScintillatorBarSizeX = val; }
     G4double GetScintillatorBarSizeX() {return fScintillatorBarSizeX; }
     void SetScintillatorBarSizeY(G4double val) { fScintillatorBarSizeY = val; }

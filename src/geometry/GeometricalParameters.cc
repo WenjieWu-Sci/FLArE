@@ -64,8 +64,8 @@ GeometricalParameters::GeometricalParameters()
 
   // FORMOSA
   fFORMOSATotalSizeZ = 5*m; //updates during construction
-  fNScintillatorBarsX = 20;
-  fNScintillatorBarsY = 20;
+  fNScinBarsX = 20;
+  fNScinBarsY = 20;
   fScintillatorBarSizeX = 5*cm;
   fScintillatorBarSizeY = 5*cm;
   fScintillatorBarSizeZ = 1*m;

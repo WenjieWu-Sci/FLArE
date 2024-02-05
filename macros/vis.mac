@@ -9,6 +9,7 @@
 #
 /run/initialize
 #
+/control/execute macros/geometry_options/FPF_hall_Reference.mac
 
 #/vis/open DAWNFILE
 # Use this open statement to create an OpenGL view:
