@@ -18,8 +18,8 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
 
   G4cout << "Building FORMOSA Detector" << G4endl;
 
-  fNScintillatorBarsX = GeometricalParameters::Get()->GetNScinBarsX();
-  fNScintillatorBarsY = GeometricalParameters::Get()->GetNScinBarsY();
+  fNScinBarsX = GeometricalParameters::Get()->GetNScinBarsX();
+  fNScinBarsY = GeometricalParameters::Get()->GetNScinBarsY();
   fScintillatorBarSizeX = GeometricalParameters::Get()->GetScintillatorBarSizeX();
   fScintillatorBarSizeY = GeometricalParameters::Get()->GetScintillatorBarSizeY();
   fScintillatorBarSizeZ = GeometricalParameters::Get()->GetScintillatorBarSizeZ();
@@ -84,26 +84,26 @@ void FORMOSADetectorConstruction::BuildScintillatorAssembly()
 
   // build scintillator block
   auto scinBlockSolid = new G4Box("scinBlockSolid",
-                               (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
-                               (fNScintillatorBarsY*fScintillatorBarSizeY)/2.,
+                               (fNScinBarsX*fScintillatorBarSizeX)/2.,
+                               (fNScinBarsY*fScintillatorBarSizeY)/2.,
                                fScintillatorBarSizeZ/2.);
   auto scinBlockLogical = new G4LogicalVolume(scinBlockSolid, fMaterials->Material("Polystyrene"), "scinBlockLogical");
   auto scinBlockYLayerSolid = new G4Box("scinBlockYLayerSolid",
-                               (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
+                               (fNScinBarsX*fScintillatorBarSizeX)/2.,
                                fScintillatorBarSizeY/2.,
                                fScintillatorBarSizeZ/2.);
   auto scinBlockYLayerLogical = new G4LogicalVolume(scinBlockYLayerSolid, fMaterials->Material("Polystyrene"), "scinBlockYLayerLogical");
   // replicate along x to build one Y layer of the block
   new G4PVReplica("scinBlockYLayerPhysical", fScintillatorBar,
-                  scinBlockYLayerLogical, kXAxis, fNScintillatorBarsX, fScintillatorBarSizeX);
+                  scinBlockYLayerLogical, kXAxis, fNScinBarsX, fScintillatorBarSizeX);
   // replicate along y to fill entire block
   new G4PVReplica("scinBlockPhysical", scinBlockYLayerLogical,
-                  scinBlockLogical, kYAxis, fNScintillatorBarsY, fScintillatorBarSizeY);
+                  scinBlockLogical, kYAxis, fNScinBarsY, fScintillatorBarSizeY);
  
   // build PMT "box"
   auto PMTBoxSolid = new G4Box("PMTBoxSolid", 
-                              (fNScintillatorBarsX*fScintillatorBarSizeX)/2.,
-                              (fNScintillatorBarsY*fScintillatorBarSizeY)/2.,
+                              (fNScinBarsX*fScintillatorBarSizeX)/2.,
+                              (fNScinBarsY*fScintillatorBarSizeY)/2.,
                                fPMTSizeSpacing/2.);
   fScintillatorPMT = new G4LogicalVolume(PMTBoxSolid, fMaterials->Material("Air"), "PMTBoxLogical");
 
