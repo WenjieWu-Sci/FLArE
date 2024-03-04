@@ -1,0 +1,45 @@
+# This file defines the standard configuration for the FPF Option2 hall
+# in which FORMOSA is placed under the FASER2 decay tunnel
+# and FASERnu2 is placed before FLArE
+# GEOMETRY IS SQUEEZED
+# The geometry contains:
+# - FASERnu2
+# - FLArE (TPC + HadCather + MuonFinder)
+# - FORMOSA (under LOS)
+# - FASER2 (SAMURAI magnet)
+
+# Configuring FASERnu2
+/det/addFASERnu2 true
+/det/addFASERnu2Pos 0 0 4293 mm
+
+# Configuring FLArE
+# assuming 1.2m gap from FASERnu2
+/det/addFLArE true
+/det/addFLArEPos 0 0 14086 mm
+/det/material LAr
+/det/module 3x7
+/det/field 1. tesla
+
+# Configuring FASER2
+# assuming NO 1.2m gap from FLArE
+# (which include veto stations)
+# + 8m decay tunnel
+/det/addFASER2 true
+/det/addFASER2Pos 0 0 31116 mm
+/det/magnetGeom SAMURAI
+/det/magnetField 1. tesla
+/det/magnetWinX 3.0 m
+/det/magnetWinY 1.0 m
+/det/magnetWinZ 4.0 m
+/det/yokeThickX 1.5 m
+/det/yokeThickY 2.0 m
+/det/trackingNumber 6
+/det/trackingGap 0.2 m
+/det/trackingNBarsX 7
+/det/trackingNBarsY 7
+/det/trackingScinThick 1.0 cm
+
+# Configuring FORMOSA
+# assuming in the middle of decay tunnel
+/det/addFORMOSA true
+/det/addFORMOSAPos 0 -2500 25996 mm
