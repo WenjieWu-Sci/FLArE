@@ -7,8 +7,6 @@
 /control/verbose 2
 /run/verbose 2
 #
-/run/initialize
-#
 /control/execute macros/geometry_options/FPF_hall_Reference.mac
 #/control/execute macros/geometry_options/FPF_hall_Reference_CP.mac
 #/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast.mac
@@ -17,7 +15,9 @@
 #/control/execute macros/geometry_options/FPF_hall_Option1b_FORMOSAunder_CP.mac
 #/control/execute macros/geometry_options/FPF_hall_Option2_FASERnufirst.mac
 #/control/execute macros/geometry_options/FPF_hall_Option2_FASERnufirst_CP.mac
-
+#
+/run/initialize
+#
 #/vis/open DAWNFILE
 # Use this open statement to create an OpenGL view:
 /vis/open OGL 1000x800-0+0
