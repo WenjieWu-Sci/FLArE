@@ -3,8 +3,6 @@
 #include <TLorentzVector.h>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
-#include "Framework/Interaction/InteractionType.h"
-#include "Framework/Interaction/ScatteringType.h"
 
 class G4ParticleGun;
 class G4GeneralParticleSource;
@@ -21,8 +19,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void GeneratePrimaries(G4Event* anEvent) override;
 
     void setUseGenie(G4bool val) { useGenie = val; }
-    void setGenieInputFile(G4String val) { ghepFileName = val; }
-    void setGenieStartEvt(G4int val) { ghepEvtStartIdx = val; }
+    void setGenieInputFile(G4String val) { gstFileName = val; }
+    void setGenieStartEvt(G4int val) { gstEvtStartIdx = val; }
 
   private:
 //    static PrimaryGeneratorAction* GeneratorInstance;
@@ -41,11 +39,10 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4double w { -1 };
     G4int fslpdg;
     TLorentzVector fslp4;
-    TLorentzVector fslx4;
 
     G4bool useGenie;
-    G4String ghepFileName;
-    G4int ghepEvtStartIdx;
+    G4String gstFileName;
+    G4int gstEvtStartIdx;
 };
 
 #endif

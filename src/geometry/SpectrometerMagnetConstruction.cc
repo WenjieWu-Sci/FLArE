@@ -19,7 +19,7 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
   fMaterials = DetectorConstructionMaterial::GetInstance();
 
   // choose magnet option
-  G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption(); 
+  GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption(); 
   if( opt == GeometricalParameters::magnetOption::SAMURAI ){
     
     G4cout << "Building SAMURAI spectrometer magnet" << G4endl;

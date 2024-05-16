@@ -19,7 +19,7 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
   fMaterials = DetectorConstructionMaterial::GetInstance();
 
   // choose target material
-  G4String fDetMaterialName = GeometricalParameters::Get()->GetTPCMaterialOption();
+  GeometricalParameters::tpcMaterialOption fDetMaterialName = GeometricalParameters::Get()->GetTPCMaterialOption();
   detectorMaterial = 0;
   if (fDetMaterialName == GeometricalParameters::tpcMaterialOption::LiquidArgon) {
     detectorMaterial = fMaterials->Material("LiquidArgon");

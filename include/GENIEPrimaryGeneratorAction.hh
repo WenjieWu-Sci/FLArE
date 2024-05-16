@@ -5,15 +5,9 @@
 #include <TTree.h>
 #include <TLorentzVector.h>
 #include "globals.hh"
-#include "Framework/Ntuple/NtpMCTreeHeader.h"
-#include "Framework/Ntuple/NtpMCEventRecord.h"
-#include "Framework/Interaction/InteractionType.h"
-#include "Framework/Interaction/ScatteringType.h"
 
 class G4GeneralParticleSource;
 class G4Event;
-
-using namespace genie;
 
 class GENIEPrimaryGeneratorAction {
   public:
@@ -22,38 +16,39 @@ class GENIEPrimaryGeneratorAction {
 
   public:
     void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx, G4int nuVtxOpt);
+    void ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector p4);
+    
+    G4int DecodeInteractionType(bool cc, bool nc, bool em);
+    G4int DecodeScatteringType(bool qel, bool res, bool dis, bool coh, bool dfr, 
+			       bool imd, bool imdanh, bool mec, bool nuel,
+	                       bool singlek, bool amnugamma);
+
     G4int             NeuIdx() { return neuIdx; };
     G4int             NeuPDG() { return neuPDG; };
     TLorentzVector    NeuP4()  { return neuP4; };
     TLorentzVector    NeuX4()  { return neuX4; };
-    InteractionType_t InteractionTypeId() { return int_type; };
-    ScatteringType_t  ScatteringTypeId()  { return scattering_type; };
+    G4int InteractionTypeId() { return int_type; };
+    G4int ScatteringTypeId()  { return scattering_type; };
     G4int             FSLPDG() { return fslPDG; };
     TLorentzVector    FSLP4()  { return fslP4; };
-    TLorentzVector    FSLX4()  { return fslX4; };
     G4double          GetW()   { return W; };
     
   private:
     G4GeneralParticleSource* fGPS;
 
-    G4String ghepFileName;
-    G4int ghepEvtStartIdx;
-    TFile* ghep_file;
-    TTree* ghep_tree;
-    NtpMCTreeHeader* thdr;
-    NtpMCEventRecord* mcrec;
+    G4String gstFileName;
+    G4int gstEvtStartIdx;
+    TFile* gst_file;
+    TTree* gst_tree;
 
     G4int neuIdx;
     G4int neuPDG;
     TLorentzVector neuP4;
     TLorentzVector neuX4;
-    // https://internal.dunescience.org/doxygen/Generator_2src_2Framework_2Interaction_2InteractionType_8h_source.html#l00033
-    // https://internal.dunescience.org/doxygen/ScatteringType_8h_source.html
-    InteractionType_t int_type;
-    ScatteringType_t  scattering_type;
+    G4int int_type;
+    G4int scattering_type;
     G4int fslPDG;
     TLorentzVector fslP4;
-    TLorentzVector fslX4;
     G4double W;
 };
 
