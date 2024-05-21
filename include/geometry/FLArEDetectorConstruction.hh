@@ -5,6 +5,7 @@
 #include "G4AssemblyVolume.hh"
 
 #include "DetectorConstructionMaterial.hh"
+#include "GeometricalParameters.hh"
 
 /// \class FLArEDetectorConstruction
 /// This class builds the FLArE TPC
@@ -56,7 +57,7 @@ class FLArEDetectorConstruction {
     G4AssemblyVolume* MuonCatcherAssembly;
 
     //G4String fDetMaterialName;
-    G4String fDetGeomOption;
+    GeometricalParameters::tpcConfigOption fDetGeomOption;
     G4double fLArSizeX;
     G4double fLArSizeY;
     G4double fLArSizeZ;

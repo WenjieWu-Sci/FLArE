@@ -182,7 +182,7 @@ namespace circularfitter {
     // two cases depending on the magnet design:
     // there can be many magnets, so many magnet positions
     // get the magnet position(s) for each geometry (SAMURAI or CrystalPulling design) first
-    G4String opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();
+    GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();
     G4int nmag = 0;
     std::vector<double> zin;
     std::vector<double> zout;

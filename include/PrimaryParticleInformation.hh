@@ -24,12 +24,11 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     /// @param scattering type of the neutrino interaction if it is from GENIE
     /// @param fsl PDG of the neutrino interaction if it is from GENIE
     /// @param fsl P4 of the neutrino interaction if it is from GENIE
-    /// @param fsl X4 of the neutrino interaction if it is from GENIE
     PrimaryParticleInformation(G4int aID, G4int aPDG, G4double aMass,
         G4ThreeVector aMomentum, G4ThreeVector aVertex,
         G4int aneuIdx, G4int aneuPDG, TLorentzVector aneuP4, TLorentzVector aneuX4,
         G4int aInttype, G4int aScatteringtype, G4double aW,
-        G4int afslPDG, TLorentzVector afslP4, TLorentzVector afslX4);
+        G4int afslPDG, TLorentzVector afslP4);
 
     virtual ~PrimaryParticleInformation();
 
@@ -58,7 +57,6 @@ class PrimaryParticleInformation : public G4VUserPrimaryParticleInformation {
     inline G4double GetW() const { return fW; };
     inline G4int GetFSLPDG() const { return fFSLPDG; };
     inline TLorentzVector GetFSLP4() const { return fFSLP4; };
-    inline TLorentzVector GetFSLX4() const { return fFSLX4; };
 
     /// Prints the information about the particle.
     virtual void Print() const;
