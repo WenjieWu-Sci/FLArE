@@ -28,7 +28,6 @@ message(STATUS "Set Geant4 : ${Geant4_USE_FILE}")
 #
 find_package(ROOT REQUIRED COMPONENTS Geom EG RIO) 
 include(${ROOT_USE_FILE})
-
 message(STATUS "Set ROOT : ${ROOT_USE_FILE}")
 
 ## Eigen

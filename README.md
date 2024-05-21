@@ -9,14 +9,13 @@ Simulation code for R&D of the FLArE detector
 * And then `cmake /path/to/source`
 * Finally `make`
 
-Things get complicated with importing GENIE results to the Geant4 Application. What we're doing now is to link to GENIE libraries so we can have a dictionary for the ROOT file format, read in the TTree record and then loop over the particles in the event record and for those with status code == 1 (those particles coming out of the nucleus) and call Geant4's PrimaryVertex. Not only GENIE libraries, there are a bunch of another packages needed in order to link GENIE libraries. 
+The minimal software requirements are:
 * Geant4 v4_10_6_p01c
 * ROOT v6_22_06a
-* GENIE v3_00_06k
-* log4cpp v1_1_3c
-* gsl v2_6a
-* libxml2 v2_9_10a
-* pythia6 v6_4_28r
+* HEP_HPC v0_14_01
+* HDF5 v1_10_0+
+
+There is no longer an explicit GENIE dependency. However, the input GENIE `ghep` files need to be converted in the `gst` format (plain ROOT tree). The conversion can be perfomed with the native GENIE utility `gntpc`.
 
 ## Macro command
 ### Geometry
