@@ -1,17 +1,22 @@
 # define detector material before run initialization
-/det/material LAr
+/control/execute macros/geometry_options/FPF_hall_Reference.mac
 
 /run/initialize
+/random/setSeeds 324199 420475
 
+# define particle gun options
 /gps/verbose 0
-/gps/direction 0 0 1
-
 /gps/pos/type Point
 /gps/pos/centre 0 0 -2.5 m
-
-# variables
+/gps/direction 0 0 1
 /gps/particle e-
 /gps/ene/mono 19.999489 GeV
-/histo/saveEvd false
+
+# define output options
+/histo/save3DEvd false
+/histo/save2DEvd false
+/histo/saveHit false
 /histo/fileName e-_momentum_20GeV.root
+
+# shoot 1 particles
 /run/beamOn 1
