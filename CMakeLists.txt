@@ -67,9 +67,10 @@ file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 file(GLOB_RECURSE gridutils RELATIVE ${PROJECT_SOURCE_DIR} GridUtils/*)
+file(GLOB_RECURSE setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
 
 # Enable macros for out-of-source build
-foreach(_file ${macros} ${genie} ${analysis} ${gridutils})
+foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
   configure_file(
     ${_file}
     ${PROJECT_BINARY_DIR}/${_file}
