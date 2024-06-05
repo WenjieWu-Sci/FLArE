@@ -6,13 +6,9 @@
 **File Access Best Practices**: https://cern.service-now.com/service-portal?id=kb_article&n=KB0003076
 
 ### Single-job example
-This example shows how to submit a single Geant4 (FLArE) job, following best practices regarding file access and output storage.
-
-Output logs must go to `/afs/cern.ch/`, while output files are transferred to `\eos\` via xroot plugin.
-
-Input files are transferred using `transfer_input_file` (in any case `/afs/cern.ch/` is visible from the nodes).
-
-Note: input files from `\eos\` need to be copied by the executable itself (via eos xroot access).
+This example shows how to submit a single Geant4 (FLArE) job. Output logs must go to `/afs/cern.ch/`, while output files are transferred to `\eos` via xroot plugin.
+Input files are transferred to the node using `transfer_input_file`. Note that in any case `/afs/cern.ch/` is visible from the nodes.
+On the other hand, input files from `\eos` need to be copied by the executable itself (via eos xroot access).
 
 Submission command: `condor_submit example.sub`
 
@@ -31,8 +27,9 @@ MY.XRDCP_CREATE_DIR     = True
 queue 1
 ```
 `$(ClusterId)` and `$(ProcId)` are expanded during execution. 
-They're used both for the output directories, and also passed to the executable as arguments. 
-All the files needed by the executable (setup script, Geant4 macros, libraries) are transferred.
+They're currently used for naming the output directories, as well as executable arguments. 
+All small files needed by the executable (setup script, Geant4 macros, libraries) are transferred in the submission file.
+Input ROOT files (such as GENIE `gst` files) are copied on the node by the executable itself.
 Output is sent automatically to `\eos` via xroot protocol.
 
 #### File: `example.sh`
@@ -56,7 +53,6 @@ eos cp /eos/user/m/mvicenzi/genie/numu_kling_ar40_e5000.gst.root .
 echo "Running ./FLArE macro.mac"
 ./FLArE macro.mac
 ```
-The executable sets the environment and creates the log directories.
-Since those are based on the cluster id, they cannot be created in advance.
-Note that all files (`lxplus_setup.sh`, `macro.mac`) are available locally because they were transferred. 
+The executable sets the environment and creates the log directories. Since those are based on the cluster id, they cannot be created in advance.
+Note that all files (`lxplus_setup.sh`, `macro.mac`) are available locally because they were transferred by the submission file.
 If a GENIE `gst` is needed, it must be transferred from within the executable.
