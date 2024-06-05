@@ -1,15 +1,21 @@
 ## Submitting a job on lxplus
 **General Documentation**: https://batchdocs.web.cern.ch/index.html
+
 **Quick Start Guide**: https://batchdocs.web.cern.ch/local/quick.html
+
 **File Access Best Practices**: https://cern.service-now.com/service-portal?id=kb_article&n=KB0003076
 
 ### Single-job example
 This example shows how to submit a single Geant4 (FLArE) job, following best practices regarding file access and output storage.
+
 Output logs must go to `/afs/cern.ch/`, while output files are transferred to `\eos\` via xroot plugin.
+
 Input files are transferred using `transfer_input_file` (in any case `/afs/cern.ch/` is visible from the nodes).
+
 Note: input files from `\eos\` need to be copied by the executable itself (via eos xroot access).
 
 Submission command: `condor_submit example.sub`
+
 Status check: `condor_q`
 
 #### File: `example.sub`
@@ -25,7 +31,7 @@ MY.XRDCP_CREATE_DIR     = True
 queue 1
 ```
 `$(ClusterId)` and `$(ProcId)` are expanded during execution. 
-They are used both for the output directories, and also passed to the executable as arguments. 
+They're used both for the output directories, and also passed to the executable as arguments. 
 All the files needed by the executable (setup script, Geant4 macros, libraries) are transferred.
 Output is sent automatically to `\eos` via xroot protocol.
 
