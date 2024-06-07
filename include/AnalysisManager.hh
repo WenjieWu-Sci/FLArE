@@ -169,6 +169,11 @@ class AnalysisManager {
     std::vector<double> trkZFSL;
     std::vector<double> trkYFSL;
     std::vector<double> trkPFSL;
+    G4int magNhits; // hits in magnet(s)
+    std::vector<double> magXFSL; // MC truth
+    std::vector<double> magZFSL;
+    std::vector<double> magYFSL;
+    std::vector<double> magPFSL;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);

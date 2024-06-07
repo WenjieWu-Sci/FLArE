@@ -125,6 +125,7 @@ void AnalysisManager::bookEvtTree() {
   if(m_circularFit){
     evt->Branch("circNhits"               , &circNhits                 , "circNhits/I");
     evt->Branch("trkNhits"                , &trkNhits                  , "trkNhits/I");
+    evt->Branch("magNhits"                , &magNhits                  , "magNhits/I");
     evt->Branch("circXc"                  , &xc                        , "circXc/D"); 
     evt->Branch("circZc"                  , &zc                        , "circZc/D");
     evt->Branch("circRc"                  , &rc                        , "circRc/D");
@@ -151,6 +152,10 @@ void AnalysisManager::bookEvtTree() {
     evt->Branch("trkHitYFSL"              , &trkYFSL);
     evt->Branch("trkHitZFSL"              , &trkZFSL);        
     evt->Branch("trkHitPFSL"              , &trkPFSL);        
+    evt->Branch("magHitXFSL"              , &magXFSL);
+    evt->Branch("magHitYFSL"              , &magYFSL);
+    evt->Branch("magHitZFSL"              , &magZFSL);        
+    evt->Branch("magHitPFSL"              , &magPFSL);        
   }
 
 }
@@ -283,6 +288,10 @@ void AnalysisManager::BeginOfEvent() {
   trkYFSL.clear();
   trkZFSL.clear();
   trkPFSL.clear();
+  magXFSL.clear();
+  magYFSL.clear();
+  magZFSL.clear();
+  magPFSL.clear();
 
 }
 
@@ -424,7 +433,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     
     circNhits = hitXFSL.size();
     trkNhits = trkXFSL.size();
-    
+    magNhits = magXFSL.size();
+
     // apply circular fitting to FLArE hadCath/muonFinder
     if ( circNhits > 0 ){
       circularfitter::CircleFit* circFit = new circularfitter::CircleFit(hitXFSL,hitZFSL);
@@ -551,6 +561,12 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
           trkZFSL.push_back(post_z);
           trkPFSL.push_back(p_perp);
         }
+	else if (sdName == "FASER2MagnetSD/lar_box") {
+          magXFSL.push_back(post_x);
+          magYFSL.push_back(post_y);
+          magZFSL.push_back(post_z);
+          magPFSL.push_back(p_perp);
+	}
       }
 
       //allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
