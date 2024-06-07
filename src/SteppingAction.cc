@@ -19,6 +19,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep) {
   //TrackLiveDebugging(aStep);
 	
   G4Track* aTrack = aStep->GetTrack();
+  int PDG = aTrack->GetParticleDefinition()->GetPDGEncoding();
+  if( TMath::Abs(PDG) != 13 ) //if not a muon, kill it
+    aTrack->SetTrackStatus(G4TrackStatus::fStopAndKill);
+ 
   G4ThreeVector post_pos = aStep->GetPostStepPoint()->GetPosition();
   
   // if the track is out of the active volumes/area, kill this track
