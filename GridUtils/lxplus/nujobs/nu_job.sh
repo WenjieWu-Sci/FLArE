@@ -6,12 +6,12 @@
 
 # Production name for output directories
 # This is used to place output logs and files
-export prodname="test_nue"
+export prodname="test_numu"
 
 # Define how many jobs, how many files
 # Jobs will be placed in the same cluster
 export n_jobs=2
-export n_evt_per_job=1
+export n_evt_per_job=10
 
 # Path to FLArE build directory in /afs/cern.ch
 export builddir="/afs/cern.ch/work/${USER:0:1}/${USER}/public/FLArE/build"
@@ -23,7 +23,7 @@ export libdict="${builddir}/libFLArE_rdict.pcm"
 export geometry="${builddir}/macros/geometry_options/FPF_hall_Reference.mac"
 
 # Path to genie gst file in /eos/
-export geniegst="/eos/user/m/mvicenzi/genie/nue_kling_ar40_e5000.gst.root"
+export geniegst="/eos/user/m/mvicenzi/genie/numu_kling_ar40_e5000.gst.root"
 
 # Path to log directory
 export logdir="/afs/cern.ch/work/${USER:0:1}/${USER}/public/LOGS"
