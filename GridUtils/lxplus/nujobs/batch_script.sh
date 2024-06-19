@@ -15,8 +15,8 @@ echo "Importing ${gst}..."
 eos cp ${gstfile} .
 
 # select the macro file
-let num=${process}*1+1
-echo "Selecting $num macro from list:"
+let num=$((${process}+1))
+echo "Selecting macro from line ${num} in list:"
 
 macropath=$(tail -n+${num} macrolist.txt | head -n1)
 macro=`basename "$macropath"`
@@ -31,3 +31,5 @@ echo "Running ./FLArE ${macro}"
 
 # delete what you imported, or it is copied in output!
 rm ${macro} ${gst}
+
+echo "Completed JOBID ${cluster}.${process}"
