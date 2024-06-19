@@ -13,6 +13,11 @@ export prodname="test_numu"
 export n_jobs=2
 export n_evt_per_job=10
 
+# Set the max wall time duration allowed
+# See https://batchdocs.web.cern.ch/tutorial/exercise6b.html
+# eg: espresso = 20 min, microcentury = 1 hour, longlunch = 2 hours
+export max_duration="microcentury"
+
 # Path to FLArE build directory in /afs/cern.ch
 export builddir="/afs/cern.ch/work/${USER:0:1}/${USER}/public/FLArE/build"
 export flare="${builddir}/FLArE"
@@ -38,7 +43,7 @@ function generate_macros {
   list=$1
 
   # for each job
-  for i in `seq 1 1 ${n_jobs}`
+  for i in $(seq 0 $((${n_jobs}-1)))
   do
 
     # setup different seeds per jobs
@@ -46,7 +51,7 @@ function generate_macros {
     seed2=$((47+i))
 
     # select the start entry for the gst file
-    istart=$((n_evt_per_job*i-n_evt_per_job))
+    istart=$((n_evt_per_job*i))
 
     # select name for output file 
     outputfile="${prodname}_${i}.root"
@@ -109,6 +114,7 @@ log                     = ${logdir}/${prodname}/log/\$(ClusterId).\$(ProcId).log
 transfer_input_files    = ${setup},${flare},${geometry},${libdict},${listpath}
 output_destination      = root://eosuser.cern.ch/${outdir}/${prodname}/
 MY.XRDCP_CREATE_DIR     = True
++JobFlavour             = "${max_duration}"
 queue ${n_jobs}
 EOF
 
@@ -127,8 +133,9 @@ mkdir -p ${logdir}/${prodname}/mac
 # check if production with the same name already exists
 if [ -d "${outdir}/${prodname}" ] && [ "$(ls -A ${outdir}/${prodname})" ]; then
   echo "WARNING: ${outdir}/${prodname} is not empty!"
-  echo "Outputs for production ${prodname} already exist, delete them first!"
-  exit
+  echo "Outputs for production ${prodname} already exist, delete them first"
+  echo "or change the name for this production!"
+  exit 1
 else
   if [ -d "${logdir}/${prodname}/out/" ] && [ "$(ls -A ${logdir}/${prodname}/out/)" ]; 
     then rm ${logdir}/${prodname}/out/*; fi
