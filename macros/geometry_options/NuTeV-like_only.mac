@@ -1,0 +1,12 @@
+# This file defines the standard configuration for a Sampling Calorimeter only option
+# The geometry contains only the Sampling Calorimeter (a NuTeV-like detector)
+
+# Configuring a Sampling Calorimeter
+/det/addSamplingCalo true
+/det/addSamplingCaloPos 0 0 2100 mm
+
+# Turn off everything else
+/det/addFLArE false
+/det/addFORMOSA false
+/det/addFASERnu2 false
+/det/addFASER2 false

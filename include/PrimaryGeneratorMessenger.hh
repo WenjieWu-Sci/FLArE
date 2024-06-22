@@ -27,6 +27,7 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIdirectory* GeneratorDir;
     G4UIcmdWithAString* GHEPInputFile;
     G4UIcmdWithAnInteger* GHEPEvtStartIdx;
+    G4UIcmdWithAnInteger* GHEPVtxOpt;
     G4UIcmdWithABool* USEGENIE;
 };
 

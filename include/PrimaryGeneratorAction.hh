@@ -21,6 +21,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void setUseGenie(G4bool val) { useGenie = val; }
     void setGenieInputFile(G4String val) { gstFileName = val; }
     void setGenieStartEvt(G4int val) { gstEvtStartIdx = val; }
+    void setGenieVtxOpt(G4int val) { gstVtxOpt = val; }
 
   private:
 //    static PrimaryGeneratorAction* GeneratorInstance;
@@ -43,6 +44,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4bool useGenie;
     G4String gstFileName;
     G4int gstEvtStartIdx;
+    G4int gstVtxOpt;
 };
 
 #endif

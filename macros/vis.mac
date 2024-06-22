@@ -20,7 +20,8 @@
 
 # Initialize the chosen graphics driver
 # Use this open statement to create an OpenGL view:
-/vis/open OGLIX 1000x800-0+0
+#/vis/open OGLIX 1000x800-0+0
+/vis/open OGLIQt 1000x800-0+0
 /vis/ogl/set/displayListLimit 5000000
 
 # For a file-based driver, use DAWN

@@ -68,7 +68,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
   if (useGenie) {
     std::cout<<std::endl;
     std::cout<<"===oooOOOooo=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===oooOOOooo==="<<std::endl;
-    fActionGenie->GeneratePrimaries(anEvent, gstFileName, gstEvtStartIdx, 1);
+    fActionGenie->GeneratePrimaries(anEvent, gstFileName, gstEvtStartIdx, gstVtxOpt);
     neuidx          = fActionGenie->NeuIdx();
     neupdg          = fActionGenie->NeuPDG();
     neup4           = fActionGenie->NeuP4();

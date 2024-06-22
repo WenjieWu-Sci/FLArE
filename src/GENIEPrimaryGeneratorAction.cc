@@ -174,6 +174,15 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
                  (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetFLArEFidVolSize().z());
       neuX4.SetT(0.);
       break;
+    case 2:
+      neuX4.SetX(GeometricalParameters::Get()->GetSamplingCaloPosition().x() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloSizeX());
+      neuX4.SetY(GeometricalParameters::Get()->GetFLArEPosition().y() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloSizeY());
+      neuX4.SetZ(GeometricalParameters::Get()->GetFLArEPosition().z() +
+                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloSizeZ());
+      neuX4.SetT(0.);
+      break;
   }
 
   // now we shoot all the final state particles into the Geant4 event

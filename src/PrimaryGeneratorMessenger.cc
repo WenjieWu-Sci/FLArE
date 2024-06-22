@@ -31,6 +31,11 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   GHEPEvtStartIdx->SetDefaultValue((G4int)0);
   GHEPEvtStartIdx->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  GHEPVtxOpt = new G4UIcmdWithAnInteger("/genie/vtxOpt", this);
+  GHEPVtxOpt->SetGuidance("set the method to generate vertices");
+  GHEPVtxOpt->SetDefaultValue((G4int)1);
+  GHEPVtxOpt->AvailableForStates(G4State_PreInit, G4State_Idle);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -39,6 +44,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 {
   delete GHEPInputFile;
   delete GHEPEvtStartIdx;
+  delete GHEPVtxOpt;
   delete USEGENIE;
   delete GeneratorDir;
 }
@@ -49,6 +55,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
 {
   if (command == GHEPInputFile) PrimGenAction->setGenieInputFile(newValues);
   if (command == GHEPEvtStartIdx) PrimGenAction->setGenieStartEvt(GHEPEvtStartIdx->GetNewIntValue(newValues));
+  if (command == GHEPVtxOpt) PrimGenAction->setGenieVtxOpt(GHEPVtxOpt->GetNewIntValue(newValues));
   if (command == USEGENIE) PrimGenAction->setUseGenie(USEGENIE->GetNewBoolValue(newValues));
 }
 
