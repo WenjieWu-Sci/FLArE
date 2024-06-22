@@ -145,6 +145,20 @@ class GeometricalParameters  {
     G4ThreeVector GetFORMOSAPosition() { return fFORMOSAPos; }
     void SetFORMOSAPosition(G4ThreeVector val) { fFORMOSAPos = val; }
 
+    // A sampling calorimeter (NuTeV-like detector)
+    G4double GetSamplingCaloThicknessCaloX()   { return fSamplingCaloThicknessCaloX; }
+    G4double GetSamplingCaloThicknessCaloY()   { return fSamplingCaloThicknessCaloY; }
+    G4double GetSamplingCaloThicknessAbsorb()  { return fSamplingCaloThicknessAbsorb; }
+    G4int    GetSamplingCaloNLayers()          { return fSamplingCaloNLayers; }
+    G4double GetSamplingCaloSizeX()   { return fSamplingCaloSizeX; }
+    G4double GetSamplingCaloSizeY()   { return fSamplingCaloSizeY; }
+    G4double GetSamplingCaloSizeZ()   { return fSamplingCaloSizeZ; }
+    void SetSamplingCaloSizeZ(G4double val) { fSamplingCaloSizeZ = val; }
+    G4ThreeVector GetSamplingCaloSizeXYZ() { return G4ThreeVector(fSamplingCaloSizeX, fSamplingCaloSizeY, fSamplingCaloSizeZ); }
+
+    G4ThreeVector GetSamplingCaloPosition() { return fSamplingCaloPos; }
+    void SetSamplingCaloPosition(G4ThreeVector val) { fSamplingCaloPos = val; }
+
     // Sensitive detectors
     void AddSD2List(int idx, std::string val) { fSDNamelist.insert(std::make_pair(idx, val)); }
     std::set<std::pair<int, std::string> > GetSDNamelist() { return fSDNamelist; }
@@ -222,6 +236,16 @@ class GeometricalParameters  {
     G4int fNScintillatorModules;
     G4double fPMTSizeSpacing;
     G4ThreeVector fFORMOSAPos;
+
+    // A Sampling Calorimeter (NuTeV-like detector)
+    G4double fSamplingCaloThicknessCaloX;
+    G4double fSamplingCaloThicknessCaloY;
+    G4double fSamplingCaloThicknessAbsorb;
+    G4double fSamplingCaloSizeX;
+    G4double fSamplingCaloSizeY;
+    G4double fSamplingCaloSizeZ;
+    G4int    fSamplingCaloNLayers;
+    G4ThreeVector fSamplingCaloPos;
 
     // Sensitive detectors
     std::set<std::pair<int, std::string> > fSDNamelist;

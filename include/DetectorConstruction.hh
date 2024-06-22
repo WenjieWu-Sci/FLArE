@@ -32,6 +32,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
     void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
     void AddFASER2(G4bool i) { m_addFASER2 = i; }
+    void AddSamplingCalorimeter(G4bool i) { m_addSamplingCalorimeter = i; }
     void UpdateGeometry();
 
   private:
@@ -66,6 +67,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* FASERnu2VetoInterfaceLogical;
 
     G4LogicalVolume *FORMOSAScintillatorBarLogical;
+
+    G4bool m_addSamplingCalorimeter;
+    G4LogicalVolume* AbsorbLayerLogical;
+    G4LogicalVolume* CaloXCellLogical;
+    G4LogicalVolume* CaloYCellLogical;
 
     DetectorConstructionMaterial* LArBoxMaterials;
     DetectorConstructionMessenger* messenger;

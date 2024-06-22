@@ -8,6 +8,7 @@
 #include "geometry/FASERnu2DetectorConstruction.hh"
 #include "geometry/FORMOSADetectorConstruction.hh"
 #include "geometry/FLArEDetectorConstruction.hh"
+#include "geometry/SamplingCalorimeterConstruction.hh"
 
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -46,7 +47,8 @@ G4ThreadLocal G4FieldManager* DetectorConstruction::fieldMgrFASER2 = 0;
 
 DetectorConstruction::DetectorConstruction()
   : G4VUserDetectorConstruction(), 
-    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true)
+    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true),
+    m_addSamplingCalorimeter(true)
 {
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
@@ -189,6 +191,27 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4cout<<"Length of FASER2 Spectrometer : "<<lengthSpectrometerMagnetAssembly<<G4endl;
     G4cout<<"Center of FASER2 Spectrometer : "<<magPos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
+
+  //-----------------------------------
+  // Sampling Calorimeter (A NuTeV-like detector)
+
+  if (m_addSamplingCalorimeter) {
+
+    SamplingCalorimeterConstruction* SamplingCaloAssembler = new SamplingCalorimeterConstruction();
+    G4AssemblyVolume* SamplingCaloAssembly = SamplingCaloAssembler->GetSamplingCalorimeterAssembly();
+    AbsorbLayerLogical       = SamplingCaloAssembler->GetSamplingCalorimeterAbsorbVolume();
+    CaloXCellLogical         = SamplingCaloAssembler->GetSamplingCalorimeterCaloXVolume();
+    CaloYCellLogical         = SamplingCaloAssembler->GetSamplingCalorimeterCaloYVolume();
+
+    // positioning
+    G4ThreeVector SamplingCaloPos = GeometricalParameters::Get()->GetSamplingCaloPosition();
+    SamplingCaloPos -= hallOffset;
+    SamplingCaloAssembly->MakeImprint(hallLV, SamplingCaloPos, nullptr, 0, fCheckOverlap);
+
+    G4cout<<"Length of the Sampling Calorimeter : "<<GeometricalParameters::Get()->GetSamplingCaloSizeZ()<<G4endl;
+    G4cout<<"Center of the Sampling Calorimeter : "<<SamplingCaloPos+hallOffset<<G4endl; // w.r.t the global coordinate
+  }
+
   
   //-------------------------------------------------------------------
 

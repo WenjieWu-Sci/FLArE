@@ -146,6 +146,15 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     trackingGapCmd->SetDefaultUnit("m");
     trackingGapCmd->SetUnitCandidates("cm m mm");
     trackingGapCmd->SetDefaultValue(0.5);
+    // Sampling Calorimeter (A NuTeV-like detector) 
+    detAddSamplingCaloCmd = new G4UIcmdWithABool("/det/addSamplingCalo", this);
+    detAddSamplingCaloCmd->SetParameterName("Add a Sampling Calorimeter", true);
+    detAddSamplingCaloCmd->SetDefaultValue(false);
+    detSamplingCaloPosCmd = new G4UIcmdWith3VectorAndUnit("/det/addSamplingCaloPos", this);
+    detSamplingCaloPosCmd->SetParameterName("x", "y", "z", false, false);
+    detSamplingCaloPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 2100.));
+    detSamplingCaloPosCmd->SetDefaultUnit("mm");
+    detSamplingCaloPosCmd->SetUnitCandidates("mm m");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -179,6 +188,9 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete trackingNBarsXCmd;
   delete trackingScinThickCmd;
   delete trackingGapCmd;
+
+  delete detAddSamplingCaloCmd;
+  delete detSamplingCaloPosCmd;
 
   delete detDir;
 }
@@ -244,6 +256,10 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
     GeometricalParameters::Get()->SetScintillatorThickness(trackingScinThickCmd->ConvertToDimensionedDouble(newValues));
   else if (command == trackingGapCmd) 
     GeometricalParameters::Get()->SetTrackingStationGap(trackingGapCmd->ConvertToDimensionedDouble(newValues));
+
+  // sampling calorimeter
+  else if (command == detAddSamplingCaloCmd) det->AddSamplingCalorimeter(detAddSamplingCaloCmd->GetNewBoolValue(newValues));
+  else if (command == detSamplingCaloPosCmd) GeometricalParameters::Get()->SetSamplingCaloPosition(detSamplingCaloPosCmd->GetNew3VectorValue(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

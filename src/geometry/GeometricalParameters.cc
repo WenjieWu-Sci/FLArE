@@ -72,6 +72,16 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorModules = 4;
   fPMTSizeSpacing = 33*cm;
   fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
+
+  // A Sampling Calorimeter (NuTeV-like detector)
+  fSamplingCaloThicknessCaloX  = 1 * cm;
+  fSamplingCaloThicknessCaloY  = 1 * cm;
+  fSamplingCaloThicknessAbsorb = 5 * cm;
+  fSamplingCaloSizeX = 1.8*m;  // optimized by energy containment  
+  fSamplingCaloSizeY = 1.8*m;  // optimized by energy containment
+  fSamplingCaloSizeZ = 4.2*m;  // optimized by energy containment
+  fSamplingCaloNLayers = 60;   // override fSamplingCaloSizeZ to update the total length
+  fSamplingCaloPos = G4ThreeVector(0., 0., 2100.*mm); 
 }
 
 GeometricalParameters* GeometricalParameters::Get()

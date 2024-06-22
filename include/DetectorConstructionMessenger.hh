@@ -66,6 +66,9 @@ class DetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithAnInteger* trackingNBarsXCmd;
     G4UIcmdWithADoubleAndUnit* trackingScinThickCmd;
     G4UIcmdWithADoubleAndUnit* trackingGapCmd;
+    // Sampling Calorimeter (A NuTeV-like detector)
+    G4UIcmdWithABool* detAddSamplingCaloCmd;
+    G4UIcmdWith3VectorAndUnit* detSamplingCaloPosCmd;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
