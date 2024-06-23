@@ -48,7 +48,7 @@ G4ThreadLocal G4FieldManager* DetectorConstruction::fieldMgrFASER2 = 0;
 DetectorConstruction::DetectorConstruction()
   : G4VUserDetectorConstruction(), 
     m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true),
-    m_addSamplingCalorimeter(true)
+    m_addSamplingCalorimeter(false)
 {
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
@@ -335,6 +335,26 @@ void DetectorConstruction::ConstructSDandField() {
     fieldMgrFASER2->SetDetectorField(magFieldFASER2);
     fieldMgrFASER2->CreateChordFinder(magFieldFASER2);
     FASER2MagnetLogical->SetFieldManager(fieldMgrFASER2, true);
+  }
+
+  if (m_addSamplingCalorimeter) {
+    LArBoxSD* SamplingCaloXSD = new LArBoxSD("SamplingCaloXSD");
+    CaloXCellLogical->SetSensitiveDetector(SamplingCaloXSD);
+    sdManager->AddNewDetector(SamplingCaloXSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloXSD/lar_box");
+    SDIdx++;
+
+    LArBoxSD* SamplingCaloYSD = new LArBoxSD("SamplingCaloYSD");
+    CaloYCellLogical->SetSensitiveDetector(SamplingCaloYSD);
+    sdManager->AddNewDetector(SamplingCaloYSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloYSD/lar_box");
+    SDIdx++;
+
+    LArBoxSD* SamplingCaloAbsorbSD = new LArBoxSD("SamplingCaloAbsorbSD");
+    AbsorbLayerLogical->SetSensitiveDetector(SamplingCaloAbsorbSD);
+    sdManager->AddNewDetector(SamplingCaloAbsorbSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloAbsorbSD/lar_box");
+    SDIdx++;
   }
 }
 

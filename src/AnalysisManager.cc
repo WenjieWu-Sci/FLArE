@@ -324,7 +324,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   }
   nPrimaryVertex   = event->GetNumberOfPrimaryVertex();
   std::cout<<"\nnumber of primary vertices  : "<<nPrimaryVertex<<std::endl;
-  std::cout<<"=============>"<<neutrino.NuPDG()<<" "<<neutrino.NuFSLPDG()<<std::endl;
+  std::cout<<"=============> NuPDG, NuFSLPDG : "<<neutrino.NuPDG()<<", "<<neutrino.NuFSLPDG()<<std::endl;
 
   // Get the hit collections
   // If there is no hit collection, there is nothing to be done
@@ -394,31 +394,59 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
-  const Double_t res_tpc[3] = {1, 5, 5}; // mm
-  if (neutrino.NuPDG()!=0) {
-    pm3D = new PixelMap3D(evtID, nPrimaryParticle, neutrino.NuPDG(), res_tpc);
+  if (!m_setSamplingCalo) {
+    const Double_t res_tpc[3] = {1, 5, 5}; // mm
+    if (neutrino.NuPDG()!=0) {
+      pm3D = new PixelMap3D(evtID, nPrimaryParticle, neutrino.NuPDG(), res_tpc);
+    } else {
+      pm3D = new PixelMap3D(evtID, nPrimaryParticle, primaries[0].PDG(), res_tpc);
+    }
+    // boundary in global coord.
+    pm3D->SetPMBoundary(GeometricalParameters::Get()->GetFLArEPosition()/mm -
+                          GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2,
+                          GeometricalParameters::Get()->GetFLArEPosition()/mm +
+                          GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
+    pm3D->InitializePM();
+
+    /// FillTrueEdep must run after FillPrimaryTruthTree, 
+    /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+    /// Pixel map is also filled here
+    for (auto sdname : SDNamelist) {
+      FillTrueEdep(sdname.first, sdname.second);
+    }
+
+    if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
+
+    pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
+    sparseFractionMem = pm3D->GetSparseFractionMem();
+    sparseFractionBins = pm3D->GetSparseFractionBins();
   } else {
-    pm3D = new PixelMap3D(evtID, nPrimaryParticle, primaries[0].PDG(), res_tpc);
+    const Double_t res_samplingCalo[3] = {10, 10, 10}; // mm
+    if (neutrino.NuPDG()!=0) {
+      pm3D = new PixelMap3D(evtID, nPrimaryParticle, neutrino.NuPDG(), res_samplingCalo);
+    } else {
+      pm3D = new PixelMap3D(evtID, nPrimaryParticle, primaries[0].PDG(), res_samplingCalo);
+    }
+    // boundary in global coord.
+    pm3D->SetPMBoundary(GeometricalParameters::Get()->GetSamplingCaloPosition()/mm -
+                          GeometricalParameters::Get()->GetSamplingCaloSizeXYZ()/mm/2,
+                          GeometricalParameters::Get()->GetSamplingCaloPosition()/mm +
+                          GeometricalParameters::Get()->GetSamplingCaloSizeXYZ()/mm/2);
+    pm3D->InitializePM();
+
+    /// FillTrueEdep must run after FillPrimaryTruthTree, 
+    /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+    /// Pixel map is also filled here
+    for (auto sdname : SDNamelist) {
+      FillTrueEdep(sdname.first, sdname.second);
+    }
+
+    if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
+
+    pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
+    sparseFractionMem = pm3D->GetSparseFractionMem();
+    sparseFractionBins = pm3D->GetSparseFractionBins();
   }
-  // boundary in global coord.
-  pm3D->SetPMBoundary(GeometricalParameters::Get()->GetFLArEPosition()/mm -
-                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2,
-                        GeometricalParameters::Get()->GetFLArEPosition()/mm +
-                        GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
-  pm3D->InitializePM();
-
-  /// FillTrueEdep must run after FillPrimaryTruthTree, 
-  /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
-  /// Pixel map is also filled here
-  for (auto sdname : SDNamelist) {
-    FillTrueEdep(sdname.first, sdname.second);
-  }
-
-  if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
-
-  pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
-  sparseFractionMem = pm3D->GetSparseFractionMem();
-  sparseFractionBins = pm3D->GetSparseFractionBins();
 
   if (m_circularFit){
     
@@ -485,6 +513,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
 void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) 
 {
+  G4cout<<"AnalysisManager::FillPrimaryTruthTree - SD "<<sdName<<G4endl;
   // Get and cast hit collection with LArBoxHits
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
@@ -614,11 +643,13 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
         }
       }
     } // end of hit loop
+    G4cout<<"nHits : "<<nHits<<G4endl;
   }
 }
 
 void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) 
 {
+  G4cout<<"AnalysisManager::FillTrueEdep : filling energy deposition"<<G4endl;
   std::map<int, int> map_tracksFromFSLSecondary;
   int _idx = 0;
   for (auto _tid : tracksFromFSLSecondary) {
@@ -680,6 +711,10 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
         pm3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if (sdName == "lArBoxSD/lar_box") {
         pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+      } 
+      if ((sdName=="SamplingCaloXSD/lar_box") ||
+          (sdName=="SamplingCaloYSD/lar_box")) {
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       }
 
       if (sdName == "lArBoxSD/lar_box") {
@@ -698,9 +733,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       // calculate dEdx along the track
       // combine the tracks if they come from the final state lepton, namely tau-
       double ShowerP = primaries[whichPrim].P();
-      if ((hit->GetPID()==0) |
-          (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) |
-          (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end()) |
+      if ((hit->GetPID()==0) ||
+          (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) ||
+          (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end()) ||
           (tracksFromFSLDecayPizeroSecondary.find(hit->GetTID()) != tracksFromFSLDecayPizeroSecondary.end())) {
         primaryTrackLength[whichPrim] += hit->GetStepLength();
         if (sdName == "lArBoxSD/lar_box") {
@@ -784,9 +819,10 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
           }
         }
       }
-
     } // end of hit loop
   }
+
+  G4cout<<"AnalysisManager::FillTrueEdep : filling energy deposition completed"<<G4endl;
 }
 
 double AnalysisManager::GetTotalEnergy(double px, double py, double pz, double m) {

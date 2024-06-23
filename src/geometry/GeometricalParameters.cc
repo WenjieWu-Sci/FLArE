@@ -80,6 +80,7 @@ GeometricalParameters::GeometricalParameters()
   fSamplingCaloSizeX = 1.8*m;  // optimized by energy containment  
   fSamplingCaloSizeY = 1.8*m;  // optimized by energy containment
   fSamplingCaloSizeZ = 4.2*m;  // optimized by energy containment
+  fSamplingCaloFidVolSize = G4ThreeVector(1.0*m, 1.0*m, 4.0*m);
   fSamplingCaloNLayers = 60;   // override fSamplingCaloSizeZ to update the total length
   fSamplingCaloPos = G4ThreeVector(0., 0., 2100.*mm); 
 }

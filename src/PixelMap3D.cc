@@ -19,6 +19,7 @@ PixelMap3D::PixelMap3D(const Int_t evtID, const Int_t nPrim, const Int_t PDG, co
 {
   G4cout<<"Creating PixelMap3D for event "<<fEvtID<<G4endl;
   fResX = res[0]; fResY = res[1]; fResZ = res[2];
+  G4cout<<"PixelMap3D: Resolution configuration : ("<<fResX<<", "<<fResY<<", "<<fResZ<<") mm"<<G4endl;
 }
 
 PixelMap3D::~PixelMap3D() 
@@ -51,6 +52,7 @@ void PixelMap3D::SetPMBoundary(G4ThreeVector min_xyz, G4ThreeVector max_xyz)
                                       (min_xyz.y()+max_xyz.y())/2,
                                       min_xyz.z())/mm;
   fPMSizeXYZ = max_xyz/mm - min_xyz/mm;
+  G4cout<<"PixelMap3D range : "<<fPMXYZMin<<" to "<<fPMXYZMax<<G4endl;
 }
 
 void PixelMap3D::InitializePM()
@@ -127,6 +129,7 @@ void PixelMap3D::InitializePM()
     vtxHitClusterZY[iPrim+1]->GetXaxis()->SetTitle("Z [mm]");
     vtxHitClusterZY[iPrim+1]->GetYaxis()->SetTitle("Y [mm]");
   }
+  G4cout<<"PixelMap3D : initialization completed"<<G4endl;
 }
 
 void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim)

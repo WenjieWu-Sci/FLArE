@@ -73,6 +73,11 @@
   addDiffusionCmd->SetGuidance("add toy diffusion effect");
   addDiffusionCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
+  samplingCaloCmd = new G4UIcmdWithABool("/histo/samplingCalo", this);
+  samplingCaloCmd->SetGuidance("change the configuration of event display for a sampling calorimeter");
+  samplingCaloCmd->SetParameterName("samplingCalo", true);
+  samplingCaloCmd->SetDefaultValue(false);
+
   //  histoCmd = new G4UIcmdWithAnInteger("/histo/setSeed",this);
   //  histoCmd->SetGuidance("Set random seed :");
   //  histoCmd->SetDefaultValue(1);
@@ -88,6 +93,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
   delete save2DEvdCmd;
   delete circleFitCmd;
   delete addDiffusionCmd;
+  delete samplingCaloCmd;
   delete histoDir;
 }
 
@@ -100,6 +106,7 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
   if (command == save3DEvdCmd) anamanager->save3DEvd(save3DEvdCmd->GetNewBoolValue(newValues));
   if (command == save2DEvdCmd) anamanager->save2DEvd(save2DEvdCmd->GetNewBoolValue(newValues));
   if (command == circleFitCmd) anamanager->circleFit(circleFitCmd->GetNewBoolValue(newValues));
+  if (command == samplingCaloCmd) anamanager->setSamplingCalo(samplingCaloCmd->GetNewBoolValue(newValues));
   if (command == addDiffusionCmd) anamanager->addDiffusion(newValues);
 
   //  if(command == histoCmd) histo->setSeed(newValues);
