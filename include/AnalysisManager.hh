@@ -35,6 +35,7 @@ class AnalysisManager {
     void save3DEvd(G4bool val) { m_save3DEvd = val; }
     void save2DEvd(G4bool val) { m_save2DEvd = val; }
     void circleFit(G4bool val) { m_circularFit = val; }
+    void setSamplingCalo(G4bool val) { m_setSamplingCalo = val; }
     void addDiffusion(G4String val) { m_addDiffusion = val; }
 
   private:
@@ -138,6 +139,7 @@ class AnalysisManager {
     G4bool m_save3DEvd;
     G4bool m_save2DEvd;
     G4bool m_circularFit;
+    G4bool m_setSamplingCalo;
     TString m_addDiffusion;
 
     PixelMap3D* pm3D;

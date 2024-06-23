@@ -12,9 +12,10 @@
 
 # define output options
 /histo/save3DEvd false
-/histo/save2DEvd false
+/histo/save2DEvd true
 /histo/saveHit false
 /histo/addDiffusion false
+/histo/samplingCalo true
 /histo/fileName test_genie_nutau.root
 
 # shoot 5 particles

@@ -153,6 +153,7 @@ class GeometricalParameters  {
     G4double GetSamplingCaloSizeX()   { return fSamplingCaloSizeX; }
     G4double GetSamplingCaloSizeY()   { return fSamplingCaloSizeY; }
     G4double GetSamplingCaloSizeZ()   { return fSamplingCaloSizeZ; }
+    G4ThreeVector GetSamplingCaloFidVolSize() { return fSamplingCaloFidVolSize; }
     void SetSamplingCaloSizeZ(G4double val) { fSamplingCaloSizeZ = val; }
     G4ThreeVector GetSamplingCaloSizeXYZ() { return G4ThreeVector(fSamplingCaloSizeX, fSamplingCaloSizeY, fSamplingCaloSizeZ); }
 
@@ -244,6 +245,7 @@ class GeometricalParameters  {
     G4double fSamplingCaloSizeX;
     G4double fSamplingCaloSizeY;
     G4double fSamplingCaloSizeZ;
+    G4ThreeVector fSamplingCaloFidVolSize;
     G4int    fSamplingCaloNLayers;
     G4ThreeVector fSamplingCaloPos;
 
