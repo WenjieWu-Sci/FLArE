@@ -43,7 +43,13 @@ class FPFParticle
     double Pz()        const { return fPz;       }
     double E()         const { return fE;        }
     double P()         const { return TMath::Sqrt(fPx*fPx+fPy*fPy+fPz*fPz); }
+    double Endx()      const { return fEndPosx; }
+    double Endy()      const { return fEndPosy; }
+    double Endz()      const { return fEndPosz; }
     void   SetProngType(int _val) { fProngType = _val; }
+    void   SetEndPosx(double _x) { fEndPosx = _x; }
+    void   SetEndPosy(double _y) { fEndPosy = _y; }
+    void   SetEndPosz(double _z) { fEndPosz = _z; }
 
   private:
     int    fPDG;         ///<- PDG of primary particles, for G4 use
@@ -65,6 +71,9 @@ class FPFParticle
     double fPy;          ///<- Py of primary particles
     double fPz;          ///<- Pz of primary particles
     double fE;               
+    double fEndPosx;     ///<- End point of primary particles from geant4
+    double fEndPosy;     ///<- End point of primary particles from geant4
+    double fEndPosz;     ///<- End point of primary particles from geant4
 };                           
                              
 #endif                       

@@ -394,6 +394,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     }
   }
 
+
   if (!m_setSamplingCalo) {
     const Double_t res_tpc[3] = {1, 5, 5}; // mm
     if (neutrino.NuPDG()!=0) {
@@ -406,20 +407,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                           GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2,
                           GeometricalParameters::Get()->GetFLArEPosition()/mm +
                           GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
-    pm3D->InitializePM();
-
-    /// FillTrueEdep must run after FillPrimaryTruthTree, 
-    /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
-    /// Pixel map is also filled here
-    for (auto sdname : SDNamelist) {
-      FillTrueEdep(sdname.first, sdname.second);
-    }
-
-    if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
-
-    pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
-    sparseFractionMem = pm3D->GetSparseFractionMem();
-    sparseFractionBins = pm3D->GetSparseFractionBins();
   } else {
     const Double_t res_samplingCalo[3] = {10, 10, 10}; // mm
     if (neutrino.NuPDG()!=0) {
@@ -432,21 +419,21 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                           GeometricalParameters::Get()->GetSamplingCaloSizeXYZ()/mm/2,
                           GeometricalParameters::Get()->GetSamplingCaloPosition()/mm +
                           GeometricalParameters::Get()->GetSamplingCaloSizeXYZ()/mm/2);
-    pm3D->InitializePM();
-
-    /// FillTrueEdep must run after FillPrimaryTruthTree, 
-    /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
-    /// Pixel map is also filled here
-    for (auto sdname : SDNamelist) {
-      FillTrueEdep(sdname.first, sdname.second);
-    }
-
-    if (m_save2DEvd) pm3D->Write2DPMToFile(thefile);
-
-    pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
-    sparseFractionMem = pm3D->GetSparseFractionMem();
-    sparseFractionBins = pm3D->GetSparseFractionBins();
   }
+  pm3D->InitializePM();
+  /// FillTrueEdep must run after FillPrimaryTruthTree, 
+  /// otherwise tracksFromFSL and tracksFromFSLSecondary are invalid
+  /// Pixel map is also filled here
+  for (auto sdname : SDNamelist) {
+    FillTrueEdep(sdname.first, sdname.second);
+  }
+  if (m_save2DEvd) {
+    pm3D->Write2DPMToFile(thefile);
+  }
+  pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
+  sparseFractionMem = pm3D->GetSparseFractionMem();
+  sparseFractionBins = pm3D->GetSparseFractionBins();
+
 
   if (m_circularFit){
     
@@ -513,7 +500,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
 void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) 
 {
-  G4cout<<"AnalysisManager::FillPrimaryTruthTree - SD "<<sdName<<G4endl;
+  G4cout<<"AnalysisManager::FillPrimaryTruthTree - "<<sdName<<G4endl;
   // Get and cast hit collection with LArBoxHits
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
@@ -643,13 +630,12 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
         }
       }
     } // end of hit loop
-    G4cout<<"nHits : "<<nHits<<G4endl;
   }
 }
 
 void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName) 
 {
-  G4cout<<"AnalysisManager::FillTrueEdep : filling energy deposition"<<G4endl;
+  G4cout<<"AnalysisManager::FillTrueEdep - "<<sdName<<G4endl;
   std::map<int, int> map_tracksFromFSLSecondary;
   int _idx = 0;
   for (auto _tid : tracksFromFSLSecondary) {
@@ -717,6 +703,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
         pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       }
 
+
       if (sdName == "lArBoxSD/lar_box") {
         double longitudinal_distance_to_vtx;  // in mm
         if (neutrino.NuPDG()!=0) {
@@ -730,14 +717,25 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
           TrueTotalDedxLongitudinal[Int_t(longitudinal_distance_to_vtx)] += hit->GetEdep();
         }
       }
+
+
       // calculate dEdx along the track
       // combine the tracks if they come from the final state lepton, namely tau-
       double ShowerP = primaries[whichPrim].P();
       if ((hit->GetPID()==0) ||
           (tracksFromFSLSecondary.find(hit->GetTID()) != tracksFromFSLSecondary.end()) ||
           (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end()) ||
-          (tracksFromFSLDecayPizeroSecondary.find(hit->GetTID()) != tracksFromFSLDecayPizeroSecondary.end())) {
+          (tracksFromFSLDecayPizeroSecondary.find(hit->GetTID()) != tracksFromFSLDecayPizeroSecondary.end())) 
+      {
         primaryTrackLength[whichPrim] += hit->GetStepLength();
+
+        if ( hit->GetTrackStatus() != fAlive ) 
+        {
+          primaries[whichPrim].SetEndPosx(hit->GetPostStepPosition().x());
+          primaries[whichPrim].SetEndPosy(hit->GetPostStepPosition().y());
+          primaries[whichPrim].SetEndPosz(hit->GetPostStepPosition().z());
+        }
+
         if (sdName == "lArBoxSD/lar_box") {
           primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
           if ((hit->GetPID()==0) |
@@ -778,7 +776,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       // exclude zero hit when calculating showerlength of the primary particle
       // exclude hits from the cryo gap (detID=8)
       if (hit->GetEdep()>0 && 
-          (sdName=="lArBoxSD/lar_box" || sdName=="HadAbsorbSD/lar_box" || sdName=="MuonFinderAbsorbSD/lar_box")) {
+          (sdName=="lArBoxSD/lar_box" || sdName=="HadAbsorbSD/lar_box" || sdName=="MuonFinderAbsorbSD/lar_box")) 
+      {
         ProngEInDetector[whichPrim] += hit->GetEdep();
         ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});
         //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
@@ -792,12 +791,14 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       }
       if ((sdName=="HadCalXSD/lar_box") || 
           (sdName=="HadCalYSD/lar_box") || 
-          (sdName=="HadAbsorbSD/lar_box")) {
+          (sdName=="HadAbsorbSD/lar_box")) 
+      {
         ProngEInHadCal[whichPrim] += hit->GetEdep();
       }
       if ((sdName=="MuonFinderXSD/lar_box") || 
           (sdName=="MuonFinderYSD/lar_box") || 
-          (sdName=="MuonFinderAbsorbSD/lar_box")) {
+          (sdName=="MuonFinderAbsorbSD/lar_box")) 
+      {
         ProngEInMuonFinder[whichPrim] += hit->GetEdep();
         if (sdName=="MuonFinderXSD/lar_box") {
           if (pos_z < GeometricalParameters::Get()->GetFLArEPosition().z()/mm+

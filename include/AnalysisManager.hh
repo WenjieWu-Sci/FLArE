@@ -78,6 +78,9 @@ class AnalysisManager {
     G4int    primaryParentPDG[1000];        ///<- parent PDG of primary particles
     G4double primaryTrackLength[1000];      ///<- track length of primary particles
     G4double primaryTrackLengthInTPC[1000]; ///<- track length of primary particles in TPC region
+    G4double primaryTrackEndx[1000];  ///<- end point of the primary track
+    G4double primaryTrackEndy[1000];  ///<- end point of the primary track
+    G4double primaryTrackEndz[1000];  ///<- end point of the primary track
 
     // pseudo-reco
     G4double ProngEInDetector[1000];
