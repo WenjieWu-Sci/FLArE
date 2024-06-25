@@ -5,5 +5,6 @@ error                   = /afs/cern.ch/work/m/mvicenzi/public/LOGS/$(ClusterId)/
 log                     = /afs/cern.ch/work/m/mvicenzi/public/LOGS/$(ClusterId)/log/welcome.$(ProcId).log
 transfer_input_files    = /afs/cern.ch/work/m/mvicenzi/public/FLArE/lxplus_setup.sh,/afs/cern.ch/work/m/mvicenzi/public/FLArE/build/FLArE,/afs/cern.ch/work/m/mvicenzi/public/geometry.mac,/afs/cern.ch/work/m/mvicenzi/public/macro.mac,/afs/cern.ch/work/m/mvicenzi/public/FLArE/build/libFLArE_rdict.pcm
 output_destination      = root://eosuser.cern.ch//eos/user/m/mvicenzi/HTCONDOR_OUTPUT/$(ClusterId)/
+RequestCpus             = 1
 MY.XRDCP_CREATE_DIR     = True
 queue 1

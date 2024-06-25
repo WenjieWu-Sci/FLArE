@@ -113,6 +113,7 @@ error                   = ${logdir}/${prodname}/err/\$(ClusterId).\$(ProcId).err
 log                     = ${logdir}/${prodname}/log/\$(ClusterId).\$(ProcId).log
 transfer_input_files    = ${setup},${flare},${geometry},${libdict},${listpath}
 output_destination      = root://eosuser.cern.ch/${outdir}/${prodname}/
+RequestCpus             = 1
 MY.XRDCP_CREATE_DIR     = True
 +JobFlavour             = "${max_duration}"
 queue ${n_jobs}
