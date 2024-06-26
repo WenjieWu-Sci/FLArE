@@ -729,7 +729,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       {
         primaryTrackLength[whichPrim] += hit->GetStepLength();
 
-        if ( hit->GetTrackStatus() != fAlive ) 
+        if ( (hit->GetTrackStatus() == fStopButAlive) ||
+             (hit->GetTrackStatus() == fStopAndKill) ||
+             (hit->GetVolume() == "hallPV") )
         {
           primaries[whichPrim].SetEndPosx(hit->GetPostStepPosition().x());
           primaries[whichPrim].SetEndPosy(hit->GetPostStepPosition().y());
@@ -738,7 +740,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
 
         if (sdName == "lArBoxSD/lar_box") {
           primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
-          if ((hit->GetPID()==0) |
+          if ((hit->GetPID()==0) ||
               (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end())) {
             double longitudinal_distance_to_vtx = ((pos_x-primaries[whichPrim].Vx())*primaries[whichPrim].Px()+
                                                    (pos_y-primaries[whichPrim].Vy())*primaries[whichPrim].Py()+
