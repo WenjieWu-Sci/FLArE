@@ -1,12 +1,12 @@
 # define detector material before run initialization
-/det/material LAr
+/control/execute macros/geometry_options/FPF_hall_Reference.mac
 
 /run/initialize
-#/control/execute macros/vis.mac
+/random/setSeeds 324199 420475
 
+# define particle gun options
 /gps/verbose 0
 /gps/direction 0 0 1
-
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
 /gps/pos/rot1 1 0 0 
@@ -14,9 +14,14 @@
 /gps/pos/radius 0.1 mm
 /gps/pos/centre 0 0 0 m
 /gps/pos/halfz 3.5 m
-
-# variables
 /gps/particle tau-
 /gps/ene/mono 1000 GeV
+
+# define output options
+/histo/save3DEvd false
+/histo/save2DEvd false
+/histo/saveHit false
 /histo/fileName 1000GeV.root
+
+# shoot 5000 particles
 /run/beamOn 5000

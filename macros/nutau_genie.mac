@@ -1,16 +1,20 @@
-/det/material LAr
-/det/saveGdml false
+# define detector material before run initialization
+/control/execute macros/geometry_options/FPF_hall_Reference.mac
 
 /run/initialize
+/random/setSeeds 324199 420475
 
-/random/setSeeds 42
+# define genie input options
 /genie/useGenie true
-/genie/genieInput /dune/data/users/wenjiewu/genie/production/nutau_bai_ar40/nutau_bai_ar40_e2000.ghep.root
-/genie/genieIStart 6
+/genie/genieInput /eos/user/m/mvicenzi/genie/nutau_bai_ar40_e2000.gst.root
+/genie/genieIStart 5
 
-#/histo/fileName /dune/data/users/wenjiewu/FLArE_Data/nutau_bai_ar40_evt1000_evd.root
-/histo/fileName test_5_9.root
-/histo/saveEvd false
+# define output options
+/histo/save3DEvd false
+/histo/save2DEvd false
 /histo/saveHit false
+/histo/addDiffusion false
+/histo/fileName test_genie_nutau.root
 
+# shoot 5 particles
 /run/beamOn 5
