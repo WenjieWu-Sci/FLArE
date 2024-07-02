@@ -67,7 +67,7 @@ file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 file(GLOB_RECURSE gridutils RELATIVE ${PROJECT_SOURCE_DIR} GridUtils/*)
-file(GLOB_RECURSE setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
+file(GLOB setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
 
 # Enable macros for out-of-source build
 foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
@@ -76,6 +76,7 @@ foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
     ${PROJECT_BINARY_DIR}/${_file}
     COPYONLY
     )
+    #message(STATUS "Copying ${_file} in ${PROJECT_BINARY_DIR}/${_file}")
 endforeach()
 
 #----------------------------------------------------------------------------
