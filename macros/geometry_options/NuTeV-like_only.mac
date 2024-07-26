@@ -3,7 +3,7 @@
 
 # Configuring a Sampling Calorimeter
 /det/addSamplingCalo true
-/det/addSamplingCaloPos 0 0 2100 mm
+/det/addSamplingCaloPos 0 0 1260 mm
 
 # Turn off everything else
 /det/addFLArE false

@@ -704,7 +704,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       }
 
 
-      if (sdName == "lArBoxSD/lar_box") {
+      if (sdName=="lArBoxSD/lar_box" ||
+          sdName=="SamplingCaloXSD/lar_box" ||
+          sdName=="SamplingCaloYSD/lar_box" ) {
         double longitudinal_distance_to_vtx;  // in mm
         if (neutrino.NuPDG()!=0) {
           longitudinal_distance_to_vtx = (pos_z-vtx_xyz[2]);
@@ -738,7 +740,9 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
           primaries[whichPrim].SetEndPosz(hit->GetPostStepPosition().z());
         }
 
-        if (sdName == "lArBoxSD/lar_box") {
+        if (sdName=="lArBoxSD/lar_box" || 
+            sdName=="SamplingCaloXSD/lar_box" ||
+            sdName=="SamplingCaloYSD/lar_box") {
           primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
           if ((hit->GetPID()==0) ||
               (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end())) {
@@ -778,7 +782,8 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       // exclude zero hit when calculating showerlength of the primary particle
       // exclude hits from the cryo gap (detID=8)
       if (hit->GetEdep()>0 && 
-          (sdName=="lArBoxSD/lar_box" || sdName=="HadAbsorbSD/lar_box" || sdName=="MuonFinderAbsorbSD/lar_box")) 
+          (sdName=="lArBoxSD/lar_box" || sdName=="HadAbsorbSD/lar_box" || sdName=="MuonFinderAbsorbSD/lar_box" ||
+           sdName=="SamplingCaloXSD/lar_box" || sdName=="SamplingCaloYSD/lar_box")) 
       {
         ProngEInDetector[whichPrim] += hit->GetEdep();
         ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});

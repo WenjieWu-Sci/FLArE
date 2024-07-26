@@ -77,12 +77,12 @@ GeometricalParameters::GeometricalParameters()
   fSamplingCaloThicknessCaloX  = 1 * cm;
   fSamplingCaloThicknessCaloY  = 1 * cm;
   fSamplingCaloThicknessAbsorb = 5 * cm;
-  fSamplingCaloSizeX = 1.8*m;  // optimized by energy containment  
-  fSamplingCaloSizeY = 1.8*m;  // optimized by energy containment
-  fSamplingCaloSizeZ = 4.2*m;  // optimized by energy containment
-  fSamplingCaloFidVolSize = G4ThreeVector(1.0*m, 1.0*m, 4.0*m);
-  fSamplingCaloNLayers = 60;   // override fSamplingCaloSizeZ to update the total length
-  fSamplingCaloPos = G4ThreeVector(0., 0., 2100.*mm); 
+  fSamplingCaloSizeX = 0.5*m;  // 
+  fSamplingCaloSizeY = 0.6*m;  // 
+  fSamplingCaloSizeZ = 2.52*m; // 
+  fSamplingCaloFidVolSize = G4ThreeVector(0.4*m, 0.4*m, 2.5*m);
+  fSamplingCaloNLayers = 36;   // override fSamplingCaloSizeZ to update the total length
+  fSamplingCaloPos = G4ThreeVector(0., 0., 1260.*mm); 
 }
 
 GeometricalParameters* GeometricalParameters::Get()

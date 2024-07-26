@@ -45,7 +45,7 @@ void SamplingCalorimeterConstruction::BuildDetector()
   auto AbsorbLayerSolid
     = new G4Box("AbsorbLayerSamplingCalo", fSamplingCaloSizeX/2, fSamplingCaloSizeY/2, thicknessAbsorber/2);
   AbsorbLayerLogical
-    = new G4LogicalVolume(AbsorbLayerSolid, fMaterials->Material("Iron"), "AbsorbLayerLogical");
+    = new G4LogicalVolume(AbsorbLayerSolid, fMaterials->Material("Tungsten"), "AbsorbLayerLogical");
 
   // x-plane
   auto CaloXLayerSolid
@@ -97,6 +97,6 @@ void SamplingCalorimeterConstruction::BuildDetector()
 
   G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
   nullVis->SetVisibility(false);
-  CaloXCellLogical->SetVisAttributes(nullVis);
-  CaloYCellLogical->SetVisAttributes(nullVis);
+  CaloXCellLogical->SetVisAttributes(CaloVis);
+  CaloYCellLogical->SetVisAttributes(CaloVis);
 }
