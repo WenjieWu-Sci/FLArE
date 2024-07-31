@@ -8,80 +8,41 @@
 DetectorConstructionMaterial* DetectorConstructionMaterial::theDetectorConstructionMaterial = NULL;
 
 DetectorConstructionMaterial::DetectorConstructionMaterial() {
+  G4NistManager* nist = G4NistManager::Instance(); 
   G4double a,z,density,fractionmass;
   G4String name,symbol;
   G4int nel,natoms;
-
+  
   //------------
   // elements
   //------------
 
-  a=1.01*g/mole;
-  elH=new G4Element(name="hydrogen",symbol="H2",z=1.,a);
+  elH = nist->FindOrBuildElement("H");
+  elHe= nist->FindOrBuildElement("He");
+  elLi= nist->FindOrBuildElement("Li");
+  elBe= nist->FindOrBuildElement("Be");
+  elC = nist->FindOrBuildElement("C");
+  elN = nist->FindOrBuildElement("N");
+  elO = nist->FindOrBuildElement("O");
+  elNe= nist->FindOrBuildElement("Ne");
+  elNa= nist->FindOrBuildElement("Na");
+  elMg= nist->FindOrBuildElement("Mg");
+  elAl= nist->FindOrBuildElement("Al");
+  elSi= nist->FindOrBuildElement("Si");
+  elP = nist->FindOrBuildElement("P");
+  elS = nist->FindOrBuildElement("S");
+  elCa= nist->FindOrBuildElement("Ca");
+  elTi= nist->FindOrBuildElement("Ti");
+  elFe= nist->FindOrBuildElement("Fe");
+  elCu= nist->FindOrBuildElement("Cu");
+  elW = nist->FindOrBuildElement("W");
+  elPb= nist->FindOrBuildElement("Pb");
+  elU = nist->FindOrBuildElement("U");
+  elMn= nist->FindOrBuildElement("Mn");
+  elSn= nist->FindOrBuildElement("Sn");
 
   a=2.01*g/mole;
   elD=new G4Element(name="deuterium",symbol="D",z=1.,a);
-
-  a=4.*g/mole;
-  elHe=new G4Element(name="helium",symbol="He",z=2.,a);
-
-  a=6.94*g/mole;
-  elLi=new G4Element(name="lithium",symbol="Li",z=3.,a);
-
-  a=9.01*g/mole;
-  elBe=new G4Element(name="berillium",symbol="Be",z=4.,a);
-
-  a=12.01*g/mole;
-  elC=new G4Element(name="carbon",symbol="C",z=6.,a);
-
-  a=14.01*g/mole;
-  elN=new G4Element(name="nitrogen",symbol="N2",z=7.,a);
-
-  a=16.*g/mole;
-  elO=new G4Element(name="oxygen",symbol="O2",z=8.,a);
-
-  a=20.18*g/mole;
-  elNe=new G4Element(name="neon",symbol="Ne",z=10.,a);
-
-  a=22.99*g/mole;
-  elNa=new G4Element(name="sodium",symbol="Na",z=11.,a);
-
-  a=24.305*g/mole;
-  elMg=new G4Element(name="magnesium",symbol="Mg",z=12.,a);
-
-  a=26.98*g/mole;
-  elAl=new G4Element(name="aluminium",symbol="Al",z=13.,a);
-
-  a=28.085*g/mole;
-  elSi=new G4Element(name="silicon",symbol="Si",z=14.,a);
-  
-  a=30.973*g/mole;
-  elP= new G4Element(name="phosphorus",symbol="P",z=15.,a);
-
-  a=32.06*g/mole;
-  elS=new G4Element(name="sulfur",symbol="S",z=16.,a);
-
-  a=40.08*g/mole;
-  elCa=new G4Element(name="calcium",symbol="Ca",z=20.,a);
-
-  a=47.867*g/mole;
-  elTi=new G4Element(name="titanium",symbol="Ti",z=22.,a);
-
-  a=55.850*g/mole;
-  elFe=new G4Element(name="iron",symbol="Fe",z=26.,a);
-
-  a=63.54*g/mole;
-  elCu=new G4Element(name="copper",symbol="Cu",z=29.,a);
-
-  a=183.85*g/mole;
-  elW=new G4Element(name="tungstenm",symbol="W",z=74.,a);
-
-  a=207.19*g/mole;
-  elPb=new G4Element(name="lead",symbol="Pb",z=82.,a);
-
-  a=238.03*g/mole;
-  elU=new G4Element(name="uranium",symbol="U",z=92.,a);
-
 
   //-------------------
   // simple materials
@@ -108,13 +69,9 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   a = 207.19*g/mole;
   Lead = new G4Material(name="Lead",z=82.,a,density);
 
-  density = 1.4*g/cm3;
-  a = 39.95*g/mole;
-  LiquidArgon = new G4Material(name="LiquidArgon",z=18.,a,density);
-
-  density = 2.413*g/cm3;
-  a = 84*g/mole;
-  LiquidKrypton = new G4Material(name="LiquidKrypton",z=36.,a,density);
+  LiquidArgon = nist->FindOrBuildMaterial("G4_lAr");
+  
+  LiquidKrypton = nist->FindOrBuildMaterial("G4_lKr");
 
   density = 0.002*g/cm3;
   a = 39.95*g/mole;
@@ -128,11 +85,10 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   // mixtures
   //------------------
 
-  density = 1.290*mg/cm3;
-  Air = new G4Material(name="Air",density, nel=2);
-  Air->AddElement(elN, 0.7);
-  Air->AddElement(elO, 0.3);
+  // Air
+  Air = nist->FindOrBuildMaterial("G4_AIR");
 
+  // Vacuum (= very low density air)
   density              = 1.e-5*g/cm3;
   G4double pressure    = 2.e-2*bar;
   G4double temperature = CLHEP::STP_Temperature;         //from PhysicalConstants.h
@@ -140,60 +96,27 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
 			  kStateGas,temperature,pressure);
   Vacuum->AddMaterial(Air, fractionmass=1.);
 
-  density = 1.977*mg/cm3;
-  CO2 = new G4Material(name="CO2", density, nel=2);
-  CO2->AddElement(elC, 1);
-  CO2->AddElement(elO, 2);
-
-  density = 2.2*g/cm3;
-  SiO2 = new G4Material(name="SiO2", density, nel=2);
-  SiO2->AddElement(elSi, 1);
-  SiO2->AddElement(elO, 2);
-
+  // Oxides
+  CO2 = nist->FindOrBuildMaterial("G4_CARBON_DIOXIDE");
+  SiO2 = nist->FindOrBuildMaterial("G4_SILICON_DIOXIDE");
+  Al2O3 = nist->FindOrBuildMaterial("G4_ALUMINUM_OXIDE");
+  Fe2O3 = nist->FindOrBuildMaterial("G4_FERRIC_OXIDE");
+  FeO = nist->FindOrBuildMaterial("G4_FERROUS_OXIDE");
+  CaO = nist->FindOrBuildMaterial("G4_CALCIUM_OXIDE");
+  MgO = nist->FindOrBuildMaterial("G4_MAGNESIUM_OXIDE");
+  Na2O = nist->FindOrBuildMaterial("G4_POTASSIUM_OXIDE");
+  TiO2 = nist->FindOrBuildMaterial("G4_TITANIUM_DIOXIDE");
+  
   density = 1.562*g/cm3;
   P2O5 = new G4Material(name="P2O5", density, nel=2);
   P2O5->AddElement(elP, 2);
   P2O5->AddElement(elO, 5);
-
-  density = 3.97*g/cm3;
-  Al2O3 = new G4Material(name="Al2O3", density, nel=2);
-  Al2O3->AddElement(elAl, 2);
-  Al2O3->AddElement(elO, 3);
-
-  density = 5.24*g/cm3;
-  Fe2O3 = new G4Material(name="Fe2O3", density, nel=2);
-  Fe2O3->AddElement(elFe, 2);
-  Fe2O3->AddElement(elO, 3);
-
-  density = 5.745*g/cm3;
-  FeO = new G4Material(name="FeO", density, nel=2);
-  FeO->AddElement(elFe, 1);
-  FeO->AddElement(elO, 1);
-
-  density = 3.35*g/cm3;
-  CaO = new G4Material(name="CaO", density, nel=2);
-  CaO->AddElement(elCa, 1);
-  CaO->AddElement(elO, 1);
-
-  density = 3.58*g/cm3;
-  MgO = new G4Material(name="MgO", density, nel=2);
-  MgO->AddElement(elMg, 1);
-  MgO->AddElement(elO, 1);
-
-  density = 2.27*g/cm3;
-  Na2O = new G4Material(name="Na2O", density, nel=2);
-  Na2O->AddElement(elNa, 2);
-  Na2O->AddElement(elO, 1);
-
-  density = 4.23*g/cm3;
-  TiO2 = new G4Material(name="TiO2", density, nel=2);
-  TiO2->AddElement(elTi, 1);
-  TiO2->AddElement(elO, 2);
-
-  // must have the right composition for stainless steel
-  density = 8.96*g/cm3;
-  StainlessSteel = new G4Material(name="StainlessSteel",density,nel=1);
-  StainlessSteel->AddElement(elO, fractionmass = 1.);
+  
+  // Stainless steel
+  StainlessSteel = nist->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+  
+  // common plastic (polyethilene)
+  Plastic = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
 
   // LS
   density = 0.859*g/cm3;
@@ -259,11 +182,20 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   Rock->AddMaterial(Na2O  , 0.0053);
   Rock->AddMaterial(P2O5  , 0.0007);
 
-
   // Placeholder for AgBr emulsion
   // currently something similar (?) straight out of NIST database
-  G4NistManager* nist = G4NistManager::Instance(); 
   Emulsion = nist->FindOrBuildMaterial("G4_PHOTO_EMULSION");
+
+  // ARMCO (almost pure iron, but still technically steel))
+  // source:  https://www.aksteel.co.uk/products/armco-pure-iron/#chemical-composition
+  density = 7.8*g/cm3;
+  ARMCO = new G4Material(name="ARMCO", density, 6);
+  ARMCO->AddElement(elFe, 0.9985);
+  ARMCO->AddElement(elMn, 0.0010);
+  ARMCO->AddElement(elCu, 0.0002);
+  ARMCO->AddElement(elSn, 0.0001);
+  ARMCO->AddElement(elC, 0.0001);
+  ARMCO->AddElement(elP, 0.0001);
 
 }
 
@@ -294,6 +226,8 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "R_PUF")              material = R_PUF;
   if(what == "Rock")               material = Rock;
   if(what == "Emulsion")           material = Emulsion;
+  if(what == "ARMCO")              material = ARMCO;
+  if(what == "Plastic")            material = Plastic;
 
   return material;
 }
