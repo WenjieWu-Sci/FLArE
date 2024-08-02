@@ -6,6 +6,7 @@
 #include <G4UniformMagField.hh>
 #include <G4FieldManager.hh>
 #include <G4AssemblyVolume.hh>
+#include "fields/BabyMINDMagneticField.hh"
 
 class G4LogicalVolume;
 class DetectorConstructionMessenger;
@@ -32,6 +33,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
     void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
     void AddFASER2(G4bool i) { m_addFASER2 = i; }
+    void AddBabyMIND(G4bool i) { m_addBabyMIND = i; }
     void UpdateGeometry();
 
   private:
@@ -39,11 +41,18 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     G4LogicalVolume* worldLV;
     G4LogicalVolume* hallLV;
+    DetectorConstructionMaterial* LArBoxMaterials;
+    DetectorConstructionMessenger* messenger;
 
     G4bool m_saveGdml;
     G4bool fCheckOverlap;
-
     G4bool m_addFLArE;
+    G4bool m_addBabyMIND;
+    G4bool m_addFORMOSA;
+    G4bool m_addFASERnu2;
+    G4bool m_addFASER2;
+
+    // FLArE
     G4LogicalVolume* TPCModuleLogical;
     G4LogicalVolume* HadCalXCellLogical;
     G4LogicalVolume* HadCalYCellLogical;
@@ -53,27 +62,30 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* MuonFinderAbsorLayersLogical;
     G4double fFieldValue;
 
-    G4bool m_addFORMOSA;
+    // BabyMIND
+    G4LogicalVolume* BabyMINDMagnetPlateLogical;
+    G4LogicalVolume* BabyMINDVerticalBar;
+    G4LogicalVolume* BabyMINDHorizontalBar;
 
-    G4bool m_addFASERnu2;
-
-    G4bool m_addFASER2;
+    // FASER2
     G4LogicalVolume* FASER2MagnetLogical;
     G4LogicalVolume* TrackingVerScinBarLogical;
     G4LogicalVolume* TrackingHorScinBarLogical; 
 
+    //FASER2nu
     G4LogicalVolume* FASERnu2EmulsionLogical;
     G4LogicalVolume* FASERnu2VetoInterfaceLogical;
 
+    //FORMOSA
     G4LogicalVolume *FORMOSAScintillatorBarLogical;
-
-    DetectorConstructionMaterial* LArBoxMaterials;
-    DetectorConstructionMessenger* messenger;
 
     static G4ThreadLocal G4UniformMagField* magField;
     static G4ThreadLocal G4FieldManager* fieldMgr;
     static G4ThreadLocal G4UniformMagField* magFieldFASER2;
     static G4ThreadLocal G4FieldManager* fieldMgrFASER2;
+    static G4ThreadLocal BabyMINDMagneticField* babyMINDField;
+    static G4ThreadLocal G4FieldManager* babyMINDFieldMgr;
+
 };
 
 #endif

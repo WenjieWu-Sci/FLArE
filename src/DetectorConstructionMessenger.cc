@@ -44,6 +44,12 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detFieldCmd->SetDefaultUnit("tesla");
     detFieldCmd->SetUnitCandidates("tesla kG G");
     detFieldCmd->SetDefaultValue(1.0);
+
+    // BabyMIND
+    detAddBabyMINDCmd = new G4UIcmdWithABool("/det/addBabyMIND", this);
+    detAddBabyMINDCmd->SetParameterName("Use BabyMIND detector", true);
+    detAddBabyMINDCmd->SetDefaultValue(false);
+
     // FORMOSA
     detAddFORMOSACmd = new G4UIcmdWithABool("/det/addFORMOSA", this);
     detAddFORMOSACmd->SetParameterName("Add FORMOSA detector", true);
@@ -158,6 +164,7 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete detGeomCmd;
   delete detFieldCmd;
 
+  delete detAddBabyMINDCmd;
   delete detAddFORMOSACmd;
 
   delete magnetGeomCmd;
@@ -186,17 +193,21 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
-  
+ 
   // flare
   if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
   else if (command == detCheckOverlapCmd) det->CheckDetOverlap(detCheckOverlapCmd->GetNewBoolValue(newValues));
-  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
+  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues)); 
   else if (command == detFLArEPosCmd) GeometricalParameters::Get()->SetFLArEPosition(detFLArEPosCmd->GetNew3VectorValue(newValues));
   else if (command == detGeomCmd) {
     GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
   }
   else if (command == detMatCmd)  {
     GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
+  }
+  else if (command == detAddBabyMINDCmd){
+    det->AddBabyMIND(detAddBabyMINDCmd->GetNewBoolValue(newValues));
+    GeometricalParameters::Get()->SetUseBabyMIND(detAddBabyMINDCmd->GetNewBoolValue(newValues));
   }
   else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
   // FORMOSA

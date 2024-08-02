@@ -7,7 +7,11 @@
 #include "geometry/GeometricalParameters.hh"
 #include "geometry/FASERnu2DetectorConstruction.hh"
 #include "geometry/FORMOSADetectorConstruction.hh"
-#include "geometry/FLArEDetectorConstruction.hh"
+#include "geometry/FLArETPCDetectorConstruction.hh"
+#include "geometry/FLArEHadCatcherMuonFinderConstruction.hh"
+#include "geometry/BabyMINDDetectorConstruction.hh"
+
+#include "fields/BabyMINDMagneticField.hh"
 
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -43,10 +47,12 @@ G4ThreadLocal G4UniformMagField* DetectorConstruction::magField = 0;
 G4ThreadLocal G4FieldManager* DetectorConstruction::fieldMgr = 0;
 G4ThreadLocal G4UniformMagField* DetectorConstruction::magFieldFASER2 = 0;
 G4ThreadLocal G4FieldManager* DetectorConstruction::fieldMgrFASER2 = 0;
+G4ThreadLocal BabyMINDMagneticField* DetectorConstruction::babyMINDField = 0;
+G4ThreadLocal G4FieldManager* DetectorConstruction::babyMINDFieldMgr = 0;
 
 DetectorConstruction::DetectorConstruction()
   : G4VUserDetectorConstruction(), 
-    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true)
+    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true), m_addBabyMIND(false)
 {
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
@@ -101,36 +107,75 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                                   fCheckOverlap);
 
   //-----------------------------------
-  // FLArE TPC volume, HadCal, and MuonCatcher
+  // FLArE TPC volume
 
   if (m_addFLArE) {
-    FLArEDetectorConstruction *FLArEAssembler = new FLArEDetectorConstruction();
+    FLArETPCDetectorConstruction *FLArETPCAssembler = new FLArETPCDetectorConstruction();
     G4double lArSizeZ               = GeometricalParameters::Get()->GetTPCSizeZ();
     G4double TPCInsulationThickness = GeometricalParameters::Get()->GetTPCInsulationThickness();
-    G4double GapToHadCatcher        = TPCInsulationThickness;
-    G4double HadCatcherLength       = GeometricalParameters::Get()->GetHadCalLength();
-    G4double MuonFinderLength       = GeometricalParameters::Get()->GetMuonCatcherLength();
-    G4double lengthFLArE            = TPCInsulationThickness + lArSizeZ + GapToHadCatcher + 
-                                      HadCatcherLength + MuonFinderLength;
 
-    G4AssemblyVolume* FLArEAssembly = FLArEAssembler->GetFLArEAssembly();
-    TPCModuleLogical            = FLArEAssembler->GetFLArETPCVolume();
-    HadCalXCellLogical          = FLArEAssembler->GetHadCalXVolume();
-    HadCalYCellLogical          = FLArEAssembler->GetHadCalYVolume();
-    HadAbsorLayersLogical       = FLArEAssembler->GetHadCalAbsorbVolume();
-    MuonFinderXCellLogical      = FLArEAssembler->GetMuonCatcherXVolume();
-    MuonFinderYCellLogical      = FLArEAssembler->GetMuonCatcherYVolume();
-    MuonFinderAbsorLayersLogical= FLArEAssembler->GetMuonCatcherAbsorbVolume();
+    G4AssemblyVolume* FLArETPCAssembly = FLArETPCAssembler->GetFLArETPCAssembly();
+    TPCModuleLogical = FLArETPCAssembler->GetFLArETPCVolume();
 
     // positioning
+    G4double lengthFLArE = 2*TPCInsulationThickness + lArSizeZ; 
     G4ThreeVector FLArEPos = GeometricalParameters::Get()->GetFLArEPosition();
     FLArEPos -= hallOffset;
-    FLArEAssembly->MakeImprint(hallLV, FLArEPos, nullptr, 0, fCheckOverlap);
+    FLArETPCAssembly->MakeImprint(hallLV, FLArEPos, nullptr, 0, fCheckOverlap);
 
-    G4cout<<"Length of FLArE     : "<<lengthFLArE<<G4endl;
-    G4cout<<"Center of FLArE TPC : "<<FLArEPos+hallOffset<<G4endl; // w.r.t the global coordinate
+    G4cout << "Length of FLArE     : " << lengthFLArE << G4endl;
+    G4cout << "Center of FLArE TPC : " << FLArEPos+hallOffset << G4endl; // w.r.t the global coordinate
+  
+    //-----------------------------------
+    // FLArE HadCal/MuonCatcher or BabyMIND
+
+    if( m_addBabyMIND ){   /// use BabyMIND
+  
+      BabyMINDDetectorConstruction *BabyMINDAssembler = new BabyMINDDetectorConstruction();
+      G4AssemblyVolume *BabyMINDAssembly = BabyMINDAssembler->GetBabyMINDAssembly();
+  
+      BabyMINDMagnetPlateLogical = BabyMINDAssembler->GetMagnetPlate();
+      BabyMINDVerticalBar = BabyMINDAssembler->GetVerticalBar();
+      BabyMINDHorizontalBar = BabyMINDAssembler->GetHorizontalBar();
+    
+      G4double babyMINDLengthZ  = GeometricalParameters::Get()->GetBabyMINDTotalSizeZ();
+      G4ThreeVector babyMINDPos = GeometricalParameters::Get()->GetFLArEPosition() +
+	                          G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
+				  G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
+      babyMINDPos -= hallOffset;
+      BabyMINDAssembly->MakeImprint(hallLV, babyMINDPos, nullptr, 0, fCheckOverlap);
+      
+      G4cout << "Length of BabyMIND : " << babyMINDLengthZ << G4endl;
+      G4cout << "Center of BabyMIND : " << babyMINDPos+hallOffset << G4endl; // w.r.t the global coordinate
+    
+    }
+    else{  //legacy HadCal/MuonCatcher
+    
+      FLArEHadCatcherMuonFinderConstruction *HadCatMuonFindAssembler = new FLArEHadCatcherMuonFinderConstruction();
+      G4double HadCatcherLength       = GeometricalParameters::Get()->GetHadCalLength();
+      G4double MuonFinderLength       = GeometricalParameters::Get()->GetMuonCatcherLength();
+    
+      G4AssemblyVolume* HadCatMuonFindAssembly = HadCatMuonFindAssembler->GetHadCatcherMuonFinderAssembly();
+      HadCalXCellLogical          = HadCatMuonFindAssembler->GetHadCalXVolume();
+      HadCalYCellLogical          = HadCatMuonFindAssembler->GetHadCalYVolume();
+      HadAbsorLayersLogical       = HadCatMuonFindAssembler->GetHadCalAbsorbVolume();
+      MuonFinderXCellLogical      = HadCatMuonFindAssembler->GetMuonCatcherXVolume();
+      MuonFinderYCellLogical      = HadCatMuonFindAssembler->GetMuonCatcherYVolume();
+      MuonFinderAbsorLayersLogical= HadCatMuonFindAssembler->GetMuonCatcherAbsorbVolume();
+      
+      G4double HadCatMuonFindLengthZ  = HadCatcherLength + MuonFinderLength;
+      G4ThreeVector HadCatMuonFindPos = GeometricalParameters::Get()->GetFLArEPosition() +
+	                                G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
+				        G4ThreeVector(0.,0.,HadCatMuonFindLengthZ/2.);
+    
+      HadCatMuonFindPos -= hallOffset;
+      HadCatMuonFindAssembly->MakeImprint(hallLV, HadCatMuonFindPos, nullptr, 0, fCheckOverlap);
+      
+      G4cout << "Length of HadCatherMuonFinder : " << HadCatMuonFindLengthZ << G4endl;
+      G4cout << "Center of HadCatherMuonFinder : " << HadCatMuonFindPos+hallOffset << G4endl; // w.r.t the global coordinate
+    }
   }
-
+  
   //-----------------------------------
   // FORMOSA
 
@@ -210,64 +255,85 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 }
 
 void DetectorConstruction::ConstructSDandField() {
+  
   G4SDManager* sdManager = G4SDManager::GetSDMpointer();
   sdManager->SetVerboseLevel(2);
   int SDIdx = 0;
+
   if (m_addFLArE) {
+
     LArBoxSD* TPCModuleSD = new LArBoxSD("lArBoxSD");
     TPCModuleLogical->SetSensitiveDetector(TPCModuleSD);
     sdManager->AddNewDetector(TPCModuleSD);
     GeometricalParameters::Get()->AddSD2List(SDIdx, "lArBoxSD/lar_box");
     SDIdx++;
+    
+    if (m_addBabyMIND) {
+    
+      LArBoxSD* BabyMINDSD = new LArBoxSD("BabyMINDSD");
+      BabyMINDMagnetPlateLogical->SetSensitiveDetector(BabyMINDSD);
+      sdManager->AddNewDetector(BabyMINDSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "BabyMINDSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* HadCalXSD = new LArBoxSD("HadCalXSD");
-    HadCalXCellLogical->SetSensitiveDetector(HadCalXSD);
-    sdManager->AddNewDetector(HadCalXSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "HadCalXSD/lar_box");
-    SDIdx++;
+      // magnetic field for BabyMIND
+      babyMINDField = new BabyMINDMagneticField();
+      babyMINDFieldMgr = new G4FieldManager();
+      babyMINDFieldMgr->SetDetectorField(babyMINDField);
+      babyMINDFieldMgr->CreateChordFinder(babyMINDField);
+      BabyMINDMagnetPlateLogical->SetFieldManager(babyMINDFieldMgr, true);
+    
+    } else {
+    
+      LArBoxSD* HadCalXSD = new LArBoxSD("HadCalXSD");
+      HadCalXCellLogical->SetSensitiveDetector(HadCalXSD);
+      sdManager->AddNewDetector(HadCalXSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "HadCalXSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* HadCalYSD = new LArBoxSD("HadCalYSD");
-    HadCalYCellLogical->SetSensitiveDetector(HadCalYSD);
-    sdManager->AddNewDetector(HadCalYSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "HadCalYSD/lar_box");
-    SDIdx++;
+      LArBoxSD* HadCalYSD = new LArBoxSD("HadCalYSD");
+      HadCalYCellLogical->SetSensitiveDetector(HadCalYSD);
+      sdManager->AddNewDetector(HadCalYSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "HadCalYSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* MuonFinderXSD = new LArBoxSD("MuonFinderXSD");
-    MuonFinderXCellLogical->SetSensitiveDetector(MuonFinderXSD);
-    sdManager->AddNewDetector(MuonFinderXSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderXSD/lar_box");
-    SDIdx++;
+      LArBoxSD* MuonFinderXSD = new LArBoxSD("MuonFinderXSD");
+      MuonFinderXCellLogical->SetSensitiveDetector(MuonFinderXSD);
+      sdManager->AddNewDetector(MuonFinderXSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderXSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* MuonFinderYSD = new LArBoxSD("MuonFinderYSD");
-    MuonFinderYCellLogical->SetSensitiveDetector(MuonFinderYSD);
-    sdManager->AddNewDetector(MuonFinderYSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderYSD/lar_box");
-    SDIdx++;
+      LArBoxSD* MuonFinderYSD = new LArBoxSD("MuonFinderYSD");
+      MuonFinderYCellLogical->SetSensitiveDetector(MuonFinderYSD);
+      sdManager->AddNewDetector(MuonFinderYSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderYSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* HadAbsorbSD = new LArBoxSD("HadAbsorbSD");
-    HadAbsorLayersLogical->SetSensitiveDetector(HadAbsorbSD);
-    sdManager->AddNewDetector(HadAbsorbSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "HadAbsorbSD/lar_box");
-    SDIdx++;
+      LArBoxSD* HadAbsorbSD = new LArBoxSD("HadAbsorbSD");
+      HadAbsorLayersLogical->SetSensitiveDetector(HadAbsorbSD);
+      sdManager->AddNewDetector(HadAbsorbSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "HadAbsorbSD/lar_box");
+      SDIdx++;
 
-    LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
-    MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
-    sdManager->AddNewDetector(MuonFinderAbsorbSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderAbsorbSD/lar_box");
-    SDIdx++;
-
-    // HadCatcher + MuonFinder  magnetic field
-    G4ThreeVector fieldValue = G4ThreeVector(0,fFieldValue, 0);
-    magField = new G4UniformMagField(fieldValue);
-    fieldMgr = new G4FieldManager();
-    fieldMgr->SetDetectorField(magField);
-    fieldMgr->CreateChordFinder(magField);
-    HadCalXCellLogical->SetFieldManager(fieldMgr, true);
-    HadCalYCellLogical->SetFieldManager(fieldMgr, true);
-    HadAbsorLayersLogical->SetFieldManager(fieldMgr, true);
-    MuonFinderXCellLogical->SetFieldManager(fieldMgr, true);
-    MuonFinderYCellLogical->SetFieldManager(fieldMgr, true);
-    MuonFinderAbsorLayersLogical->SetFieldManager(fieldMgr, true);
+      LArBoxSD* MuonFinderAbsorbSD = new LArBoxSD("MuonFinderAbsorbSD");
+      MuonFinderAbsorLayersLogical->SetSensitiveDetector(MuonFinderAbsorbSD);
+      sdManager->AddNewDetector(MuonFinderAbsorbSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "MuonFinderAbsorbSD/lar_box");
+      SDIdx++;
+    
+      // magnetic field for HadCatcher + MuonFinder
+      G4ThreeVector fieldValue = G4ThreeVector(0,fFieldValue, 0);
+      magField = new G4UniformMagField(fieldValue);
+      fieldMgr = new G4FieldManager();
+      fieldMgr->SetDetectorField(magField);
+      fieldMgr->CreateChordFinder(magField);
+      HadCalXCellLogical->SetFieldManager(fieldMgr, true);
+      HadCalYCellLogical->SetFieldManager(fieldMgr, true);
+      HadAbsorLayersLogical->SetFieldManager(fieldMgr, true);
+      MuonFinderXCellLogical->SetFieldManager(fieldMgr, true);
+      MuonFinderYCellLogical->SetFieldManager(fieldMgr, true);
+      MuonFinderAbsorLayersLogical->SetFieldManager(fieldMgr, true);
+    }
   }
 
   if (m_addFORMOSA) {

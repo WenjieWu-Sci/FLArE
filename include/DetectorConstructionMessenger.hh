@@ -37,6 +37,8 @@ class DetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithAString* detMatCmd;
     G4UIcmdWithAString* detGeomCmd;
     G4UIcmdWithADoubleAndUnit* detFieldCmd;
+    //BabyMIND
+    G4UIcmdWithABool* detAddBabyMINDCmd;
     // FORMOSA
     G4UIcmdWithABool* detAddFORMOSACmd;
     G4UIcmdWith3VectorAndUnit* detFORMOSAPosCmd;
