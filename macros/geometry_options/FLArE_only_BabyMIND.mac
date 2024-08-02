@@ -7,7 +7,7 @@
 /det/flare/material LAr
 /det/flare/module 3x7
 /det/flare/field 1. tesla
-/det/flare/useBabyMIND false
+/det/flare/useBabyMIND true
 
 # Turn off everything else
 /det/addFORMOSA false

@@ -8,36 +8,37 @@
 
 # Configuring FLArE
 /det/addFLArE true
-/det/addFLArEPos 0 0 4300 mm
-/det/material LAr
-/det/module 3x7
-/det/field 1. tesla
+/det/flare/addFLArEPos 0 0 4300 mm
+/det/flare/material LAr
+/det/flare/module 3x7
+/det/flare/field 1. tesla
+/det/flare/useBabyMIND false
 
 # Configuring FASERnu2
 # assuming 1.2m gap from FLArE
 /det/addFASERnu2 true
-/det/addFASERnu2Pos 0 0 15503 mm
+/det/fasernu/addFASERnu2Pos 0 0 15503 mm
 
 # Configuring FASER2
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
 # + 10m decay tunnel
 /det/addFASER2 true
-/det/addFASER2Pos 0 0 36116 mm
-/det/magnetGeom SAMURAI
-/det/magnetField 1. tesla
-/det/magnetWinX 3.0 m
-/det/magnetWinY 1.0 m
-/det/magnetWinZ 4.0 m
-/det/yokeThickX 1.5 m
-/det/yokeThickY 2.0 m
-/det/trackingNumber 6
-/det/trackingGap 0.5 m
-/det/trackingNBarsX 7
-/det/trackingNBarsY 7
-/det/trackingScinThick 1.0 cm
+/det/faser/addFASER2Pos 0 0 36116 mm
+/det/faser/magnetGeom SAMURAI
+/det/faser/magnetField 1. tesla
+/det/faser/magnetWinX 3.0 m
+/det/faser/magnetWinY 1.0 m
+/det/faser/magnetWinZ 4.0 m
+/det/faser/yokeThickX 1.5 m
+/det/faser/yokeThickY 2.0 m
+/det/faser/trackingNumber 6
+/det/faser/trackingGap 0.5 m
+/det/faser/trackingNBarsX 7
+/det/faser/trackingNBarsY 7
+/det/faser/trackingScinThick 1.0 cm
 
 # Configuring FORMOSA
 # assuming in the middle of decay tunnel
 /det/addFORMOSA true
-/det/addFORMOSAPos 0 -2500 25996 mm
+/det/formosa/addFORMOSAPos 0 -2500 25996 mm

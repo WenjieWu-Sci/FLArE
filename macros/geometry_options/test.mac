@@ -1,0 +1,10 @@
+# This is a test!
+
+# Configuring FLArE
+/det/addFLArE true
+/det/flare/useBabyMIND false
+
+# Turn off everything else
+/det/addFORMOSA false
+/det/addFASERnu2 false
+/det/addFASER2 false

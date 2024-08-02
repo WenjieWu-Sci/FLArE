@@ -66,6 +66,25 @@ class GeometricalParameters  {
     G4double GetBabyMINDBlockPadding() { return fBabyMINDBlockPadding; };
     G4String GetBabyMINDBlockSequence() { return fBabyMINDBlockSequence; };
     G4bool GetUseBabyMIND() { return fUseBabyMIND; }
+    void SetBabyMINDMagnetPlateThickness(G4double val) { fBabyMINDMagnetPlateThickness = val; }
+    void SetBabyMINDMagnetPlateSizeX(G4double val) { fBabyMINDMagnetPlateSizeX = val; }
+    void SetBabyMINDMagnetPlateSizeY(G4double val) { fBabyMINDMagnetPlateSizeY = val; }
+    void SetBabyMINDMagnetCentralPlateY(G4double val) { fBabyMINDMagnetCentralPlateY = val; }
+    void SetBabyMINDSlitSizeX(G4double val) { fBabyMINDSlitSizeX = val; }
+    void SetBabyMINDSlitSizeY(G4double val) { fBabyMINDSlitSizeY = val; }
+    void SetBabyMINDFieldStrength(G4double val) { fBabyMINDFieldStrength = val; }
+    void SetBabyMINDNVerticalBars(G4int val) { fBabyMINDNVerticalBars = val; }
+    void SetBabyMINDNHorizontalBars(G4int val) { fBabyMINDNHorizontalBars = val; }
+    void SetBabyMINDBarThickness(G4double val) { fBabyMINDBarThickness = val; }
+    void SetBabyMINDVerticalBarSizeX(G4double val) { fBabyMINDVerticalBarSizeX = val; }
+    void SetBabyMINDVerticalBarSizeY(G4double val) { fBabyMINDVerticalBarSizeY = val; }
+    void SetBabyMINDHorizontalBarSizeX(G4double val) { fBabyMINDHorizontalBarSizeX = val; }
+    void SetBabyMINDHorizontalBarSizeY(G4double val) { fBabyMINDHorizontalBarSizeY = val; }
+    void SetBabyMINDMagnetToScinSpacing(G4double val) { fBabyMINDMagnetToScinSpacing = val; };
+    void SetBabyMINDMagnetToMagnetSpacing(G4double val) { fBabyMINDMagnetToMagnetSpacing = val; };
+    void SetBabyMINDBlockToBlockSpacing(G4double val) { fBabyMINDBlockToBlockSpacing = val; };
+    void SetBabyMINDBlockPadding(G4double val)  { fBabyMINDBlockPadding = val; };
+    void SetBabyMINDBlockSequence(G4String val) { fBabyMINDBlockSequence = val; };
     void SetUseBabyMIND(G4bool val) { fUseBabyMIND = val; }
     void SetBabyMINDTotalSizeZ(G4double val) { fBabyMINDTotalSizeZ = val; }
 
@@ -202,8 +221,8 @@ class GeometricalParameters  {
     G4double fBabyMINDSlitSizeX;
     G4double fBabyMINDSlitSizeY;
     G4double fBabyMINDFieldStrength;
-    G4double fBabyMINDNVerticalBars;
-    G4double fBabyMINDNHorizontalBars;
+    G4int fBabyMINDNVerticalBars;
+    G4int fBabyMINDNHorizontalBars;
     G4double fBabyMINDBarThickness;
     G4double fBabyMINDVerticalBarSizeX;
     G4double fBabyMINDVerticalBarSizeY;

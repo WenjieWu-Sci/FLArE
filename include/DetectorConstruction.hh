@@ -33,7 +33,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     void AddFORMOSA(G4bool i) { m_addFORMOSA = i; }
     void AddFASERnu2(G4bool i) { m_addFASERnu2 = i; }
     void AddFASER2(G4bool i) { m_addFASER2 = i; }
-    void AddBabyMIND(G4bool i) { m_addBabyMIND = i; }
+    void UseBabyMIND(G4bool i) { m_useBabyMIND = i; }
     void UpdateGeometry();
 
   private:
@@ -47,7 +47,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4bool m_saveGdml;
     G4bool fCheckOverlap;
     G4bool m_addFLArE;
-    G4bool m_addBabyMIND;
+    G4bool m_useBabyMIND;
     G4bool m_addFORMOSA;
     G4bool m_addFASERnu2;
     G4bool m_addFASER2;

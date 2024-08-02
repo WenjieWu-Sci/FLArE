@@ -52,7 +52,7 @@ G4ThreadLocal G4FieldManager* DetectorConstruction::babyMINDFieldMgr = 0;
 
 DetectorConstruction::DetectorConstruction()
   : G4VUserDetectorConstruction(), 
-    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true), m_addBabyMIND(false)
+    m_addFLArE(true), m_addFORMOSA(true), m_addFASERnu2(true), m_addFASER2(true), m_useBabyMIND(false)
 {
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
@@ -129,7 +129,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     //-----------------------------------
     // FLArE HadCal/MuonCatcher or BabyMIND
 
-    if( m_addBabyMIND ){   /// use BabyMIND
+    if( m_useBabyMIND ){   /// use BabyMIND
   
       BabyMINDDetectorConstruction *BabyMINDAssembler = new BabyMINDDetectorConstruction();
       G4AssemblyVolume *BabyMINDAssembly = BabyMINDAssembler->GetBabyMINDAssembly();
@@ -268,7 +268,7 @@ void DetectorConstruction::ConstructSDandField() {
     GeometricalParameters::Get()->AddSD2List(SDIdx, "lArBoxSD/lar_box");
     SDIdx++;
     
-    if (m_addBabyMIND) {
+    if (m_useBabyMIND) {
     
       LArBoxSD* BabyMINDSD = new LArBoxSD("BabyMINDSD");
       BabyMINDMagnetPlateLogical->SetSensitiveDetector(BabyMINDSD);
