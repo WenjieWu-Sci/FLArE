@@ -270,10 +270,16 @@ void DetectorConstruction::ConstructSDandField() {
     
     if (m_useBabyMIND) {
     
-      LArBoxSD* BabyMINDSD = new LArBoxSD("BabyMINDSD");
-      BabyMINDMagnetPlateLogical->SetSensitiveDetector(BabyMINDSD);
-      sdManager->AddNewDetector(BabyMINDSD);
-      GeometricalParameters::Get()->AddSD2List(SDIdx, "BabyMINDSD/lar_box");
+      LArBoxSD* BabyMINDHorBarSD = new LArBoxSD("BabyMINDHorBarSD");
+      BabyMINDHorizontalBar->SetSensitiveDetector(BabyMINDHorBarSD);
+      sdManager->AddNewDetector(BabyMINDHorBarSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "BabyMINDHorBarSD/lar_box");
+      SDIdx++;
+      
+      LArBoxSD* BabyMINDVerBarSD = new LArBoxSD("BabyMINDVerBarSD");
+      BabyMINDVerticalBar->SetSensitiveDetector(BabyMINDVerBarSD);
+      sdManager->AddNewDetector(BabyMINDVerBarSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "BabyMINDVerBarSD/lar_box");
       SDIdx++;
 
       // magnetic field for BabyMIND
