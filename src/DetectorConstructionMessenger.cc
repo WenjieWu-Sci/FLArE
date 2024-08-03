@@ -99,7 +99,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     babymindSlitSizeYCmd->SetUnitCategory("Length");
     babymindSlitSizeYCmd->SetUnitCandidates("cm m mm");
     // magnetic field in magnet plate
-    babymindFieldStrengthCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/slitSizeX",this);
+    babymindFieldStrengthCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/fieldStrength",this);
     babymindFieldStrengthCmd->SetUnitCategory("Magnetic flux density");
     babymindFieldStrengthCmd->SetUnitCandidates("tesla kG G");
     // bar thickness
