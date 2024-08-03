@@ -41,6 +41,75 @@ namespace slid {
     delete [] bins;
   }
 
+
+  ShowerLID::ShowerLID(TH2F* px, TH2F* py,
+                       const double aVtxX, const double aVtxY, const double aVtxZ,
+                       const double aPx, const double aPy, const double aPz)
+  {
+    Int_t nbins_x = px->GetNbinsY();
+    Int_t nbins_y = py->GetNbinsY();
+    Int_t nbins_z = py->GetNbinsX();
+
+    ShowerLengthFrom2DPM = 0;
+    ShowerWidthFrom2DPM = 0;
+    NCell = 0;
+    NPlane = 0;
+
+    Double_t pmag = TMath::Sqrt(aPx*aPx+aPy*aPy+aPz*aPz);
+    if (pmag==0) {
+      ShowerLengthFrom2DPM = 0;
+      ShowerWidthFrom2DPM = 0;
+    } else {
+      Double_t tmp_showerlength = 0;
+      Double_t tmp_showerwidth = 0;
+      Double_t tot_e = 0;
+      for (Long64_t i= 0; i< nbins_z; ++i) {
+        Int_t flag_validPlane = 0;
+        for (Long64_t j= 0; j< nbins_x; ++j) {
+          Double_t xview_e = px->GetBinContent(i+1, j+1);
+          if (xview_e>0.1) {  // only count pixels with deposited energy higher than 0.1 MeV
+            Double_t x = px->GetYaxis()->GetBinCenter(j+1);
+            Double_t z = px->GetXaxis()->GetBinCenter(i+1);
+            // find matched bin in the y-view
+            Int_t matched_biny = 0;
+            Double_t min_diff = 1e6;
+            for (Long64_t k= 0; k< nbins_y; ++k) {
+              Double_t tmp_yview_e = py->GetBinContent(i+1, k+1);
+              if ( (tmp_yview_e>0.1) && (abs(xview_e-tmp_yview_e)<min_diff) ) { 
+                min_diff = abs(xview_e - tmp_yview_e);
+                matched_biny = k+1;
+              }
+            }
+            if (matched_biny>0) { // matched bin in the y-view found
+              NCell++;
+              flag_validPlane = 1;
+              Double_t yview_e = py->GetBinContent(i+1, matched_biny);
+              tot_e += (xview_e+yview_e)/2.;
+              Double_t y = py->GetYaxis()->GetBinCenter(matched_biny);
+              // calculate the shower/track length and width
+              // length: defined as the longest projection distance at the true direction between vertex and hits
+              //         length = |\vector{hit_position}|\cdot\cos(theta) = \vertor{hit_position}\cdot\vector{P} / |\vector{P}|
+              // width: defined as the weighted average of the least distance of the hits to the true direction
+              Double_t tmp_len = abs((x-aVtxX)*aPx+(y-aVtxY)*aPy+(z-aVtxZ)*aPz)/pmag;
+              if (tmp_len>tmp_showerlength) tmp_showerlength = tmp_len;
+
+              Double_t dsquare_hit_vtx = TMath::Power((x-aVtxX),2)+
+                                         TMath::Power((y-aVtxY),2)+
+                                         TMath::Power((z-aVtxZ),2);
+              Double_t width_hit = TMath::Sqrt((dsquare_hit_vtx - tmp_len*tmp_len));
+              Double_t weighted_width_hit = width_hit*(xview_e+yview_e)/2;
+              if (!std::isnan(weighted_width_hit)) tmp_showerwidth += weighted_width_hit;
+            }
+          }
+        }
+        if (flag_validPlane>0) NPlane++;
+      }
+      ShowerLengthFrom2DPM = tmp_showerlength;
+      ShowerWidthFrom2DPM = tot_e>0 ? tmp_showerwidth/tot_e : 0;
+    }
+  }
+                      
+
   ShowerLID::~ShowerLID()
   {
   }

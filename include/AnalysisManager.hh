@@ -98,6 +98,8 @@ class AnalysisManager {
     G4double ShowerWidthInLAr[1000];
     G4double ProngAvgdEdx[1000];
     G4double ProngAvgdEdxInLAr[1000];
+    G4int    ProngNCell[1000];
+    G4int    ProngNPlane[1000];
     G4double ProngdEdxAlongTrack[1000][100];
     G4int    ProngdEdxTrackLength[1000][100];
     G4double TotalDedxLongitudinal[3000];

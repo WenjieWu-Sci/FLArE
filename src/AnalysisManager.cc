@@ -85,6 +85,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("ShowerWidthInLAr"          , ShowerWidthInLAr           , "ShowerWidthInLAr[nPrimaryParticle]/D");
   evt->Branch("ProngAvgdEdx"              , ProngAvgdEdx               , "ProngAvgdEdx[nPrimaryParticle]/D");
   evt->Branch("ProngAvgdEdxInLAr"         , ProngAvgdEdxInLAr          , "ProngAvgdEdxInLAr[nPrimaryParticle]/D");
+  evt->Branch("ProngNCell"                , ProngNCell                 , "ProngNCell[nPrimaryParticle]/I");
+  evt->Branch("ProngNPlane"               , ProngNPlane                , "ProngNPlane[nPrimaryParticle]/I");
   evt->Branch("ProngdEdxAlongTrack"       , ProngdEdxAlongTrack        , "ProngdEdxAlongTrack[nPrimaryParticle][100]/D");
   evt->Branch("ProngdEdxTrackLength"      , ProngdEdxTrackLength       , "ProngdEdxTrackLength[nPrimaryParticle][100]/I");
   evt->Branch("dir_pol_x"                 , dir_pol_x                  , "dir_pol_x[nPrimaryParticle]/D");
@@ -229,6 +231,8 @@ void AnalysisManager::BeginOfEvent() {
     ShowerWidthInLAr[i]          = 0;
     ProngAvgdEdx[i]              = -1;
     ProngAvgdEdxInLAr[i]         = -1;
+    ProngNCell[i]                = 0;
+    ProngNPlane[i]               = 0;
     for (G4int j= 0; j< 100; ++j) {
       ProngdEdxAlongTrack[i][j] = 0;
       ProngdEdxTrackLength[i][j] = -1;
@@ -767,18 +771,6 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
           }
         }
       }
-      // calculate the shower/track length and width
-      // length: defined as the longest projection distance at the true direction between vertex and hits
-      //         length = |\vector{hit_position}|\cdot\cos(theta) = \vertor{hit_position}\cdot\vector{P} / |\vector{P}|
-      // width: defined as the weighted average of the least distance of the hits to the true direction
-      double dsquare_hit_vtx = TMath::Power((pos_x-primaries[whichPrim].Vx()),2)+
-                               TMath::Power((pos_y-primaries[whichPrim].Vy()),2)+
-                               TMath::Power((pos_z-primaries[whichPrim].Vz()),2);
-      double product_hit_p = (pos_x-primaries[whichPrim].Vx())*primaries[whichPrim].Px()+
-                             (pos_y-primaries[whichPrim].Vy())*primaries[whichPrim].Py()+
-                             (pos_z-primaries[whichPrim].Vz())*primaries[whichPrim].Pz();
-      double len_hit = TMath::Abs(product_hit_p)/ShowerP;
-      double width_hit = TMath::Sqrt((dsquare_hit_vtx - product_hit_p*product_hit_p/ShowerP/ShowerP));
       // exclude zero hit when calculating showerlength of the primary particle
       // exclude hits from the cryo gap (detID=8)
       if (hit->GetEdep()>0 && 
@@ -786,13 +778,26 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
            sdName=="SamplingCaloXSD/lar_box" || sdName=="SamplingCaloYSD/lar_box")) 
       {
         ProngEInDetector[whichPrim] += hit->GetEdep();
-        ShowerLength[whichPrim] = std::max({ShowerLength[whichPrim], len_hit});
-        //double square_weighted_width_hit = TMath::Power(width_hit*hit->GetEdep(),2);
-        double weighted_width_hit = width_hit*hit->GetEdep();
-        if (!std::isnan(weighted_width_hit)) ShowerWidth[whichPrim] += weighted_width_hit;
+
         if (sdName=="lArBoxSD/lar_box") {
+          // calculate the shower/track length and width
+          // length: defined as the longest projection distance at the true direction between vertex and hits
+          //         length = |\vector{hit_position}|\cdot\cos(theta) = \vertor{hit_position}\cdot\vector{P} / |\vector{P}|
+          // width: defined as the weighted average of the least distance of the hits to the true direction
+          double dsquare_hit_vtx = TMath::Power((pos_x-primaries[whichPrim].Vx()),2)+
+                                   TMath::Power((pos_y-primaries[whichPrim].Vy()),2)+
+                                   TMath::Power((pos_z-primaries[whichPrim].Vz()),2);
+          double product_hit_p = (pos_x-primaries[whichPrim].Vx())*primaries[whichPrim].Px()+
+                                 (pos_y-primaries[whichPrim].Vy())*primaries[whichPrim].Py()+
+                                 (pos_z-primaries[whichPrim].Vz())*primaries[whichPrim].Pz();
+          double len_hit = TMath::Abs(product_hit_p)/ShowerP;
+          double width_hit = TMath::Sqrt((dsquare_hit_vtx - product_hit_p*product_hit_p/ShowerP/ShowerP));
+          double weighted_width_hit = width_hit*hit->GetEdep();
+
           ProngEInLAr[whichPrim] += hit->GetEdep();
+
           ShowerLengthInLAr[whichPrim] = std::max({ShowerLengthInLAr[whichPrim], len_hit});
+
           if (!std::isnan(weighted_width_hit)) ShowerWidthInLAr[whichPrim] += weighted_width_hit;
         }
       }
@@ -838,22 +843,22 @@ double AnalysisManager::GetTotalEnergy(double px, double py, double pz, double m
 }
 
 void AnalysisManager::FillPseudoRecoVar() {
-  //  AngleToBeamDir, dEdx, dEdxInLAr ProngType
   std::cout<<std::fixed<<std::setw(10)<<"PDG"
     <<std::setw(12)<<"Angle"
     <<std::setw(13)<<"TrackLength"
     <<std::setw(13)<<"ShowerLength"
-    <<std::setw(18)<<"ShowerWidthInLAr"
-    <<std::setw(12)<<"EInLAr" 
-    <<std::setw(12)<<"EInHadCal"
-    <<std::setw(12)<<"dEdxInLAr"
+    <<std::setw(18)<<"ShowerWidth"
+    <<std::setw(12)<<"EInDetector" 
     <<std::setw(10)<<"ProngType"
     <<std::setw(12)<<"Pz"<<std::endl;
 
+  pm3D->CalculateShowerProperty(primaries);
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
-    if (ProngEInDetector[iPrim]>0) {
-      ShowerWidth[iPrim] = ShowerWidth[iPrim]/ProngEInDetector[iPrim];
-    }
+    ShowerWidth[iPrim]  = pm3D->GetShowerWidthFrom2DPM(iPrim);
+    ShowerLength[iPrim] = pm3D->GetShowerLengthFrom2DPM(iPrim);
+    ProngNCell[iPrim]   = pm3D->GetProngNCell(iPrim);
+    ProngNPlane[iPrim]  = pm3D->GetProngNPlane(iPrim);
+
     if (ProngEInLAr[iPrim]>0) {
       ShowerWidthInLAr[iPrim] = ShowerWidthInLAr[iPrim]/ProngEInLAr[iPrim];
     }
@@ -872,10 +877,8 @@ void AnalysisManager::FillPseudoRecoVar() {
     std::cout<<std::setw(12)<<ProngAngleToBeamDir[iPrim];
     std::cout<<std::setw(13)<<primaryTrackLength[iPrim];
     std::cout<<std::setw(13)<<ShowerLength[iPrim];
-    std::cout<<std::setw(18)<<ShowerWidthInLAr[iPrim];
-    std::cout<<std::setw(12)<<ProngEInLAr[iPrim] ;
-    std::cout<<std::setw(12)<<ProngEInHadCal[iPrim];
-    std::cout<<std::setw(12)<<ProngAvgdEdxInLAr[iPrim];
+    std::cout<<std::setw(18)<<ShowerWidth[iPrim];
+    std::cout<<std::setw(12)<<ProngEInDetector[iPrim] ;
     std::cout<<std::setw(10)<<primaries[iPrim].ProngType();
     std::cout<<std::setw(12)<<primaries[iPrim].Pz()<<std::endl;
   }
