@@ -2,7 +2,7 @@
 # in which FORMOSA is placed after the FASER2 spectrometer magnet
 # but using the CrystalPulling design
 # The geometry contains:
-# - FLArE (TPC + HadCather + MuonFinder)
+# - FLArE (TPC + BabyMIND)
 # - FASERnu2
 # - FASER2 (CrystalPulling magnets)
 # - FORMOSA
@@ -13,19 +13,19 @@
 /det/flare/material LAr
 /det/flare/module 3x7
 /det/flare/field 1. tesla
-/det/flare/useBabyMIND false
+/det/flare/useBabyMIND true
 
 # Configuring FASERnu2
 # assuming 1.2m gap from FLArE
 /det/addFASERnu2 true
-/det/fasernu/addFASERnu2Pos 0 0 15503 mm
+/det/fasernu/addFASERnu2Pos 0 0 17393 mm
 
 # Configuring FASER2
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
 # + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 34141 mm
+/det/faser/addFASER2Pos 0 0 36031 mm
 /det/faser/magnetGeom CrystalPulling
 /det/faser/magnetField 0.6 tesla
 /det/faser/magnetInnerR 0.8 m
@@ -42,4 +42,4 @@
 # Configuring FORMOSA
 # assuming 1.2m gap from FASER2
 /det/addFORMOSA true
-/det/formosa/addFORMOSAPos 0 0 41146 mm
+/det/formosa/addFORMOSAPos 0 0 43046 mm

@@ -1,5 +1,5 @@
 # This file defines the standard configuration for the FLArE only option
-# The geometry contains only FLArE (TPC + HadCather + MuonFinder)
+# The geometry contains only FLArE (TPC + BabyMIND)
 
 # Configuring FLArE
 /det/addFLArE true
@@ -9,7 +9,7 @@
 /det/flare/field 1. tesla
 /det/flare/useBabyMIND true
 
-/det/babymind/blockSequence "|MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|"
+/det/babymind/blockSequence |MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|
 /det/babymind/magnetPlateThickness 30 mm
 /det/babymind/magnetPlateSizeX 3 m
 /det/babymind/magnetPlateSizeY 2 m

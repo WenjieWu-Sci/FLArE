@@ -67,7 +67,7 @@ Example macros can be found in `macros`: `numu_genie.mac`, `nue_genie.mac`, `nut
 |/det/flare/module      | option for tpc module option, choose `single` or `3x7`, run before `/run/initialize` |`single`|
 |/det/flare/field       | option for setting the magnetic field value in FLArE HadCather and Muon Finder       |`1 T`|
 |/det/flare/useBabyMIND | option for using BabyMIND instead of the legacy FLArE HadCather and Muon Finder      |`false`|
-|/det/babymind/blockSequence | option for BabyMIND module sequence |`\|MMMMD\|\|DMMMD\|\|DMMMMD\|\|MMDMMD\|\|MMDMMD\|\|MDMDMD\|\|DMMMD\|'|
+|/det/babymind/blockSequence | option for BabyMIND module sequence |`\|MMMMD\|\|DMMMD\|\|DMMMMD\|\|MMDMMD\|\|MMDMMD\|\|MDMDMD\|\|DMMMD\|`|
 |/det/babymind/magnetPlateThickness  | option for BabyMIND magnet plate thickness                              |`30 mm`|
 |/det/babymind/magnetPlateSizeX      | option for BabyMIND magnet plate size x                                 |`3 m`|
 |/det/babymind/magnetPlateSizeY      | option for BabyMIND magnet plate size y                                 |`2 m`|
