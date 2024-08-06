@@ -327,21 +327,4 @@ G4double PixelMap3D::DistanceToAnode(G4double x) {
   return distance;
 }
 
-void PixelMap3D::CalculateShowerProperty(const std::vector<FPFParticle>& primaries) {
-  ShowerLengthFrom2DPM.resize(fNPrim);
-  ShowerWidthFrom2DPM.resize(fNPrim);
-  ProngNCell.resize(fNPrim);
-  ProngNPlane.resize(fNPrim);
-  for (int i=0; i<fNPrim; ++i) {
-    slid::ShowerLID* shwlid = new slid::ShowerLID(
-        hitClusterZX[i+1], hitClusterZY[i+1],
-        primaries[i].Vx(), primaries[i].Vy(), primaries[i].Vz(),
-        primaries[i].Px(), primaries[i].Py(), primaries[i].Pz());
-    ShowerLengthFrom2DPM[i] = shwlid->GetShowerLength();
-    ShowerWidthFrom2DPM[i]  = shwlid->GetShowerWidth();
-    ProngNCell[i]           = shwlid->GetNCell();
-    ProngNPlane[i]          = shwlid->GetNPlane();
-    delete shwlid;
-  }
-}
 

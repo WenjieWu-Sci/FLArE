@@ -104,6 +104,8 @@ class AnalysisManager {
     G4int    ProngdEdxTrackLength[1000][100];
     G4double TotalDedxLongitudinal[3000];
     G4double TrueTotalDedxLongitudinal[3000];
+    G4double CaloSamplingXViewEdepProfile[1800];
+    G4double CaloSamplingYViewEdepProfile[2160];
     // reco
     // direction
     G4double dir_pol_x[1000];

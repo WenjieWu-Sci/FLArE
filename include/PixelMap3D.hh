@@ -28,7 +28,6 @@ class PixelMap3D {
     void FillEntryWithToySingleElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void Write2DPMToFile(TFile* thefile);
     void Process3DPM(hep_hpc::hdf5::File &h5file, FPFNeutrino neutrino, G4bool save3D);
-    void CalculateShowerProperty(const std::vector<FPFParticle>& primaries);
 
     // this should go to a Geometry Service class
     G4double DistanceToAnode(G4double x);
@@ -40,11 +39,6 @@ class PixelMap3D {
     TH2F* Get2DPixelMapZY(G4int idx) { return hitClusterZY[idx]; }
     TH2F* Get2DVtxPixelMapZX(G4int idx) { return vtxHitClusterZX[idx]; }
     TH2F* Get2DVtxPixelMapZY(G4int idx) { return vtxHitClusterZY[idx]; }
-    G4double* GetTotalDedxLongitudinal() { return TotalDedxLongitudinal; }
-    G4double GetShowerLengthFrom2DPM(G4int idx) { return ShowerLengthFrom2DPM[idx]; }
-    G4double GetShowerWidthFrom2DPM(G4int idx) { return ShowerWidthFrom2DPM[idx]; }
-    G4int    GetProngNCell(G4int idx) { return ProngNCell[idx]; }
-    G4int    GetProngNPlane(G4int idx) { return ProngNPlane[idx]; }
 
     void SetEventID(G4int val) { fEvtID = val; }
 
@@ -63,12 +57,6 @@ class PixelMap3D {
     std::vector<TH2F*> vtxHitClusterZX;
     std::vector<TH2F*> vtxHitClusterZY;
     THnSparseF* hist3DEdep;
-    std::vector<G4double> ShowerLengthFrom2DPM;
-    std::vector<G4double> ShowerWidthFrom2DPM;
-    std::vector<G4int>    ProngNCell;
-    std::vector<G4int>    ProngNPlane;
-
-    G4double TotalDedxLongitudinal[3000];
 };
 
 #endif

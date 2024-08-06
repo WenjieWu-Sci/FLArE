@@ -17,7 +17,17 @@
 #include <TAxis.h>
 
 namespace slid {
-  ShowerLID::ShowerLID(THnSparseF* aHist3DEdep,
+  ShowerLID::ShowerLID()
+  {
+  }
+
+
+  ShowerLID::~ShowerLID()
+  {
+  }
+
+
+  void ShowerLID::CalculateDedxFrom3DPM(THnSparseF* aHist3DEdep,
                        const double aVtxX, const double aVtxY, const double aVtxZ,
                        const double aPx, const double aPy, const double aPz)
   {
@@ -42,7 +52,7 @@ namespace slid {
   }
 
 
-  ShowerLID::ShowerLID(TH2F* px, TH2F* py,
+  void ShowerLID::CalculateShowerFrom2DPM(TH2F* px, TH2F* py,
                        const double aVtxX, const double aVtxY, const double aVtxZ,
                        const double aPx, const double aPy, const double aPz)
   {
@@ -55,6 +65,10 @@ namespace slid {
     NCell = 0;
     NPlane = 0;
 
+    // find the z-plane where the vertex is located at
+    Int_t vtx_binZ = px->GetXaxis()->FindBin(aVtxZ);
+    Double_t TotalEdep = px->Integral();
+
     Double_t pmag = TMath::Sqrt(aPx*aPx+aPy*aPy+aPz*aPz);
     if (pmag==0) {
       ShowerLengthFrom2DPM = 0;
@@ -64,6 +78,11 @@ namespace slid {
       Double_t tmp_showerwidth = 0;
       Double_t tot_e = 0;
       for (Long64_t i= 0; i< nbins_z; ++i) {
+        // calculate the deposited energy between current plane and the plane where the vertex is
+        // if the deposited energy is 99.7% (3sigma) or higher of the total deposited energy, exclude this plane
+        Double_t interEdep = px->ProjectionX()->Integral(vtx_binZ<=i+1?vtx_binZ:i+1, vtx_binZ<=i+1?i+1:vtx_binZ);
+        if (interEdep/TotalEdep > 0.997) continue;
+
         Int_t flag_validPlane = 0;
         for (Long64_t j= 0; j< nbins_x; ++j) {
           Double_t xview_e = px->GetBinContent(i+1, j+1);
@@ -109,8 +128,23 @@ namespace slid {
     }
   }
                       
-
-  ShowerLID::~ShowerLID()
+  void ShowerLID::CalculateEdepProfileFrom2DPM(TH2F* px, TH2F* py)
   {
+    Int_t nbins_x = px->GetNbinsY();
+    Int_t nbins_y = py->GetNbinsY();
+    Int_t nbins_z = py->GetNbinsX();
+    for (Long64_t i= 0; i< nbins_z; ++i) {
+      if ((i+2)%7==0) {
+        for (Long64_t j= 0; j< nbins_x; ++j) {
+          XViewEdepProfile[(Int_t((i+2)/7)-1)*50+j] = px->GetBinContent(i+1,j+1);
+        }
+      }
+      if ((i+1)%7==0) {
+        for (Long64_t k= 0; k< nbins_y; ++k) {
+          YViewEdepProfile[(Int_t((i+1)/7)-1)*60+k] = py->GetBinContent(i+1,k+1);
+        }
+      }
+    }
   }
+
 }

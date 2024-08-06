@@ -66,6 +66,8 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("FPFParticle"                , &primaries, 96000, 0);
   evt->Branch("TotalDedxLongitudinal"     , TotalDedxLongitudinal      , "TotalDedxLongitudinal[3000]/D");
   evt->Branch("TrueTotalDedxLongitudinal" , TrueTotalDedxLongitudinal  , "TrueTotalDedxLongitudinal[3000]/D");
+  evt->Branch("CaloSamplingXViewEdepProfile", CaloSamplingXViewEdepProfile, "CaloSamplingXViewEdepProfile[1800]/D");
+  evt->Branch("CaloSamplingYViewEdepProfile", CaloSamplingYViewEdepProfile, "CaloSamplingYViewEdepProfile[2160]/D");
   evt->Branch("nPrimaryParticle"          , &nPrimaryParticle          , "nPrimaryParticle/I");
   evt->Branch("primaryParentPDG"          , primaryParentPDG           , "primaryParentPDG[nPrimaryParticle]/I");
   evt->Branch("primaryTrackLength"        , primaryTrackLength         , "primaryTrackLength[nPrimaryParticle]/D");
@@ -212,6 +214,8 @@ void AnalysisManager::BeginOfEvent() {
     TotalDedxLongitudinal[j] = 0;
     TrueTotalDedxLongitudinal[j] = 0;
   }
+  for (G4int j= 0; j< 1800; ++j) CaloSamplingXViewEdepProfile[j] = 0;
+  for (G4int j= 0; j< 2160; ++j) CaloSamplingYViewEdepProfile[j] = 0;
   for (G4int i= 0; i< 1000; ++i) {
     primaryParentPDG[i]          = 0;
     primaryTrackLength[i]        = 0;
@@ -852,12 +856,15 @@ void AnalysisManager::FillPseudoRecoVar() {
     <<std::setw(10)<<"ProngType"
     <<std::setw(12)<<"Pz"<<std::endl;
 
-  pm3D->CalculateShowerProperty(primaries);
+  slid::ShowerLID* shwlid = new slid::ShowerLID();
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
-    ShowerWidth[iPrim]  = pm3D->GetShowerWidthFrom2DPM(iPrim);
-    ShowerLength[iPrim] = pm3D->GetShowerLengthFrom2DPM(iPrim);
-    ProngNCell[iPrim]   = pm3D->GetProngNCell(iPrim);
-    ProngNPlane[iPrim]  = pm3D->GetProngNPlane(iPrim);
+    shwlid->CalculateShowerFrom2DPM(pm3D->Get2DPixelMapZX(iPrim+1), pm3D->Get2DPixelMapZY(iPrim+1),
+        primaries[iPrim].Vx(), primaries[iPrim].Vy(), primaries[iPrim].Vz(),
+        primaries[iPrim].Px(), primaries[iPrim].Py(), primaries[iPrim].Pz());
+    ShowerWidth[iPrim]  = shwlid->GetShowerWidth();
+    ShowerLength[iPrim] = shwlid->GetShowerLength();
+    ProngNCell[iPrim]   = shwlid->GetNCell();
+    ProngNPlane[iPrim]  = shwlid->GetNPlane();
 
     if (ProngEInLAr[iPrim]>0) {
       ShowerWidthInLAr[iPrim] = ShowerWidthInLAr[iPrim]/ProngEInLAr[iPrim];
@@ -883,10 +890,16 @@ void AnalysisManager::FillPseudoRecoVar() {
     std::cout<<std::setw(12)<<primaries[iPrim].Pz()<<std::endl;
   }
 
-  slid::ShowerLID* shwlid = new slid::ShowerLID(pm3D->Get3DPixelMap(), 
+  shwlid->CalculateDedxFrom3DPM(pm3D->Get3DPixelMap(), 
       neutrino.NuVx(), neutrino.NuVy(), neutrino.NuVz(), 0., 0., 1.); 
   Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
   std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
+
+  shwlid->CalculateEdepProfileFrom2DPM(pm3D->Get2DPixelMapZX(0), pm3D->Get2DPixelMapZY(0));
+  Double_t* ptr_xview = shwlid->GetXViewEdepProfile();
+  std::copy(ptr_xview, ptr_xview+1800, CaloSamplingXViewEdepProfile);
+  Double_t* ptr_yview = shwlid->GetYViewEdepProfile();
+  std::copy(ptr_yview, ptr_yview+2160, CaloSamplingYViewEdepProfile);
 
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     directionfitter::LinearFit* linFit = new directionfitter::LinearFit(

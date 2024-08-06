@@ -19,13 +19,20 @@ namespace slid {
 
   class ShowerLID {
     public:
-      ShowerLID(THnSparseF* aHist3DEdep, const double aVtxX, const double aVtxY, const double aVtxZ, 
-          const double aPx, const double aPy, const double aPz);
-      ShowerLID(TH2F* px, TH2F* py, const double aVtxX, const double aVtxY, const double aVtxZ,
-          const double aPx, const double aPy, const double aPz);
+      ShowerLID();
       ~ShowerLID();
 
+      void CalculateDedxFrom3DPM(THnSparseF* aHist3DEdep, 
+          const double aVtxX, const double aVtxY, const double aVtxZ, 
+          const double aPx, const double aPy, const double aPz);
+      void CalculateShowerFrom2DPM(TH2F* px, TH2F* py, 
+          const double aVtxX, const double aVtxY, const double aVtxZ,
+          const double aPx, const double aPy, const double aPz);
+      void CalculateEdepProfileFrom2DPM(TH2F* px, TH2F* py);
+
       Double_t* GetTotalDedxLongitudinal() { return TotalDedxLongitudinal; }
+      Double_t* GetXViewEdepProfile() { return XViewEdepProfile; }
+      Double_t* GetYViewEdepProfile() { return YViewEdepProfile; }
       Double_t GetShowerLength() { return ShowerLengthFrom2DPM; }
       Double_t GetShowerWidth() { return ShowerWidthFrom2DPM; }
       Int_t    GetNCell() { return NCell; }
@@ -33,6 +40,8 @@ namespace slid {
 
     private:
       Double_t TotalDedxLongitudinal[kNumLongitudinalBins] = { 0. };
+      Double_t XViewEdepProfile[1800] = { 0. };
+      Double_t YViewEdepProfile[2160] = { 0. };
 
       Double_t ShowerLengthFrom2DPM;
       Double_t ShowerWidthFrom2DPM;
