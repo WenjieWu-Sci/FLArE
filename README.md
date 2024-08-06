@@ -6,7 +6,7 @@ Simulation code for R&D of the FLArE detector
 ## Setting up on lxplus
 The `LXPLUS` service at CERN (`lxplus.cern.ch`) provides a cluster of machines for interactive computing as well as access to the HTCondor batch system for job submission. Provided you have a valid CERN computing account, you can access LXPLUS following these instructions:
 1. Visit the list of services at the [CERN Resources Portal](https://resources.web.cern.ch/resources/Manage/ListServices.aspx), and search for boxes: LXPLUS and Linux, AFS Workspaces, EOS/CERNBox.
-2. Subscribe to LXPLUS and Linux
+2. Subscribe to LXPLUS and Linux.
 3. Subscribe and setup your AFS Workspaces: you can have up to 10GB in `/afs/cern.ch/user/<initial>/<username>` and up to 100GB in `/afs/cern.ch/work/<initial>/<username>`. You can set these limits from the Settings in the "AFS Workspace". 
 4. Subscribe to EOS/CERNBox and login to cernbox: [https://cernbox.cern.ch/](https://cernbox.cern.ch/). This will allow you access to `/eos/user/<initial>/<username>` with up to 1TB of space.
 
@@ -17,11 +17,11 @@ source lxplus_setup.sh
 ```
 
 ## To compile the code
-* Create a new directory to contain the executables (assume the path is `/path/to/build`)
-* Assume the path to the source code is `/path/to/source`
-* To compile, you need to go to the build directory `cd /path/to/build`
-* And then `cmake -S /path/to/source -B /path/to/build`
-* Finally `make`
+* Create a new directory to contain the executables (assume the path is `/path/to/build`).
+* Assume the path to the source code is `/path/to/source`.
+* To compile, you need to go to the build directory `cd /path/to/build`.
+* And then `cmake -S /path/to/source -B /path/to/build`.
+* Finally `make`.
 
 The minimal software requirements are:
 * Geant4 v4_10_6_p01c
@@ -59,33 +59,53 @@ Example macros can be found in `macros`: `numu_genie.mac`, `nue_genie.mac`, `nut
 |/det/saveGdml          | option for saving detector geometry in a GDML file, run before `/run/initialize`     |`false`|
 |/det/checkOverlap      | check overlap of volumns during detector construction, run before `/run/initialize`  |`false`|
 |/det/addFLArE          | option for adding the FLArE detector, run before `/run/initialize`                   |`true`|
-|/det/addFLArEPos       | position of the FLArE detector, run before `/run/initialize`                         |`0 0 4300 mm`|
-|/det/material          | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|
-|/det/module            | option for tpc module option, choose `single` or `3x7`, run before `/run/initialize` |`single`|
-|/det/field             | option for setting the magnetic field value in FLArE HadCather and Muon Finder       |`1 T`|
 |/det/addFORMOSA        | option for adding the FORMOSA detector, run before `/run/initialize`                 |`true`|
-|/det/addFORMOSAPos     | position of the FORMOSA detector, run before `/run/initialize`                       |`0 0 13870 mm`|
 |/det/addFASERnu2       | option for adding the FASERnu2 detector, run before `/run/initialize`                |`true`|
-|/det/addFASERnu2Pos    | position of the FASERnu2 detector, run before `/run/initialize`                      |`0 0 22023 mm`|
-|/det/addFASER2         | option for adding the FASER2 detector, run before `/run/initialize`                  |`true`|
-|/det/addFASER2Pos      | position of the FASER2 detector, run before `/run/initialize`                        |`0 0 42636 mm`|
-|/det/magnetGeom        | option for FASER2 magnet geometry, choose `SAMURAI` or `CrystalPulling`              |`SAMURAI`|
-|/det/magnetField       | option for setting the FASER2 magnetic field value                                   |`1 T`|
-|/det/magnetWinX        | option for SAMURAI magnet window size along X axis                                   |`3.0 m`|
-|/det/magnetWinY        | option for SAMURAI magnet window size along Y axis                                   |`1.0 m`|
-|/det/magnetWinZ        | option for SAMURAI magnet window size along Z size                                   |`4.0 m`|
-|/det/yokeThickX        | option for SAMURAI yoke thickness along X axis                                       |`1.5 m`|
-|/det/yokeThickY        | option for SAMURAI yoke thickness along Y axis                                       |`2.0 m`|
-|/det/magnetNumber      | option for number of CrystalPulling magnets                                          |`3`|
-|/det/magnetInnerR      | option for CrystalPulling magnet inner radius                                        |`0.8 m`|
-|/det/magnetOuterR      | option for CrystalPulling magnet outer radius                                        |`1.2 m`|
-|/det/magnetLengthZ     | option for CrystalPulling magnet size along Z axis                                   |`1.25 m`|
-|/det/magnetGap         | option for gap length (along Z) between CrystalPullin magnets                        |`0.5 m`|
-|/det/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
-|/det/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
-|/det/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
-|/det/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
-|/det/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |` 0.5 m`|
+|/det/faser/addFASER2   | option for adding the FASER2 detector, run before `/run/initialize`                  |`true`|
+|/det/flare/addFLArEPos | position of the FLArE detector, run before `/run/initialize`                         |`0 0 4300 mm`|
+|/det/flare/material    | option for detector material, choose `LAr` or `LKr`, run before `/run/initialize`    |`LAr`|
+|/det/flare/module      | option for tpc module option, choose `single` or `3x7`, run before `/run/initialize` |`single`|
+|/det/flare/field       | option for setting the magnetic field value in FLArE HadCather and Muon Finder       |`1 T`|
+|/det/flare/useBabyMIND | option for using BabyMIND instead of the legacy FLArE HadCather and Muon Finder      |`false`|
+|/det/babymind/blockSequence | option for BabyMIND module sequence |`\|MMMMD\|\|DMMMD\|\|DMMMMD\|\|MMDMMD\|\|MMDMMD\|\|MDMDMD\|\|DMMMD\|`|
+|/det/babymind/magnetPlateThickness  | option for BabyMIND magnet plate thickness                              |`30 mm`|
+|/det/babymind/magnetPlateSizeX      | option for BabyMIND magnet plate size x                                 |`3 m`|
+|/det/babymind/magnetPlateSizeY      | option for BabyMIND magnet plate size y                                 |`2 m`|
+|/det/babymind/magnetCentralPlateY   | option for BabyMIND central magnet plate height (y)                     |`1 m`|
+|/det/babymind/slitSizeX             | option for BabyMIND magnet plate slit size x                            |`2.8 m`|
+|/det/babymind/slitSizeY             | option for BabyMIND magnet plate slit size y                            |`10 mm`|
+|/det/babymind/fieldStrength         | option for BabyMIND magnetic field strength                             |`1.5 T`|
+|/det/babymind/verticalNbars         | option for number of vertical bars in BabyMIND modules                  |`16`|
+|/det/babymind/horizontalNbars       | option for number of horizontal bars in babyMIND modules                |`96`|
+|/det/babymind/barThickness          | option for BabyMIND scintillator bar thickness                          |`7.5 mm`|
+|/det/babymind/verticalBarSizeX      | option for BabyMIND vertical scintillator bar size x                    |`21 cm`|
+|/det/babymind/verticalBarSizeY      | option for BabyMIND vertical scintillator bar size y                    |`2 m`|
+|/det/babymind/horizontalBarSizeX    | option for BabyMIND horizontal scintillator bar size x                  |`3 m`|
+|/det/babymind/horizontalBarSizeY    | option for BabyMIND horizontal scintillator bar size y                  |`3 cm`|
+|/det/babymind/magnetToScinSpacing   | option for BabyMIND magnet plate to scintillator module spacing         |`15 mm`|
+|/det/babymind/magnetToMagnetSpacing | option for BabyMIND magnet plate to magnet plate spacing                |`20 mm`|
+|/det/babymind/blockToBlockSpacing   | option for BabyMIND block to block spacing                              |`30 mm`|
+|/det/babymind/blockPadding          | option for BabyMIND block padding size                                  |`100 mm`|
+|/det/formosa/addFORMOSAPos   | position of the FORMOSA detector, run before `/run/initialize`                       |`0 0 13870 mm`|
+|/det/fasernu/addFASERnu2Pos  | position of the FASERnu2 detector, run before `/run/initialize`                      |`0 0 22023 mm`|
+|/det/faser/addFASER2Pos      | position of the FASER2 detector, run before `/run/initialize`                        |`0 0 42636 mm`|
+|/det/faser/magnetGeom        | option for FASER2 magnet geometry, choose `SAMURAI` or `CrystalPulling`              |`SAMURAI`|
+|/det/faser/magnetField       | option for setting the FASER2 magnetic field value                                   |`1 T`|
+|/det/faser/magnetWinX        | option for SAMURAI magnet window size along X axis                                   |`3.0 m`|
+|/det/faser/magnetWinY        | option for SAMURAI magnet window size along Y axis                                   |`1.0 m`|
+|/det/faser/magnetWinZ        | option for SAMURAI magnet window size along Z size                                   |`4.0 m`|
+|/det/faser/yokeThickX        | option for SAMURAI yoke thickness along X axis                                       |`1.5 m`|
+|/det/faser/yokeThickY        | option for SAMURAI yoke thickness along Y axis                                       |`2.0 m`|
+|/det/faser/magnetNumber      | option for number of CrystalPulling magnets                                          |`3`|
+|/det/faser/magnetInnerR      | option for CrystalPulling magnet inner radius                                        |`0.8 m`|
+|/det/faser/magnetOuterR      | option for CrystalPulling magnet outer radius                                        |`1.2 m`|
+|/det/faser/magnetLengthZ     | option for CrystalPulling magnet size along Z axis                                   |`1.25 m`|
+|/det/faser/magnetGap         | option for gap length (along Z) between CrystalPullin magnets                        |`0.5 m`|
+|/det/faser/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
+|/det/faser/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
+|/det/faser/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
+|/det/faser/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
+|/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |` 0.5 m`|
 ### Event generators
 |Command |Description |
 |:--|:--|

@@ -3,10 +3,11 @@
 
 # Configuring FLArE
 /det/addFLArE true
-/det/addFLArEPos 0 0 4300 mm
-/det/material LAr
-/det/module 3x7
-/det/field 1. tesla
+/det/flare/addFLArEPos 0 0 4300 mm
+/det/flare/material LAr
+/det/flare/module 3x7
+/det/flare/field 1. tesla
+/det/flare/useBabyMIND false
 
 # Turn off everything else
 /det/addFORMOSA false

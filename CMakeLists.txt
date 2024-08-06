@@ -58,16 +58,18 @@ message(STATUS "HEP_HPC lib: ${HEP_HPC_LIBRARIES}")
 include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc 
                           ${PROJECT_SOURCE_DIR}/src/reco/*.cc
-                          ${PROJECT_SOURCE_DIR}/src/geometry/*.cc)
+                          ${PROJECT_SOURCE_DIR}/src/geometry/*.cc
+                          ${PROJECT_SOURCE_DIR}/src/fields/*.cc)
 file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh 
                           ${PROJECT_SOURCE_DIR}/include/reco/*.hh
                           ${PROJECT_SOURCE_DIR}/include/utils/*.hh
-                          ${PROJECT_SOURCE_DIR}/include/geometry/*.hh)
+                          ${PROJECT_SOURCE_DIR}/include/geometry/*.hh
+                          ${PROJECT_SOURCE_DIR}/include/fields/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 file(GLOB_RECURSE gridutils RELATIVE ${PROJECT_SOURCE_DIR} GridUtils/*)
-file(GLOB_RECURSE setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
+file(GLOB setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
 
 # Enable macros for out-of-source build
 foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
@@ -76,6 +78,7 @@ foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
     ${PROJECT_BINARY_DIR}/${_file}
     COPYONLY
     )
+    #message(STATUS "Copying ${_file} in ${PROJECT_BINARY_DIR}/${_file}")
 endforeach()
 
 #----------------------------------------------------------------------------

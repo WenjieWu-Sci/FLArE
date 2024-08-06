@@ -1,5 +1,5 @@
-#ifndef FLAREDETECTORCONSTRUCTION_HH
-#define FLAREDETECTORCONSTRUCTION_HH
+#ifndef FLAREHADCATCHERMUONFINDERCONSTRUCTION_HH
+#define FLAREHADCATCHERMUONFINDERCONSTRUCTION_HH
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
@@ -7,20 +7,18 @@
 #include "DetectorConstructionMaterial.hh"
 #include "GeometricalParameters.hh"
 
-/// \class FLArEDetectorConstruction
-/// This class builds the FLArE TPC
+/// \class FLArEHadCatcherMuonFinderConstruction
+/// This class builds the FLArE Hadron Catcher and Muon Finder
 
-class FLArEDetectorConstruction {
+class FLArEHadCatcherMuonFinderConstruction {
   public:
-    FLArEDetectorConstruction();
-    ~FLArEDetectorConstruction();
+    FLArEHadCatcherMuonFinderConstruction();
+    ~FLArEHadCatcherMuonFinderConstruction();
 
     // Return assembly volume for placement
-    G4AssemblyVolume* GetFLArEAssembly() { return fFLArETPCAssembly; }
+    G4AssemblyVolume* GetHadCatcherMuonFinderAssembly() { return fHadCatcherMuonFinderAssembly; }
 
     // Return logical volumes
-    // TPC volume
-    G4LogicalVolume* GetFLArETPCVolume() { return fFLArETPCLog; }
     // Hadronic calorimetry
     G4LogicalVolume* GetHadCalAbsorbVolume() { return HadAbsorLayersLogical; }
     G4LogicalVolume* GetHadCalXVolume()      { return HadCalXCellLogical; }
@@ -30,21 +28,14 @@ class FLArEDetectorConstruction {
     G4LogicalVolume* GetMuonCatcherXVolume()      { return MuonFinderXCellLogical; }
     G4LogicalVolume* GetMuonCatcherYVolume()      { return MuonFinderYCellLogical; }
 
-
     // Construction methods
-    void BuildFLArETPC();
     void BuildFLArEHadCal();
     void BuildFLArEMuonCatcher();
 
   private:
     DetectorConstructionMaterial* fMaterials;
-    G4Material* detectorMaterial;
-
-    G4AssemblyVolume* fFLArETPCAssembly;
-
-    G4LogicalVolume* fFLArETPCLog;
-    G4LogicalVolume* lArBoxLog;
-    G4LogicalVolume* cryoInsulationLog;
+  
+    G4AssemblyVolume* fHadCatcherMuonFinderAssembly;
 
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* HadCalXCellLogical;
@@ -56,12 +47,8 @@ class FLArEDetectorConstruction {
     G4LogicalVolume* MuonFinderYCellLogical;
     G4AssemblyVolume* MuonCatcherAssembly;
 
-    //G4String fDetMaterialName;
-    GeometricalParameters::tpcConfigOption fDetGeomOption;
     G4double fLArSizeX;
     G4double fLArSizeY;
-    G4double fLArSizeZ;
-    G4double fThicknessInsulation;
     G4double fHadCalLength;
     G4double fMuonCatcherLength;
 };
