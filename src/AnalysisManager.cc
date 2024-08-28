@@ -66,8 +66,10 @@ void AnalysisManager::bookEvtTree() {
   evt->Branch("FPFParticle"                , &primaries, 96000, 0);
   evt->Branch("TotalDedxLongitudinal"     , TotalDedxLongitudinal      , "TotalDedxLongitudinal[3000]/D");
   evt->Branch("TrueTotalDedxLongitudinal" , TrueTotalDedxLongitudinal  , "TrueTotalDedxLongitudinal[3000]/D");
-  evt->Branch("CaloSamplingXViewEdepProfile", CaloSamplingXViewEdepProfile, "CaloSamplingXViewEdepProfile[1800]/D");
-  evt->Branch("CaloSamplingYViewEdepProfile", CaloSamplingYViewEdepProfile, "CaloSamplingYViewEdepProfile[2160]/D");
+  evt->Branch("CaloSamplingXViewEdepProfileLep", CaloSamplingXViewEdepProfileLep, "CaloSamplingXViewEdepProfileLep[1800]/D");
+  evt->Branch("CaloSamplingYViewEdepProfileLep", CaloSamplingYViewEdepProfileLep, "CaloSamplingYViewEdepProfileLep[2160]/D");
+  evt->Branch("CaloSamplingXViewEdepProfileHad", CaloSamplingXViewEdepProfileHad, "CaloSamplingXViewEdepProfileHad[1800]/D");
+  evt->Branch("CaloSamplingYViewEdepProfileHad", CaloSamplingYViewEdepProfileHad, "CaloSamplingYViewEdepProfileHad[2160]/D");
   evt->Branch("nPrimaryParticle"          , &nPrimaryParticle          , "nPrimaryParticle/I");
   evt->Branch("primaryParentPDG"          , primaryParentPDG           , "primaryParentPDG[nPrimaryParticle]/I");
   evt->Branch("primaryTrackLength"        , primaryTrackLength         , "primaryTrackLength[nPrimaryParticle]/D");
@@ -214,8 +216,14 @@ void AnalysisManager::BeginOfEvent() {
     TotalDedxLongitudinal[j] = 0;
     TrueTotalDedxLongitudinal[j] = 0;
   }
-  for (G4int j= 0; j< 1800; ++j) CaloSamplingXViewEdepProfile[j] = 0;
-  for (G4int j= 0; j< 2160; ++j) CaloSamplingYViewEdepProfile[j] = 0;
+  for (G4int j= 0; j< 1800; ++j) {
+    CaloSamplingXViewEdepProfileLep[j] = 0;
+    CaloSamplingXViewEdepProfileHad[j] = 0;
+  }
+  for (G4int j= 0; j< 2160; ++j) {
+    CaloSamplingYViewEdepProfileLep[j] = 0;
+    CaloSamplingYViewEdepProfileHad[j] = 0;
+  }
   for (G4int i= 0; i< 1000; ++i) {
     primaryParentPDG[i]          = 0;
     primaryTrackLength[i]        = 0;
@@ -439,6 +447,9 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     pm3D->Write2DPMToFile(thefile);
   }
   pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
+  if (m_save3DEvd) {
+    pm3D->Write3DPMToFile(thefile);
+  }
   sparseFractionMem = pm3D->GetSparseFractionMem();
   sparseFractionBins = pm3D->GetSparseFractionBins();
 

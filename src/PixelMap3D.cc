@@ -316,6 +316,14 @@ void PixelMap3D::Write2DPMToFile(TFile* thefile)
   }
 }
 
+void PixelMap3D::Write3DPMToFile(TFile* thefile)
+{
+  std::string dirname = "edep3D/evt_"+std::to_string(fEvtID)+"/";
+  thefile->mkdir(dirname.c_str());
+  thefile->cd(dirname.c_str());
+  hist3DEdep->Write();
+}
+
 G4double PixelMap3D::DistanceToAnode(G4double x) {
   G4double anode_x[6] = {-900, -301, -299, 299, 301, 900};
   G4double distance = 9999;

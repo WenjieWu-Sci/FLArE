@@ -27,6 +27,7 @@ class PixelMap3D {
     void FillEntryWithToyElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void FillEntryWithToySingleElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void Write2DPMToFile(TFile* thefile);
+    void Write3DPMToFile(TFile* thefile);
     void Process3DPM(hep_hpc::hdf5::File &h5file, FPFNeutrino neutrino, G4bool save3D);
 
     // this should go to a Geometry Service class
