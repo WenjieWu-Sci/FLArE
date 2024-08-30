@@ -34,6 +34,7 @@ class AnalysisManager {
     void saveHit(G4bool val) { m_saveHit = val; }
     void save3DEvd(G4bool val) { m_save3DEvd = val; }
     void save2DEvd(G4bool val) { m_save2DEvd = val; }
+    void saveG4Hits(G4bool val) { m_g4hitInH5 = val; }
     void circleFit(G4bool val) { m_circularFit = val; }
     void setSamplingCalo(G4bool val) { m_setSamplingCalo = val; }
     void addDiffusion(G4String val) { m_addDiffusion = val; }
@@ -147,6 +148,7 @@ class AnalysisManager {
     G4bool m_saveHit;
     G4bool m_save3DEvd;
     G4bool m_save2DEvd;
+    G4bool m_g4hitInH5;
     G4bool m_circularFit;
     G4bool m_setSamplingCalo;
     TString m_addDiffusion;
@@ -184,6 +186,7 @@ class AnalysisManager {
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
     void FillTrueEdep(G4int sdId, std::string sdName);
+    void HDF5Maker(hep_hpc::hdf5::File &h5file);
     double GetTotalEnergy(double px, double py, double pz, double m);
     void FillPseudoRecoVar();
 

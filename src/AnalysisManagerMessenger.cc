@@ -64,6 +64,11 @@
   save2DEvdCmd->SetParameterName("save2DEvd", true);
   save2DEvdCmd->SetDefaultValue(false);
 
+  h5SaveG4HitsCmd = new G4UIcmdWithABool("/hdf5/saveG4Hits", this);
+  h5SaveG4HitsCmd->SetGuidance("whether save G4 hits in h5");
+  h5SaveG4HitsCmd->SetParameterName("saveG4Hits", true);
+  h5SaveG4HitsCmd->SetDefaultValue(false);
+
   circleFitCmd = new G4UIcmdWithABool("/histo/circleFit", this);
   circleFitCmd->SetGuidance("perform circular fit");
   circleFitCmd->SetParameterName("circleFit", true);
@@ -91,6 +96,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
   delete saveHitCmd;
   delete save3DEvdCmd;
   delete save2DEvdCmd;
+  delete h5SaveG4HitsCmd;
   delete circleFitCmd;
   delete addDiffusionCmd;
   delete samplingCaloCmd;
@@ -105,6 +111,7 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
   if (command == saveHitCmd) anamanager->saveHit(saveHitCmd->GetNewBoolValue(newValues));
   if (command == save3DEvdCmd) anamanager->save3DEvd(save3DEvdCmd->GetNewBoolValue(newValues));
   if (command == save2DEvdCmd) anamanager->save2DEvd(save2DEvdCmd->GetNewBoolValue(newValues));
+  if (command == h5SaveG4HitsCmd) anamanager->saveG4Hits(h5SaveG4HitsCmd->GetNewBoolValue(newValues));
   if (command == circleFitCmd) anamanager->circleFit(circleFitCmd->GetNewBoolValue(newValues));
   if (command == samplingCaloCmd) anamanager->setSamplingCalo(samplingCaloCmd->GetNewBoolValue(newValues));
   if (command == addDiffusionCmd) anamanager->addDiffusion(newValues);

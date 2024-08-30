@@ -2,8 +2,6 @@
 #include "geometry/GeometricalParameters.hh"
 #include "reco/ShowerLID.hh"
 
-#include "hep_hpc/hdf5/make_ntuple.hpp"
-
 #include <G4ThreeVector.hh>
 #include <G4SystemOfUnits.hh>
 #include <G4Poisson.hh>
@@ -13,7 +11,7 @@
 #include <TAxis.h>
 #include <TString.h>
 
-using namespace hep_hpc::hdf5;
+//using namespace hep_hpc::hdf5;
 
 PixelMap3D::PixelMap3D(const Int_t evtID, const Int_t nPrim, const Int_t PDG, const Double_t* res) :
   fEvtID(evtID), fNPrim(nPrim), fGeneratorPDG(PDG)
@@ -129,8 +127,9 @@ void PixelMap3D::InitializePM()
   G4cout<<"PixelMap3D : initialization completed"<<G4endl;
 }
 
-void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim)
+void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const LArBoxHit* hit, const Int_t idxPrim)
 {
+  G4double edep = hit->GetEdep();
   G4double pos_x = pos_xyz[0] - fPMShiftedCenterXYZ.x();
   G4double pos_y = pos_xyz[1] - fPMShiftedCenterXYZ.y();
   G4double pos_z = pos_xyz[2] - fPMShiftedCenterXYZ.z();
@@ -259,40 +258,46 @@ void PixelMap3D::FillEntryWithToySingleElectronTransportation(const Double_t* po
   }
 }
 
+/*
 void PixelMap3D::Process3DPM(File &h5file, FPFNeutrino nu, G4bool save3D)
 {
   static auto evt_data = 
     make_ntuple({h5file, "evt_data"},
                 make_scalar_column<int>("evtid"),
+                make_scalar_column<int>("nuidx"),
                 make_scalar_column<int>("nupdg"), 
                 make_scalar_column<int>("pdg"), 
                 make_scalar_column<int>("intType"),
                 make_scalar_column<int>("mode"),
                 make_scalar_column<float>("nuE"));
 
-  evt_data.insert(fEvtID, nu.NuPDG(), nu.NuFSLPDG(),
+  evt_data.insert(fEvtID, nu.NuIdx(), nu.NuPDG(), nu.NuFSLPDG(),
                   nu.NuIntType(), nu.NuScatteringType(), nu.NuE());
 
-  static auto pm_data = 
-    make_ntuple({h5file, "pm_data"},
-                make_scalar_column<int>("evtid"), 
-                make_scalar_column<int>("hitid"),
-                make_scalar_column<float>("edep"),
-                make_scalar_column<float>("x"),
-                make_scalar_column<float>("y"),
-                make_scalar_column<float>("z"));
-  Int_t dim = hist3DEdep->GetNdimensions();
-  Double_t* x = new Double_t[dim + 1];
-  memset(x, 0, sizeof(Double_t) * (dim +1));
-  Int_t *bins = new Int_t[dim];
-  for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
-    x[dim] = hist3DEdep->GetBinContent(i, bins);
-    for (Int_t d = 0; d < dim; ++d) {
-      x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
+  if (save3D) {
+    static auto pm_data = 
+      make_ntuple({h5file, "pm_data"},
+                  make_scalar_column<int>("evtid"), 
+                  make_scalar_column<int>("nuidx"),
+                  make_scalar_column<int>("hitid"),
+                  make_scalar_column<float>("edep"),
+                  make_scalar_column<float>("x"),
+                  make_scalar_column<float>("y"),
+                  make_scalar_column<float>("z"));
+    Int_t dim = hist3DEdep->GetNdimensions();
+    Double_t* x = new Double_t[dim + 1];
+    memset(x, 0, sizeof(Double_t) * (dim +1));
+    Int_t *bins = new Int_t[dim];
+    for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
+      x[dim] = hist3DEdep->GetBinContent(i, bins);
+      for (Int_t d = 0; d < dim; ++d) {
+        x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
+      }
+      pm_data.insert(fEvtID, nu.NuIdx(), i, x[3], x[0], x[1], x[2]);
     }
-    if (save3D) pm_data.insert(fEvtID, i, x[3], x[0], x[1], x[2]);
   }
 }
+*/
 
 void PixelMap3D::Write2DPMToFile(TFile* thefile)
 {

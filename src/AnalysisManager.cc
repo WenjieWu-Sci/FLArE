@@ -32,6 +32,8 @@
 #include <TString.h>
 #include <Math/ProbFunc.h>
 
+#include "hep_hpc/hdf5/make_ntuple.hpp"
+
 using namespace hep_hpc::hdf5;
 
 AnalysisManager* AnalysisManager::instance = 0;
@@ -412,7 +414,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 
 
   if (!m_setSamplingCalo) {
-    const Double_t res_tpc[3] = {1, 5, 5}; // mm
+    const Double_t res_tpc[3] = {5, 5, 5}; // mm
     if (neutrino.NuPDG()!=0) {
       pm3D = new PixelMap3D(evtID, nPrimaryParticle, neutrino.NuPDG(), res_tpc);
     } else {
@@ -443,10 +445,13 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   for (auto sdname : SDNamelist) {
     FillTrueEdep(sdname.first, sdname.second);
   }
+
+  HDF5Maker(fH5file);
+  //pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
+
   if (m_save2DEvd) {
     pm3D->Write2DPMToFile(thefile);
   }
-  pm3D->Process3DPM(fH5file, neutrino, m_save3DEvd);
   if (m_save3DEvd) {
     pm3D->Write3DPMToFile(thefile);
   }
@@ -662,6 +667,21 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
     _idx++;
   }
 
+  // Filling g4 hits in HDF5 file
+  static auto g4_data = 
+    make_ntuple({fH5file, "g4_data_"+std::to_string(sdId)},
+                make_scalar_column<int>("evtid"),
+                make_scalar_column<int>("nuid"),
+                make_scalar_column<int>("tid"),
+                make_scalar_column<int>("pid"),
+                make_scalar_column<int>("pdg"),
+                make_scalar_column<int>("prong_type"),
+                make_scalar_column<int>("step_no"),
+                make_scalar_column<float>("step_edep"),
+                make_scalar_column<float>("step_x"),
+                make_scalar_column<float>("step_y"),
+                make_scalar_column<float>("step_z"));
+
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
   if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
@@ -710,16 +730,23 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
         vtx_xyz[2] = primaries[0].Vz();
       }
 
+      if (m_g4hitInH5) {
+        g4_data.insert(evtID, neutrino.NuIdx(), 
+            hit->GetTID(), hit->GetPID(), hit->GetParticle(),
+            primaries[whichPrim].ProngType(), hit->GetStepNo(),
+            hit->GetEdep(), pos_x, pos_y, pos_z);
+      }
+
       if ((sdName == "lArBoxSD/lar_box") && (m_addDiffusion == "toy")) {
         pm3D->FillEntryWithToyElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if ((sdName == "lArBoxSD/lar_box") && (m_addDiffusion == "single")) {
         pm3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if (sdName == "lArBoxSD/lar_box") {
-        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit, whichPrim);
       } 
       if ((sdName=="SamplingCaloXSD/lar_box") ||
           (sdName=="SamplingCaloYSD/lar_box")) {
-        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit, whichPrim);
       }
 
 
@@ -869,6 +896,7 @@ void AnalysisManager::FillPseudoRecoVar() {
 
   slid::ShowerLID* shwlid = new slid::ShowerLID();
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) { 
+    /*
     shwlid->CalculateShowerFrom2DPM(pm3D->Get2DPixelMapZX(iPrim+1), pm3D->Get2DPixelMapZY(iPrim+1),
         primaries[iPrim].Vx(), primaries[iPrim].Vy(), primaries[iPrim].Vz(),
         primaries[iPrim].Px(), primaries[iPrim].Py(), primaries[iPrim].Pz());
@@ -876,6 +904,7 @@ void AnalysisManager::FillPseudoRecoVar() {
     ShowerLength[iPrim] = shwlid->GetShowerLength();
     ProngNCell[iPrim]   = shwlid->GetNCell();
     ProngNPlane[iPrim]  = shwlid->GetNPlane();
+    */
 
     if (ProngEInLAr[iPrim]>0) {
       ShowerWidthInLAr[iPrim] = ShowerWidthInLAr[iPrim]/ProngEInLAr[iPrim];
@@ -906,11 +935,13 @@ void AnalysisManager::FillPseudoRecoVar() {
   Double_t* ptr_dedx = shwlid->GetTotalDedxLongitudinal();
   std::copy(ptr_dedx, ptr_dedx+3000, TotalDedxLongitudinal);
 
+  /*
   shwlid->CalculateEdepProfileFrom2DPM(pm3D->Get2DPixelMapZX(0), pm3D->Get2DPixelMapZY(0));
   Double_t* ptr_xview = shwlid->GetXViewEdepProfile();
-  std::copy(ptr_xview, ptr_xview+1800, CaloSamplingXViewEdepProfile);
+  std::copy(ptr_xview, ptr_xview+1800, CaloSamplingXViewEdepProfileLep);
   Double_t* ptr_yview = shwlid->GetYViewEdepProfile();
-  std::copy(ptr_yview, ptr_yview+2160, CaloSamplingYViewEdepProfile);
+  std::copy(ptr_yview, ptr_yview+2160, CaloSamplingYViewEdepProfileLep);
+  */
 
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     directionfitter::LinearFit* linFit = new directionfitter::LinearFit(
@@ -930,4 +961,43 @@ void AnalysisManager::FillPseudoRecoVar() {
   }
 
   delete shwlid;
+}
+
+void AnalysisManager::HDF5Maker(hep_hpc::hdf5::File& h5file) {
+  static auto evt_data = 
+    make_ntuple({h5file, "evt_data"},
+                make_scalar_column<int>("evtid"),
+                make_scalar_column<int>("nuidx"),
+                make_scalar_column<int>("nupdg"), 
+                make_scalar_column<int>("pdg"), 
+                make_scalar_column<int>("intType"),
+                make_scalar_column<int>("mode"),
+                make_scalar_column<float>("nuE"));
+
+  evt_data.insert(evtID, neutrino.NuIdx(), neutrino.NuPDG(), neutrino.NuFSLPDG(),
+                  neutrino.NuIntType(), neutrino.NuScatteringType(), neutrino.NuE());
+
+  if (m_save3DEvd) {
+    static auto pm_data = 
+      make_ntuple({h5file, "pm_data"},
+                  make_scalar_column<int>("evtid"), 
+                  make_scalar_column<int>("nuidx"),
+                  make_scalar_column<int>("hitid"),
+                  make_scalar_column<float>("edep"),
+                  make_scalar_column<float>("x"),
+                  make_scalar_column<float>("y"),
+                  make_scalar_column<float>("z"));
+    THnSparseF* hist3DEdep = pm3D->Get3DPixelMap();
+    Int_t dim = hist3DEdep->GetNdimensions();
+    Double_t* x = new Double_t[dim + 1];
+    memset(x, 0, sizeof(Double_t) * (dim +1));
+    Int_t *bins = new Int_t[dim];
+    for (Long64_t i = 0; i < hist3DEdep->GetNbins(); ++i) { // non-zero bins
+      x[dim] = hist3DEdep->GetBinContent(i, bins);
+      for (Int_t d = 0; d < dim; ++d) {
+        x[d] = hist3DEdep->GetAxis(d)->GetBinCenter(bins[d]);
+      }
+      pm_data.insert(evtID, neutrino.NuIdx(), i, x[3], x[0], x[1], x[2]);
+    }
+  }
 }

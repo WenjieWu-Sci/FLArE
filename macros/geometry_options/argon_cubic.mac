@@ -1,0 +1,14 @@
+# This file defines the standard configuration for the FLArE only option
+# The geometry contains only FLArE (TPC + HadCather + MuonFinder)
+
+# Configuring FLArE
+/det/addFLArE true
+/det/addFLArEPos 0 0 4300 mm
+/det/material LAr
+/det/module 3x7
+/det/field 1. tesla
+
+# Turn off everything else
+/det/addFORMOSA false
+/det/addFASERnu2 false
+/det/addFASER2 false

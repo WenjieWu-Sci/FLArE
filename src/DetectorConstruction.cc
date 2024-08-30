@@ -117,12 +117,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4AssemblyVolume* FLArEAssembly = FLArEAssembler->GetFLArEAssembly();
     TPCModuleLogical            = FLArEAssembler->GetFLArETPCVolume();
+    /*
     HadCalXCellLogical          = FLArEAssembler->GetHadCalXVolume();
     HadCalYCellLogical          = FLArEAssembler->GetHadCalYVolume();
     HadAbsorLayersLogical       = FLArEAssembler->GetHadCalAbsorbVolume();
     MuonFinderXCellLogical      = FLArEAssembler->GetMuonCatcherXVolume();
     MuonFinderYCellLogical      = FLArEAssembler->GetMuonCatcherYVolume();
     MuonFinderAbsorLayersLogical= FLArEAssembler->GetMuonCatcherAbsorbVolume();
+    */
 
     // positioning
     G4ThreeVector FLArEPos = GeometricalParameters::Get()->GetFLArEPosition();
@@ -243,6 +245,7 @@ void DetectorConstruction::ConstructSDandField() {
     GeometricalParameters::Get()->AddSD2List(SDIdx, "lArBoxSD/lar_box");
     SDIdx++;
 
+    /*
     LArBoxSD* HadCalXSD = new LArBoxSD("HadCalXSD");
     HadCalXCellLogical->SetSensitiveDetector(HadCalXSD);
     sdManager->AddNewDetector(HadCalXSD);
@@ -291,6 +294,7 @@ void DetectorConstruction::ConstructSDandField() {
     MuonFinderXCellLogical->SetFieldManager(fieldMgr, true);
     MuonFinderYCellLogical->SetFieldManager(fieldMgr, true);
     MuonFinderAbsorLayersLogical->SetFieldManager(fieldMgr, true);
+    */
   }
 
   if (m_addFORMOSA) {

@@ -59,6 +59,7 @@ class AnalysisManagerMessenger: public G4UImessenger
     G4UIcmdWithABool* saveHitCmd;
     G4UIcmdWithABool* save3DEvdCmd;
     G4UIcmdWithABool* save2DEvdCmd;
+    G4UIcmdWithABool* h5SaveG4HitsCmd;
     G4UIcmdWithABool* circleFitCmd;
     G4UIcmdWithAnInteger* histoCmd;
     G4UIcmdWithAString* addDiffusionCmd;

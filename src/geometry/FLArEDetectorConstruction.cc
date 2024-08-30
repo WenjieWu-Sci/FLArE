@@ -41,8 +41,10 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
   fThicknessInsulation = GeometricalParameters::Get()->GetTPCInsulationThickness();
 
   BuildFLArETPC();
+  /*
   BuildFLArEHadCal();
   BuildFLArEMuonCatcher();
+  */
 
   fFLArETPCAssembly = new G4AssemblyVolume();
   G4RotationMatrix* noRot = new G4RotationMatrix();
@@ -58,6 +60,7 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
   }
   fFLArETPCAssembly->AddPlacedVolume(cryoInsulationLog, tpcCenter, noRot);
 
+  /*
   // HadCal
   G4ThreeVector hadCalCenter(0.,0.,fLArSizeZ/2.+fThicknessInsulation+fHadCalLength/2.);
   fFLArETPCAssembly->AddPlacedAssembly(HadCalAssembly,hadCalCenter,noRot);
@@ -78,6 +81,7 @@ FLArEDetectorConstruction::FLArEDetectorConstruction()
   HadCalYCellLogical->SetVisAttributes(nullVis);
   MuonFinderXCellLogical->SetVisAttributes(nullVis);
   MuonFinderYCellLogical->SetVisAttributes(nullVis);
+  */
 }
 
 FLArEDetectorConstruction::~FLArEDetectorConstruction()
@@ -110,7 +114,7 @@ void FLArEDetectorConstruction::BuildFLArETPC()
     fFLArETPCLog->SetVisAttributes(lArBoxVis);
     fFLArETPCLog->SetUserLimits(new G4UserLimits(0.5*mm));
   } else if (fDetGeomOption == GeometricalParameters::tpcConfigOption::ThreeBySeven) {
-    G4cout << "TPC module configuration: 3x7" << G4endl;
+    G4cout << "TPC module configuration: 4x7" << G4endl;
     lArBoxLog = new G4LogicalVolume(lArBox, detectorMaterial, "TPCModuleLogical");
     auto lArBoxVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
     lArBoxVis->SetVisibility(false);
@@ -119,7 +123,7 @@ void FLArEDetectorConstruction::BuildFLArETPC()
     G4double TPCLayerWidth   = fLArSizeX;
     G4double TPCLayerHeight  = fLArSizeY;
     G4double TPCLayerLength  = fLArSizeZ / 7.0;
-    G4double TPCModuleWidth  = TPCLayerWidth / 3.0;
+    G4double TPCModuleWidth  = TPCLayerWidth / 4.0;
     G4double TPCModuleHeight = TPCLayerHeight;
     G4double TPCModuleLength = TPCLayerLength;
     auto TPCLayerSolid
@@ -129,7 +133,7 @@ void FLArEDetectorConstruction::BuildFLArETPC()
     auto TPCModuleSolid
       = new G4Box("TPCModuleBox", TPCModuleWidth/2, TPCModuleHeight/2, TPCModuleLength/2);
     fFLArETPCLog = new G4LogicalVolume(TPCModuleSolid, detectorMaterial, "TPCModuleLog");
-    new G4PVReplica("TPCModulePhysical", fFLArETPCLog, TPCLayerLogical, kXAxis, 3, TPCModuleWidth);
+    new G4PVReplica("TPCModulePhysical", fFLArETPCLog, TPCLayerLogical, kXAxis, 4, TPCModuleWidth);
     new G4PVReplica("TPC", TPCLayerLogical, lArBoxLog, kZAxis, 7, TPCLayerLength);
     G4VisAttributes* TPCModuleVis = new G4VisAttributes(G4Colour(86./255, 152./255, 195./255));
     TPCModuleVis->SetVisibility(true);
