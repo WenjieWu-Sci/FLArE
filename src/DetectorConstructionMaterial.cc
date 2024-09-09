@@ -116,7 +116,7 @@ DetectorConstructionMaterial::DetectorConstructionMaterial() {
   StainlessSteel = nist->FindOrBuildMaterial("G4_STAINLESS-STEEL");
   
   // common plastic (polyethilene)
-  Plastic = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
+  Polyethylene = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
 
   // LS
   density = 0.859*g/cm3;
@@ -227,7 +227,7 @@ G4Material* DetectorConstructionMaterial::Material(G4String what) {
   if(what == "Rock")               material = Rock;
   if(what == "Emulsion")           material = Emulsion;
   if(what == "ARMCO")              material = ARMCO;
-  if(what == "Plastic")            material = Plastic;
+  if(what == "Polyethylene")       material = Polyethylene;
 
   return material;
 }
