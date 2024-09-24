@@ -10,6 +10,7 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh" 
 #include "G4PVReplica.hh"
+#include "G4UserLimits.hh"
 
 SamplingCalorimeterConstruction::SamplingCalorimeterConstruction()
 {
@@ -22,6 +23,8 @@ SamplingCalorimeterConstruction::SamplingCalorimeterConstruction()
   thicknessAbsorber = GeometricalParameters::Get()->GetSamplingCaloThicknessAbsorb();
   thicknessCaloX    = GeometricalParameters::Get()->GetSamplingCaloThicknessCaloX();;
   thicknessCaloY    = GeometricalParameters::Get()->GetSamplingCaloThicknessCaloY();
+  widthCaloX        = GeometricalParameters::Get()->GetSamplingCaloWidthCaloX();;
+  widthCaloY        = GeometricalParameters::Get()->GetSamplingCaloWidthCaloY();
   fSamplingCaloSizeX   = GeometricalParameters::Get()->GetSamplingCaloSizeX();
   fSamplingCaloSizeY   = GeometricalParameters::Get()->GetSamplingCaloSizeY();
   fSamplingCaloNLayers = GeometricalParameters::Get()->GetSamplingCaloNLayers();
@@ -54,11 +57,11 @@ void SamplingCalorimeterConstruction::BuildDetector()
     = new G4LogicalVolume(CaloXLayerSolid, fMaterials->Material("Polystyrene"), "CaloXLayerLogical");
 
   auto CaloXCellSolid
-    = new G4Box("CaloXCell", thicknessCaloX/2, fSamplingCaloSizeY/2, thicknessCaloX/2);
+    = new G4Box("CaloXCell", widthCaloX/2, fSamplingCaloSizeY/2, thicknessCaloX/2);
   CaloXCellLogical
     = new G4LogicalVolume(CaloXCellSolid, fMaterials->Material("Polystyrene"), "CaloXCellLogical");
   new G4PVReplica("CaloXCellPhysical", CaloXCellLogical,
-                  CaloXLayerLogical, kXAxis, fSamplingCaloSizeX/thicknessCaloX, thicknessCaloX);
+                  CaloXLayerLogical, kXAxis, fSamplingCaloSizeX/widthCaloX, widthCaloX);
 
   // y-plane
   auto CaloYLayerSolid
@@ -67,11 +70,11 @@ void SamplingCalorimeterConstruction::BuildDetector()
     = new G4LogicalVolume(CaloYLayerSolid, fMaterials->Material("Polystyrene"), "CaloYLayerLogical");
 
   auto CaloYCellSolid
-    = new G4Box("CaloYCell", fSamplingCaloSizeX/2, thicknessCaloY/2, thicknessCaloY/2);
+    = new G4Box("CaloYCell", fSamplingCaloSizeX/2, widthCaloY/2, thicknessCaloY/2);
   CaloYCellLogical
     = new G4LogicalVolume(CaloYCellSolid, fMaterials->Material("Polystyrene"), "CaloYCellLogical");
   new G4PVReplica("CaloYCellPhysical", CaloYCellLogical,
-                  CaloYLayerLogical, kYAxis, fSamplingCaloSizeY/thicknessCaloY, thicknessCaloY);
+                  CaloYLayerLogical, kYAxis, fSamplingCaloSizeY/widthCaloY, widthCaloY);
 
   SamplingCaloAssembly = new G4AssemblyVolume();
   G4RotationMatrix Ra(0, 0, 0);
@@ -99,4 +102,6 @@ void SamplingCalorimeterConstruction::BuildDetector()
   nullVis->SetVisibility(false);
   CaloXCellLogical->SetVisAttributes(CaloVis);
   CaloYCellLogical->SetVisAttributes(CaloVis);
+  CaloXCellLogical->SetUserLimits(new G4UserLimits(0.2*mm));
+  CaloYCellLogical->SetUserLimits(new G4UserLimits(0.2*mm));
 }

@@ -35,6 +35,8 @@ class SamplingCalorimeterConstruction {
     G4double thicknessAbsorber;
     G4double thicknessCaloX;
     G4double thicknessCaloY;
+    G4double widthCaloX;
+    G4double widthCaloY;
     G4double fSamplingCaloSizeX;
     G4double fSamplingCaloSizeY;
     G4double fSamplingCaloSizeZ;

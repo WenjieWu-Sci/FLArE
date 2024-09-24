@@ -76,6 +76,8 @@ GeometricalParameters::GeometricalParameters()
   // A Sampling Calorimeter (NuTeV-like detector)
   fSamplingCaloThicknessCaloX  = 1 * cm;
   fSamplingCaloThicknessCaloY  = 1 * cm;
+  fSamplingCaloWidthCaloX  = 0.5 * m;
+  fSamplingCaloWidthCaloY  = 0.6 * m;
   fSamplingCaloThicknessAbsorb = 5 * cm;
   fSamplingCaloSizeX = 0.5*m;  // 
   fSamplingCaloSizeY = 0.6*m;  // 

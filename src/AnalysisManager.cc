@@ -908,9 +908,9 @@ void AnalysisManager::FillPseudoRecoVar() {
 
   shwlid->CalculateEdepProfileFrom2DPM(pm3D->Get2DPixelMapZX(0), pm3D->Get2DPixelMapZY(0));
   Double_t* ptr_xview = shwlid->GetXViewEdepProfile();
-  std::copy(ptr_xview, ptr_xview+1800, CaloSamplingXViewEdepProfile);
+  std::copy(ptr_xview, ptr_xview+1800, CaloSamplingXViewEdepProfileLep);
   Double_t* ptr_yview = shwlid->GetYViewEdepProfile();
-  std::copy(ptr_yview, ptr_yview+2160, CaloSamplingYViewEdepProfile);
+  std::copy(ptr_yview, ptr_yview+2160, CaloSamplingYViewEdepProfileLep);
 
   for(int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     directionfitter::LinearFit* linFit = new directionfitter::LinearFit(

@@ -166,6 +166,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
       neuX4.SetT(0.);
       break;
     case 1:
+      std::cout<<"z - "<<GeometricalParameters::Get()->GetFLArEPosition().z()<<", "<<GeometricalParameters::Get()->GetFLArEFidVolSize().z()<<std::endl;
       neuX4.SetX(GeometricalParameters::Get()->GetFLArEPosition().x() +
                  (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetFLArEFidVolSize().x());
       neuX4.SetY(GeometricalParameters::Get()->GetFLArEPosition().y() +
@@ -180,7 +181,8 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
       neuX4.SetY(GeometricalParameters::Get()->GetSamplingCaloPosition().y() +
                  (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloFidVolSize().y());
       neuX4.SetZ(GeometricalParameters::Get()->GetSamplingCaloPosition().z() +
-                 (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloFidVolSize().z());
+                 - GeometricalParameters::Get()->GetSamplingCaloSizeZ()/2 + 5.1*cm);
+                 //(G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloFidVolSize().z());
       neuX4.SetT(0.);
       break;
   }
