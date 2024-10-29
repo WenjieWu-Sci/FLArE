@@ -424,7 +424,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
                           GeometricalParameters::Get()->GetFLArEPosition()/mm +
                           GeometricalParameters::Get()->GetTPCSizeXYZ()/mm/2);
   } else {
-    const Double_t res_samplingCalo[3] = {10, 10, 10}; // mm
+    const Double_t res_samplingCalo[3] = {10, 10, 5}; // mm
     if (neutrino.NuPDG()!=0) {
       pm3D = new PixelMap3D(evtID, nPrimaryParticle, neutrino.NuPDG(), res_samplingCalo);
     } else {
@@ -715,12 +715,18 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
       } else if ((sdName == "lArBoxSD/lar_box") && (m_addDiffusion == "single")) {
         pm3D->FillEntryWithToySingleElectronTransportation(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
       } else if (sdName == "lArBoxSD/lar_box") {
-        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim, 0);
       } 
-      if ((sdName=="SamplingCaloXSD/lar_box") ||
-          (sdName=="SamplingCaloYSD/lar_box")) {
-        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+      // separate different views for 2D histograms
+      if (sdName=="SamplingCaloXSD/lar_box") {
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim, 1);
+      } else if (sdName=="SamplingCaloYSD/lar_box") {
+        pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim, 2);
       }
+      //if ((sdName=="SamplingCaloXSD/lar_box") ||
+      //    (sdName=="SamplingCaloYSD/lar_box")) {
+      //  pm3D->FillEntry(hit_position_xyz, vtx_xyz, hit->GetEdep(), whichPrim);
+      //}
 
 
       if (sdName=="lArBoxSD/lar_box" ||
@@ -761,7 +767,7 @@ void AnalysisManager::FillTrueEdep(G4int sdId, std::string sdName)
 
         if (sdName=="lArBoxSD/lar_box" || 
             sdName=="SamplingCaloXSD/lar_box" ||
-            sdName=="SamplingCaloYSD/lar_box") {
+            sdName=="SamplingCaloYSD/lar_box" ) {
           primaryTrackLengthInTPC[whichPrim] += hit->GetStepLength();
           if ((hit->GetPID()==0) ||
               (tracksFromFSPizeroSecondary.find(hit->GetTID()) != tracksFromFSPizeroSecondary.end())) {

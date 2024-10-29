@@ -72,6 +72,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     G4LogicalVolume* AbsorbLayerLogical;
     G4LogicalVolume* CaloXCellLogical;
     G4LogicalVolume* CaloYCellLogical;
+    G4LogicalVolume* FiberXCellLogical;
+    G4LogicalVolume* FiberYCellLogical;
 
     DetectorConstructionMaterial* LArBoxMaterials;
     DetectorConstructionMessenger* messenger;

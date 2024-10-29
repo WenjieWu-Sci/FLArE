@@ -23,7 +23,7 @@ class PixelMap3D {
 
     void SetPMBoundary(G4ThreeVector min_xyz, G4ThreeVector max_xyz);
     void InitializePM();
-    void FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim);
+    void FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim, const Int_t view_idx);
     void FillEntryWithToyElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void FillEntryWithToySingleElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim);
     void Write2DPMToFile(TFile* thefile);

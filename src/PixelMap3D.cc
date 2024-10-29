@@ -129,7 +129,7 @@ void PixelMap3D::InitializePM()
   G4cout<<"PixelMap3D : initialization completed"<<G4endl;
 }
 
-void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim)
+void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, const Double_t edep, const Int_t idxPrim, const Int_t view_idx)
 {
   G4double pos_x = pos_xyz[0] - fPMShiftedCenterXYZ.x();
   G4double pos_y = pos_xyz[1] - fPMShiftedCenterXYZ.y();
@@ -139,14 +139,26 @@ void PixelMap3D::FillEntry(const Double_t* pos_xyz, const Double_t* vtx_xyz, con
   G4double vtx_z = vtx_xyz[2] - fPMShiftedCenterXYZ.z();
   Double_t relative_pos_xyz[3] = {pos_x, pos_y, pos_z};
   hist3DEdep->Fill(relative_pos_xyz, edep);
-  hitClusterZX[0]->Fill(pos_z, pos_x, edep);
-  hitClusterZY[0]->Fill(pos_z, pos_y, edep);
-  hitClusterZX[idxPrim+1]->Fill(pos_z, pos_x, edep);
-  hitClusterZY[idxPrim+1]->Fill(pos_z, pos_y, edep);
-  vtxHitClusterZX[0]->Fill(pos_z-vtx_z, pos_x-vtx_x, edep);
-  vtxHitClusterZY[0]->Fill(pos_z-vtx_z, pos_y-vtx_y, edep);
-  vtxHitClusterZX[idxPrim+1]->Fill(pos_z-vtx_z, pos_x-vtx_x, edep);
-  vtxHitClusterZY[idxPrim+1]->Fill(pos_z-vtx_z, pos_y-vtx_y, edep);
+  if (view_idx==1) {
+    hitClusterZX[0]->Fill(pos_z, pos_x, edep);
+    hitClusterZX[idxPrim+1]->Fill(pos_z, pos_x, edep);
+    vtxHitClusterZX[0]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_x-int(vtx_x/0.2)*0.2, edep);
+    vtxHitClusterZX[idxPrim+1]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_x-int(vtx_x/0.2)*0.2, edep);
+  } else if (view_idx==2) {
+    hitClusterZY[0]->Fill(pos_z, pos_y, edep);
+    hitClusterZY[idxPrim+1]->Fill(pos_z, pos_y, edep);
+    vtxHitClusterZY[0]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_y-int(vtx_y/0.2)*0.2, edep);
+    vtxHitClusterZY[idxPrim+1]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_y-int(vtx_y/0.2)*0.2, edep);
+  } else {
+    hitClusterZX[0]->Fill(pos_z, pos_x, edep);
+    hitClusterZY[0]->Fill(pos_z, pos_y, edep);
+    hitClusterZX[idxPrim+1]->Fill(pos_z, pos_x, edep);
+    hitClusterZY[idxPrim+1]->Fill(pos_z, pos_y, edep);
+    vtxHitClusterZX[0]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_x-int(vtx_x/0.2)*0.2, edep);
+    vtxHitClusterZY[0]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_y-int(vtx_y/0.2)*0.2, edep);
+    vtxHitClusterZX[idxPrim+1]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_x-int(vtx_x/0.2)*0.2, edep);
+    vtxHitClusterZY[idxPrim+1]->Fill(pos_z-int(vtx_z/0.2)*0.2, pos_y-int(vtx_y/0.2)*0.2, edep);
+  }
 }
 
 void PixelMap3D::FillEntryWithToyElectronTransportation(const Double_t* pos_xyz, const Double_t* vtx_xyz, Double_t edep, const Int_t idxPrim)

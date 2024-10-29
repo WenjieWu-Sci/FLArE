@@ -151,6 +151,10 @@ class GeometricalParameters  {
     G4double GetSamplingCaloThicknessAbsorb()  { return fSamplingCaloThicknessAbsorb; }
     G4double GetSamplingCaloWidthCaloX()   { return fSamplingCaloWidthCaloX; }
     G4double GetSamplingCaloWidthCaloY()   { return fSamplingCaloWidthCaloY; }
+    G4double GetSamplingCaloThicknessFiberX()   { return fSamplingCaloThicknessFiberX; }
+    G4double GetSamplingCaloThicknessFiberY()   { return fSamplingCaloThicknessFiberY; }
+    G4double GetSamplingCaloWidthFiberX()   { return fSamplingCaloWidthFiberX; }
+    G4double GetSamplingCaloWidthFiberY()   { return fSamplingCaloWidthFiberY; }
     G4int    GetSamplingCaloNLayers()          { return fSamplingCaloNLayers; }
     G4double GetSamplingCaloSizeX()   { return fSamplingCaloSizeX; }
     G4double GetSamplingCaloSizeY()   { return fSamplingCaloSizeY; }
@@ -246,6 +250,10 @@ class GeometricalParameters  {
     G4double fSamplingCaloThicknessAbsorb;
     G4double fSamplingCaloWidthCaloX;
     G4double fSamplingCaloWidthCaloY;
+    G4double fSamplingCaloThicknessFiberX;
+    G4double fSamplingCaloThicknessFiberY;
+    G4double fSamplingCaloWidthFiberX;
+    G4double fSamplingCaloWidthFiberY;
     G4double fSamplingCaloSizeX;
     G4double fSamplingCaloSizeY;
     G4double fSamplingCaloSizeZ;

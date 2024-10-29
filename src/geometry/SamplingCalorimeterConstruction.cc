@@ -5,6 +5,7 @@
 #include "G4AssemblyVolume.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Box.hh"
+#include "G4Tubs.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ThreeVector.hh"
 #include "G4VisAttributes.hh"
@@ -21,15 +22,19 @@ SamplingCalorimeterConstruction::SamplingCalorimeterConstruction()
 
   // detector geometry configuration
   thicknessAbsorber = GeometricalParameters::Get()->GetSamplingCaloThicknessAbsorb();
-  thicknessCaloX    = GeometricalParameters::Get()->GetSamplingCaloThicknessCaloX();;
+  thicknessCaloX    = GeometricalParameters::Get()->GetSamplingCaloThicknessCaloX();
   thicknessCaloY    = GeometricalParameters::Get()->GetSamplingCaloThicknessCaloY();
-  widthCaloX        = GeometricalParameters::Get()->GetSamplingCaloWidthCaloX();;
+  widthCaloX        = GeometricalParameters::Get()->GetSamplingCaloWidthCaloX();
   widthCaloY        = GeometricalParameters::Get()->GetSamplingCaloWidthCaloY();
+  thicknessFiberX   = GeometricalParameters::Get()->GetSamplingCaloThicknessFiberX();
+  thicknessFiberY   = GeometricalParameters::Get()->GetSamplingCaloThicknessFiberY();
+  widthFiberX   = GeometricalParameters::Get()->GetSamplingCaloWidthFiberX();
+  widthFiberY   = GeometricalParameters::Get()->GetSamplingCaloWidthFiberY();
   fSamplingCaloSizeX   = GeometricalParameters::Get()->GetSamplingCaloSizeX();
   fSamplingCaloSizeY   = GeometricalParameters::Get()->GetSamplingCaloSizeY();
   fSamplingCaloNLayers = GeometricalParameters::Get()->GetSamplingCaloNLayers();
 
-  BuildDetector();
+  BuildScintBarDetector();
 
   fSamplingCalorimeterAssembly = new G4AssemblyVolume();
   G4RotationMatrix* noRot = new G4RotationMatrix();
@@ -37,8 +42,10 @@ SamplingCalorimeterConstruction::SamplingCalorimeterConstruction()
   fSamplingCalorimeterAssembly->AddPlacedAssembly(SamplingCaloAssembly, detCenter, noRot);
 }
 
-void SamplingCalorimeterConstruction::BuildDetector()
+/// @brief block for building a scintillator bar sampling calorimetor
+void SamplingCalorimeterConstruction::BuildScintBarDetector()
 {
+  // Scintillator bars X/Y + 2x15mm tungsten plates
   G4double thicknessOneLayer = thicknessAbsorber + thicknessCaloX + thicknessCaloY;
   fSamplingCaloSizeZ = fSamplingCaloNLayers*thicknessOneLayer;
   // override fSamplingCaloSizeZ to this updated calculation
@@ -50,7 +57,7 @@ void SamplingCalorimeterConstruction::BuildDetector()
   AbsorbLayerLogical
     = new G4LogicalVolume(AbsorbLayerSolid, fMaterials->Material("Tungsten"), "AbsorbLayerLogical");
 
-  // x-plane
+  // x-plane scintillator
   auto CaloXLayerSolid
     = new G4Box("CaloXLayer", fSamplingCaloSizeX/2, fSamplingCaloSizeY/2, thicknessCaloX/2);
   auto CaloXLayerLogical
@@ -63,7 +70,7 @@ void SamplingCalorimeterConstruction::BuildDetector()
   new G4PVReplica("CaloXCellPhysical", CaloXCellLogical,
                   CaloXLayerLogical, kXAxis, fSamplingCaloSizeX/widthCaloX, widthCaloX);
 
-  // y-plane
+  // y-plane scintillator
   auto CaloYLayerSolid
     = new G4Box("CaloYLayer", fSamplingCaloSizeX/2, fSamplingCaloSizeY/2, thicknessCaloY/2);
   auto CaloYLayerLogical
@@ -80,11 +87,11 @@ void SamplingCalorimeterConstruction::BuildDetector()
   G4RotationMatrix Ra(0, 0, 0);
   for (int i= 0; i< fSamplingCaloNLayers; ++i) {
     G4RotationMatrix Rm(0, 0, 0);
-    G4ThreeVector TAbsorb(0, 0, (i+0.5)*thicknessAbsorber+i*thicknessCaloX+i*thicknessCaloY-fSamplingCaloSizeZ/2.);
-    G4ThreeVector TCaloX(0, 0, (i+1)*thicknessAbsorber+(i+0.5)*thicknessCaloX+i*thicknessCaloY-fSamplingCaloSizeZ/2.);
-    G4ThreeVector TCaloY(0, 0, (i+1)*thicknessAbsorber+(i+1)*thicknessCaloX+(i+0.5)*thicknessCaloY-fSamplingCaloSizeZ/2.);
+    G4ThreeVector TAbsorb(0, 0, i*thicknessOneLayer + thicknessAbsorber/2.-fSamplingCaloSizeZ/2.);
     SamplingCaloAssembly->AddPlacedVolume(AbsorbLayerLogical, TAbsorb, &Ra);
+    G4ThreeVector TCaloX(0, 0, i*thicknessOneLayer+thicknessAbsorber+thicknessCaloX/2.-fSamplingCaloSizeZ/2.);
     SamplingCaloAssembly->AddPlacedVolume(CaloXLayerLogical, TCaloX, &Ra);
+    G4ThreeVector TCaloY(0, 0, i*thicknessOneLayer+thicknessAbsorber+thicknessCaloX+thicknessCaloY/2.-fSamplingCaloSizeZ/2.);
     SamplingCaloAssembly->AddPlacedVolume(CaloYLayerLogical, TCaloY, &Ra);
   }
 
@@ -102,6 +109,7 @@ void SamplingCalorimeterConstruction::BuildDetector()
   nullVis->SetVisibility(false);
   CaloXCellLogical->SetVisAttributes(CaloVis);
   CaloYCellLogical->SetVisAttributes(CaloVis);
-  CaloXCellLogical->SetUserLimits(new G4UserLimits(0.2*mm));
-  CaloYCellLogical->SetUserLimits(new G4UserLimits(0.2*mm));
+  CaloXCellLogical->SetUserLimits(new G4UserLimits(0.15*mm));
+  CaloYCellLogical->SetUserLimits(new G4UserLimits(0.15*mm));
 }
+

@@ -152,7 +152,7 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detAddSamplingCaloCmd->SetDefaultValue(false);
     detSamplingCaloPosCmd = new G4UIcmdWith3VectorAndUnit("/det/addSamplingCaloPos", this);
     detSamplingCaloPosCmd->SetParameterName("x", "y", "z", false, false);
-    detSamplingCaloPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 1260.));
+    detSamplingCaloPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 495.));
     detSamplingCaloPosCmd->SetDefaultUnit("mm");
     detSamplingCaloPosCmd->SetUnitCandidates("mm m");
 }

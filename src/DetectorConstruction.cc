@@ -209,6 +209,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     SamplingCaloAssembly->MakeImprint(hallLV, SamplingCaloPos, nullptr, 0, fCheckOverlap);
 
     G4cout<<"Length of the Sampling Calorimeter : "<<GeometricalParameters::Get()->GetSamplingCaloSizeZ()<<G4endl;
+    G4cout<<"Sampling Calo Pos : "<<SamplingCaloPos<<G4endl; // w.r.t the global coordinate
+    G4cout<<"Hall Offset       : "<<hallOffset<<G4endl; // w.r.t the global coordinate
     G4cout<<"Center of the Sampling Calorimeter : "<<SamplingCaloPos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
 
@@ -338,6 +340,12 @@ void DetectorConstruction::ConstructSDandField() {
   }
 
   if (m_addSamplingCalorimeter) {
+    LArBoxSD* SamplingCaloAbsorbSD = new LArBoxSD("SamplingCaloAbsorbSD");
+    AbsorbLayerLogical->SetSensitiveDetector(SamplingCaloAbsorbSD);
+    sdManager->AddNewDetector(SamplingCaloAbsorbSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloAbsorbSD/lar_box");
+    SDIdx++;
+
     LArBoxSD* SamplingCaloXSD = new LArBoxSD("SamplingCaloXSD");
     CaloXCellLogical->SetSensitiveDetector(SamplingCaloXSD);
     sdManager->AddNewDetector(SamplingCaloXSD);
@@ -348,12 +356,6 @@ void DetectorConstruction::ConstructSDandField() {
     CaloYCellLogical->SetSensitiveDetector(SamplingCaloYSD);
     sdManager->AddNewDetector(SamplingCaloYSD);
     GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloYSD/lar_box");
-    SDIdx++;
-
-    LArBoxSD* SamplingCaloAbsorbSD = new LArBoxSD("SamplingCaloAbsorbSD");
-    AbsorbLayerLogical->SetSensitiveDetector(SamplingCaloAbsorbSD);
-    sdManager->AddNewDetector(SamplingCaloAbsorbSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "SamplingCaloAbsorbSD/lar_box");
     SDIdx++;
   }
 }

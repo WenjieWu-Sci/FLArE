@@ -74,17 +74,25 @@ GeometricalParameters::GeometricalParameters()
   fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
 
   // A Sampling Calorimeter (NuTeV-like detector)
-  fSamplingCaloThicknessCaloX  = 1 * cm;
-  fSamplingCaloThicknessCaloY  = 1 * cm;
-  fSamplingCaloWidthCaloX  = 0.5 * m;
-  fSamplingCaloWidthCaloY  = 0.6 * m;
-  fSamplingCaloThicknessAbsorb = 5 * cm;
-  fSamplingCaloSizeX = 0.5*m;  // 
-  fSamplingCaloSizeY = 0.6*m;  // 
-  fSamplingCaloSizeZ = 2.52*m; // 
-  fSamplingCaloFidVolSize = G4ThreeVector(0.4*m, 0.4*m, 2.5*m);
-  fSamplingCaloNLayers = 36;   // override fSamplingCaloSizeZ to update the total length
-  fSamplingCaloPos = G4ThreeVector(0., 0., 1260.*mm); 
+  fSamplingCaloThicknessCaloX  = 0.5 * cm;
+  fSamplingCaloThicknessCaloY  = 0.5 * cm;
+  //fSamplingCaloWidthCaloX  = 25 * cm;
+  //fSamplingCaloWidthCaloY  = 30 * cm;
+  fSamplingCaloWidthCaloX  = 1 * cm;
+  fSamplingCaloWidthCaloY  = 1 * cm;
+  fSamplingCaloThicknessFiberX = 0.2 * mm;
+  fSamplingCaloThicknessFiberY = 0.2 * mm;
+  //fSamplingCaloWidthFiberX = 25 * cm;
+  //fSamplingCaloWidthFiberY = 30 * cm;
+  fSamplingCaloWidthFiberX = 0.2 * mm;
+  fSamplingCaloWidthFiberY = 0.2 * mm;
+  fSamplingCaloThicknessAbsorb = 0.5 * cm;
+  fSamplingCaloSizeX = 0.25*m;  // 
+  fSamplingCaloSizeY = 0.6*m;   // 
+  fSamplingCaloSizeZ = 0.99*m;   // 
+  fSamplingCaloFidVolSize = G4ThreeVector(0.2*m, 0.55*m, 0.9*m);
+  fSamplingCaloNLayers = 66;   // override fSamplingCaloSizeZ to update the total length
+  fSamplingCaloPos = G4ThreeVector(0., 0., 495.*mm); 
 }
 
 GeometricalParameters* GeometricalParameters::Get()

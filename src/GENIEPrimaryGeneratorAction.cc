@@ -181,8 +181,9 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
       neuX4.SetY(GeometricalParameters::Get()->GetSamplingCaloPosition().y() +
                  (G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloFidVolSize().y());
       neuX4.SetZ(GeometricalParameters::Get()->GetSamplingCaloPosition().z() +
-                 - GeometricalParameters::Get()->GetSamplingCaloSizeZ()/2 + 5.1*cm);
+                 - GeometricalParameters::Get()->GetSamplingCaloSizeZ()/2 + 6*mm);
                  //(G4UniformRand()-0.5) * GeometricalParameters::Get()->GetSamplingCaloFidVolSize().z());
+      std::cout<<"GENIEPrimaryGeneratorAction (DEBUG) : "<<neuX4.Z()<<std::endl;
       neuX4.SetT(0.);
       break;
   }
