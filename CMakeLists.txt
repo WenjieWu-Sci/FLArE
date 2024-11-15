@@ -29,6 +29,7 @@ message(STATUS "Set Geant4 : ${Geant4_USE_FILE}")
 find_package(ROOT REQUIRED COMPONENTS Geom EG RIO) 
 include(${ROOT_USE_FILE})
 message(STATUS "Set ROOT : ${ROOT_USE_FILE}")
+message(STATUS "ROOT : ${ROOT_LIBRARIES}")
 
 ## Eigen
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
@@ -58,16 +59,18 @@ message(STATUS "HEP_HPC lib: ${HEP_HPC_LIBRARIES}")
 include_directories(${ROOT_INCLUDE_DIR} ${Geant4_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE sources ${PROJECT_SOURCE_DIR}/src/*.cc 
                           ${PROJECT_SOURCE_DIR}/src/reco/*.cc
-                          ${PROJECT_SOURCE_DIR}/src/geometry/*.cc)
+                          ${PROJECT_SOURCE_DIR}/src/geometry/*.cc
+                          ${PROJECT_SOURCE_DIR}/src/fields/*.cc)
 file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh 
                           ${PROJECT_SOURCE_DIR}/include/reco/*.hh
                           ${PROJECT_SOURCE_DIR}/include/utils/*.hh
-                          ${PROJECT_SOURCE_DIR}/include/geometry/*.hh)
+                          ${PROJECT_SOURCE_DIR}/include/geometry/*.hh
+                          ${PROJECT_SOURCE_DIR}/include/fields/*.hh)
 file(GLOB_RECURSE macros RELATIVE ${PROJECT_SOURCE_DIR} macros/*.mac)
 file(GLOB_RECURSE genie RELATIVE ${PROJECT_SOURCE_DIR} genie/*)
 file(GLOB_RECURSE analysis RELATIVE ${PROJECT_SOURCE_DIR} analysis/*)
 file(GLOB_RECURSE gridutils RELATIVE ${PROJECT_SOURCE_DIR} GridUtils/*)
-file(GLOB_RECURSE setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
+file(GLOB setup RELATIVE ${PROJECT_SOURCE_DIR} lxplus_setup.sh)
 
 # Enable macros for out-of-source build
 foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
@@ -76,28 +79,39 @@ foreach(_file ${macros} ${genie} ${analysis} ${gridutils} ${setup})
     ${PROJECT_BINARY_DIR}/${_file}
     COPYONLY
     )
+    #message(STATUS "Copying ${_file} in ${PROJECT_BINARY_DIR}/${_file}")
 endforeach()
+
+#----------------------------------------------------------------------------
+# generate dictionaries for the custum classes in the ROOT tree
+ROOT_GENERATE_DICTIONARY(DictOutput ${PROJECT_SOURCE_DIR}/include/FPFNeutrino.hh 
+                                    ${PROJECT_SOURCE_DIR}/include/FPFParticle.hh 
+				    LINKDEF ${PROJECT_SOURCE_DIR}/include/LinkDef.h)
+
+# create a shared library that includes the dictionary
+add_library(FPFClasses SHARED ${PROJECT_SOURCE_DIR}/src/FPFNeutrino.cc
+                              ${PROJECT_SOURCE_DIR}/src/FPFParticle.cc
+                              DictOutput.cxx)
+
+# include directories for headers
+target_include_directories(FPFClasses PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(FLArE FLArE.cc ${sources} ${headers})
-message(STATUS "ROOT : ${ROOT_LIBRARIES}")
+
 target_link_libraries(FLArE 
   ${ROOT_LIBRARIES} 
   ${Geant4_LIBRARIES} 
   ${HDF5_LIBRARIES}
   ${HEP_HPC_LIBRARIES}
+  FPFClasses
   )
-
-# attach dictionaries to the executable. first, tell it where to look for headers required by the dictionaries:
-target_include_directories(FLArE PRIVATE ${PROJECT_SOURCE_DIR}/include)
-# then generate dictionaries and add them as a dependency of the executable (via the MODULE parameter):
-ROOT_GENERATE_DICTIONARY(DictOutput ${PROJECT_SOURCE_DIR}/include/FPFNeutrino.hh 
-                                    ${PROJECT_SOURCE_DIR}/include/FPFParticle.hh 
-                                    MODULE FLArE LINKDEF ${PROJECT_SOURCE_DIR}/include/LinkDef.h)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS FLArE DESTINATION bin)
+install(TARGETS FLArE DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+install(TARGETS FPFClasses DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+install(FILES ${PROJECT_SOURCE_DIR}/build/libDictOutput_rdict.pcm DESTINATION ${PROJECT_SOURCE_DIR}/lib)
