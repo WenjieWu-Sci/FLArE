@@ -1,0 +1,35 @@
+# This file defines the standard configuration for the FLArE only option
+# The geometry contains only FLArE (TPC + BabyMIND)
+
+# Configuring FLArE
+/det/addFLArE true
+/det/flare/addFLArEPos 0 0 4300 mm
+/det/flare/material LAr
+/det/flare/module 3x7
+/det/flare/field 1. tesla
+/det/flare/useBabyMIND true
+
+/det/babymind/blockSequence |MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|
+/det/babymind/magnetPlateThickness 30 mm
+/det/babymind/magnetPlateSizeX 3.5 m
+/det/babymind/magnetPlateSizeY 2 m
+/det/babymind/magnetCentralPlateY 1 m
+/det/babymind/slitSizeX 2.8 m
+/det/babymind/slitSizeY 10 mm
+/det/babymind/fieldStrength 1.5 tesla
+/det/babymind/verticalNbars 16
+/det/babymind/horizontalNbars 96
+/det/babymind/barThickness 7.5 mm
+/det/babymind/verticalBarSizeX 21 cm
+/det/babymind/verticalBarSizeY 2 m
+/det/babymind/horizontalBarSizeX 3 m
+/det/babymind/horizontalBarSizeY 3 cm
+/det/babymind/magnetToScinSpacing 15 mm
+/det/babymind/magnetToMagnetSpacing 20 mm
+/det/babymind/blockToBlockSpacing 30 mm
+/det/babymind/blockPadding 100 mm
+
+# Turn off everything else
+/det/addFORMOSA false
+/det/addFASERnu2 false
+/det/addFASER2 false

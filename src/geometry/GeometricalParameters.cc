@@ -22,6 +22,29 @@ GeometricalParameters::GeometricalParameters()
   fHadCalLength = 120*cm;     //updates during construction
   fFLArEPos = G4ThreeVector(0., 0., 4300.*mm); 
   
+  // BabyMIND
+  fUseBabyMIND = false; //default
+  fBabyMINDMagnetPlateThickness = 30*mm;
+  fBabyMINDMagnetPlateSizeX = 3.5*m;
+  fBabyMINDMagnetPlateSizeY = 2.*m;
+  fBabyMINDMagnetCentralPlateY = 1.*m;
+  fBabyMINDSlitSizeX = 2.8*m;
+  fBabyMINDSlitSizeY = 10*mm;
+  fBabyMINDFieldStrength = 1.5*tesla;
+  fBabyMINDNVerticalBars = 16;
+  fBabyMINDNHorizontalBars = 96;
+  fBabyMINDBarThickness = 7.5*mm;
+  fBabyMINDVerticalBarSizeX = 21.*cm;
+  fBabyMINDVerticalBarSizeY = 2.*m;
+  fBabyMINDHorizontalBarSizeX = 3.*m;
+  fBabyMINDHorizontalBarSizeY = 3.*cm;
+  fBabyMINDTotalSizeZ = 3300*mm; //updates during construction
+  fBabyMINDMagnetToScinSpacing = 15*mm;
+  fBabyMINDMagnetToMagnetSpacing = 20*mm;
+  fBabyMINDBlockToBlockSpacing = 30*mm;
+  fBabyMINDBlockPadding = 100*mm;
+  fBabyMINDBlockSequence = "|MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|";
+
   // FASER2 magnet
   fSpectrometerMagnetOption = magnetOption::SAMURAI;
   fSpectrometerMagnetField = 1.0*tesla;

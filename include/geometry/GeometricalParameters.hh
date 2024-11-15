@@ -44,6 +44,50 @@ class GeometricalParameters  {
     G4ThreeVector GetFLArEPosition() { return fFLArEPos; }
     void SetFLArEPosition(G4ThreeVector val) { fFLArEPos = val; }
 
+    // BabyMIND
+    G4double GetBabyMINDMagnetPlateThickness() { return fBabyMINDMagnetPlateThickness; }
+    G4double GetBabyMINDMagnetPlateSizeX() { return fBabyMINDMagnetPlateSizeX; }
+    G4double GetBabyMINDMagnetPlateSizeY() { return fBabyMINDMagnetPlateSizeY; }
+    G4double GetBabyMINDMagnetCentralPlateY() { return fBabyMINDMagnetCentralPlateY; }
+    G4double GetBabyMINDSlitSizeX() { return fBabyMINDSlitSizeX; }
+    G4double GetBabyMINDSlitSizeY() { return fBabyMINDSlitSizeY; }
+    G4double GetBabyMINDFieldStrength() { return fBabyMINDFieldStrength; }
+    G4double GetBabyMINDNVerticalBars() { return fBabyMINDNVerticalBars; }
+    G4double GetBabyMINDNHorizontalBars() { return fBabyMINDNHorizontalBars; }
+    G4double GetBabyMINDBarThickness() { return fBabyMINDBarThickness; }
+    G4double GetBabyMINDVerticalBarSizeX() { return fBabyMINDVerticalBarSizeX; }
+    G4double GetBabyMINDVerticalBarSizeY() { return fBabyMINDVerticalBarSizeY; }
+    G4double GetBabyMINDHorizontalBarSizeX() { return fBabyMINDHorizontalBarSizeX; }
+    G4double GetBabyMINDHorizontalBarSizeY() { return fBabyMINDHorizontalBarSizeY; }
+    G4double GetBabyMINDTotalSizeZ() { return fBabyMINDTotalSizeZ; }
+    G4double GetBabyMINDMagnetToScinSpacing() { return fBabyMINDMagnetToScinSpacing; };
+    G4double GetBabyMINDMagnetToMagnetSpacing() { return fBabyMINDMagnetToMagnetSpacing; };
+    G4double GetBabyMINDBlockToBlockSpacing() { return fBabyMINDBlockToBlockSpacing; };
+    G4double GetBabyMINDBlockPadding() { return fBabyMINDBlockPadding; };
+    G4String GetBabyMINDBlockSequence() { return fBabyMINDBlockSequence; };
+    G4bool GetUseBabyMIND() { return fUseBabyMIND; }
+    void SetBabyMINDMagnetPlateThickness(G4double val) { fBabyMINDMagnetPlateThickness = val; }
+    void SetBabyMINDMagnetPlateSizeX(G4double val) { fBabyMINDMagnetPlateSizeX = val; }
+    void SetBabyMINDMagnetPlateSizeY(G4double val) { fBabyMINDMagnetPlateSizeY = val; }
+    void SetBabyMINDMagnetCentralPlateY(G4double val) { fBabyMINDMagnetCentralPlateY = val; }
+    void SetBabyMINDSlitSizeX(G4double val) { fBabyMINDSlitSizeX = val; }
+    void SetBabyMINDSlitSizeY(G4double val) { fBabyMINDSlitSizeY = val; }
+    void SetBabyMINDFieldStrength(G4double val) { fBabyMINDFieldStrength = val; }
+    void SetBabyMINDNVerticalBars(G4int val) { fBabyMINDNVerticalBars = val; }
+    void SetBabyMINDNHorizontalBars(G4int val) { fBabyMINDNHorizontalBars = val; }
+    void SetBabyMINDBarThickness(G4double val) { fBabyMINDBarThickness = val; }
+    void SetBabyMINDVerticalBarSizeX(G4double val) { fBabyMINDVerticalBarSizeX = val; }
+    void SetBabyMINDVerticalBarSizeY(G4double val) { fBabyMINDVerticalBarSizeY = val; }
+    void SetBabyMINDHorizontalBarSizeX(G4double val) { fBabyMINDHorizontalBarSizeX = val; }
+    void SetBabyMINDHorizontalBarSizeY(G4double val) { fBabyMINDHorizontalBarSizeY = val; }
+    void SetBabyMINDMagnetToScinSpacing(G4double val) { fBabyMINDMagnetToScinSpacing = val; };
+    void SetBabyMINDMagnetToMagnetSpacing(G4double val) { fBabyMINDMagnetToMagnetSpacing = val; };
+    void SetBabyMINDBlockToBlockSpacing(G4double val) { fBabyMINDBlockToBlockSpacing = val; };
+    void SetBabyMINDBlockPadding(G4double val)  { fBabyMINDBlockPadding = val; };
+    void SetBabyMINDBlockSequence(G4String val) { fBabyMINDBlockSequence = val; };
+    void SetUseBabyMIND(G4bool val) { fUseBabyMIND = val; }
+    void SetBabyMINDTotalSizeZ(G4double val) { fBabyMINDTotalSizeZ = val; }
+
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
     magnetOption ConvertStringToMagnetOption(G4String val);
@@ -167,7 +211,30 @@ class GeometricalParameters  {
     G4double fHadCalLength;
     G4double fMuonCatcherLength;
     G4ThreeVector fFLArEPos;
-    
+ 
+    // BabyMIND
+    G4bool fUseBabyMIND;
+    G4double fBabyMINDMagnetPlateThickness;
+    G4double fBabyMINDMagnetPlateSizeX;
+    G4double fBabyMINDMagnetPlateSizeY;
+    G4double fBabyMINDMagnetCentralPlateY;
+    G4double fBabyMINDSlitSizeX;
+    G4double fBabyMINDSlitSizeY;
+    G4double fBabyMINDFieldStrength;
+    G4int fBabyMINDNVerticalBars;
+    G4int fBabyMINDNHorizontalBars;
+    G4double fBabyMINDBarThickness;
+    G4double fBabyMINDVerticalBarSizeX;
+    G4double fBabyMINDVerticalBarSizeY;
+    G4double fBabyMINDHorizontalBarSizeX;
+    G4double fBabyMINDHorizontalBarSizeY;
+    G4double fBabyMINDTotalSizeZ;
+    G4double fBabyMINDMagnetToScinSpacing;
+    G4double fBabyMINDMagnetToMagnetSpacing;
+    G4double fBabyMINDBlockToBlockSpacing;
+    G4double fBabyMINDBlockPadding;
+    G4String fBabyMINDBlockSequence;
+
     // FASER2 Spectrometer Magnet
     magnetOption fSpectrometerMagnetOption;
     G4double fSpectrometerMagnetField;
