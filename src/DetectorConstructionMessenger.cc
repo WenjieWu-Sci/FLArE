@@ -15,137 +15,205 @@
 
 DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstruction* manager) 
   : det(manager) {
-    detDir = new G4UIdirectory("/det/");
-    detDir->SetGuidance("detector control");
  
+    // -------------------------
     // GENERAL OPTIONS  
+    detDir = new G4UIdirectory("/det/");
+    detDir->SetGuidance("Detector control");
+    
+    // saving gdml
     detGdmlCmd = new G4UIcmdWithABool("/det/saveGdml", this);
     detGdmlCmd->SetParameterName("saveGdml", true);
     detGdmlCmd->SetDefaultValue(false);
+    // check overlap
     detCheckOverlapCmd = new G4UIcmdWithABool("/det/checkOverlap", this);
     detCheckOverlapCmd->SetParameterName("checkOverlap", true);
     detCheckOverlapCmd->SetDefaultValue(false);
-    
-    // FLArE 
+    // add FLARE volume
     detAddFLArECmd = new G4UIcmdWithABool("/det/addFLArE", this);
     detAddFLArECmd->SetParameterName("Add FLArE detector", true);
     detAddFLArECmd->SetDefaultValue(true);
-    detFLArEPosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFLArEPos", this);
-    detFLArEPosCmd->SetParameterName("x", "y", "z", false, false);
-    detFLArEPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 4300.));
-    detFLArEPosCmd->SetDefaultUnit("mm");
-    detFLArEPosCmd->SetUnitCandidates("mm m");
-    detMatCmd = new G4UIcmdWithAString("/det/material", this);
-    detMatCmd->SetGuidance("set material of the detector: LAr, LKr");
-    detGeomCmd = new G4UIcmdWithAString("/det/module", this);
-    detGeomCmd->SetGuidance("set module option of the detector: single, 3x7");
-    detFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/field", this);
-    detFieldCmd->SetUnitCategory("Magnetic flux density");
-    detFieldCmd->SetDefaultUnit("tesla");
-    detFieldCmd->SetUnitCandidates("tesla kG G");
-    detFieldCmd->SetDefaultValue(1.0);
-    // FORMOSA
+    // add FORMOSA volume
     detAddFORMOSACmd = new G4UIcmdWithABool("/det/addFORMOSA", this);
     detAddFORMOSACmd->SetParameterName("Add FORMOSA detector", true);
     detAddFORMOSACmd->SetDefaultValue(true);
-    detFORMOSAPosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFORMOSAPos", this);
-    detFORMOSAPosCmd->SetParameterName("x", "y", "z", false, false);
-    detFORMOSAPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 13870.));
-    detFORMOSAPosCmd->SetDefaultUnit("mm");
-    detFORMOSAPosCmd->SetUnitCandidates("mm m");
-    // FASERnu2
+    // add FASERnu2 volume
     detAddFASERnu2Cmd = new G4UIcmdWithABool("/det/addFASERnu2", this);
     detAddFASERnu2Cmd->SetParameterName("Add FASERnu2 detector", true);
     detAddFASERnu2Cmd->SetDefaultValue(true);
-    detFASERnu2PosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFASERnu2Pos", this);
-    detFASERnu2PosCmd->SetParameterName("x", "y", "z", false, false);
-    detFASERnu2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 22023.));
-    detFASERnu2PosCmd->SetDefaultUnit("mm");
-    detFASERnu2PosCmd->SetUnitCandidates("mm m");
-    // FASER2 SPECTROMETER MAGNET
+    // add FASER2 volume
     detAddFASER2Cmd = new G4UIcmdWithABool("/det/addFASER2", this);
     detAddFASER2Cmd->SetParameterName("Add FASER2 Spectrometer", true);
     detAddFASER2Cmd->SetDefaultValue(true);
-    detFASER2PosCmd = new G4UIcmdWith3VectorAndUnit("/det/addFASER2Pos", this);
-    detFASER2PosCmd->SetParameterName("x", "y", "z", false, false);
-    detFASER2PosCmd->SetDefaultValue(G4ThreeVector(0., 0., 42636.));
-    detFASER2PosCmd->SetDefaultUnit("mm");
-    detFASER2PosCmd->SetUnitCandidates("mm m");
-    magnetGeomCmd = new G4UIcmdWithAString("/det/magnetGeom", this);
-    magnetGeomCmd->SetGuidance("Set the magnet design option");
-    magnetGeomCmd->SetCandidates("SAMURAI CrystalPulling");
-    magnetGeomCmd->SetDefaultValue("SAMURAI");
-    magnetFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetField", this);
-    magnetFieldCmd->SetUnitCategory("Magnetic flux density");
-    magnetFieldCmd->SetDefaultUnit("tesla");
-    magnetFieldCmd->SetUnitCandidates("tesla kG G");
-    magnetFieldCmd->SetDefaultValue(1.0);
+    
+    // -------------------------
+    // FLARE COMMANDS
+    flareDir = new G4UIdirectory("/det/flare/");
+    flareDir->SetGuidance("FLArE Detector control");
+    
+    // FLArE position
+    flarePosCmd = new G4UIcmdWith3VectorAndUnit("/det/flare/addFLArEPos", this);
+    flarePosCmd->SetParameterName("x", "y", "z", false, false);
+    flarePosCmd->SetUnitCandidates("mm m");
+    // FLArE material
+    flareMatCmd = new G4UIcmdWithAString("/det/flare/material", this);
+    flareMatCmd->SetGuidance("set material of the detector: LAr, LKr");
+    // TPC geometry option
+    flareGeomCmd = new G4UIcmdWithAString("/det/flare/module", this);
+    flareGeomCmd->SetGuidance("set module option of the detector: single, 3x7");
+    // FLArE magnetic field (for HadCatcher+MuonFinder)
+    flareFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/flare/field", this);
+    flareFieldCmd->SetGuidance("set magnetic field for HadCatcher+MuonFinder");
+    flareFieldCmd->SetUnitCategory("Magnetic flux density");
+    flareFieldCmd->SetUnitCandidates("tesla kG G");
+    // use BabyMIND (instead of for HadCatcher+MuonFinder)
+    flareUseBabyMINDCmd = new G4UIcmdWithABool("/det/flare/useBabyMIND", this);
+    flareUseBabyMINDCmd->SetParameterName("Use BabyMIND detector", true);
+    flareUseBabyMINDCmd->SetDefaultValue(false);
+    
+    // -------------------------
+    // BABYMIND COMMANDS
+    babymindDir = new G4UIdirectory("/det/babymind/");
+    babymindDir->SetGuidance("BabyMIND Detector control");
+
+    // magnet plate thickness
+    babymindMagnetPlateThickCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetPlateThickness", this);
+    babymindMagnetPlateThickCmd->SetUnitCategory("Length");
+    babymindMagnetPlateThickCmd->SetUnitCandidates("cm m mm");
+    // magnet plate size x/y
+    babymindMagnetPlateSizeXCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetPlateSizeX", this);
+    babymindMagnetPlateSizeXCmd->SetUnitCategory("Length");
+    babymindMagnetPlateSizeXCmd->SetUnitCandidates("cm m mm");
+    babymindMagnetPlateSizeYCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetPlateSizeY", this);
+    babymindMagnetPlateSizeYCmd->SetUnitCategory("Length");
+    babymindMagnetPlateSizeYCmd->SetUnitCandidates("cm m mm");
+    // central magnet plate height (y)
+    babymindMagnetCentralPlateYCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetCentralPlateY", this);
+    babymindMagnetCentralPlateYCmd->SetUnitCategory("Length");
+    babymindMagnetCentralPlateYCmd->SetUnitCandidates("cm m mm");
+    // slit size x/y
+    babymindSlitSizeXCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/slitSizeX",this);
+    babymindSlitSizeXCmd->SetUnitCategory("Length");
+    babymindSlitSizeXCmd->SetUnitCandidates("cm m mm");
+    babymindSlitSizeYCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/slitSizeY",this);
+    babymindSlitSizeYCmd->SetUnitCategory("Length");
+    babymindSlitSizeYCmd->SetUnitCandidates("cm m mm");
+    // magnetic field in magnet plate
+    babymindFieldStrengthCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/fieldStrength",this);
+    babymindFieldStrengthCmd->SetUnitCategory("Magnetic flux density");
+    babymindFieldStrengthCmd->SetUnitCandidates("tesla kG G");
+    // bar thickness
+    babymindBarThicknessCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/barThickness",this);
+    babymindBarThicknessCmd->SetUnitCategory("Length");
+    babymindBarThicknessCmd->SetUnitCandidates("cm m mm");
+    // vertical bars
+    babymindNVerticalBarsCmd = new G4UIcmdWithAnInteger("/det/babymind/verticalNbars", this);;
+    babymindVerticalBarSizeXCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/verticalBarSizeX",this);
+    babymindVerticalBarSizeXCmd->SetUnitCategory("Length");
+    babymindVerticalBarSizeXCmd->SetUnitCandidates("cm m mm");
+    babymindVerticalBarSizeYCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/verticalBarSizeY",this);
+    babymindVerticalBarSizeYCmd->SetUnitCategory("Length");
+    babymindVerticalBarSizeYCmd->SetUnitCandidates("cm m mm");
+    // horizontal bars
+    babymindNHorizontalBarsCmd = new G4UIcmdWithAnInteger("/det/babymind/horizontalNbars", this);;
+    babymindHorizontalBarSizeXCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/horizontalBarSizeX",this);
+    babymindHorizontalBarSizeXCmd->SetUnitCategory("Length");
+    babymindHorizontalBarSizeXCmd->SetUnitCandidates("cm m mm");
+    babymindHorizontalBarSizeYCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/horizontalBarSizeY",this);
+    babymindHorizontalBarSizeYCmd->SetUnitCategory("Length");
+    babymindHorizontalBarSizeYCmd->SetUnitCandidates("cm m mm");
+    // spacing between modules/plates
+    babymindMagnetToScinSpacingCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetToScinSpacing",this);
+    babymindMagnetToScinSpacingCmd->SetUnitCategory("Length");
+    babymindMagnetToScinSpacingCmd->SetUnitCandidates("cm m mm");
+    babymindMagnetToMagnetSpacingCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/magnetToMagnetSpacing",this);
+    babymindMagnetToMagnetSpacingCmd->SetUnitCategory("Length");
+    babymindMagnetToMagnetSpacingCmd->SetUnitCandidates("cm m mm");
+    babymindBlockToBlockSpacingCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/blockToBlockSpacing",this);
+    babymindBlockToBlockSpacingCmd->SetUnitCategory("Length");
+    babymindBlockToBlockSpacingCmd->SetUnitCandidates("cm m mm");
+    babymindBlockPaddingCmd = new G4UIcmdWithADoubleAndUnit("/det/babymind/blockPadding",this);
+    babymindBlockPaddingCmd->SetUnitCategory("Length");
+    babymindBlockPaddingCmd->SetUnitCandidates("cm m mm");
+    // module/plates sequence
+    babymindBlockSequenceCmd = new G4UIcmdWithAString("/det/babymind/blockSequence",this);
+    babymindBlockSequenceCmd->SetGuidance("set modules/plates sequence for babymind");
+  
+    // -------------------------
+    // FORMOSA COMMANDS
+    formosaDir = new G4UIdirectory("/det/formosa/");
+    formosaDir->SetGuidance("FORMOSA Detector control");
+    
+    formosaPosCmd = new G4UIcmdWith3VectorAndUnit("/det/formosa/addFORMOSAPos", this);
+    formosaPosCmd->SetParameterName("x", "y", "z", false, false);
+    formosaPosCmd->SetDefaultValue(G4ThreeVector(0., 0., 13870.));
+    formosaPosCmd->SetDefaultUnit("mm");
+    formosaPosCmd->SetUnitCandidates("mm m cm");
+    
+    // -------------------------
+    // FASERnu2 COMMANDS
+    fasernuDir = new G4UIdirectory("/det/fasernu/");
+    fasernuDir->SetGuidance("FASERnu2 Detector control");
+    
+    fasernuPosCmd = new G4UIcmdWith3VectorAndUnit("/det/fasernu/addFASERnu2Pos", this);
+    fasernuPosCmd->SetParameterName("x", "y", "z", false, false);
+    fasernuPosCmd->SetUnitCandidates("mm m cm");
+    
+    // -------------------------
+    // FASER2 SPECTROMETER MAGNET COMMANDS
+    faserDir = new G4UIdirectory("/det/faser/");
+    faserDir->SetGuidance("FASER2 Detector control");
+    
+    faserPosCmd = new G4UIcmdWith3VectorAndUnit("/det/faser/addFASER2Pos", this);
+    faserPosCmd->SetParameterName("x", "y", "z", false, false);
+    faserPosCmd->SetUnitCandidates("mm m cm");
+    faserMagnetGeomCmd = new G4UIcmdWithAString("/det/faser/magnetGeom", this);
+    faserMagnetGeomCmd->SetGuidance("Set the magnet design option");
+    faserMagnetGeomCmd->SetCandidates("SAMURAI CrystalPulling");
+    faserMagnetGeomCmd->SetDefaultValue("SAMURAI");
+    faserMagnetFieldCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetField", this);
+    faserMagnetFieldCmd->SetUnitCategory("Magnetic flux density");
+    faserMagnetFieldCmd->SetUnitCandidates("tesla kG G");
     // SAMURAI design
-    magnetWinXCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinX", this);
-    magnetWinXCmd->SetUnitCategory("Length");
-    magnetWinXCmd->SetDefaultUnit("m");
-    magnetWinXCmd->SetUnitCandidates("cm m mm");
-    magnetWinXCmd->SetDefaultValue(3.0);
-    magnetWinYCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinY", this);
-    magnetWinYCmd->SetUnitCategory("Length");
-    magnetWinYCmd->SetDefaultUnit("m");
-    magnetWinYCmd->SetUnitCandidates("cm m mm");
-    magnetWinYCmd->SetDefaultValue(1.0);
-    magnetWinZCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetWinZ", this);
-    magnetWinZCmd->SetUnitCategory("Length");
-    magnetWinZCmd->SetDefaultUnit("m");
-    magnetWinZCmd->SetUnitCandidates("cm m mm");
-    magnetWinZCmd->SetDefaultValue(4.0);
-    yokeThickXCmd = new G4UIcmdWithADoubleAndUnit("/det/yokeThickX", this);
-    yokeThickXCmd->SetUnitCategory("Length");
-    yokeThickXCmd->SetDefaultUnit("m");
-    yokeThickXCmd->SetUnitCandidates("cm m mm");
-    yokeThickXCmd->SetDefaultValue(1.5);
-    yokeThickYCmd = new G4UIcmdWithADoubleAndUnit("/det/yokeThickY", this);
-    yokeThickYCmd->SetUnitCategory("Length");
-    yokeThickYCmd->SetDefaultUnit("m");
-    yokeThickYCmd->SetUnitCandidates("cm m mm");
-    yokeThickYCmd->SetDefaultValue(2.0);
+    faserMagnetWinXCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetWinX", this);
+    faserMagnetWinXCmd->SetUnitCategory("Length");
+    faserMagnetWinXCmd->SetUnitCandidates("cm m mm");
+    faserMagnetWinYCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetWinY", this);
+    faserMagnetWinYCmd->SetUnitCategory("Length");
+    faserMagnetWinYCmd->SetUnitCandidates("cm m mm");
+    faserMagnetWinZCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetWinZ", this);
+    faserMagnetWinZCmd->SetUnitCategory("Length");
+    faserMagnetWinZCmd->SetUnitCandidates("cm m mm");
+    faserYokeThickXCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/yokeThickX", this);
+    faserYokeThickXCmd->SetUnitCategory("Length");
+    faserYokeThickXCmd->SetUnitCandidates("cm m mm");
+    faserYokeThickYCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/yokeThickY", this);
+    faserYokeThickYCmd->SetUnitCategory("Length");
+    faserYokeThickYCmd->SetUnitCandidates("cm m mm");
     // CrystalPullign design
-    magnetInnerRCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetInnerR", this);
-    magnetInnerRCmd->SetUnitCategory("Length");
-    magnetInnerRCmd->SetDefaultUnit("m");
-    magnetInnerRCmd->SetUnitCandidates("cm m mm");
-    magnetInnerRCmd->SetDefaultValue(0.8);
-    magnetOuterRCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetOuterR", this);
-    magnetOuterRCmd->SetUnitCategory("Length");
-    magnetOuterRCmd->SetDefaultUnit("m");
-    magnetOuterRCmd->SetUnitCandidates("cm m mm");
-    magnetOuterRCmd->SetDefaultValue(1.2);
-    magnetLengthZCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetLengthZ", this);
-    magnetLengthZCmd->SetUnitCategory("Length");
-    magnetLengthZCmd->SetDefaultUnit("m");
-    magnetLengthZCmd->SetUnitCandidates("cm m mm");
-    magnetLengthZCmd->SetDefaultValue(1.25);
-    magnetGapCmd = new G4UIcmdWithADoubleAndUnit("/det/magnetGap", this);
-    magnetGapCmd->SetUnitCategory("Length");
-    magnetGapCmd->SetDefaultUnit("m");
-    magnetGapCmd->SetUnitCandidates("cm m mm");
-    magnetGapCmd->SetDefaultValue(0.5);
-    magnetNumberCmd = new G4UIcmdWithAnInteger("/det/magnetNumber", this);
-    magnetNumberCmd->SetDefaultValue(3);
+    faserMagnetInnerRCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetInnerR", this);
+    faserMagnetInnerRCmd->SetUnitCategory("Length");
+    faserMagnetInnerRCmd->SetUnitCandidates("cm m mm");
+    faserMagnetOuterRCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetOuterR", this);
+    faserMagnetOuterRCmd->SetUnitCategory("Length");
+    faserMagnetOuterRCmd->SetUnitCandidates("cm m mm");
+    faserMagnetLengthZCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetLengthZ", this);
+    faserMagnetLengthZCmd->SetUnitCategory("Length");
+    faserMagnetLengthZCmd->SetUnitCandidates("cm m mm");
+    faserMagnetGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetGap", this);
+    faserMagnetGapCmd->SetUnitCategory("Length");
+    faserMagnetGapCmd->SetUnitCandidates("cm m mm");
+    faserMagnetNumberCmd = new G4UIcmdWithAnInteger("/det/faser/magnetNumber", this);
     // Tracking stations
-    trackingNumberCmd = new G4UIcmdWithAnInteger("/det/trackingNumber", this);
-    trackingNumberCmd->SetDefaultValue(6);
-    trackingNBarsYCmd = new G4UIcmdWithAnInteger("/det/trackingNBarsY", this);
-    trackingNBarsYCmd->SetDefaultValue(3);
-    trackingNBarsXCmd = new G4UIcmdWithAnInteger("/det/trackingNBarsX", this);
-    trackingNBarsXCmd->SetDefaultValue(7);
-    trackingScinThickCmd = new G4UIcmdWithADoubleAndUnit("/det/trackingScinThick", this);
-    trackingScinThickCmd->SetUnitCategory("Length");
-    trackingScinThickCmd->SetDefaultUnit("cm");
-    trackingScinThickCmd->SetUnitCandidates("cm m mm");
-    trackingScinThickCmd->SetDefaultValue(1.0);
-    trackingGapCmd = new G4UIcmdWithADoubleAndUnit("/det/trackingGap", this);
-    trackingGapCmd->SetUnitCategory("Length");
-    trackingGapCmd->SetDefaultUnit("m");
-    trackingGapCmd->SetUnitCandidates("cm m mm");
-    trackingGapCmd->SetDefaultValue(0.5);
+    faserTrackingNumberCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNumber", this);
+    faserTrackingNBarsYCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsY", this);
+    faserTrackingNBarsXCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsX", this);
+    faserTrackingScinThickCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingScinThick", this);
+    faserTrackingScinThickCmd->SetUnitCategory("Length");
+    faserTrackingScinThickCmd->SetUnitCandidates("cm m mm");
+    faserTrackingGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingGap", this);
+    faserTrackingGapCmd->SetUnitCategory("Length");
+    faserTrackingGapCmd->SetUnitCandidates("cm m mm");
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -154,96 +222,179 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete detGdmlCmd;
   delete detCheckOverlapCmd;
   delete detAddFLArECmd;
-  delete detMatCmd;
-  delete detGeomCmd;
-  delete detFieldCmd;
-
   delete detAddFORMOSACmd;
+  delete detAddFASER2Cmd;
+  delete detAddFASERnu2Cmd;
 
-  delete magnetGeomCmd;
-  delete magnetFieldCmd;
-  delete magnetWinXCmd;
-  delete magnetWinYCmd;
-  delete magnetWinZCmd;
-  delete yokeThickXCmd;
-  delete yokeThickYCmd;
+  delete flarePosCmd;
+  delete flareMatCmd;
+  delete flareGeomCmd;
+  delete flareFieldCmd;
+  delete flareUseBabyMINDCmd;
     
-  delete magnetInnerRCmd;
-  delete magnetOuterRCmd;
-  delete magnetLengthZCmd;
-  delete magnetGapCmd;
-  delete magnetNumberCmd;
+  delete babymindMagnetPlateThickCmd;
+  delete babymindMagnetPlateSizeXCmd;
+  delete babymindMagnetPlateSizeYCmd;
+  delete babymindMagnetCentralPlateYCmd;
+  delete babymindSlitSizeXCmd;
+  delete babymindSlitSizeYCmd;
+  delete babymindFieldStrengthCmd;
+  delete babymindBarThicknessCmd; 
+  delete babymindNVerticalBarsCmd;
+  delete babymindVerticalBarSizeXCmd;
+  delete babymindVerticalBarSizeYCmd;
+  delete babymindNHorizontalBarsCmd; 
+  delete babymindHorizontalBarSizeXCmd;
+  delete babymindHorizontalBarSizeYCmd;
+  delete babymindMagnetToScinSpacingCmd;
+  delete babymindMagnetToMagnetSpacingCmd;
+  delete babymindBlockToBlockSpacingCmd;
+  delete babymindBlockPaddingCmd; 
+  delete babymindBlockSequenceCmd;
 
-  delete trackingNumberCmd;
-  delete trackingNBarsYCmd;
-  delete trackingNBarsXCmd;
-  delete trackingScinThickCmd;
-  delete trackingGapCmd;
+  delete formosaPosCmd;
+  
+  delete fasernuPosCmd;
+
+  delete faserPosCmd;
+  delete faserMagnetGeomCmd;
+  delete faserMagnetFieldCmd;
+  delete faserMagnetWinXCmd;
+  delete faserMagnetWinYCmd;
+  delete faserMagnetWinZCmd;
+  delete faserYokeThickXCmd;
+  delete faserYokeThickYCmd;
+  delete faserMagnetInnerRCmd;
+  delete faserMagnetOuterRCmd;
+  delete faserMagnetLengthZCmd;
+  delete faserMagnetGapCmd;
+  delete faserMagnetNumberCmd;
+  delete faserTrackingNumberCmd;
+  delete faserTrackingNBarsYCmd;
+  delete faserTrackingNBarsXCmd;
+  delete faserTrackingScinThickCmd;
+  delete faserTrackingGapCmd;
 
   delete detDir;
+  delete flareDir;
+  delete babymindDir;
+  delete formosaDir;
+  delete faserDir;
+  delete fasernuDir;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
-  
-  // flare
+ 
+  // GENERAL COMMANDS
   if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
   else if (command == detCheckOverlapCmd) det->CheckDetOverlap(detCheckOverlapCmd->GetNewBoolValue(newValues));
-  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues));
-  else if (command == detFLArEPosCmd) GeometricalParameters::Get()->SetFLArEPosition(detFLArEPosCmd->GetNew3VectorValue(newValues));
-  else if (command == detGeomCmd) {
-    GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
-  }
-  else if (command == detMatCmd)  {
-    GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
-  }
-  else if (command == detFieldCmd) det->SetFieldValue(detFieldCmd->ConvertToDimensionedDouble(newValues));
-  // FORMOSA
+  else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues)); 
   else if (command == detAddFORMOSACmd) det->AddFORMOSA(detAddFORMOSACmd->GetNewBoolValue(newValues));
-  else if (command == detFORMOSAPosCmd) GeometricalParameters::Get()->SetFORMOSAPosition(detFORMOSAPosCmd->GetNew3VectorValue(newValues));
-  // FASERnu2
   else if (command == detAddFASERnu2Cmd) det->AddFASERnu2(detAddFASERnu2Cmd->GetNewBoolValue(newValues));
-  else if (command == detFASERnu2PosCmd) GeometricalParameters::Get()->SetFASERnu2Position(detFASERnu2PosCmd->GetNew3VectorValue(newValues));
-  // faser2 magnet
   else if (command == detAddFASER2Cmd) det->AddFASER2(detAddFASER2Cmd->GetNewBoolValue(newValues));
-  else if (command == detFASER2PosCmd) GeometricalParameters::Get()->SetFASER2Position(detFASER2PosCmd->GetNew3VectorValue(newValues));
-  else if (command == magnetGeomCmd)  
-    GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
-  else if (command == magnetFieldCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetField(magnetFieldCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetWinXCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowX(magnetWinXCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetWinYCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowY(magnetWinYCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetWinZCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowZ(magnetWinZCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == yokeThickXCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickX(yokeThickXCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == yokeThickYCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickY(yokeThickYCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetInnerRCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetInnerR(magnetInnerRCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetOuterRCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetOuterR(magnetOuterRCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetLengthZCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetLengthZ(magnetLengthZCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetGapCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetGap(magnetGapCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == magnetNumberCmd) 
-    GeometricalParameters::Get()->SetNSpectrometerMagnets(magnetNumberCmd->GetNewIntValue(newValues));
+  
+  // FLARE COMMANDS
+  else if (command == flarePosCmd)
+    GeometricalParameters::Get()->SetFLArEPosition(flarePosCmd->GetNew3VectorValue(newValues));
+  else if (command == flareGeomCmd)
+    GeometricalParameters::Get()->SetTPCConfigOption(GeometricalParameters::Get()->ConvertStringToTPCConfigOption(newValues));
+  else if (command == flareMatCmd)
+    GeometricalParameters::Get()->SetTPCMaterialOption(GeometricalParameters::Get()->ConvertStringToTPCMaterialOption(newValues));
+  else if (command == flareFieldCmd) 
+    det->SetFieldValue(flareFieldCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == flareUseBabyMINDCmd){
+    det->UseBabyMIND(flareUseBabyMINDCmd->GetNewBoolValue(newValues));
+    GeometricalParameters::Get()->SetUseBabyMIND(flareUseBabyMINDCmd->GetNewBoolValue(newValues));
+  }
 
+  //BABYMIND COMMANDS
+  else if (command == babymindMagnetPlateThickCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetPlateThickness(babymindMagnetPlateThickCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindMagnetPlateSizeXCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetPlateSizeX(babymindMagnetPlateSizeXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindMagnetPlateSizeYCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetPlateSizeY(babymindMagnetPlateSizeYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindMagnetCentralPlateYCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetCentralPlateY(babymindMagnetCentralPlateYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindSlitSizeXCmd)
+    GeometricalParameters::Get()->SetBabyMINDSlitSizeX(babymindSlitSizeXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindSlitSizeYCmd)
+    GeometricalParameters::Get()->SetBabyMINDSlitSizeY(babymindSlitSizeYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindFieldStrengthCmd)
+    GeometricalParameters::Get()->SetBabyMINDFieldStrength(babymindFieldStrengthCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindBarThicknessCmd)
+    GeometricalParameters::Get()->SetBabyMINDBarThickness(babymindBarThicknessCmd->ConvertToDimensionedDouble(newValues));  
+  else if (command == babymindNVerticalBarsCmd)
+    GeometricalParameters::Get()->SetBabyMINDNVerticalBars(babymindNVerticalBarsCmd->GetNewIntValue(newValues));
+  else if (command == babymindNHorizontalBarsCmd)
+    GeometricalParameters::Get()->SetBabyMINDNHorizontalBars(babymindNHorizontalBarsCmd->GetNewIntValue(newValues));
+  else if (command == babymindVerticalBarSizeXCmd)
+    GeometricalParameters::Get()->SetBabyMINDVerticalBarSizeX(babymindVerticalBarSizeXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindVerticalBarSizeYCmd)
+    GeometricalParameters::Get()->SetBabyMINDVerticalBarSizeY(babymindVerticalBarSizeYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindHorizontalBarSizeXCmd)
+    GeometricalParameters::Get()->SetBabyMINDHorizontalBarSizeX(babymindHorizontalBarSizeXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindHorizontalBarSizeYCmd)
+    GeometricalParameters::Get()->SetBabyMINDHorizontalBarSizeY(babymindHorizontalBarSizeYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindMagnetToScinSpacingCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetToScinSpacing(babymindMagnetToScinSpacingCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindMagnetToMagnetSpacingCmd)
+    GeometricalParameters::Get()->SetBabyMINDMagnetToMagnetSpacing(babymindMagnetToMagnetSpacingCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindBlockToBlockSpacingCmd)
+    GeometricalParameters::Get()->SetBabyMINDBlockToBlockSpacing(babymindBlockToBlockSpacingCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindBlockPaddingCmd)
+    GeometricalParameters::Get()->SetBabyMINDBlockPadding(babymindBlockPaddingCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == babymindBlockSequenceCmd)
+    GeometricalParameters::Get()->SetBabyMINDBlockSequence(newValues);
+
+  // FORMOSA COMMANDS
+  else if (command == formosaPosCmd) 
+    GeometricalParameters::Get()->SetFORMOSAPosition(formosaPosCmd->GetNew3VectorValue(newValues));
+  
+  // FASERnu2 COMMANDS
+  else if (command == fasernuPosCmd)
+   GeometricalParameters::Get()->SetFASERnu2Position(fasernuPosCmd->GetNew3VectorValue(newValues));
+  
+  // FASER2 COMMANDS
+  else if (command == faserPosCmd) 
+    GeometricalParameters::Get()->SetFASER2Position(faserPosCmd->GetNew3VectorValue(newValues));
+  else if (command == faserMagnetGeomCmd)  
+    GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
+  else if (command == faserMagnetFieldCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetField(faserMagnetFieldCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetWinXCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowX(faserMagnetWinXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetWinYCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowY(faserMagnetWinYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetWinZCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetWindowZ(faserMagnetWinZCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserYokeThickXCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickX(faserYokeThickXCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserYokeThickYCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickY(faserYokeThickYCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetInnerRCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetInnerR(faserMagnetInnerRCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetOuterRCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetOuterR(faserMagnetOuterRCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetLengthZCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetLengthZ(faserMagnetLengthZCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetGapCmd) 
+    GeometricalParameters::Get()->SetSpectrometerMagnetGap(faserMagnetGapCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserMagnetNumberCmd) 
+    GeometricalParameters::Get()->SetNSpectrometerMagnets(faserMagnetNumberCmd->GetNewIntValue(newValues));
   //faser2 tracking stations
-  else if (command == trackingNumberCmd) 
-    GeometricalParameters::Get()->SetNTrackingStations(trackingNumberCmd->GetNewIntValue(newValues));
-  else if (command == trackingNBarsYCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsY(trackingNBarsYCmd->GetNewIntValue(newValues));
-  else if (command == trackingNBarsXCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsX(trackingNBarsXCmd->GetNewIntValue(newValues));
-  else if (command == trackingScinThickCmd) 
-    GeometricalParameters::Get()->SetScintillatorThickness(trackingScinThickCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == trackingGapCmd) 
-    GeometricalParameters::Get()->SetTrackingStationGap(trackingGapCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserTrackingNumberCmd) 
+    GeometricalParameters::Get()->SetNTrackingStations(faserTrackingNumberCmd->GetNewIntValue(newValues));
+  else if (command == faserTrackingNBarsYCmd) 
+    GeometricalParameters::Get()->SetNScintillatorBarsY(faserTrackingNBarsYCmd->GetNewIntValue(newValues));
+  else if (command == faserTrackingNBarsXCmd) 
+    GeometricalParameters::Get()->SetNScintillatorBarsX(faserTrackingNBarsXCmd->GetNewIntValue(newValues));
+  else if (command == faserTrackingScinThickCmd) 
+    GeometricalParameters::Get()->SetScintillatorThickness(faserTrackingScinThickCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserTrackingGapCmd) 
+    GeometricalParameters::Get()->SetTrackingStationGap(faserTrackingGapCmd->ConvertToDimensionedDouble(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

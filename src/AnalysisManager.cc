@@ -354,6 +354,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
       }
     }
   }
+  
   // tracksFromFSL includes all the tracks orginating from the fsl
   // tracksFromFSLSecondary only inclues the tracks directly decayed from the fsl
   std::cout<<"Recorded tracks       : "<<allTracksPTPair.size()<<std::endl;
@@ -539,7 +540,8 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
         // save hits in FLArE hadCather+muonFinder
         if( (sdName == "HadCalXSD/lar_box") || (sdName == "HadCalYSD/lar_box") ||
             (sdName == "MuonFinderXSD/lar_box") || (sdName == "MuonFinderYSD/lar_box") ||
-            (sdName == "HadAbsorbSD/lar_box") || (sdName == "MuonFinderAbsorbSD/lar_box")){
+            (sdName == "HadAbsorbSD/lar_box") || (sdName == "MuonFinderAbsorbSD/lar_box") ||
+            (sdName == "BabyMINDHorBarSD/lar_box") || (sdName == "BabyMINDVerBarSD/lar_box")){
           hitXFSL.push_back(post_x);
           hitYFSL.push_back(post_y);
           hitZFSL.push_back(post_z);
@@ -557,7 +559,7 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
 
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
-        if (hit->GetStepNo()==1) {
+        if (hit->GetStepNo()==1 || primaries.size()<1) { 
           // the following line excludes final state lepton tau from the primary particle list
           //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
           countPrimaryParticle++;
