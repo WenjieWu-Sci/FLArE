@@ -6,26 +6,26 @@
 
 # Production name for output directories
 # This is used to place output logs and files
-export prodname="test_production"
+export prodname="FLArE_FASER2_only_fid"
 
 # Define how many jobs, how many files
 # Jobs will be placed in the same cluster
-export n_jobs=2
-export n_evt_per_job=5
+export n_jobs=500
+export n_evt_per_job=200
 
 # Set the max wall time duration allowed
 # See https://batchdocs.web.cern.ch/tutorial/exercise6b.html
 # eg: espresso = 20 min, microcentury = 1 hour, longlunch = 2 hours
-export max_duration="microcentury"
+export max_duration="longlunch"
 
 # Path to FLArE build directory in /afs/cern.ch
 export builddir="/afs/cern.ch/work/${USER:0:1}/${USER}/public/FLArE/build"
 export flare="${builddir}/FLArE"
 export setup="${builddir}/lxplus_setup.sh"
-export libdict="${builddir}/libFLArE_rdict.pcm"
+export libdict="${builddir}/libDictOutput_rdict.pcm"
 
 # Path to geometry macro in /afs/cern.ch
-export geometry="${builddir}/macros/geometry_options/FPF_hall_Reference.mac"
+export geometry="${builddir}/macros/geometry_options/FLArE_FASER2_only.mac"
 
 # Path to genie gst file in /eos/
 export geniegst="/eos/user/m/mvicenzi/genie/numu_kling_ar40_e5000.gst.root"
@@ -114,6 +114,7 @@ log                     = ${logdir}/${prodname}/log/\$(ClusterId).\$(ProcId).log
 transfer_input_files    = ${setup},${flare},${geometry},${libdict},${listpath}
 output_destination      = root://eosuser.cern.ch/${outdir}/${prodname}/
 MY.XRDCP_CREATE_DIR     = True
+request_memory          = 8000
 +JobFlavour             = "${max_duration}"
 queue ${n_jobs}
 EOF
