@@ -184,14 +184,14 @@ void make_muon_flux_histos(){
   set_muons_binning();
 
   // negative muons
-  fin = new TFile("/dune/data/users/mvicenzi/FPF_backgrounds/muons/flux_v2/Nmu_data.root", "READ");
+  fin = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/muons/flux_v2/Nmu_data.root", "READ");
   TTree *tmu_n = (TTree*) fin->Get(mu_m.c_str());
   std::cout << "Setting up: " << mu_m << std::endl;
   set_tree(tmu_n);
   make_histos(tmu_n,mu_m);
   
   // positive muons
-  fin = new TFile("/dune/data/users/mvicenzi/FPF_backgrounds/muons/flux_v2/Pmu_data.root", "READ");
+  fin = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/muons/flux_v2/Pmu_data.root", "READ");
   TTree *tmu_p = (TTree*) fin->Get(mu_p.c_str());
   std::cout << "Setting up: " << mu_p << std::endl;
   set_tree(tmu_p);

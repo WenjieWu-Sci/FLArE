@@ -180,7 +180,7 @@ void make_neutron_flux_histos(){
 
   set_neutrons_binning();
 
-  fin = new TFile("/dune/data/users/mvicenzi/FPF_backgrounds/neutrons/Neutron_data.root", "READ");
+  fin = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/neutrons/Neutron_data.root", "READ");
   TTree *tn = (TTree*) fin->Get(neut.c_str());
   std::cout << "Setting up: " << neut << std::endl;
   set_tree(tn);
