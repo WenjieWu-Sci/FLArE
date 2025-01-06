@@ -210,12 +210,27 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
 
   // define the histogram
   std::string id = "h_xy_" + ts;
+  std::string idz = "h_xy_zoom_" + ts;
   std::ostringstream s;
   s <<  ts << " fluence in XY averaged over z=(" << minz << "," <<maxz << ")cm";
   TH2D *h_xy = new TH2D(id.c_str(),s.str().c_str(),xbins,xmin,xmax,ybins,ymin,ymax);
+  TH2D *h_xy_zoom = new TH2D(idz.c_str(),s.str().c_str(),10.,-106.,94.,10.,-99.,101.);
   
-  for( auto it = xy_proj.begin(); it != xy_proj.end(); it++)
+  std::ofstream outcsv;
+  std::string csvpath = "zoom_bins_" + ts + ".csv";
+  outcsv.open(csvpath,ios::out);
+  outcsv << "x,y,fluence" << std::endl;
+
+  for( auto it = xy_proj.begin(); it != xy_proj.end(); it++){
     h_xy->Fill(it->first.first,it->first.second,it->second);
+    h_xy_zoom->Fill(it->first.first,it->first.second,it->second);
+
+    if( it->first.first > -100. && it->first.first < 100. &&
+        it->first.second > -100. && it->first.second < 100. ) 
+      outcsv << it->first.first << "," << it->first.second << "," << it->second << std::endl; 
+  }
+
+  outcsv.close();
 
   h_xy->SetMaximum(10.);
   h_xy->SetMinimum(0.001);
@@ -233,14 +248,33 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
   c0->cd();
   h_xy->Draw("COL2Z");
   gPad->SetLogz();
+  
+  TCanvas *c1 = new TCanvas();
+  c1->SetCanvasSize(800,600);
+  c1->SetWindowSize(805+(805-c1->GetWw()), 620+(620-c1->GetWh()));
+  c1->SetRightMargin(0.15);
+  c1->cd();
+  //h_xy_zoom->SetMaximum(10.);
+  //h_xy_zoom->SetMinimum(0.001);
+  h_xy_zoom->GetXaxis()->SetTitle("x [cm]");
+  h_xy_zoom->GetYaxis()->SetTitle("y [cm]");
+  h_xy_zoom->GetYaxis()->SetTitleOffset(1.3);
+  h_xy_zoom->GetZaxis()->SetTitle("Fluence rate per 5L_{0} [cm^{-2}s^{-1}]");
+  h_xy_zoom->GetZaxis()->SetTitleOffset(1.3);
+  h_xy_zoom->SetStats(0);
+  h_xy_zoom->Draw("COL2Z TEXT");
+  //gPad->SetLogz();
  
   // save to image
   std::string path = "figs/"+id+".png"; 
+  std::string pathz = "figs/"+idz+".png"; 
   c0->SaveAs(path.c_str());
+  c1->SaveAs(pathz.c_str());
 
   // save to file
   fout->cd(ts.c_str());
   h_xy->Write();
+  h_xy_zoom->Write();
   f->cd();
 }
 
@@ -249,7 +283,7 @@ void build_xy_projection(double minz, double maxz, std::string ts=""){
 void make_muon_fluence_histos(){
 
   //input
-  f = new TFile("/dune/data/users/mvicenzi/FPF_backgrounds/muons/fluence/mu_fluence.root", "READ");
+  f = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/muons/fluence/mu_fluence.root", "READ");
   std::string mu_m = "mu_minus";
   std::string mu_p = "mu_plus";
   TTree *mu_minus = (TTree*) f->Get(mu_m.c_str()); 

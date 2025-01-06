@@ -10,15 +10,14 @@ The first two scrips are meant to be run at CERN (`lxplus`):
    It can be used to extract the flux for these particle species, but also other distributions.
  
 The other scripts are used to produce the inputs histograms for the background studies.
-These are saved in a ROOT filed and accessed by the generator class in Geant4.
+These are saved in a ROOT file and accessed by the generator class in Geant4.
 * `make_muon_fluence_histos.C`: produces 2D projections of the muon fluence rates, with a focus on the FPF entrance.
 * `make_muon_flux_histos.C`: produces the muon flux at the FPF entrance, binned in slices along the x-axis.   
 * `make_neutron_flence_histos.C`: produces the 2D xy projection of the neutron fluence rate at the FPF entrance.   
 * `make_neutron_flux_histos.C`: produces the neutron flux at the FPF entrance, binned in slices along the x-axis.   
-
 ### Samples
 The original outputs of the FLUKA simulations produced by the CERN team are available in CERNBox.
-Converted versions of those files are available on DUNE GPVMs.
+Converted versions of those files are also available on DUNE GPVMs.
 
 |Description | CERNBox | DUNE GPVM |
 |:--|:--|:--|
@@ -27,4 +26,4 @@ Converted versions of those files are available on DUNE GPVMs.
 |Muon flux (v2), only FPF entrance  | https://cernbox.cern.ch/s/7zxlKX1KRePn66s | `/dune/data/users/mvicenzi/FPF_backgrounds/muons/flux_v2/` |
 |Neutron flux, only FPF entrance    | https://cernbox.cern.ch/s/7zxlKX1KRePn66s | `/dune/data/users/mvicenzi/FPF_backgrounds/neutrons/` |
 
-_Note_: The statistics for muons changed from v1 to v2, so the two files require a different normalization factor. In particular, v2 has more statistics and it's the one produced alongside the neutron sample so they share the same normalization.
+_Note_: The muon statistics changed from v1 to v2, so the two files require a different normalization factor. In particular, v2 has more statistics and it's the one produced alongside the neutron sample so they share the same normalization.
