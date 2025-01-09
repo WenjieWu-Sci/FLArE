@@ -22,6 +22,10 @@ int Ebins;
 double Emin, Emax;
 double Ebinsize;
 
+int dbins;
+double dmin, dmax;
+double dbinsize;
+
 // files
 std::string outpath_mu = "../background_input.root";
 TFile *fin; //input
@@ -29,22 +33,51 @@ TFile *fout; //output
 
 // ----------------------------------------------------------------------------------
 
-void set_binning(){
+void set_muon_binning(){
 
   // 20cm bins along X
-  xbins = 47;
+  xbinsize = 20;
   xmin = -326.; xmax = 614.;
-  xbinsize = int((xmax-xmin)/xbins);
+  xbins = int((xmax-xmin)/xbinsize);
 
   // 20cm bins along y
-  ybins = 38;
+  ybinsize = 20;
   ymin = -159.; ymax = 601.;
-  ybinsize = int((ymax-ymin)/ybins);
+  ybins = int((ymax-ymin)/ybinsize);
 
   // energy binning: 20 GeV
-  Ebins = 225;
+  Ebinsize = 20;
   Emin = 0., Emax = 4500.;
-  Ebinsize = int((Emax-Emin)/Ebins);
+  Ebins = int((Emax-Emin)/Ebinsize);
+
+  // x/y dircos binning: 0.01
+  dbinsize = 0.01;
+  dmin = -1., dmax = 1.;
+  dbins = int((dmax-dmin)/dbinsize);
+
+}
+
+void set_neutron_binning(){
+
+  // 20cm bins along X
+  xbinsize = 20;
+  xmin = -326.; xmax = 614.;
+  xbins = int((xmax-xmin)/xbinsize);
+
+  // 20cm bins along y
+  ybinsize = 20;
+  ymin = -159.; ymax = 601.;
+  ybins = int((ymax-ymin)/ybinsize);
+
+  // energy binning: 0.5 GeV
+  Ebinsize = 0.5;
+  Emin = 0., Emax = 100.;
+  Ebins = int((Emax-Emin)/Ebinsize);
+
+  // x/y dircos binning: 0.01
+  dbinsize = 0.01;
+  dmin = -1., dmax = 1.;
+  dbins = int((dmax-dmin)/dbinsize);
 
 }
 
@@ -84,17 +117,23 @@ void set_tree(TTree *t){
 
 void make_histos(TTree *t, std::string name){
 
-  std::string label = "h_" + name;
-  std::string labelE = "hE_" + name;
-  std::string title = name + " input at FPF entrance";
+  std::string label = "hxyE_" + name;
+  std::string labeld = "hdir_" + name;
+  
+  std::string title = name + " (x,y,E) correlations at FPF entrance";
+  std::string titled = name + " (xdircos,ydircos,E) correlations at FPF entrance";
+
   TH3D *h = new TH3D(label.c_str(),title.c_str(),xbins,xmin,xmax,ybins,ymin,ymax,Ebins,Emin,Emax);
-  TH1D *hE = new TH1D(labelE.c_str(),title.c_str(),Ebins,Emin,Emax);
+  TH3D *hd = new TH3D(labeld.c_str(),titled.c_str(),dbins,dmin,dmax,dbins,dmin,dmax,Ebins,Emin,Emax);
+  
   std::cout << N << " entries" << std::endl;
   std::cout << xbins << " bins (" << ybinsize << " GeV) from " << xmin << " to " << xmax << std::endl;
   std::cout << ybins << " bins (" << xbinsize << " GeV) from " << ymin << " to " << ymax << std::endl;
   std::cout << Ebins << " bins (" << Ebinsize << " GeV) from " << Emin << " to " << Emax << std::endl;
+  std::cout << dbins << " bins (" << dbinsize << ") from " << dmin << " to " << dmax << std::endl;
 
   for (int i=0; i<N; i++){
+
     t->GetEntry(i);
 
     // discard if outside binning limits
@@ -102,41 +141,29 @@ void make_histos(TTree *t, std::string name){
     if ( x< xmin || x > xmax ) continue;
     
     h->Fill(x, y, E, w);
-    hE->Fill(E, w);
+    hd->Fill(xdircos , ydircos, E, w);
 
-    if ( i % 100000 == 0 ) std::cout << i << " entries processed" << std::endl;
+    if ( i % 100000 == 0 ) std::cout << i << " entries processed" << std::endl; 
+  
   }
 
-  // apply normalizations
+  // apply normalizations: we are doing this only to the xyE histogram
+  // this is not important for sampling out events for the generator
+  // this is important to know how many events correspond to what integrated luminosity
   for( int i=1; i<h->GetNbinsX()+1; i++){
     for( int j=1; j<h->GetNbinsY()+1; j++){
       for( int k=1; k<h->GetNbinsZ()+1; k++){  	    
 
       double area = (xbinsize)*(ybinsize); // area for every bin
       double content = h->GetBinContent(i,j,k)/Ebinsize/area; // now is GeV-1 cm-2
-      content = apply_normalization(content); // GeV-1 cm-2 s-1 per 5L0
-      h->SetBinContent(i,j,k,content);
+      double normalized_content = apply_normalization(content); // GeV-1 cm-2 s-1 per 5L0
+      h->SetBinContent(i,j,k,normalized_content);
       }
     }
   }
 
-  for( int i=1; i<hE->GetNbinsX()+1; i++){
-    double content = hE->GetBinContent(i); // this is number of particles
-    content = apply_normalization(content); // this number of particles per second
-    hE->SetBinContent(i,content);
-  }
- 
-  // checking that 2d xy projection is what we expect
-  int samples = 1e6;
-  TH2D *h2d = new TH2D("h2d","xy projection",xbins,xmin,xmax,ybins,ymin,ymax);
-  for( int i=1; i<samples; i++){
-      double x, y, E;
-      h->GetRandom3(x,y,E);      
-      h2d->Fill(x,y);
-  }
-
-  gStyle->SetPalette(kRainBow);
 /*
+  gStyle->SetPalette(kRainBow);
   TCanvas *c0 = new TCanvas();
   c0->SetCanvasSize(800,600);
   c0->SetWindowSize(805+(805-c0->GetWw()), 620+(620-c0->GetWh()));
@@ -151,31 +178,11 @@ void make_histos(TTree *t, std::string name){
   h->SetStats(0);
   h->Draw("BOX2Z");
 */
-
-  // uncomment to check 2D profiles look okay
   
-  TCanvas *c1 = new TCanvas();
-  c1->cd();
-  h2d->Draw("COL2Z");
-  h2d->GetXaxis()->SetTitle("x [cm]");
-  h2d->GetYaxis()->SetTitle("y [cm]");
-  h2d->GetZaxis()->SetTitle("Flux [GeV^{-1} cm^{-2} s^{-1} per 5L_{0}]");
-  h2d->GetZaxis()->SetTitleOffset(1.3);
-  h2d->SetStats(0);
-  gPad->SetLogz();
-  
-  
-  // uncomment to check normalization
-  TCanvas *c2 = new TCanvas();
-  c2->cd();
-  hE->Draw("HIST");
-  hE->GetXaxis()->SetTitle("E [GeV]");
-  hE->GetYaxis()->SetTitle("Number of particles per p-p collision");
-  hE->SetStats(0);
-
   // save to file
   fout->cd(name.c_str());
   h->Write();
+  hd->Write();
   fin->cd();
 }
 
@@ -189,7 +196,7 @@ void make_generator_input(){
   TDirectory *dir_plus= fout->mkdir(mu_p.c_str());
   TDirectory *dir_neut = fout->mkdir(neut.c_str());
 
-  set_binning();
+  set_muon_binning();
 
   // negative muons
   fin = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/muons/flux_v2/Nmu_data.root", "READ");
@@ -204,6 +211,8 @@ void make_generator_input(){
   std::cout << "Setting up: " << mu_p << std::endl;
   set_tree(tmu_p);
   make_histos(tmu_p,mu_p);
+
+  set_neutron_binning();
 
   // neutrons
   fin = new TFile("/eos/user/m/mvicenzi/FPF_FLUKA/neutrons/Neutron_data.root", "READ");
