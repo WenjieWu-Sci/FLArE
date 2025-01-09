@@ -4,6 +4,7 @@
 #include "PrimaryGeneratorMessenger.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "GENIEPrimaryGeneratorAction.hh"
+#include "BackgroundPrimaryGeneratorAction.hh"
 #include "PrimaryParticleInformation.hh"
 #include "geometry/GeometricalParameters.hh"
 
@@ -13,16 +14,6 @@
 #include <G4ParticleGun.hh>
 #include <Randomize.hh>
 #include <G4GeneralParticleSource.hh>
-
-//PrimaryGeneratorAction* PrimaryGeneratorAction::GeneratorInstance = 0;
-//
-//PrimaryGeneratorAction* PrimaryGeneratorAction::GetInstance() {
-//  if (!GeneratorInstance) {
-//    std::cout<<"PrimaryGeneratorAction: Re-initialization"<<std::endl;
-//    GeneratorInstance = new PrimaryGeneratorAction();
-//  }
-//  return GeneratorInstance;
-//}
 
 PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS = new G4GeneralParticleSource();
@@ -53,6 +44,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
 
   fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
+  fActionBackground = new BackgroundPrimaryGeneratorAction(fGPS);
 
   // create a messenger for this class
   genMessenger = new PrimaryGeneratorMessenger(this);
@@ -61,13 +53,16 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
 PrimaryGeneratorAction::~PrimaryGeneratorAction() {
   delete fGPS;
   delete fActionGenie;
+  delete fActionBackground;
   delete genMessenger;
 }
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
+ 
   if (useGenie) {
-    std::cout<<std::endl;
-    std::cout<<"===oooOOOooo=== Event Generator (# "<<anEvent->GetEventID()<<") : GENIE ===oooOOOooo==="<<std::endl;
+    std::cout << std::endl;
+    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
+    std::cout << ") : GENIE ===oooOOOooo===" << std::endl;
     fActionGenie->GeneratePrimaries(anEvent, gstFileName, gstEvtStartIdx, 1);
     neuidx          = fActionGenie->NeuIdx();
     neupdg          = fActionGenie->NeuPDG();
@@ -78,9 +73,15 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     w               = fActionGenie->GetW();
     fslpdg          = fActionGenie->FSLPDG();
     fslp4           = fActionGenie->FSLP4();
+  } else if(useBackground) {
+    std::cout << std::endl;
+    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
+    std::cout << ") : Background Generator ===oooOOOooo===" << std::endl;
+    fActionBackground->GeneratePrimaries(anEvent, bkgFileName);
   } else {
-    std::cout<<std::endl;
-    std::cout<<"===oooOOOooo=== Event Generator (# "<<anEvent->GetEventID()<<"): General Particle Source ===oooOOOooo==="<<std::endl;
+    std::cout << std::endl;
+    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
+    std::cout << "): General Particle Source ===oooOOOooo===" << std::endl;
     fGPS->GeneratePrimaryVertex(anEvent);
   }
 

@@ -24,10 +24,15 @@ class PrimaryGeneratorMessenger: public G4UImessenger
   private:
     PrimaryGeneratorAction* PrimGenAction;
 
-    G4UIdirectory* GeneratorDir;
+    G4UIdirectory* GENIEGeneratorDir;
     G4UIcmdWithAString* GHEPInputFile;
     G4UIcmdWithAnInteger* GHEPEvtStartIdx;
     G4UIcmdWithABool* USEGENIE;
+
+    G4UIdirectory* bkgGeneratorDir;
+    G4UIcmdWithABool* USEBKG;
+    G4UIcmdWithAString* bkgInputFile;
+
 };
 
 #endif
