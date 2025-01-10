@@ -329,6 +329,27 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
         PrimaryParticleInformation* primary_particle_info = 
           dynamic_cast<PrimaryParticleInformation*>(primary_particle->GetUserInformation());
         primary_particle_info->Print();
+
+	// add to list of primary particles
+	// this list is then appended further if necessary
+        countPrimaryParticle++;
+	primaryIDs.push_back(primary_particle_info->GetPartID()); //store to avoid duplicates
+        primaries.push_back(FPFParticle(primary_particle_info->GetPDG(), 0, 
+		primary_particle_info->GetPartID(),
+	       	countPrimaryParticle-1, 1,
+		primary_particle_info->GetMass(),
+                primary_particle_info->GetVertexMC().x(),
+                primary_particle_info->GetVertexMC().y(),
+                primary_particle_info->GetVertexMC().z(),
+		0.,
+                primary_particle_info->GetMomentumMC().x(), 
+		primary_particle_info->GetMomentumMC().y(),
+	        primary_particle_info->GetMomentumMC().z(), 
+                GetTotalEnergy(primary_particle_info->GetMomentumMC().x(),primary_particle_info->GetMomentumMC().y(),
+                  primary_particle_info->GetMomentumMC().z(), primary_particle_info->GetMass())
+		));
+
+	// if it's the first, also store the nuetrino info (if available)
         if (primary_particle_info->GetPartID()==0) {
           nuIdx            = primary_particle_info->GetNeuIdx();
           nuPDG            = primary_particle_info->GetNeuPDG();
@@ -613,13 +634,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
 
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
-        
-	int TID = hit->GetTID(); // check if already recorded as primary   
-        if ( std::find(primaryIDs.begin(), primaryIDs.end(), TID) == primaryIDs.end() ) { 
+        if ( std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end() ) { 
           // the following line excludes final state lepton tau from the primary particle list
           //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
           countPrimaryParticle++;
-	  primaryIDs.push_back(TID);
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 1, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -634,8 +653,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       //if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
       if (hit->GetIsTrackFromPrimaryLepton()) {
         tracksFromFSLSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 2, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -648,8 +668,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       // its decay products are also counted as primary particles, mostly 2 gammas
       if (hit->GetIsTrackFromPrimaryPizero()) {
         tracksFromFSPizeroSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 3, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -662,8 +683,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       // decay products of this pizero are also counted as primary particles, mostly 2 gammas
       if (hit->GetIsTrackFromFSLPizero()) {
         tracksFromFSLDecayPizeroSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 4, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
