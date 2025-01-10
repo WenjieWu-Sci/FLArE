@@ -189,6 +189,7 @@ void AnalysisManager::EndOfRun() {
 void AnalysisManager::BeginOfEvent() {
   neutrino = FPFNeutrino();
   primaries.clear();
+  primaryIDs.clear();
   nHits                        = 0;
   sparseFractionMem            = -1;
   sparseFractionBins           = -1;
@@ -559,10 +560,13 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
 
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
-        if (hit->GetStepNo()==1 || primaries.size()<1) { 
+        
+	int TID = hit->GetTID(); // check if already recorded as primary   
+        if ( std::find(primaryIDs.begin(), primaryIDs.end(), TID) == primaryIDs.end() ) { 
           // the following line excludes final state lepton tau from the primary particle list
           //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
           countPrimaryParticle++;
+	  primaryIDs.push_back(TID);
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 1, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 

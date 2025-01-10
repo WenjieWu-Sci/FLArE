@@ -50,6 +50,7 @@ class AnalysisManager {
     G4int    evtID;
     FPFNeutrino neutrino;
     std::vector<FPFParticle> primaries;
+    std::vector<int> primaryIDs;
     // Truth information from genie
     G4int    nuIdx;             ///<- neutrino index (for genie neutrino interaction)
     G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)
