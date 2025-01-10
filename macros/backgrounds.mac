@@ -1,5 +1,5 @@
 # define detector material before run initialization
-/control/execute macros/geometry_options/FPF_hall_Reference.mac
+/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast_BabyMIND.mac
 
 /run/initialize
 /random/setSeeds 324199 420475
@@ -15,5 +15,5 @@
 /histo/addDiffusion false
 /histo/fileName backgrounds.root
 
-# shoot 5 particles
-/run/beamOn 1
+# shoot background equivalent to 2 "spill"
+/run/beamOn 2
