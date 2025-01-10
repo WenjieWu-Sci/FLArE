@@ -53,6 +53,11 @@
   saveHitCmd->SetGuidance("whether save the information of all hits");
   saveHitCmd->SetParameterName("saveHit", true);
   saveHitCmd->SetDefaultValue(false);
+  
+  saveTrackCmd = new G4UIcmdWithABool("/histo/saveTrack", this);
+  saveTrackCmd->SetGuidance("whether save the information of all tracks");
+  saveTrackCmd->SetParameterName("saveTrack", true);
+  saveTrackCmd->SetDefaultValue(false);
 
   save3DEvdCmd = new G4UIcmdWithABool("/histo/save3DEvd", this);
   save3DEvdCmd->SetGuidance("whether save 3D Pixel Map");
@@ -84,6 +89,7 @@ AnalysisManagerMessenger::~AnalysisManagerMessenger()
 {
   delete factoryCmd;
   delete saveHitCmd;
+  delete saveTrackCmd;
   delete save3DEvdCmd;
   delete save2DEvdCmd;
   delete circleFitCmd;
@@ -97,6 +103,7 @@ void AnalysisManagerMessenger::SetNewValue(G4UIcommand* command,G4String newValu
 {
   if (command == factoryCmd) anamanager->setFileName(newValues);
   if (command == saveHitCmd) anamanager->saveHit(saveHitCmd->GetNewBoolValue(newValues));
+  if (command == saveTrackCmd) anamanager->saveTrack(saveTrackCmd->GetNewBoolValue(newValues));
   if (command == save3DEvdCmd) anamanager->save3DEvd(save3DEvdCmd->GetNewBoolValue(newValues));
   if (command == save2DEvdCmd) anamanager->save2DEvd(save2DEvdCmd->GetNewBoolValue(newValues));
   if (command == circleFitCmd) anamanager->circleFit(circleFitCmd->GetNewBoolValue(newValues));

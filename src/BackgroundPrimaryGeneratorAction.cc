@@ -131,10 +131,10 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       // then extract the direction (directional cosines) from second histogram
       // TODO: you should actually be using a 5D histo for full correlations?
      
-      double z = -1.*GeometricalParameters::Get()->GetHallHeadDistance(); //entry wall
+      double z = -1.*GeometricalParameters::Get()->GetHallHeadDistance(); //entry wall z in mm
       double t = 0.; // TODO: how to imprint the bunch-crossing timing structure?
       double x, y, E;
-      hxyE->GetRandom3(x, y, E);
+      hxyE->GetRandom3(x, y, E); //pos in cm, E in GeV
 
       double xdircos, ydircos;
       SampleDirectionCosines(xdircos, ydircos, E); 
@@ -142,7 +142,7 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       double zdircos = TMath::Sqrt(zdircos2); // always positive
 
       // now prepare inputs to load the gun
-      TLorentzVector x4(x, y, z, t);
+      TLorentzVector x4(x*cm, y*cm, z, t); // tell G4 that zy are cm
 
       double mass = G4ParticleTable::GetParticleTable()->FindParticle(pdg)->GetPDGMass()*MeV; // in MeV
       double totE = E*GeV + mass; //total energy

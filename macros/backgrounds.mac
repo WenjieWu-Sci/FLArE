@@ -15,5 +15,8 @@
 /histo/addDiffusion false
 /histo/fileName backgrounds.root
 
+/tracking/storeTrajectory 1
+/histo/saveTrack true
+
 # shoot background equivalent to 2 "spill"
-/run/beamOn 2
+/run/beamOn 1
