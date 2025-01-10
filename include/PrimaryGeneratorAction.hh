@@ -1,5 +1,6 @@
 #ifndef PRIMARY_GENERATOR_ACTION_HH
 #define PRIMARY_GENERATOR_ACTION_HH 
+
 #include <TLorentzVector.h>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>

@@ -9,6 +9,7 @@
 #include <G4Poisson.hh>
 #include <Randomize.hh>
 
+#include <TLorentzVector.h>
 #include <TMath.h>
 #include <TTree.h>
 #include <TH3D.h>
@@ -21,7 +22,7 @@ BackgroundPrimaryGeneratorAction::BackgroundPrimaryGeneratorAction(G4GeneralPart
 BackgroundPrimaryGeneratorAction::~BackgroundPrimaryGeneratorAction()
 {}
 
-void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg, TLorenztVector x4, TLorenztVector p4)
+void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector x4, TLorentzVector p4)
 {
   // prepare a particle with the extracted starting position and momentum
   // once ready, shoot it with the gun!
@@ -46,21 +47,21 @@ int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticlesPerOrbit()
   // the (x,y,E) is normalized to the instantaneous luminosity
   // it represents the number of particles / GeV / cm2 / s
   // get the total particles by summing up all bins
-  double total_weigths = hxyE->Integral(); // in GeV-1 cm-2 s-1
-  double Ebinsize = hxyE->GetZaxis()->GetBinWidth(); // GeV
-  double xbinsize = hxyE->GetXaxis()->GetBinWidth(); // cm
-  double ybinsize = hxyE->GetXaxis()->GetBinWidth(); // cm
-  total_weights *= Ebinsize * xbinsize * ybinsize; // in s-1
+  double summed_bins = hxyE->Integral(); // in GeV-1 cm-2 s-1
+  double Ebinsize = hxyE->GetZaxis()->GetBinWidth(1); // GeV
+  double xbinsize = hxyE->GetXaxis()->GetBinWidth(1); // cm
+  double ybinsize = hxyE->GetXaxis()->GetBinWidth(1); // cm
+  summed_bins *= Ebinsize * xbinsize * ybinsize; // in s-1
 
   // now convert from s-1 to per full LHC orbit (88.9us)
   // this way we get the expected background particles in a full orbit period
   double orbits_per_sec = 1./LHC_orbitPeriod_s; // number of orbits per second
-  int lambda = total_weigths/orbits_per_sec; 
+  int lambda = summed_bins/orbits_per_sec; 
 
   // now this value is the expectation of a Poisson distribution (or Gaussian)
   // use it to extract a realization...
   int Nparticles = 0;
-  if(lambda < 20) Nparticles = int(G4Poisson(lambda) + 0.5);
+  if(lambda < 100) Nparticles = int(G4Poisson(lambda) + 0.5);
   else Nparticles = int(G4RandGauss::shoot(Nparticles, TMath::Sqrt(Nparticles))+0.5);
 
   return Nparticles;
@@ -86,14 +87,14 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
 {
   bkgFileName = filename;
   int evtID = anEvent->GetEventID();
-  std::cout << "oooOOOooo Event # " << evtID << " oooOOOooo" << std::endl;
-  G4cout << "GeneratePrimaries from source " << bkgFileName << std::end;
+  G4cout << "oooOOOooo Event # " << evtID << " oooOOOooo" << G4endl;
+  G4cout << "GeneratePrimaries from source " << bkgFileName << G4endl;
 
   // open the file and find the source histograms
   // for each background species (mu+, mu-, n)
   bkgFile = new TFile(bkgFileName, "read");
-  if (!bkgFile->IsOpen()) {
-    std::cout << "Cannot open file : " << bkgFileName <<std::endl;
+  if (!bkgFile->IsOpen() || bkgFile->IsZombie()) {
+    G4cout << "Cannot open file : " << bkgFileName << G4endl;
     exit(1);
   }
 
@@ -114,21 +115,13 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
     // TODO: currently launching the equivalent of a "spill" = full LHC orbit
     // This should be probably rephrased in terms of luminosity
     
-    int nparticles  = SampleParticlesPerOrbit();
-    std::cout <<"Shooting " << nparticles << " background " << name << "!" << std::endl;
+    int nparticles = ExtractBackgroundParticlesPerOrbit();
+    G4cout << "*** Shooting " << nparticles << " background " << name << "!" << G4endl;
     
     int pdg=0;
-    switch(name) {
-      case "mu_plus":
-        pdg = -13;
-	break;
-      case "mu_minus":
-        pdg = 13;
-	break;
-      case "neut":
-	pdg = 2112;
-	break;
-    }
+    if( name == "mu_plus") pdg = -13;
+    else if( name == "mu_minus") pdg = 13;
+    else if( name == "neut") pdg = 2112;
 
     // for each particle 
     for(int i=0; i<nparticles; i++){

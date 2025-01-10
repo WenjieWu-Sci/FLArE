@@ -43,6 +43,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
   fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
 
+  useGenie = false;
+  useBackground = false;
   fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
   fActionBackground = new BackgroundPrimaryGeneratorAction(fGPS);
 

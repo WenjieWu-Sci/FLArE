@@ -3,6 +3,7 @@
 
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "TH3D.h"
 #include "globals.hh"
 
 class G4GeneralParticleSource;
@@ -25,8 +26,8 @@ class BackgroundPrimaryGeneratorAction {
     G4GeneralParticleSource* fGPS;
     G4String bkgFileName;
     TFile* bkgFile;
-    TH3D *h_xyE;
-    TH3D *h_dir;
+    TH3D *hxyE;
+    TH3D *hdir;
 
     std::vector<std::string> speciesList = { "mu_plus","mu_minus","neut" }; 
     G4double LHC_orbitPeriod_s = 88.924e-6; // orbit is 88.924 us
