@@ -1,0 +1,19 @@
+# define detector material before run initialization
+/control/execute macros/geometry_options/FPF_hall_Reference.mac
+
+/run/initialize
+/random/setSeeds 324199 420475
+
+# define genie input options
+/bkg/useBackground true
+/bkg/backgroundInput ../backgrounds/background_input.root
+
+# define output options
+/histo/save3DEvd false
+/histo/save2DEvd false
+/histo/saveHit false
+/histo/addDiffusion false
+/histo/fileName backgrounds.root
+
+# shoot 5 particles
+/run/beamOn 1
