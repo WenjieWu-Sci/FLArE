@@ -27,11 +27,13 @@ void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg
   // prepare a particle with the extracted starting position and momentum
   // once ready, shoot it with the gun!
   G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(pdg);
-  
+ 
+  /* uncomment for debugging.. 
   G4cout << "Particle PDG " << pdg << " mass " << particleDefinition->GetPDGMass()*MeV << G4endl;
   G4cout << "  x4  " << x4.X() << " " << x4.Y() << " " << x4.Z() << " " << x4.T() << G4endl;
   G4cout << "  p4  " << p4.X() << " " << p4.Y() << " " << p4.Z() << " " << p4.E() << G4endl;
   G4cout << "  kinE " << (p4.E() - particleDefinition->GetPDGMass()*MeV)  << G4endl;
+  */
 
   // load the gun...
   fGPS->SetParticleDefinition(particleDefinition);

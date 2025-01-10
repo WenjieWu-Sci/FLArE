@@ -10,13 +10,14 @@
 
 # define output options
 /histo/save3DEvd false
-/histo/save2DEvd false
+/histo/save2DEvd true
 /histo/saveHit false
 /histo/addDiffusion false
-/histo/fileName backgrounds.root
+/histo/fileName test_backgrounds.root
 
+# store and save trajectories for EVD
 /tracking/storeTrajectory 1
 /histo/saveTrack true
 
-# shoot background equivalent to 2 "spill"
+# shoot background equivalent to 1 "spill"
 /run/beamOn 1
