@@ -29,9 +29,9 @@ void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg
   G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(pdg);
   
   G4cout << "Particle PDG " << pdg << " mass " << particleDefinition->GetPDGMass()*MeV << G4endl;
-  G4cout << "x4  " << x4.X() << " " << x4.Y() << " " << x4.Z() << " " << x4.T() << G4endl;
-  G4cout << "p4  " << p4.X() << " " << p4.Y() << " " << p4.Z() << " " << p4.E() << G4endl;
-  G4cout << "kinE " << (p4.E() - particleDefinition->GetPDGMass()*MeV)  << G4endl;
+  G4cout << "  x4  " << x4.X() << " " << x4.Y() << " " << x4.Z() << " " << x4.T() << G4endl;
+  G4cout << "  p4  " << p4.X() << " " << p4.Y() << " " << p4.Z() << " " << p4.E() << G4endl;
+  G4cout << "  kinE " << (p4.E() - particleDefinition->GetPDGMass()*MeV)  << G4endl;
 
   // load the gun...
   fGPS->SetParticleDefinition(particleDefinition);
@@ -116,6 +116,7 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
     // This should be probably rephrased in terms of luminosity
     
     int nparticles = ExtractBackgroundParticlesPerOrbit();
+    G4cout << "********" << G4endl;
     G4cout << "*** Shooting " << nparticles << " background " << name << "!" << G4endl;
     
     int pdg=0;
@@ -138,7 +139,7 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       double xdircos, ydircos;
       SampleDirectionCosines(xdircos, ydircos, E); 
       double zdircos2 = 1 - (xdircos*xdircos) - (ydircos*ydircos);
-      double zdircos = TMath::Sqrt(zdircos); // always positive
+      double zdircos = TMath::Sqrt(zdircos2); // always positive
 
       // now prepare inputs to load the gun
       TLorentzVector x4(x, y, z, t);
@@ -152,7 +153,7 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       ShootParticle( anEvent, pdg, x4, p4);
     }
   
-    std::cout << name << " background done!" << std::endl;
+    G4cout << "*** " << name << " background done!" << G4endl;
   }
 
   bkgFile->Close();
