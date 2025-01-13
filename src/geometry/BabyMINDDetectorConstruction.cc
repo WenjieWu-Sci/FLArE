@@ -66,40 +66,46 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
     G4ThreeVector currentPos = prevPos;
 
     switch(c) {
-    
+
       case '|': // start/end of block padding, nothing to place
-        shift += fBlockPadding;
+       
+        // length is spacing from previous + full size
+        shift = fBlockPadding;
         if(prev=='|') shift += fBlockToBlockSpacing;
         currentPos += G4ThreeVector(0.,0.,shift);
         break;
     
-      case 'M': //magnet module (M)
+       case 'M': //magnet module (M)
 
+        // shift to the middle of the module
+        // spacing from previous + half its size
         if( prev == 'M' ) shift += fMagnetToMagnetSpacing;
         else if( prev == 'D' ) shift += fMagnetToScinSpacing;
-
-        shift += fMagnetPlateThickness/2.; 
+        shift += fMagnetPlateThickness/2.;
         currentPos += G4ThreeVector(0.,0.,shift);
         // placing a magnet module
-	fBabyMINDAssembly->AddPlacedVolume(fMagnetPlate,currentPos,noRot);
-        shift += fMagnetPlateThickness/2.; 
+        fBabyMINDAssembly->AddPlacedVolume(fMagnetPlate,currentPos,noRot);
+        // update pointer to the end of the module
+        // shift by only remaining half size
+        shift = fMagnetPlateThickness/2.;
         currentPos += G4ThreeVector(0.,0.,shift);
-
         break;
       
       case 'D': //detector module (D)
         
-	if( prev == 'M' ) shift += fMagnetToScinSpacing;
+        // shift to the middle of the module
+        // spacing from previous + half its size
+        if( prev == 'M' ) shift += fMagnetToScinSpacing;
         else if( prev == 'D' ) shift += fMagnetToScinSpacing;
-        
-	shift += 2*fBarThickness;
+        shift += 2*fBarThickness;
         currentPos += G4ThreeVector(0.,0.,shift);
         // placing a detector module
-	fBabyMINDAssembly->AddPlacedAssembly(fDetectorModule,currentPos,noRot);
-        shift += 2*fBarThickness; 
+        fBabyMINDAssembly->AddPlacedAssembly(fDetectorModule,currentPos,noRot);
+        // update pointer to the end of the module
+        // shift by only remaining half size
+        shift = 2*fBarThickness; 
         currentPos += G4ThreeVector(0.,0.,shift);
-        
-	break;
+        break;
   
       default:
         G4cout << "ERROR: unrecognized char='" << c << "' in block sequence: '" << fBlockSequence << "'" << G4endl;

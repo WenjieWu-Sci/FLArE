@@ -21,7 +21,7 @@ source lxplus_setup.sh
 * Assume the path to the source code is `/path/to/source`.
 * To compile, you need to go to the build directory `cd /path/to/build`.
 * And then `cmake -S /path/to/source -B /path/to/build`.
-* Finally `make`.
+* Finally `make` or `make install`.
 
 The minimal software requirements are:
 * Geant4 v4_10_6_p01c
