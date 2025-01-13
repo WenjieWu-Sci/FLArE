@@ -7,6 +7,7 @@
 # define genie input options
 /bkg/useBackground true
 /bkg/backgroundInput ../backgrounds/background_input.root
+/bkg/backgroundWindow 187.5 us
 
 # define output options
 /histo/save3DEvd false

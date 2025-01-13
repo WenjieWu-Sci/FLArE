@@ -45,6 +45,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
 
   useGenie = false;
   useBackground = false;
+  bkgTimeWindow = 187.5*us; //default: max drift time
+
   fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
   fActionBackground = new BackgroundPrimaryGeneratorAction(fGPS);
 
@@ -79,7 +81,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     std::cout << std::endl;
     std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
     std::cout << ") : Background Generator ===oooOOOooo===" << std::endl;
-    fActionBackground->GeneratePrimaries(anEvent, bkgFileName);
+    fActionBackground->GeneratePrimaries(anEvent, bkgFileName, bkgTimeWindow);
   } else {
     std::cout << std::endl;
     std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();

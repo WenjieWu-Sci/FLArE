@@ -24,6 +24,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
     void setUseBackground(G4bool val) { useBackground = val; }
     void setBkgInputFile(G4String val) { bkgFileName = val; }
+    void setBkgTimeWindow(G4double val) { bkgTimeWindow = val; }
 
   private:
     PrimaryGeneratorMessenger* genMessenger;
@@ -47,6 +48,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     BackgroundPrimaryGeneratorAction* fActionBackground;
     G4bool useBackground;
     G4String bkgFileName;
+    G4double bkgTimeWindow;
 };
 
 #endif

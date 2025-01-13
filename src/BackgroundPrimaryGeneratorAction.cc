@@ -44,7 +44,7 @@ void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg
   fGPS->GeneratePrimaryVertex(anEvent); // ...and shoot!
 }
 
-int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticlesPerOrbit()
+int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticles(G4double time_window)
 {
   // the (x,y,E) is normalized to the instantaneous luminosity
   // it represents the number of particles / GeV / cm2 / s
@@ -55,10 +55,10 @@ int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticlesPerOrbit()
   double ybinsize = hxyE->GetXaxis()->GetBinWidth(1); // cm
   summed_bins *= Ebinsize * xbinsize * ybinsize; // in s-1
 
-  // now convert from s-1 to per full LHC orbit (88.9us)
-  // this way we get the expected background particles in a full orbit period
-  double orbits_per_sec = 1./LHC_orbitPeriod_s; // number of orbits per second
-  int lambda = summed_bins/orbits_per_sec; 
+  // now convert from s-1 to the requested time window
+  // this way we get the expected background particles in the time window
+  double windows_per_sec = 1./(time_window/s); // number of windows in a second
+  int lambda = summed_bins/windows_per_sec; 
 
   // now this value is the expectation of a Poisson distribution (or Gaussian)
   // use it to extract a realization...
@@ -85,7 +85,7 @@ void BackgroundPrimaryGeneratorAction::SampleDirectionCosines(double& xdircos, d
   h2Ddir->GetRandom2(xdircos, ydircos);
 }
 
-void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4String filename)
+void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4String filename, G4double time_window)
 {
   bkgFileName = filename;
   int evtID = anEvent->GetEventID();
@@ -114,10 +114,10 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
     hdir = (TH3D*)bkgFile->Get(hdir_path.c_str());
 
     // get total number of particles to shoot
-    // TODO: currently launching the equivalent of a "spill" = full LHC orbit
+    // TODO: currently launching the equivalente of the requested time window
     // This should be probably rephrased in terms of luminosity
-    
-    int nparticles = ExtractBackgroundParticlesPerOrbit();
+    G4cout << "Requested window for background extraction: " << time_window/us << " us" << G4endl;
+    int nparticles = ExtractBackgroundParticles(time_window);
     G4cout << "********" << G4endl;
     G4cout << "*** Shooting " << nparticles << " background " << name << "!" << G4endl;
     

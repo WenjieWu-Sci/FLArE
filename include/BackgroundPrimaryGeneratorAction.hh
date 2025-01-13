@@ -16,10 +16,10 @@ class BackgroundPrimaryGeneratorAction {
 
   public:
 
-    void GeneratePrimaries(G4Event* anEvent, G4String filename);
+    void GeneratePrimaries(G4Event* anEvent, G4String filename, G4double time_window);
     void ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector x4, TLorentzVector p4);
     void SampleDirectionCosines(double& xdircos, double& ydircos, double E);
-    int ExtractBackgroundParticlesPerOrbit();
+    int ExtractBackgroundParticles(G4double time_window);
 
   private:
     
@@ -31,6 +31,7 @@ class BackgroundPrimaryGeneratorAction {
 
     std::vector<std::string> speciesList = { "mu_plus","mu_minus","neut" }; 
     G4double LHC_orbitPeriod_s = 88.924e-6; // orbit is 88.924 us
+    G4double TPC_driftTime_s = 187.5e-6; // 187.5 us for 30cm drift
 
 };
 

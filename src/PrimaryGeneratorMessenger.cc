@@ -7,6 +7,7 @@
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -41,6 +42,11 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   bkgInputFile = new G4UIcmdWithAString("/bkg/backgroundInput", this);
   bkgInputFile->SetGuidance("set input filename of the background generator");
   bkgInputFile->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
+    
+  bkgTimeWindow = new G4UIcmdWithADoubleAndUnit("/bkg/backgroundWindow", this);
+  bkgTimeWindow->SetGuidance("set time window for background extraction");
+  bkgTimeWindow->SetUnitCategory("Time");
+  bkgTimeWindow->SetUnitCandidates("s us ms ns");
 
 }
 
@@ -55,6 +61,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   
   delete USEBKG;
   delete bkgInputFile;
+  delete bkgTimeWindow;
   delete bkgGeneratorDir;
 }
 
@@ -66,6 +73,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   else if (command == GHEPEvtStartIdx) PrimGenAction->setGenieStartEvt(GHEPEvtStartIdx->GetNewIntValue(newValues));
   else if (command == USEGENIE) PrimGenAction->setUseGenie(USEGENIE->GetNewBoolValue(newValues));
   else if (command == bkgInputFile) PrimGenAction->setBkgInputFile(newValues);
+  else if (command == bkgTimeWindow) PrimGenAction->setBkgTimeWindow(bkgTimeWindow->GetNewDoubleValue(newValues));
   else if (command == USEBKG) PrimGenAction->setUseBackground(USEBKG->GetNewBoolValue(newValues));
 }
 

@@ -11,6 +11,7 @@ class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithAnInteger;
 class G4UIcmdWithABool;
+class G4UIcmdWithADoubleAndUnit;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -32,6 +33,7 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIdirectory* bkgGeneratorDir;
     G4UIcmdWithABool* USEBKG;
     G4UIcmdWithAString* bkgInputFile;
+    G4UIcmdWithADoubleAndUnit* bkgTimeWindow;
 
 };
 

@@ -114,17 +114,18 @@ An example macro can be found in `macros`: `backgrounds.mac`.
 ### Event generators
 |Command |Description |
 |:--|:--|
-|/genie/useGenie     | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from GENIE|
-|/genie/genieInput   | if `useGenie is true`, give which `.gst.root` file to read GENIE events|
-|/genie/genieIStart  | if `useGenie is true`, give the start position of the file to read GENIE events|
-|/bkg/useBackground  | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
-|/bkg/backgroundInput| if `useBackground is true`, give which file to sample background events|
+|/genie/useGenie      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from GENIE|
+|/genie/genieInput    | if `useGenie is true`, give which `.gst.root` file to read GENIE events|
+|/genie/genieIStart   | if `useGenie is true`, give the start position of the file to read GENIE events|
+|/bkg/useBackground   | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
+|/bkg/backgroundInput | if `useBackground is true`, give which file to sample background events|
+|/bkg/backgroundWindow| if `useBackground is true`, set time window for background extraction|
 ### Analysis
 |Command |Description |
 |:--|:--|
 |/histo/fileName     | option for AnalysisManagerMessenger, set name of the file saving all analysis variables|
 |/histo/saveHit      | if `true` save info for all hits, `false` in default to save space|
-|/histo/saveTrack    | if 'true' save info for all tracks, `false` in default, requires `\tracking\storeTrajectory 1`|
+|/histo/saveTrack    | if `true` save info for all tracks, `false` in default, requires `\tracking\storeTrajectory 1`|
 |/histo/save3DEvd    | if `true` save 3D spatial distribution of energy deposition, `false` in default|
 |/histo/save2DEvd    | if `true` save 2D spatial distribution of energy deposition, `false` in default|
 |/histo/circleFit    | if `true` run circle fitting and save information in output, `false` in default to save space|
