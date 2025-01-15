@@ -24,6 +24,7 @@
 #include <G4SystemOfUnits.hh>
 #include <Randomize.hh>
 #include <G4Poisson.hh>
+#include <G4Trajectory.hh>
 
 #include <TFile.h>
 #include <TTree.h>
@@ -46,10 +47,12 @@ AnalysisManager* AnalysisManager::GetInstance() {
 
 AnalysisManager::AnalysisManager() {
   evt = 0;
+  trk = 0;
   messenger = new AnalysisManagerMessenger(this);
   m_filename = "test.root";
   m_addDiffusion = "false";
   m_saveHit = false;
+  m_saveTrack = false;
   m_save3DEvd = false;
   m_save2DEvd = false;
   m_circularFit = false;
@@ -155,13 +158,29 @@ void AnalysisManager::bookEvtTree() {
 
 }
 
+void AnalysisManager::bookTrkTree() {
+
+  trk = new TTree("trk", "trkTreeInfo");
+  trk->Branch("evtID", &evtID, "evtID/I");
+  trk->Branch("trackTID", &trackTID, "trackTID/I");                     
+  trk->Branch("trackPID", &trackPID, "trackPID/I");                     
+  trk->Branch("trakcPDG", &trackPDG, "trackPDG/I");
+  trk->Branch("trackNPoints", &trackNPoints, "trackNPoints/I");  
+  trk->Branch("trackPointX", &trackPointX);  
+  trk->Branch("trackPointY", &trackPointY);  
+  trk->Branch("trackPointZ", &trackPointZ);
+
+}
+
 void AnalysisManager::BeginOfRun() {
+  
   G4cout<<"TTree is booked and the run has been started"<<G4endl;
   if (thefile) {
     delete thefile;
   }
   thefile = new TFile(m_filename.c_str(), "RECREATE");
   bookEvtTree();
+  if(m_saveTrack) bookTrkTree();
 
   fH5Filename = m_filename;
   if(fH5Filename.find(".root") != std::string::npos) {
@@ -182,6 +201,7 @@ void AnalysisManager::BeginOfRun() {
 void AnalysisManager::EndOfRun() {
   thefile->cd();
   evt->Write();
+  trk->Write();
   thefile->Close();
   fH5file.close();
 }
@@ -189,6 +209,7 @@ void AnalysisManager::EndOfRun() {
 void AnalysisManager::BeginOfEvent() {
   neutrino = FPFNeutrino();
   primaries.clear();
+  primaryIDs.clear();
   nHits                        = 0;
   sparseFractionMem            = -1;
   sparseFractionBins           = -1;
@@ -284,6 +305,14 @@ void AnalysisManager::BeginOfEvent() {
   trkZFSL.clear();
   trkPFSL.clear();
 
+  trackTID = -1;                     
+  trackPID = -1;     
+  trackPDG = -1;
+  trackNPoints = -1;  
+  trackPointX.clear();  
+  trackPointY.clear();  
+  trackPointZ.clear();
+
 }
 
 void AnalysisManager::EndOfEvent(const G4Event* event) {
@@ -300,6 +329,27 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
         PrimaryParticleInformation* primary_particle_info = 
           dynamic_cast<PrimaryParticleInformation*>(primary_particle->GetUserInformation());
         primary_particle_info->Print();
+
+	// add to list of primary particles
+	// this list is then appended further if necessary
+        countPrimaryParticle++;
+	primaryIDs.push_back(primary_particle_info->GetPartID()); //store to avoid duplicates
+        primaries.push_back(FPFParticle(primary_particle_info->GetPDG(), 0, 
+		primary_particle_info->GetPartID(),
+	       	countPrimaryParticle-1, 1,
+		primary_particle_info->GetMass(),
+                primary_particle_info->GetVertexMC().x(),
+                primary_particle_info->GetVertexMC().y(),
+                primary_particle_info->GetVertexMC().z(),
+		0.,
+                primary_particle_info->GetMomentumMC().x(), 
+		primary_particle_info->GetMomentumMC().y(),
+	        primary_particle_info->GetMomentumMC().z(), 
+                GetTotalEnergy(primary_particle_info->GetMomentumMC().x(),primary_particle_info->GetMomentumMC().y(),
+                  primary_particle_info->GetMomentumMC().z(), primary_particle_info->GetMass())
+		));
+
+	// if it's the first, also store the nuetrino info (if available)
         if (primary_particle_info->GetPartID()==0) {
           nuIdx            = primary_particle_info->GetNeuIdx();
           nuPDG            = primary_particle_info->GetNeuPDG();
@@ -325,7 +375,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   nPrimaryVertex   = event->GetNumberOfPrimaryVertex();
   std::cout<<"\nnumber of primary vertices  : "<<nPrimaryVertex<<std::endl;
   std::cout<<"=============>"<<neutrino.NuPDG()<<" "<<neutrino.NuFSLPDG()<<std::endl;
-
+  
   // Get the hit collections
   // If there is no hit collection, there is nothing to be done
   hcofEvent = event->GetHCofThisEvent();
@@ -471,9 +521,34 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // FillPseudoRecoVar must run after FillTrueEdep, otherwise some of the variables won't be filled
   FillPseudoRecoVar();
 
+  int count_tracks = 0;
+  if(m_saveTrack){
+    G4cout << "---> Saving track information to tree..." << G4endl;
+    auto trajectoryContainer = event->GetTrajectoryContainer();
+    if (trajectoryContainer) {
+      for (size_t i = 0; i < trajectoryContainer->entries(); ++i) {
+        auto trajectory = static_cast<G4Trajectory*>((*trajectoryContainer)[i]);
+        trackTID = trajectory->GetTrackID();
+        trackPID = trajectory->GetParentID();
+        trackPDG = trajectory->GetPDGEncoding();
+        trackNPoints = trajectory->GetPointEntries();
+        count_tracks++;
+	for (size_t j = 0; j < trackNPoints; ++j) {
+          G4ThreeVector pos = trajectory->GetPoint(j)->GetPosition();
+	  trackPointX.push_back( pos.x() );
+	  trackPointY.push_back( pos.y() );
+	  trackPointZ.push_back( pos.z() );
+        }
+      }
+    } else G4cout << "No tracks found: did you enable their storage with '/tracking/storeTrajectory 1'?" << G4endl;
+    G4cout << "---> Done!" << G4endl;
+  }
+  
   evt->Fill();
+  trk->Fill();
 
-  std::cout<<"Total number of recorded hits : "<<nHits<<std::endl;
+  G4cout << "Total number of recorded hits : " << nHits << std::endl;
+  if(m_saveTrack) G4cout << "Total number of recorded track: " << count_tracks << std::endl;
 
   for (int iPrim= 0; iPrim< nPrimaryParticle; ++iPrim) {
     trackClusters[iPrim].clear();
@@ -559,10 +634,11 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
 
       // stable final state particles in GENIE, primary particles in Geant4
       if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
-        if (hit->GetStepNo()==1 || primaries.size()<1) { 
+        if ( std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end() ) { 
           // the following line excludes final state lepton tau from the primary particle list
           //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 1, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -577,8 +653,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       //if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
       if (hit->GetIsTrackFromPrimaryLepton()) {
         tracksFromFSLSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 2, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -591,8 +668,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       // its decay products are also counted as primary particles, mostly 2 gammas
       if (hit->GetIsTrackFromPrimaryPizero()) {
         tracksFromFSPizeroSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 3, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
@@ -605,8 +683,9 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       // decay products of this pizero are also counted as primary particles, mostly 2 gammas
       if (hit->GetIsTrackFromFSLPizero()) {
         tracksFromFSLDecayPizeroSecondary.insert(hit->GetTID());
-        if (hit->GetStepNo()==1) {
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
           countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
           primaries.push_back(FPFParticle(hit->GetParticle(), 
                 hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 4, hit->GetParticleMass(),
                 hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 

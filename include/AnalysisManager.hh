@@ -20,6 +20,7 @@ class AnalysisManager {
     ~AnalysisManager();
     static AnalysisManager* GetInstance();
     void bookEvtTree();
+    void bookTrkTree();
     void BeginOfRun();
     void EndOfRun();
     void BeginOfEvent();
@@ -32,6 +33,7 @@ class AnalysisManager {
     // function for controlling from the configuration file
     void setFileName(std::string val) { m_filename = val; }
     void saveHit(G4bool val) { m_saveHit = val; }
+    void saveTrack(G4bool val) { m_saveTrack = val; }
     void save3DEvd(G4bool val) { m_save3DEvd = val; }
     void save2DEvd(G4bool val) { m_save2DEvd = val; }
     void circleFit(G4bool val) { m_circularFit = val; }
@@ -44,12 +46,14 @@ class AnalysisManager {
     TFile*   thefile;
     std::string  m_filename;
     TTree*   evt;
+    TTree*   trk;
     std::string  fH5Filename;
     hep_hpc::hdf5::File fH5file;
 
     G4int    evtID;
     FPFNeutrino neutrino;
     std::vector<FPFParticle> primaries;
+    std::vector<int> primaryIDs;
     // Truth information from genie
     G4int    nuIdx;             ///<- neutrino index (for genie neutrino interaction)
     G4int    nuPDG;             ///<- neutrino PDG code (for genie neutrino interaction)
@@ -135,6 +139,7 @@ class AnalysisManager {
     G4double HitEdep[40000000];
 
     G4bool m_saveHit;
+    G4bool m_saveTrack;
     G4bool m_save3DEvd;
     G4bool m_save2DEvd;
     G4bool m_circularFit;
@@ -169,6 +174,15 @@ class AnalysisManager {
     std::vector<double> trkZFSL;
     std::vector<double> trkYFSL;
     std::vector<double> trkPFSL;
+
+    // track information
+    int trackTID;                     
+    int trackPID;     
+    int trackPDG;
+    int trackNPoints;  
+    std::vector<double> trackPointX;  
+    std::vector<double> trackPointY;  
+    std::vector<double> trackPointZ;
 
   private:
     void FillPrimaryTruthTree(G4int sdId, std::string sdName);
