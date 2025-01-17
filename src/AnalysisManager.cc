@@ -164,7 +164,7 @@ void AnalysisManager::bookTrkTree() {
   trk->Branch("evtID", &evtID, "evtID/I");
   trk->Branch("trackTID", &trackTID, "trackTID/I");                     
   trk->Branch("trackPID", &trackPID, "trackPID/I");                     
-  trk->Branch("trakcPDG", &trackPDG, "trackPDG/I");
+  trk->Branch("trackPDG", &trackPDG, "trackPDG/I");
   trk->Branch("trackNPoints", &trackNPoints, "trackNPoints/I");  
   trk->Branch("trackPointX", &trackPointX);  
   trk->Branch("trackPointY", &trackPointY);  
@@ -539,13 +539,16 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 	  trackPointY.push_back( pos.y() );
 	  trackPointZ.push_back( pos.z() );
         }
+        trk->Fill();
+	trackPointX.clear();
+	trackPointY.clear();
+	trackPointZ.clear();
       }
     } else G4cout << "No tracks found: did you enable their storage with '/tracking/storeTrajectory 1'?" << G4endl;
     G4cout << "---> Done!" << G4endl;
   }
   
   evt->Fill();
-  trk->Fill();
 
   G4cout << "Total number of recorded hits : " << nHits << std::endl;
   if(m_saveTrack) G4cout << "Total number of recorded track: " << count_tracks << std::endl;
