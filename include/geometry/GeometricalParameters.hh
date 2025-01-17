@@ -20,6 +20,8 @@ class GeometricalParameters  {
 
     // experimental hall
     G4double GetHallHeadDistance() { return fHallHeadDistance; }
+    G4double GetHallOffsetX() { return fHallOffsetX; }
+    G4double GetHallOffsetY() { return fHallOffsetY; }
 
     // FLArE TPC volume
     enum tpcMaterialOption { LiquidArgon, LiquidKrypton};
@@ -199,6 +201,8 @@ class GeometricalParameters  {
 
     // experimental hall
     G4double fHallHeadDistance; ///<- distance between the entrance wall and the first detector
+    G4double fHallOffsetX; // x offset of hall center from the LOS
+    G4double fHallOffsetY; // x offset of hall center from the LOS
 
     // FLArE TPC volume
     tpcMaterialOption fFLArETPCMaterialOption;

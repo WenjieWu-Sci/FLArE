@@ -88,7 +88,7 @@ void FASERnu2DetectorConstruction::BuildEmulsionTungstenModule()
 
   // build tungsten layer
   auto tungstenPlateSolid = new G4Box("tungstenPlateSolid", fEmulsionTungstenSizeX/2., fEmulsionTungstenSizeY/2., fTungstenThickness/2.);
-  fTungstenPlate = new G4LogicalVolume(tungstenPlateSolid, fMaterials->Material("Tungsten"), "tungstenPlatLogical");
+  fTungstenPlate = new G4LogicalVolume(tungstenPlateSolid, fMaterials->Material("Tungsten"), "tungstenPlateLogical");
   
   G4RotationMatrix *rot = new G4RotationMatrix();
   G4double offset = -fModuleThickness/2.;
