@@ -179,6 +179,7 @@ class AnalysisManager {
     int trackTID;                     
     int trackPID;     
     int trackPDG;
+    double trackKinE;
     int trackNPoints;  
     std::vector<double> trackPointX;  
     std::vector<double> trackPointY;  

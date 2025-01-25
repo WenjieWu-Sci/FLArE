@@ -165,6 +165,7 @@ void AnalysisManager::bookTrkTree() {
   trk->Branch("trackTID", &trackTID, "trackTID/I");                     
   trk->Branch("trackPID", &trackPID, "trackPID/I");                     
   trk->Branch("trackPDG", &trackPDG, "trackPDG/I");
+  trk->Branch("trackKinE", &trackKinE, "trackKinE/D");
   trk->Branch("trackNPoints", &trackNPoints, "trackNPoints/I");  
   trk->Branch("trackPointX", &trackPointX);  
   trk->Branch("trackPointY", &trackPointY);  
@@ -308,6 +309,7 @@ void AnalysisManager::BeginOfEvent() {
   trackTID = -1;                     
   trackPID = -1;     
   trackPDG = -1;
+  trackKinE = -1;
   trackNPoints = -1;  
   trackPointX.clear();  
   trackPointY.clear();  
@@ -531,6 +533,7 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
         trackTID = trajectory->GetTrackID();
         trackPID = trajectory->GetParentID();
         trackPDG = trajectory->GetPDGEncoding();
+	trackKinE = trajectory->GetInitialKineticEnergy();
         trackNPoints = trajectory->GetPointEntries();
         count_tracks++;
 	for (size_t j = 0; j < trackNPoints; ++j) {
