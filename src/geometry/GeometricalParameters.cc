@@ -9,6 +9,8 @@ GeometricalParameters::GeometricalParameters()
   
   // experimental hall
   fHallHeadDistance = 3.1*m;
+  fHallOffsetX = 1.44*m;
+  fHallOffsetY = 2.21*m;
 
   // FLArE TPC volume
   fFLArETPCMaterialOption = tpcMaterialOption::LiquidArgon;

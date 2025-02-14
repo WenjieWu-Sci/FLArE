@@ -87,13 +87,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // FPF long paper: https://dx.doi.org/10.1088/1361-6471/ac865e
   // section 2.1.1, figure 5, and figure 7
-  G4double hallSizeX  = 8.5 * m;
-  G4double hallSizeY  = 7.2 * m;
-  G4double hallSizeZ  = 65. * m;
-  G4ThreeVector hallOffset(0., 0., hallSizeZ/2 -            // this offset accounts for the distance between 
-      GeometricalParameters::Get()->GetHallHeadDistance()); // the entrance wall of the hall and the 
-                                                            // first detector, so the first detector 
-                                                            // starts at the center of the global coordinate
+  G4double hallSizeX  = 9.4 * m;
+  G4double hallSizeY  = 7.6 * m;
+  G4double hallSizeZ  = 64.6 * m;
+  
+  // this offset accounts for: 
+  // - distance between the entrance wall of the hall and the first detector, so the first detector 
+  //   starts at the center of the global coordinate
+  // - position of the cavern center w.r.t. the line of sight, since it's not in the exact middle
+  G4ThreeVector hallOffset( GeometricalParameters::Get()->GetHallOffsetX(), 
+		            GeometricalParameters::Get()->GetHallOffsetY(), 
+			    hallSizeZ/2 - GeometricalParameters::Get()->GetHallHeadDistance()); 
                                                            
   auto hallBox = new G4Box("hallBox", hallSizeX/2, hallSizeY/2, hallSizeZ/2);
   hallLV = new G4LogicalVolume(hallBox, LArBoxMaterials->Material("Air"), "hallLV");

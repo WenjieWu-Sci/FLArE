@@ -7,9 +7,10 @@
 /run/verbose 2
 
 # Choose the geometry option by importing one of the default macros
-/control/execute macros/geometry_options/FPF_hall_Reference.mac
+#/control/execute macros/geometry_options/FPF_hall_Reference.mac
 #/control/execute macros/geometry_options/FPF_hall_Reference_CP.mac
-#/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast.mac
+/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast_BabyMIND.mac
+#/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast_CP_BabyMIND.mac
 #/control/execute macros/geometry_options/FPF_hall_Option1a_FORMOSAlast_CP.mac
 #/control/execute macros/geometry_options/FPF_hall_Option1b_FORMOSAunder.mac
 #/control/execute macros/geometry_options/FPF_hall_Option1b_FORMOSAunder_CP.mac
@@ -20,8 +21,8 @@
 
 # Initialize the chosen graphics driver
 # Use this open statement to create an OpenGL view:
-/vis/open OGLIX 1000x800-0+0
-/vis/ogl/set/displayListLimit 5000000
+#/vis/open OGLIX 1000x800-0+0
+/vis/open OGL 1000x800-0+0
 
 # For a file-based driver, use DAWN
 #/vis/open DAWNFILE
