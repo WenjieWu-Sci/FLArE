@@ -241,7 +241,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
-    fParser.Write("LArBoxDetGeo.gdml", worldPV);
+    fParser.Write("FPF_FLArE_Geo.gdml", worldPV);
   }
 
   return worldPV;
