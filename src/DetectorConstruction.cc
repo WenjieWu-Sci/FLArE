@@ -18,10 +18,6 @@
 #include <G4NistManager.hh>
 #include <G4VisAttributes.hh>
 #include <G4Box.hh>
-#include <G4ReplicatedSlice.hh>
-#include <G4PVReplica.hh>
-#include <G4AssemblyVolume.hh>
-#include <G4SubtractionSolid.hh>
 #include <G4RotationMatrix.hh>
 #include <G4ThreeVector.hh>
 #include <G4PhysicalConstants.hh>
@@ -96,19 +92,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //   starts at the center of the global coordinate
   // - position of the cavern center w.r.t. the line of sight, since it's not in the exact middle
   G4ThreeVector hallOffset( GeometricalParameters::Get()->GetHallOffsetX(), 
-		            GeometricalParameters::Get()->GetHallOffsetY(), 
-			    hallSizeZ/2 - GeometricalParameters::Get()->GetHallHeadDistance()); 
+		                        GeometricalParameters::Get()->GetHallOffsetY(), 
+			                      hallSizeZ/2 - GeometricalParameters::Get()->GetHallHeadDistance()); 
                                                            
   auto hallBox = new G4Box("hallBox", hallSizeX/2, hallSizeY/2, hallSizeZ/2);
   hallLV = new G4LogicalVolume(hallBox, LArBoxMaterials->Material("Air"), "hallLV");
-  auto hallPV = new G4PVPlacement(nullptr,
-                                  hallOffset,
-                                  hallLV,
-                                  "hallPV",
-                                  worldLV,
-                                  false, 
-                                  0,
-                                  fCheckOverlap);
+  auto hallPV = new G4PVPlacement(nullptr, hallOffset, hallLV, "hallPV", worldLV, false, 0, fCheckOverlap);
 
   //-----------------------------------
   // FLArE TPC volume
@@ -118,14 +107,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     G4double lArSizeZ               = GeometricalParameters::Get()->GetTPCSizeZ();
     G4double TPCInsulationThickness = GeometricalParameters::Get()->GetTPCInsulationThickness();
 
-    G4AssemblyVolume* FLArETPCAssembly = FLArETPCAssembler->GetFLArETPCAssembly();
+    G4LogicalVolume* FLArETPCAssembly = FLArETPCAssembler->GetFLArETPCAssembly();
     TPCModuleLogical = FLArETPCAssembler->GetFLArETPCVolume();
 
     // positioning
     G4double lengthFLArE = 2*TPCInsulationThickness + lArSizeZ; 
     G4ThreeVector FLArEPos = GeometricalParameters::Get()->GetFLArEPosition();
     FLArEPos -= hallOffset;
-    FLArETPCAssembly->MakeImprint(hallLV, FLArEPos, nullptr, 0, fCheckOverlap);
+    new G4PVPlacement(nullptr, FLArEPos, FLArETPCAssembly, "FLArETPCPhysical", hallLV, false, 0, fCheckOverlap);
 
     G4cout << "Length of FLArE     : " << lengthFLArE << G4endl;
     G4cout << "Center of FLArE TPC : " << FLArEPos+hallOffset << G4endl; // w.r.t the global coordinate
@@ -159,7 +148,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       G4double HadCatcherLength       = GeometricalParameters::Get()->GetHadCalLength();
       G4double MuonFinderLength       = GeometricalParameters::Get()->GetMuonCatcherLength();
     
-      G4AssemblyVolume* HadCatMuonFindAssembly = HadCatMuonFindAssembler->GetHadCatcherMuonFinderAssembly();
+      G4LogicalVolume* HadCatMuonFindAssembly = HadCatMuonFindAssembler->GetHadCatcherMuonFinderAssembly();
       HadCalXCellLogical          = HadCatMuonFindAssembler->GetHadCalXVolume();
       HadCalYCellLogical          = HadCatMuonFindAssembler->GetHadCalYVolume();
       HadAbsorLayersLogical       = HadCatMuonFindAssembler->GetHadCalAbsorbVolume();
@@ -169,11 +158,11 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       
       G4double HadCatMuonFindLengthZ  = HadCatcherLength + MuonFinderLength;
       G4ThreeVector HadCatMuonFindPos = GeometricalParameters::Get()->GetFLArEPosition() +
-	                                G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
-				                          G4ThreeVector(0.,0.,HadCatMuonFindLengthZ/2.);
+	                                      G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
+				                                G4ThreeVector(0.,0.,HadCatMuonFindLengthZ/2.);
     
       HadCatMuonFindPos -= hallOffset;
-      HadCatMuonFindAssembly->MakeImprint(hallLV, HadCatMuonFindPos, nullptr, 0, fCheckOverlap);
+      new G4PVPlacement(nullptr, HadCatMuonFindPos, HadCatMuonFindAssembly, "HadCatMuonFindPhysical", hallLV, false, 0, fCheckOverlap);
       
       G4cout << "Length of HadCatherMuonFinder : " << HadCatMuonFindLengthZ << G4endl;
       G4cout << "Center of HadCatherMuonFinder : " << HadCatMuonFindPos+hallOffset << G4endl; // w.r.t the global coordinate
@@ -185,14 +174,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   if (m_addFORMOSA) {
     FORMOSADetectorConstruction *FORMOSAAssembler = new FORMOSADetectorConstruction();
-    G4AssemblyVolume* FORMOSAAssembly = FORMOSAAssembler->GetFORMOSAAssembly();
+    G4LogicalVolume* FORMOSAAssembly = FORMOSAAssembler->GetFORMOSAAssembly();
     FORMOSAScintillatorBarLogical = FORMOSAAssembler->GetScintillatorBar();
 
     // positioning
     G4double lengthFORMOSA = GeometricalParameters::Get()->GetFORMOSATotalSizeZ();
     G4ThreeVector FORMOSAPos = GeometricalParameters::Get()->GetFORMOSAPosition();
     FORMOSAPos -= hallOffset;
-    FORMOSAAssembly->MakeImprint(hallLV, FORMOSAPos, nullptr, 0, fCheckOverlap);
+    new G4PVPlacement(nullptr, FORMOSAPos, FORMOSAAssembly, "FORMOSAPhysical", hallLV, false, 0, fCheckOverlap);
 
     G4cout<<"Length of FORMOSA : "<<lengthFORMOSA<<G4endl;
     G4cout<<"Center of FORMOSA : "<<FORMOSAPos+hallOffset<<G4endl; // w.r.t the global coordinate
@@ -225,18 +214,18 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
     TrackingVerScinBarLogical = magnetAssembler->GetVerTrackingScinBar(); //need to assign SD
     TrackingHorScinBarLogical = magnetAssembler->GetHorTrackingScinBar(); //need to assign SD
-    G4AssemblyVolume* magnetAssembly = magnetAssembler->GetSpectrometerMagnetAssembly();
+    G4LogicalVolume* FASER2Assembly = magnetAssembler->GetFASER2Assembly();
 
     // positioning
-    G4double lengthSpectrometerMagnetAssembly = GeometricalParameters::Get()->GetFASER2TotalSizeZ();
-    G4ThreeVector magPos = GeometricalParameters::Get()->GetFASER2Position();
-    GeometricalParameters::Get()->SetMagnetZPosition(magPos.z()); // save for momentum analysis
-    magPos -= hallOffset;
-    magnetAssembly->MakeImprint(hallLV, magPos, nullptr, 0, fCheckOverlap);
+    G4double lengthFASER2Assembly = GeometricalParameters::Get()->GetFASER2TotalSizeZ();
+    G4ThreeVector FASER2Pos = GeometricalParameters::Get()->GetFASER2Position();
+    GeometricalParameters::Get()->SetMagnetZPosition(FASER2Pos.z()); // save for momentum analysis
+    FASER2Pos -= hallOffset;
+    new G4PVPlacement(nullptr, FASER2Pos, FASER2Assembly, "FASER2Physical", hallLV, false, 0, fCheckOverlap);
 
     //detectorGapLength = 1.2*m;
-    G4cout<<"Length of FASER2 Spectrometer : "<<lengthSpectrometerMagnetAssembly<<G4endl;
-    G4cout<<"Center of FASER2 Spectrometer : "<<magPos+hallOffset<<G4endl; // w.r.t the global coordinate
+    G4cout<<"Length of FASER2 Spectrometer : "<<lengthFASER2Assembly<<G4endl;
+    G4cout<<"Center of FASER2 Spectrometer : "<<FASER2Pos+hallOffset<<G4endl; // w.r.t the global coordinate
   }
   
   //-------------------------------------------------------------------

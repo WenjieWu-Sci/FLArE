@@ -16,7 +16,7 @@ class SpectrometerMagnetConstruction {
     ~SpectrometerMagnetConstruction();
 
     // Returns assembly volume for placement    
-    G4AssemblyVolume* GetSpectrometerMagnetAssembly(){ return fMagnetAssembly;}
+    G4LogicalVolume* GetFASER2Assembly(){ return fFASER2Assembly;}
   
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
@@ -30,7 +30,7 @@ class SpectrometerMagnetConstruction {
 
   private:
 
-    G4AssemblyVolume* fMagnetAssembly;
+    G4LogicalVolume* fFASER2Assembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
