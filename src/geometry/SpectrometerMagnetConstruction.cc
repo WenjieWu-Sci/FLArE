@@ -105,8 +105,8 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
      
     // total length (all magnets, all tracking stations sets, all gaps)
     G4double totalLengthZ = 2*(totThickness+fMagnetGap) + magnetsLengthZ;
-    G4doulle totalLengthY = 2*fMagnetOuterR;
-    G4doulle totalLengthX = 2*fMagnetOuterR;
+    G4double totalLengthY = 2*fMagnetOuterR;
+    G4double totalLengthX = 2*fMagnetOuterR;
     GeometricalParameters::Get()->SetFASER2TotalSizeZ(totalLengthZ);    
 
     BuildCrystalPullingDesign(); //sets logical volumes
@@ -171,7 +171,7 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
 
 SpectrometerMagnetConstruction::~SpectrometerMagnetConstruction()
 { 
-  delete fMagnetAssembly;
+  delete fFASER2Assembly;
   delete fMagnetWindow;
   delete fMagnetYoke;
 }

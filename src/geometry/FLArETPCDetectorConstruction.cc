@@ -47,8 +47,8 @@ FLArETPCDetectorConstruction::FLArETPCDetectorConstruction()
   G4double halfContainerX = fLArSizeX/2. + fThicknessInsulation;
   G4double halfContainerY = fLArSizeY/2. + fThicknessInsulation;
   G4double halfContainerZ = fLArSizeZ/2. + fThicknessInsulation;
-  auto containerSolid = new G4Box("FLArETPCContainerSolid", halfContainerX, halfContainerY, halfContainerZ);
-  fFLArETPCLogical = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FLArETPCLogical");
+  auto containerSolid = new G4Box("FLArESolid", halfContainerX, halfContainerY, halfContainerZ);
+  fFLArETPCAssembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FLArELogical");
 
   // TPC
   G4ThreeVector tpcCenter(0.,0.,0.);

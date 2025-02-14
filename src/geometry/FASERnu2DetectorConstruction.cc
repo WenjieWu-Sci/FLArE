@@ -10,6 +10,7 @@
 #include "G4Colour.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4PVReplica.hh"
+#include "G4PVPlacement.hh"
 
 FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
 {

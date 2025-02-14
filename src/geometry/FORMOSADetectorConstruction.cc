@@ -29,8 +29,8 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
   fPMTSizeSpacing = GeometricalParameters::Get()->GetPMTSizeSpacing();
 
   G4double totLengthZ = NScintillatorModules*(fScintillatorBarSizeZ+fPMTSizeSpacing);
-  Gedouble totLengthX = fNScinBarsX*fScintillatorBarSizeX;
-  Gedouble totLengthY = fNScinBarsY*fScintillatorBarSizeY;
+  G4double totLengthX = fNScinBarsX*fScintillatorBarSizeX;
+  G4double totLengthY = fNScinBarsY*fScintillatorBarSizeY;
   GeometricalParameters::Get()->SetFORMOSATotalSizeZ(totLengthZ);
 
   BuildScintillatorAssembly();
