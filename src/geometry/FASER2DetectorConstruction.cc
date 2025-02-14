@@ -1,4 +1,4 @@
-#include "geometry/SpectrometerMagnetConstruction.hh"
+#include "geometry/FASER2DetectorConstruction.hh"
 #include "geometry/GeometricalParameters.hh"
 #include "DetectorConstructionMaterial.hh"
 
@@ -14,21 +14,21 @@
 #include "G4PVReplica.hh"
 #include "G4PVPlacement.hh"
 
-SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
+FASER2DetectorConstruction::FASER2DetectorConstruction()
 {
   // load materials
   fMaterials = DetectorConstructionMaterial::GetInstance();
 
   // choose magnet option
-  GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption(); 
+  GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetFASER2MagnetOption(); 
   if( opt == GeometricalParameters::magnetOption::SAMURAI ){
     
     G4cout << "Building SAMURAI spectrometer magnet" << G4endl;
-    fMagnetWindowX = GeometricalParameters::Get()->GetSpectrometerMagnetWindowX();
-    fMagnetWindowY = GeometricalParameters::Get()->GetSpectrometerMagnetWindowY();
-    fMagnetWindowZ = GeometricalParameters::Get()->GetSpectrometerMagnetWindowZ();
-    fMagnetYokeThicknessX = GeometricalParameters::Get()->GetSpectrometerMagnetYokeThickX();
-    fMagnetYokeThicknessY = GeometricalParameters::Get()->GetSpectrometerMagnetYokeThickY();
+    fMagnetWindowX = GeometricalParameters::Get()->GetFASER2MagnetWindowX();
+    fMagnetWindowY = GeometricalParameters::Get()->GetFASER2MagnetWindowY();
+    fMagnetWindowZ = GeometricalParameters::Get()->GetFASER2MagnetWindowZ();
+    fMagnetYokeThicknessX = GeometricalParameters::Get()->GetFASER2MagnetYokeThickX();
+    fMagnetYokeThicknessY = GeometricalParameters::Get()->GetFASER2MagnetYokeThickY();
    
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size + bending plane
@@ -79,11 +79,11 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
   } else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
  
     G4cout << "Building CrystalPulling spectrometer magnet" << G4endl;
-    fMagnetLengthZ = GeometricalParameters::Get()->GetSpectrometerMagnetLengthZ();
-    fMagnetInnerR = GeometricalParameters::Get()->GetSpectrometerMagnetInnerR();
-    fMagnetOuterR = GeometricalParameters::Get()->GetSpectrometerMagnetOuterR();
-    fNMagnets = GeometricalParameters::Get()->GetNSpectrometerMagnets();
-    fMagnetGap = GeometricalParameters::Get()->GetSpectrometerMagnetGap();
+    fMagnetLengthZ = GeometricalParameters::Get()->GetFASER2MagnetLengthZ();
+    fMagnetInnerR = GeometricalParameters::Get()->GetFASER2MagnetInnerR();
+    fMagnetOuterR = GeometricalParameters::Get()->GetFASER2MagnetOuterR();
+    fNMagnets = GeometricalParameters::Get()->GetNFASER2Magnets();
+    fMagnetGap = GeometricalParameters::Get()->GetFASER2MagnetGap();
     
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = 2*fMagnetInnerR + 0.5*m ; //match magnet size + bending plane (for now, FIXME?)
@@ -123,7 +123,7 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
     // each magnet comes with a set of N tracking stations just before it
     // the gap between each magnet is then given by magnetSpacing
     G4double magnetSpacing = 2*fMagnetGap + totThickness;
-    GeometricalParameters::Get()->SetSpectrometerMagnetSpacing(magnetSpacing);    
+    GeometricalParameters::Get()->SetFASER2MagnetSpacing(magnetSpacing);    
 
     for(int i=0; i<fNMagnets; i++){
       G4double offset = (i-0.5*(fNMagnets-1))*(magnetSpacing+fMagnetLengthZ);
@@ -169,14 +169,14 @@ SpectrometerMagnetConstruction::SpectrometerMagnetConstruction()
   fVerTrackingScinBar->SetVisAttributes(stationVis);  
 }
 
-SpectrometerMagnetConstruction::~SpectrometerMagnetConstruction()
+FASER2DetectorConstruction::~FASER2DetectorConstruction()
 { 
   delete fFASER2Assembly;
   delete fMagnetWindow;
   delete fMagnetYoke;
 }
 
-void SpectrometerMagnetConstruction::BuildSAMURAIDesign()
+void FASER2DetectorConstruction::BuildSAMURAIDesign()
 {
   auto magnetYokeBlock = new G4Box("MagnetYokeBlock", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fMagnetWindowZ/2.);
   auto magnetWindowSolid = new G4Box("MagnetYokeWindow", fMagnetWindowX/2., fMagnetWindowY/2., fMagnetWindowZ/2.);
@@ -190,7 +190,7 @@ void SpectrometerMagnetConstruction::BuildSAMURAIDesign()
   fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical"); 
 }
 
-void SpectrometerMagnetConstruction::BuildCrystalPullingDesign()
+void FASER2DetectorConstruction::BuildCrystalPullingDesign()
 {
   auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
   auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
@@ -199,7 +199,7 @@ void SpectrometerMagnetConstruction::BuildCrystalPullingDesign()
   fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical");
 }
 
-void SpectrometerMagnetConstruction::BuildTrackingStation()
+void FASER2DetectorConstruction::BuildTrackingStation()
 {
   // Each tracking station is made of 2 layers
   // 1st layer: fNScinBarsY horizontal modules

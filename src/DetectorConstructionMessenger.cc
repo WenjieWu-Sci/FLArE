@@ -361,29 +361,29 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
   else if (command == faserPosCmd) 
     GeometricalParameters::Get()->SetFASER2Position(faserPosCmd->GetNew3VectorValue(newValues));
   else if (command == faserMagnetGeomCmd)  
-    GeometricalParameters::Get()->SetSpectrometerMagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetOption(GeometricalParameters::Get()->ConvertStringToMagnetOption(newValues));
   else if (command == faserMagnetFieldCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetField(faserMagnetFieldCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetField(faserMagnetFieldCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetWinXCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowX(faserMagnetWinXCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetWindowX(faserMagnetWinXCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetWinYCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowY(faserMagnetWinYCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetWindowY(faserMagnetWinYCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetWinZCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetWindowZ(faserMagnetWinZCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetWindowZ(faserMagnetWinZCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserYokeThickXCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickX(faserYokeThickXCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetYokeThickX(faserYokeThickXCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserYokeThickYCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetYokeThickY(faserYokeThickYCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetYokeThickY(faserYokeThickYCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetInnerRCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetInnerR(faserMagnetInnerRCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetInnerR(faserMagnetInnerRCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetOuterRCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetOuterR(faserMagnetOuterRCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetOuterR(faserMagnetOuterRCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetLengthZCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetLengthZ(faserMagnetLengthZCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetLengthZ(faserMagnetLengthZCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetGapCmd) 
-    GeometricalParameters::Get()->SetSpectrometerMagnetGap(faserMagnetGapCmd->ConvertToDimensionedDouble(newValues));
+    GeometricalParameters::Get()->SetFASER2MagnetGap(faserMagnetGapCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetNumberCmd) 
-    GeometricalParameters::Get()->SetNSpectrometerMagnets(faserMagnetNumberCmd->GetNewIntValue(newValues));
+    GeometricalParameters::Get()->SetNFASER2Magnets(faserMagnetNumberCmd->GetNewIntValue(newValues));
   //faser2 tracking stations
   else if (command == faserTrackingNumberCmd) 
     GeometricalParameters::Get()->SetNTrackingStations(faserTrackingNumberCmd->GetNewIntValue(newValues));

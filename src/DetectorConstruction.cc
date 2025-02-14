@@ -3,7 +3,7 @@
 #include "DetectorConstructionMessenger.hh"
 #include "LArBoxSD.hh"
 
-#include "geometry/SpectrometerMagnetConstruction.hh"
+#include "geometry/FASER2DetectorConstruction.hh"
 #include "geometry/GeometricalParameters.hh"
 #include "geometry/FASERnu2DetectorConstruction.hh"
 #include "geometry/FORMOSADetectorConstruction.hh"
@@ -210,7 +210,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   // FASER2 Magnet + Tracking stations
 
   if (m_addFASER2) {
-    SpectrometerMagnetConstruction *magnetAssembler = new SpectrometerMagnetConstruction();
+    FASER2DetectorConstruction *magnetAssembler = new FASER2DetectorConstruction();
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
     TrackingVerScinBarLogical = magnetAssembler->GetVerTrackingScinBar(); //need to assign SD
     TrackingHorScinBarLogical = magnetAssembler->GetHorTrackingScinBar(); //need to assign SD
@@ -371,7 +371,7 @@ void DetectorConstruction::ConstructSDandField() {
     SDIdx++;
 
     // FASER2 magnetic field
-    G4ThreeVector fieldValueFASER2 = GeometricalParameters::Get()->GetSpectrometerMagnetField();
+    G4ThreeVector fieldValueFASER2 = GeometricalParameters::Get()->GetFASER2MagnetField();
     magFieldFASER2 = new G4UniformMagField(fieldValueFASER2);
     fieldMgrFASER2 = new G4FieldManager();
     fieldMgrFASER2->SetDetectorField(magFieldFASER2);
