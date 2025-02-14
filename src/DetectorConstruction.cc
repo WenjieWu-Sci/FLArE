@@ -92,8 +92,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   //   starts at the center of the global coordinate
   // - position of the cavern center w.r.t. the line of sight, since it's not in the exact middle
   G4ThreeVector hallOffset( GeometricalParameters::Get()->GetHallOffsetX(), 
-		                        GeometricalParameters::Get()->GetHallOffsetY(), 
-			                      hallSizeZ/2 - GeometricalParameters::Get()->GetHallHeadDistance()); 
+                            GeometricalParameters::Get()->GetHallOffsetY(), 
+                            hallSizeZ/2 - GeometricalParameters::Get()->GetHallHeadDistance()); 
                                                            
   auto hallBox = new G4Box("hallBox", hallSizeX/2, hallSizeY/2, hallSizeZ/2);
   hallLV = new G4LogicalVolume(hallBox, LArBoxMaterials->Material("Air"), "hallLV");
@@ -133,8 +133,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     
       G4double babyMINDLengthZ  = GeometricalParameters::Get()->GetBabyMINDTotalSizeZ();
       G4ThreeVector babyMINDPos = GeometricalParameters::Get()->GetFLArEPosition() +
-	                                G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
-				                          G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
+                                  G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
+                                  G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
       babyMINDPos -= hallOffset;
       new G4PVPlacement(nullptr, babyMINDPos, BabyMINDAssembly, "BabyMINDPhysical", hallLV, false, 0, fCheckOverlap);
       
