@@ -144,8 +144,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     
       G4double babyMINDLengthZ  = GeometricalParameters::Get()->GetBabyMINDTotalSizeZ();
       G4ThreeVector babyMINDPos = GeometricalParameters::Get()->GetFLArEPosition() +
-	                          G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
-				  G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
+	                                G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
+				                          G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
       babyMINDPos -= hallOffset;
       new G4PVPlacement(nullptr, babyMINDPos, BabyMINDAssembly, "BabyMINDPhysical", hallLV, false, 0, fCheckOverlap);
       
@@ -170,7 +170,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       G4double HadCatMuonFindLengthZ  = HadCatcherLength + MuonFinderLength;
       G4ThreeVector HadCatMuonFindPos = GeometricalParameters::Get()->GetFLArEPosition() +
 	                                G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
-				        G4ThreeVector(0.,0.,HadCatMuonFindLengthZ/2.);
+				                          G4ThreeVector(0.,0.,HadCatMuonFindLengthZ/2.);
     
       HadCatMuonFindPos -= hallOffset;
       HadCatMuonFindAssembly->MakeImprint(hallLV, HadCatMuonFindPos, nullptr, 0, fCheckOverlap);
@@ -205,13 +205,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     FASERnu2DetectorConstruction *FASERnu2Assembler = new FASERnu2DetectorConstruction();
     FASERnu2EmulsionLogical = FASERnu2Assembler->GetEmulsionFilm();
     FASERnu2VetoInterfaceLogical = FASERnu2Assembler->GetVetoInterfaceDetector();
-    G4AssemblyVolume* FASERnu2Assembly = FASERnu2Assembler->GetFASERnu2Assembly();
+    G4LogicalVolume* FASERnu2Assembly = FASERnu2Assembler->GetFASERnu2Assembly();
     
     // positioning
     G4double lengthFASERnu2 = GeometricalParameters::Get()->GetFASERnu2TotalSizeZ();
     G4ThreeVector FASERnu2Pos = GeometricalParameters::Get()->GetFASERnu2Position();
     FASERnu2Pos -= hallOffset;
-    FASERnu2Assembly->MakeImprint(hallLV, FASERnu2Pos, nullptr, 0, fCheckOverlap);
+    new G4PVPlacement(nullptr, FASERnu2Pos, FASERnu2Assembly, "FASERnu2Physical", hallLV, false, 0, fCheckOverlap);
 
     G4cout<<"Length of FASERnu2 : "<<lengthFASERnu2<<G4endl;
     G4cout<<"Center of FASERnu2 : "<<FASERnu2Pos+hallOffset<<G4endl; // w.r.t the global coordinate

@@ -62,6 +62,7 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
   // starting position for placement
   G4ThreeVector prevPos(0.,0.,-BabyMINDTotalSizeZ/2.);
   char prev = 'i';
+  int k = 0;
 
   for(auto c : fBlockSequence) {
     
@@ -88,7 +89,8 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
         shift += fMagnetPlateThickness/2.;
         currentPos += G4ThreeVector(0.,0.,shift);
         // placing a magnet module
-        new G4PVPlacement(noRot, currentPos, fMagnetPlate, "MagnetPlatePhysical", fBabyMINDLogical, false, 0, false);
+        new G4PVPlacement(noRot, currentPos, fMagnetPlate, "MagnetPlatePhysical", fBabyMINDAssembly, false, k, false);
+        k++;
         // update pointer to the end of the module
         // shift by only remaining half size
         shift = fMagnetPlateThickness/2.;

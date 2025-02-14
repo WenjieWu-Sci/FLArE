@@ -29,31 +29,36 @@ FASERnu2DetectorConstruction::FASERnu2DetectorConstruction()
 
   fModuleThickness = (fNEmulsionTungstenLayers/2.)*(fEmulsionThickness+fTungstenThickness);
   G4double totLengthZ = 2*fModuleThickness + 3*fVetoInterfaceSizeZ;
-   
+  G4double totLengthX = (fVetoInterfaceSizeX > fEmulsionTungstenSizeX) ? fVetoInterfaceSizeX : fEmulsionTungstenSizeX;
+  G4double totLengthY = (fVetoInterfaceSizeY > fEmulsionTungstenSizeY) ? fVetoInterfaceSizeY : fEmulsionTungstenSizeY;
   GeometricalParameters::Get()->SetFASERnu2TotalSizeZ(totLengthZ);
 
   BuildEmulsionTungstenModule();
   BuildVetoInterfaceDetector(); 
-    
-  fFASERnu2Assembly = new G4AssemblyVolume();
-  G4RotationMatrix *noRot = new G4RotationMatrix();
+
+  // create a top-level logical volume container
+  auto containerSolid = new G4Box("FASERnu2Solid",totLengthX/2.,totLengthY/2.,totLengthZ/2.);
+  fFASERnu2Assembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FASERnu2Logical");
 
   // center of the assembly is the center of middle interface detector
   G4ThreeVector FASERnu2Center(0.,0.,0.);
+  G4RotationMatrix *noRot = new G4RotationMatrix();
 
   // placing middle interface detector
-  fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,FASERnu2Center,noRot);
+  new G4PVPlacement(noRot, FASERnu2Center, fInterfaceDetector, "InterfaceDetPhysical", fFASERnu2Assembly, false, 0, false);
     
   // placing the two emulsion sandwiches
   for( int i=-1; i<=1; i=i+2 ){
     G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,(fModuleThickness+fVetoInterfaceSizeZ)/2.);
-    fFASERnu2Assembly->AddPlacedAssembly(fEmulsionTungstenModule,pos,noRot);
+    fEmulsionTungstenModule->MakeImprint(fFASERnu2Assembly, pos, noRot, 0, false);
   }
 
   // placing the outer interface detectors
+  int k = 1;
   for( int i=-1; i<=1; i=i+2 ){
     G4ThreeVector pos = FASERnu2Center + i*G4ThreeVector(0.,0.,fModuleThickness+1.0*fVetoInterfaceSizeZ);
-    fFASERnu2Assembly->AddPlacedVolume(fInterfaceDetector,pos,noRot);
+    new G4PVPlacement(noRot, pos, fInterfaceDetector, "InterfaceDetPhysical", fFASERnu2Assembly, false, k, false);
+    k++;
   }
 
   // visibility
