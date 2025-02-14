@@ -136,7 +136,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     if( m_useBabyMIND ){   /// use BabyMIND
   
       BabyMINDDetectorConstruction *BabyMINDAssembler = new BabyMINDDetectorConstruction();
-      G4AssemblyVolume *BabyMINDAssembly = BabyMINDAssembler->GetBabyMINDAssembly();
+      G4LogicalVolume *BabyMINDAssembly = BabyMINDAssembler->GetBabyMINDAssembly();
   
       BabyMINDMagnetPlateLogical = BabyMINDAssembler->GetMagnetPlate();
       BabyMINDVerticalBar = BabyMINDAssembler->GetVerticalBar();
@@ -147,7 +147,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 	                          G4ThreeVector(0.,0.,lArSizeZ/2.+TPCInsulationThickness) +
 				  G4ThreeVector(0.,0.,babyMINDLengthZ/2.);
       babyMINDPos -= hallOffset;
-      BabyMINDAssembly->MakeImprint(hallLV, babyMINDPos, nullptr, 0, fCheckOverlap);
+      new G4PVPlacement(nullptr, babyMINDPos, BabyMINDAssembly, "BabyMINDPhysical", hallLV, false, 0, fCheckOverlap);
       
       G4cout << "Length of BabyMIND : " << babyMINDLengthZ << G4endl;
       G4cout << "Center of BabyMIND : " << babyMINDPos+hallOffset << G4endl; // w.r.t the global coordinate
