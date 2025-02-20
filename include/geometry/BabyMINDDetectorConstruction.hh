@@ -16,7 +16,7 @@ class BabyMINDDetectorConstruction {
     ~BabyMINDDetectorConstruction();
 
     // Returns assembly volume for placement    
-    G4AssemblyVolume* GetBabyMINDAssembly(){ return fBabyMINDAssembly;}
+    G4LogicalVolume* GetBabyMINDAssembly(){ return fBabyMINDAssembly;}
   
     // Returns logical volumes
     G4LogicalVolume* GetMagnetPlate(){ return fMagnetPlate;}
@@ -32,7 +32,7 @@ class BabyMINDDetectorConstruction {
 
   private:
 
-    G4AssemblyVolume* fBabyMINDAssembly;
+    G4LogicalVolume* fBabyMINDAssembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetPlate;
     G4LogicalVolume* fHorizontalBar;

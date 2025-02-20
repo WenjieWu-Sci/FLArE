@@ -493,8 +493,8 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
     // apply circular fitting for FASER2 spectrometer magnet
     if( trkNhits > 0 ){
       
-      Nmagnets = (GeometricalParameters::Get()->GetSpectrometerMagnetOption() == GeometricalParameters::magnetOption::SAMURAI) ? 1 :
-                  GeometricalParameters::Get()->GetNSpectrometerMagnets();
+      Nmagnets = (GeometricalParameters::Get()->GetFASER2MagnetOption() == GeometricalParameters::magnetOption::SAMURAI) ? 1 :
+                  GeometricalParameters::Get()->GetNFASER2Magnets();
       G4cout << "Number of FASER2 magnets: " << Nmagnets << G4endl;
 
       circularfitter::CircleExtractor* circExtract = new circularfitter::CircleExtractor(trkXFSL,trkYFSL,trkZFSL);

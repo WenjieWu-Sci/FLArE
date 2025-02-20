@@ -6,6 +6,8 @@
 # - FASER2 (SAMURAI magnet)
 # - FORMOSA
 
+/det/fileGdml FPF_hall_Option1a_FORMOSAlast.gdml
+
 # Configuring FLArE
 /det/addFLArE true
 /det/flare/addFLArEPos 0 0 4300 mm

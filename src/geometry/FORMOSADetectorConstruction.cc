@@ -10,6 +10,7 @@
 #include "G4Colour.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4PVReplica.hh"
+#include "G4PVPlacement.hh"
 
 FORMOSADetectorConstruction::FORMOSADetectorConstruction()
 {
@@ -28,23 +29,26 @@ FORMOSADetectorConstruction::FORMOSADetectorConstruction()
   fPMTSizeSpacing = GeometricalParameters::Get()->GetPMTSizeSpacing();
 
   G4double totLengthZ = NScintillatorModules*(fScintillatorBarSizeZ+fPMTSizeSpacing);
+  G4double totLengthX = fNScinBarsX*fScintillatorBarSizeX;
+  G4double totLengthY = fNScinBarsY*fScintillatorBarSizeY;
   GeometricalParameters::Get()->SetFORMOSATotalSizeZ(totLengthZ);
 
   BuildScintillatorAssembly();
   //BuildVetoDetector(); 
     
-  fFORMOSAAssembly = new G4AssemblyVolume();
-  G4RotationMatrix *noRot = new G4RotationMatrix();
+  auto containerSolid = new G4Box("FORMOSASolid",totLengthX/2.,totLengthY/2.,totLengthZ/2.);
+  fFORMOSAAssembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FORMOSALogical");
 
   // center of the assembly is the center of middle PMT box
   G4ThreeVector FORMOSACenter(0.,0.,0.);
+  G4RotationMatrix *noRot = new G4RotationMatrix();
 
   // placing the scintillator blocks: note that the center of each scintillator assembly
   // is in the middle of the scintillator, not in the geometrical baricenter
   for( int i=0; i<NScintillatorModules; i++ ){
     G4double offset = -0.5*(3.*fScintillatorBarSizeZ+4.*fPMTSizeSpacing)+i*(fScintillatorBarSizeZ+fPMTSizeSpacing);
     G4ThreeVector pos = FORMOSACenter + G4ThreeVector(0.,0., offset);
-    fFORMOSAAssembly->AddPlacedAssembly(fScintillatorAssembly,pos,noRot);
+    fScintillatorAssembly->MakeImprint(fFORMOSAAssembly, pos, noRot, 0, false);
   }
 
   // placing the outer veto detectors

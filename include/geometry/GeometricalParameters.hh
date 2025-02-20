@@ -93,10 +93,10 @@ class GeometricalParameters  {
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
     magnetOption ConvertStringToMagnetOption(G4String val);
-    void SetSpectrometerMagnetOption(magnetOption val) { fSpectrometerMagnetOption = val; }
-    magnetOption GetSpectrometerMagnetOption() { return fSpectrometerMagnetOption; }
-    void SetSpectrometerMagnetField(G4double val) { fSpectrometerMagnetField = val; }
-    G4ThreeVector GetSpectrometerMagnetField();
+    void SetFASER2MagnetOption(magnetOption val) { fFASER2MagnetOption = val; }
+    magnetOption GetFASER2MagnetOption() { return fFASER2MagnetOption; }
+    void SetFASER2MagnetField(G4double val) { fFASER2MagnetField = val; }
+    G4ThreeVector GetFASER2MagnetField();
     void SetMagnetTotalSizeZ(G4double val) { fMagnetTotalSizeZ = val; }
     G4double GetMagnetTotalSizeZ() { return fMagnetTotalSizeZ; }
     void SetTrackingStationTotalSizeZ(G4double val) { fTrackingStationTotalSizeZ = val; }
@@ -106,29 +106,29 @@ class GeometricalParameters  {
     void SetFASER2TotalSizeZ(G4double val) { fFASER2TotalSizeZ = val; }
     G4double GetFASER2TotalSizeZ() { return fFASER2TotalSizeZ; }
     // SAMURAI design
-    void SetSpectrometerMagnetWindowX(G4double val) { fSpectrometerMagnetWindowX = val; }
-    G4double GetSpectrometerMagnetWindowX() { return fSpectrometerMagnetWindowX; }
-    void SetSpectrometerMagnetWindowY(G4double val) { fSpectrometerMagnetWindowY = val; }
-    G4double GetSpectrometerMagnetWindowY() { return fSpectrometerMagnetWindowY; }
-    void SetSpectrometerMagnetWindowZ(G4double val) { fSpectrometerMagnetWindowZ = val; }
-    G4double GetSpectrometerMagnetWindowZ() { return fSpectrometerMagnetWindowZ; }
-    void SetSpectrometerMagnetYokeThickX(G4double val) { fSpectrometerMagnetYokeThickX = val; }
-    G4double GetSpectrometerMagnetYokeThickX() { return fSpectrometerMagnetYokeThickX; }
-    void SetSpectrometerMagnetYokeThickY(G4double val) { fSpectrometerMagnetYokeThickY = val; }
-    G4double GetSpectrometerMagnetYokeThickY() { return fSpectrometerMagnetYokeThickY; }
+    void SetFASER2MagnetWindowX(G4double val) { fFASER2MagnetWindowX = val; }
+    G4double GetFASER2MagnetWindowX() { return fFASER2MagnetWindowX; }
+    void SetFASER2MagnetWindowY(G4double val) { fFASER2MagnetWindowY = val; }
+    G4double GetFASER2MagnetWindowY() { return fFASER2MagnetWindowY; }
+    void SetFASER2MagnetWindowZ(G4double val) { fFASER2MagnetWindowZ = val; }
+    G4double GetFASER2MagnetWindowZ() { return fFASER2MagnetWindowZ; }
+    void SetFASER2MagnetYokeThickX(G4double val) { fFASER2MagnetYokeThickX = val; }
+    G4double GetFASER2MagnetYokeThickX() { return fFASER2MagnetYokeThickX; }
+    void SetFASER2MagnetYokeThickY(G4double val) { fFASER2MagnetYokeThickY = val; }
+    G4double GetFASER2MagnetYokeThickY() { return fFASER2MagnetYokeThickY; }
     // Crystal-Pulling design
-    void SetSpectrometerMagnetInnerR(G4double val) { fSpectrometerMagnetInnerR = val; }
-    G4double GetSpectrometerMagnetInnerR() { return fSpectrometerMagnetInnerR; }
-    void SetSpectrometerMagnetOuterR(G4double val) { fSpectrometerMagnetOuterR = val; }
-    G4double GetSpectrometerMagnetOuterR() { return fSpectrometerMagnetOuterR; }
-    void SetSpectrometerMagnetLengthZ(G4double val) { fSpectrometerMagnetLengthZ = val; }
-    G4double GetSpectrometerMagnetLengthZ() { return fSpectrometerMagnetLengthZ; }
-    void SetNSpectrometerMagnets(G4int val) { fNSpectrometerMagnets = val; }
-    G4int GetNSpectrometerMagnets() { return fNSpectrometerMagnets; }
-    void SetSpectrometerMagnetGap(G4double val) { fSpectrometerMagnetGap = val; }
-    G4double GetSpectrometerMagnetGap() { return fSpectrometerMagnetGap; }  
-    void SetSpectrometerMagnetSpacing(G4double val) { fSpectrometerMagnetSpacing = val; }
-    G4double GetSpectrometerMagnetSpacing() { return fSpectrometerMagnetSpacing; }  
+    void SetFASER2MagnetInnerR(G4double val) { fFASER2MagnetInnerR = val; }
+    G4double GetFASER2MagnetInnerR() { return fFASER2MagnetInnerR; }
+    void SetFASER2MagnetOuterR(G4double val) { fFASER2MagnetOuterR = val; }
+    G4double GetFASER2MagnetOuterR() { return fFASER2MagnetOuterR; }
+    void SetFASER2MagnetLengthZ(G4double val) { fFASER2MagnetLengthZ = val; }
+    G4double GetFASER2MagnetLengthZ() { return fFASER2MagnetLengthZ; }
+    void SetNFASER2Magnets(G4int val) { fNFASER2Magnets = val; }
+    G4int GetNFASER2Magnets() { return fNFASER2Magnets; }
+    void SetFASER2MagnetGap(G4double val) { fFASER2MagnetGap = val; }
+    G4double GetFASER2MagnetGap() { return fFASER2MagnetGap; }  
+    void SetFASER2MagnetSpacing(G4double val) { fFASER2MagnetSpacing = val; }
+    G4double GetFASER2MagnetSpacing() { return fFASER2MagnetSpacing; }  
     // Tracking station
     void SetNTrackingStations(G4int val) { fNTrackingStations = val; }
     G4int GetNTrackingStations() { return fNTrackingStations; }  
@@ -240,25 +240,25 @@ class GeometricalParameters  {
     G4String fBabyMINDBlockSequence;
 
     // FASER2 Spectrometer Magnet
-    magnetOption fSpectrometerMagnetOption;
-    G4double fSpectrometerMagnetField;
+    magnetOption fFASER2MagnetOption;
+    G4double fFASER2MagnetField;
     G4double fMagnetTotalSizeZ;
     G4double fTrackingStationTotalSizeZ;
     G4double fMagnetZPos;
     G4double fFASER2TotalSizeZ;
     // SAMURAI design
-    G4double fSpectrometerMagnetWindowX;
-    G4double fSpectrometerMagnetWindowY;
-    G4double fSpectrometerMagnetWindowZ;
-    G4double fSpectrometerMagnetYokeThickX;
-    G4double fSpectrometerMagnetYokeThickY;
+    G4double fFASER2MagnetWindowX;
+    G4double fFASER2MagnetWindowY;
+    G4double fFASER2MagnetWindowZ;
+    G4double fFASER2MagnetYokeThickX;
+    G4double fFASER2MagnetYokeThickY;
     // Crystal-Pulling design
-    G4double fSpectrometerMagnetInnerR;
-    G4double fSpectrometerMagnetOuterR;
-    G4double fSpectrometerMagnetLengthZ;
-    G4int fNSpectrometerMagnets;
-    G4double fSpectrometerMagnetGap;
-    G4double fSpectrometerMagnetSpacing;
+    G4double fFASER2MagnetInnerR;
+    G4double fFASER2MagnetOuterR;
+    G4double fFASER2MagnetLengthZ;
+    G4int fNFASER2Magnets;
+    G4double fFASER2MagnetGap;
+    G4double fFASER2MagnetSpacing;
     // Tracking stations
     G4int fNTrackingStations;
     G4int fNScintillatorBarsY;

@@ -16,7 +16,7 @@ class FASERnu2DetectorConstruction {
     ~FASERnu2DetectorConstruction();
 
     // Returns assembly volume for placement    
-    G4AssemblyVolume* GetFASERnu2Assembly(){ return fFASERnu2Assembly;}
+    G4LogicalVolume* GetFASERnu2Assembly(){ return fFASERnu2Assembly;}
   
     // Returns logical volumes
     G4LogicalVolume* GetEmulsionFilm(){ return fEmulsionFilm;}
@@ -28,7 +28,7 @@ class FASERnu2DetectorConstruction {
 
   private:
 
-    G4AssemblyVolume* fFASERnu2Assembly;
+    G4LogicalVolume* fFASERnu2Assembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fEmulsionFilm;
     G4LogicalVolume* fTungstenPlate;

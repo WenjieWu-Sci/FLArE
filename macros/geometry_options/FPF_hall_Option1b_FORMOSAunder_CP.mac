@@ -7,6 +7,8 @@
 # - FORMOSA (under LOS)
 # - FASER2 (CrystalPulling magnets)
 
+/det/fileGdml FPF_hall_Option1b_FORMOSAunder_CP.gdml
+
 # Configuring FLArE
 /det/addFLArE true
 /det/flare/addFLArEPos 0 0 4300 mm

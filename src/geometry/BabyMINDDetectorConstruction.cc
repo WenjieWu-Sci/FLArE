@@ -45,19 +45,24 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
   BuildMagnetModule();
   BuildScintillatorModule(); 
  
-  fBabyMINDAssembly = new G4AssemblyVolume();
-  G4RotationMatrix *noRot = new G4RotationMatrix();
-
   // let's find the total size of BabyMIND, this depends on the block sequence
   G4double BabyMINDTotalSizeZ = ComputeTotalSize();
+  G4double BabyMINDTotalSizeX = (fMagnetPlateSizeX > fHorizontalBarSizeX) ? fMagnetPlateSizeX : fHorizontalBarSizeX;
+  G4double BabyMINDTotalSizeY = (fMagnetPlateSizeY > fVerticalBarSizeY) ? fMagnetPlateSizeY : fVerticalBarSizeY;
   GeometricalParameters::Get()->SetBabyMINDTotalSizeZ(BabyMINDTotalSizeZ);
+
+  // create a top-level logical volume container
+  auto containerSolid = new G4Box("BabyMINDSolid", BabyMINDTotalSizeX/2., BabyMINDTotalSizeY/2., BabyMINDTotalSizeZ/2.);
+  fBabyMINDAssembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "BabyMINDLogical");
 
   // center of the assembly is...
   G4ThreeVector BabyMINDCenter(0.,0.,0.);
+  G4RotationMatrix *noRot = new G4RotationMatrix();
 
   // starting position for placement
   G4ThreeVector prevPos(0.,0.,-BabyMINDTotalSizeZ/2.);
   char prev = 'i';
+  int k = 0;
 
   for(auto c : fBlockSequence) {
     
@@ -84,7 +89,8 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
         shift += fMagnetPlateThickness/2.;
         currentPos += G4ThreeVector(0.,0.,shift);
         // placing a magnet module
-        fBabyMINDAssembly->AddPlacedVolume(fMagnetPlate,currentPos,noRot);
+        new G4PVPlacement(noRot, currentPos, fMagnetPlate, "MagnetPlatePhysical", fBabyMINDAssembly, false, k, false);
+        k++;
         // update pointer to the end of the module
         // shift by only remaining half size
         shift = fMagnetPlateThickness/2.;
@@ -100,7 +106,7 @@ BabyMINDDetectorConstruction::BabyMINDDetectorConstruction()
         shift += 2*fBarThickness;
         currentPos += G4ThreeVector(0.,0.,shift);
         // placing a detector module
-        fBabyMINDAssembly->AddPlacedAssembly(fDetectorModule,currentPos,noRot);
+        fDetectorModule->MakeImprint(fBabyMINDAssembly, currentPos, noRot, 0, false);
         // update pointer to the end of the module
         // shift by only remaining half size
         shift = 2*fBarThickness; 

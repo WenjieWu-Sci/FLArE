@@ -16,7 +16,7 @@ class FLArEHadCatcherMuonFinderConstruction {
     ~FLArEHadCatcherMuonFinderConstruction();
 
     // Return assembly volume for placement
-    G4AssemblyVolume* GetHadCatcherMuonFinderAssembly() { return fHadCatcherMuonFinderAssembly; }
+    G4LogicalVolume* GetHadCatcherMuonFinderAssembly() { return fHadCatcherMuonFinderAssembly; }
 
     // Return logical volumes
     // Hadronic calorimetry
@@ -35,7 +35,7 @@ class FLArEHadCatcherMuonFinderConstruction {
   private:
     DetectorConstructionMaterial* fMaterials;
   
-    G4AssemblyVolume* fHadCatcherMuonFinderAssembly;
+    G4LogicalVolume* fHadCatcherMuonFinderAssembly;
 
     G4LogicalVolume* HadAbsorLayersLogical;
     G4LogicalVolume* HadCalXCellLogical;

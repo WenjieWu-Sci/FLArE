@@ -16,7 +16,7 @@ class FLArETPCDetectorConstruction {
     ~FLArETPCDetectorConstruction();
 
     // Return assembly volume for placement
-    G4AssemblyVolume* GetFLArETPCAssembly() { return fFLArETPCAssembly; }
+    G4LogicalVolume* GetFLArETPCAssembly() { return fFLArETPCAssembly; }
 
     // Return logical volumes
     // TPC volume
@@ -30,7 +30,7 @@ class FLArETPCDetectorConstruction {
     DetectorConstructionMaterial* fMaterials;
     G4Material* detectorMaterial;
 
-    G4AssemblyVolume* fFLArETPCAssembly;
+    G4LogicalVolume* fFLArETPCAssembly;
 
     G4LogicalVolume* fFLArETPCLog;
     G4LogicalVolume* lArBoxLog;

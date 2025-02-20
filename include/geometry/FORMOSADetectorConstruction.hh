@@ -16,7 +16,7 @@ class FORMOSADetectorConstruction {
     ~FORMOSADetectorConstruction();
 
     // Returns assembly volume for placement    
-    G4AssemblyVolume* GetFORMOSAAssembly(){ return fFORMOSAAssembly;}
+    G4LogicalVolume* GetFORMOSAAssembly(){ return fFORMOSAAssembly;}
   
     // Returns logical volumes
     G4LogicalVolume* GetScintillatorBar(){ return fScintillatorBar;}
@@ -27,7 +27,7 @@ class FORMOSADetectorConstruction {
 
   private:
 
-    G4AssemblyVolume* fFORMOSAAssembly;
+    G4LogicalVolume* fFORMOSAAssembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fScintillatorBar;
     G4AssemblyVolume* fScintillatorAssembly;

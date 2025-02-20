@@ -7,6 +7,8 @@
 # - FASER2 (CrystalPulling magnets)
 # - FORMOSA
 
+/det/fileGdml FPF_hall_Option1a_FORMOSAlast_CP_BabyMIND.gdml
+
 # Configuring FLArE
 /det/addFLArE true
 /det/flare/addFLArEPos 0 0 4300 mm

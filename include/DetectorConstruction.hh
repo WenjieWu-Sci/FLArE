@@ -27,6 +27,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     void ConstructSDandField() override;
     void SaveGDML(G4bool i) { m_saveGdml = i; }
+    void NameGDML(G4String str) { m_fileGdml = str; }
     void CheckDetOverlap(G4bool i) { fCheckOverlap = i; }
     void AddFLArE(G4bool i) { m_addFLArE = i; }
     void SetFieldValue(G4double val) { fFieldValue = val; }
@@ -45,6 +46,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     DetectorConstructionMessenger* messenger;
 
     G4bool m_saveGdml;
+    G4String m_fileGdml;
     G4bool fCheckOverlap;
     G4bool m_addFLArE;
     G4bool m_useBabyMIND;
