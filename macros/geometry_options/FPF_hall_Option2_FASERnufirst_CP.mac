@@ -8,6 +8,8 @@
 # - FORMOSA (under LOS)
 # - FASER2 (CrystalPulling magnet)
 
+/det/fileGdml FPF_hall_Option2_FASERnufirst_CP.gdml
+
 # Configuring FASERnu2
 /det/addFASERnu2 true
 /det/fasernu/addFASERnu2Pos 0 0 4293 mm

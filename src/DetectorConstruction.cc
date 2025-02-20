@@ -53,6 +53,7 @@ DetectorConstruction::DetectorConstruction()
   DefineMaterial();
   messenger = new DetectorConstructionMessenger(this);
   m_saveGdml = false;
+  m_fileGdml = "FPF_FLArE_geo.gdml";
   fCheckOverlap = false;
 }
 
@@ -241,7 +242,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   if (m_saveGdml) {
     G4GDMLParser fParser;
-    fParser.Write("FPF_FLArE_Geo.gdml", worldPV);
+    G4cout << "Exporting geometry to " << m_fileGdml << G4endl;
+    fParser.Write(m_fileGdml, worldPV);
   }
 
   return worldPV;

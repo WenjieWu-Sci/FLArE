@@ -22,9 +22,12 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     detDir->SetGuidance("Detector control");
     
     // saving gdml
-    detGdmlCmd = new G4UIcmdWithABool("/det/saveGdml", this);
-    detGdmlCmd->SetParameterName("saveGdml", true);
-    detGdmlCmd->SetDefaultValue(false);
+    detGdmlSaveCmd = new G4UIcmdWithABool("/det/saveGdml", this);
+    detGdmlSaveCmd->SetParameterName("saveGdml", true);
+    detGdmlSaveCmd->SetDefaultValue(false);
+    detGdmlFileCmd = new G4UIcmdWithAString("/det/fileGdml", this);
+    detGdmlFileCmd->SetGuidance("set filename for GDML output");
+
     // check overlap
     detCheckOverlapCmd = new G4UIcmdWithABool("/det/checkOverlap", this);
     detCheckOverlapCmd->SetParameterName("checkOverlap", true);
@@ -219,7 +222,8 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstructionMessenger::~DetectorConstructionMessenger() {
-  delete detGdmlCmd;
+  delete detGdmlSaveCmd;
+  delete detGdmlFileCmd;
   delete detCheckOverlapCmd;
   delete detAddFLArECmd;
   delete detAddFORMOSACmd;
@@ -288,7 +292,8 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
 void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String newValues) {
  
   // GENERAL COMMANDS
-  if (command == detGdmlCmd) det->SaveGDML(detGdmlCmd->GetNewBoolValue(newValues));
+  if (command == detGdmlSaveCmd) det->SaveGDML(detGdmlSaveCmd->GetNewBoolValue(newValues));
+  else if (command == detGdmlFileCmd) det->NameGDML(newValues);
   else if (command == detCheckOverlapCmd) det->CheckDetOverlap(detCheckOverlapCmd->GetNewBoolValue(newValues));
   else if (command == detAddFLArECmd) det->AddFLArE(detAddFLArECmd->GetNewBoolValue(newValues)); 
   else if (command == detAddFORMOSACmd) det->AddFORMOSA(detAddFORMOSACmd->GetNewBoolValue(newValues));
