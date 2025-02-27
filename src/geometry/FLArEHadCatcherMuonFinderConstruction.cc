@@ -12,6 +12,7 @@
 #include "G4Colour.hh" 
 #include "G4PVReplica.hh"
 #include "G4UserLimits.hh"
+#include "G4PVPlacement.hh"
 
 FLArEHadCatcherMuonFinderConstruction::FLArEHadCatcherMuonFinderConstruction()
 {
@@ -25,18 +26,20 @@ FLArEHadCatcherMuonFinderConstruction::FLArEHadCatcherMuonFinderConstruction()
   BuildFLArEHadCal();
   BuildFLArEMuonCatcher();
 
-  fHadCatcherMuonFinderAssembly = new G4AssemblyVolume();
+  G4double totalLength = fHadCalLength + fMuonCatcherLength;
+  auto containerSolid = new G4Box("HadCatcherMuonFinderContainer",fLArSizeX/2.,fLArSizeY/2.,totalLength/2.);
+  fHadCatcherMuonFinderAssembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "HadCatcherMuonFinderLogical");
+
   G4RotationMatrix* noRot = new G4RotationMatrix();
   G4ThreeVector assemblyCenter(0.,0.,0.);
-  G4double totalLength = fHadCalLength + fMuonCatcherLength;
-
+  
   // HadCal
   G4ThreeVector hadCalCenter(0.,0.,-totalLength/2. +fHadCalLength/2.);
-  fHadCatcherMuonFinderAssembly->AddPlacedAssembly(HadCalAssembly,hadCalCenter,noRot);
+  HadCalAssembly->MakeImprint(fHadCatcherMuonFinderAssembly, hadCalCenter, noRot, 0, false);
 
   // MuonCatcher
   G4ThreeVector MuonCatcherCenter(0.,0.,-totalLength/2.+fHadCalLength+fMuonCatcherLength/2.);
-  fHadCatcherMuonFinderAssembly->AddPlacedAssembly(MuonCatcherAssembly,MuonCatcherCenter,noRot);
+  MuonCatcherAssembly->MakeImprint(fHadCatcherMuonFinderAssembly, MuonCatcherCenter, noRot, 0, false);
 
   // visualization
   G4VisAttributes* absorVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));

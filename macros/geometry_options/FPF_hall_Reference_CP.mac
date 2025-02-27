@@ -6,6 +6,8 @@
 # - FASERnu2
 # - FASER2 (CrystalPulling magnets)
 
+/det/fileGdml FPF_hall_Reference_CP.gdml
+
 # Configuring FLArE
 /det/addFLArE true
 /det/flare/addFLArEPos 0 0 4300 mm

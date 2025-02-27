@@ -48,25 +48,25 @@ GeometricalParameters::GeometricalParameters()
   fBabyMINDBlockSequence = "|MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|";
 
   // FASER2 magnet
-  fSpectrometerMagnetOption = magnetOption::SAMURAI;
-  fSpectrometerMagnetField = 1.0*tesla;
+  fFASER2MagnetOption = magnetOption::SAMURAI;
+  fFASER2MagnetField = 1.0*tesla;
   fMagnetTotalSizeZ = 4*m; //updates during construction
   fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
   fFASER2TotalSizeZ = 10.24*m;
   // SAMURAI design
-  fSpectrometerMagnetWindowX = 3.0*m;
-  fSpectrometerMagnetWindowY = 1.0*m;
-  fSpectrometerMagnetWindowZ = 4.0*m;
-  fSpectrometerMagnetYokeThickX = 1.5*m;
-  fSpectrometerMagnetYokeThickY = 2.0*m;
+  fFASER2MagnetWindowX = 3.0*m;
+  fFASER2MagnetWindowY = 1.0*m;
+  fFASER2MagnetWindowZ = 4.0*m;
+  fFASER2MagnetYokeThickX = 1.5*m;
+  fFASER2MagnetYokeThickY = 2.0*m;
   // CrystalPulling design
-  fSpectrometerMagnetLengthZ = 1.25*m;
-  fSpectrometerMagnetInnerR = 0.8*m;
-  fSpectrometerMagnetOuterR = 1.2*m;
-  fNSpectrometerMagnets = 3;
-  fSpectrometerMagnetGap = 0.25*m;
-  fSpectrometerMagnetSpacing = 0.76*m; //updates during construction
+  fFASER2MagnetLengthZ = 1.25*m;
+  fFASER2MagnetInnerR = 0.8*m;
+  fFASER2MagnetOuterR = 1.2*m;
+  fNFASER2Magnets = 3;
+  fFASER2MagnetGap = 0.25*m;
+  fFASER2MagnetSpacing = 0.76*m; //updates during construction
   // Tracking stations
   fNTrackingStations = 6;
   fNScintillatorBarsY = 3;
@@ -142,12 +142,12 @@ GeometricalParameters::magnetOption GeometricalParameters::ConvertStringToMagnet
   }
 }
 
-G4ThreeVector GeometricalParameters::GetSpectrometerMagnetField()
+G4ThreeVector GeometricalParameters::GetFASER2MagnetField()
 {
-  if (fSpectrometerMagnetOption == magnetOption::SAMURAI )
-    return G4ThreeVector(0.,fSpectrometerMagnetField,0.); //field along Y
-  else if (fSpectrometerMagnetOption == magnetOption::CrystalPulling)     
-    return G4ThreeVector(0.,fSpectrometerMagnetField,0.); //field along Y (for now, FIXME?)
+  if (fFASER2MagnetOption == magnetOption::SAMURAI )
+    return G4ThreeVector(0.,fFASER2MagnetField,0.); //field along Y
+  else if (fFASER2MagnetOption == magnetOption::CrystalPulling)     
+    return G4ThreeVector(0.,fFASER2MagnetField,0.); //field along Y (for now, FIXME?)
   else
     return G4ThreeVector(0.,0.,0.);
 }

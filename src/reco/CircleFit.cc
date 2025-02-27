@@ -182,7 +182,7 @@ namespace circularfitter {
     // two cases depending on the magnet design:
     // there can be many magnets, so many magnet positions
     // get the magnet position(s) for each geometry (SAMURAI or CrystalPulling design) first
-    GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetSpectrometerMagnetOption();
+    GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetFASER2MagnetOption();
     G4int nmag = 0;
     std::vector<double> zin;
     std::vector<double> zout;
@@ -200,9 +200,9 @@ namespace circularfitter {
     }else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
       
       double zcenter = GeometricalParameters::Get()->GetMagnetZPosition();
-      double size = GeometricalParameters::Get()->GetSpectrometerMagnetLengthZ();
-      double spacing = GeometricalParameters::Get()->GetSpectrometerMagnetSpacing();
-      nmag = GeometricalParameters::Get()->GetNSpectrometerMagnets();
+      double size = GeometricalParameters::Get()->GetFASER2MagnetLengthZ();
+      double spacing = GeometricalParameters::Get()->GetFASER2MagnetSpacing();
+      nmag = GeometricalParameters::Get()->GetNFASER2Magnets();
       for(int i=0; i<nmag; i++){
 	double offset = (i-0.5*(nmag-1))*(spacing+size);
 	fzpos.push_back( zcenter + offset );

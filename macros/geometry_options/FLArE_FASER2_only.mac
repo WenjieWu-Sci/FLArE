@@ -3,6 +3,8 @@
 # - FLArE (TPC + HadCather + MuonFinder)
 # - FASER2 (SAMURAI magnet)
 
+/det/fileGdml FLArE_FASER2_only.gdml
+
 # Configuring FLArE
 /det/addFLArE true
 /det/flare/addFLArEPos 0 0 4300 mm

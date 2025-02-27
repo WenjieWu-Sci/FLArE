@@ -12,6 +12,7 @@
 #include "G4Colour.hh" 
 #include "G4PVReplica.hh"
 #include "G4UserLimits.hh"
+#include "G4PVPlacement.hh"
 
 FLArETPCDetectorConstruction::FLArETPCDetectorConstruction()
 {
@@ -43,19 +44,23 @@ FLArETPCDetectorConstruction::FLArETPCDetectorConstruction()
   BuildFLArETPC();
   BuildCryostatInsulation();
 
-  fFLArETPCAssembly = new G4AssemblyVolume();
-  G4RotationMatrix* noRot = new G4RotationMatrix();
+  G4double halfContainerX = fLArSizeX/2. + fThicknessInsulation;
+  G4double halfContainerY = fLArSizeY/2. + fThicknessInsulation;
+  G4double halfContainerZ = fLArSizeZ/2. + fThicknessInsulation;
+  auto containerSolid = new G4Box("FLArESolid", halfContainerX, halfContainerY, halfContainerZ);
+  fFLArETPCAssembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FLArELogical");
 
   // TPC
   G4ThreeVector tpcCenter(0.,0.,0.);
+  G4RotationMatrix* noRot = new G4RotationMatrix();
   if (fDetGeomOption == GeometricalParameters::tpcConfigOption::Single) {
-    fFLArETPCAssembly->AddPlacedVolume(fFLArETPCLog, tpcCenter, noRot);
+    new G4PVPlacement(noRot, tpcCenter, fFLArETPCLog, "LArPhysical", fFLArETPCAssembly, false, 0, false);
   } else if (fDetGeomOption == GeometricalParameters::tpcConfigOption::ThreeBySeven) {
-    fFLArETPCAssembly->AddPlacedVolume(lArBoxLog, tpcCenter, noRot);
+    new G4PVPlacement(noRot, tpcCenter, lArBoxLog, "LArPhysical", fFLArETPCAssembly, false, 0, false);
   } else {
     G4cout << "ERROR: undefined TPC configuration!" << G4endl;  
   }
-  fFLArETPCAssembly->AddPlacedVolume(cryoInsulationLog, tpcCenter, noRot);
+  new G4PVPlacement(noRot, tpcCenter, cryoInsulationLog, "CryostatPhysical", fFLArETPCAssembly, false, 0, false);
 
 }
 

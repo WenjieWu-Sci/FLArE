@@ -1,22 +1,22 @@
-#ifndef SpectrometerMagnetConstruction_hh
-#define SpectrometerMagnetConstruction_hh
+#ifndef FASER2DetectorConstruction_hh
+#define FASER2DetectorConstruction_hh
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
 
 #include "DetectorConstructionMaterial.hh"
 
-/// \class SpectrometerMagnetConstruction
-/// This class builds the FASER2 spectrometer magnet, using either the SAMURAI design
+/// \class FASER2DetectorConstruction
+/// This class builds the FASER2 spectrometer, using either the SAMURAI design
 /// or multiple crystal-pulling magnets from Toshiba.  
 
-class SpectrometerMagnetConstruction {
+class FASER2DetectorConstruction {
   public:
-    SpectrometerMagnetConstruction();
-    ~SpectrometerMagnetConstruction();
+    FASER2DetectorConstruction();
+    ~FASER2DetectorConstruction();
 
     // Returns assembly volume for placement    
-    G4AssemblyVolume* GetSpectrometerMagnetAssembly(){ return fMagnetAssembly;}
+    G4LogicalVolume* GetFASER2Assembly(){ return fFASER2Assembly;}
   
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
@@ -30,7 +30,7 @@ class SpectrometerMagnetConstruction {
 
   private:
 
-    G4AssemblyVolume* fMagnetAssembly;
+    G4LogicalVolume* fFASER2Assembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
