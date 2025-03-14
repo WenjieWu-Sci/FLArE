@@ -20,8 +20,7 @@ class FASER2DetectorConstruction {
   
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
-    G4LogicalVolume* GetHorTrackingScinBar(){ return fHorTrackingScinBar;}
-    G4LogicalVolume* GetVerTrackingScinBar(){ return fVerTrackingScinBar;}
+    G4LogicalVolume* GetTrackingStation(){ return fTrackingLogical;}
 
     // Construction methods
     void BuildSAMURAIDesign();
@@ -34,10 +33,9 @@ class FASER2DetectorConstruction {
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
+    G4LogicalVolume* fTrackingLogical;
     G4AssemblyVolume* fTrackingStation;
-    G4LogicalVolume* fHorTrackingScinBar;   
-    G4LogicalVolume* fVerTrackingScinBar;   
-
+    
     // SAMURAI design
     G4double fMagnetWindowX;
     G4double fMagnetWindowY;

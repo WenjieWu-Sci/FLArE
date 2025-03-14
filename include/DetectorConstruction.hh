@@ -71,8 +71,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     // FASER2
     G4LogicalVolume* FASER2MagnetLogical;
-    G4LogicalVolume* TrackingVerScinBarLogical;
-    G4LogicalVolume* TrackingHorScinBarLogical; 
+    G4LogicalVolume* FASER2TrackingLogical;
 
     //FASER2nu
     G4LogicalVolume* FASERnu2EmulsionLogical;
