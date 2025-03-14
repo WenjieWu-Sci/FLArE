@@ -16,7 +16,38 @@ A simple script is provided to setup the relevant software dependencies in the L
 source lxplus_setup.sh
 ```
 
+## Setting up on local machine with Docker
+
+An el9 Docker container which mimics the lxplus environment is available from [DockerHub](https://hub.docker.com/layers/benw22022/faser/el9-cvmfs/images/sha256-e6cffa8f752e192eae60b134dd28fb34682d257e02eed9355d17986c186ae116?context=repo).
+
+A repository containing a script to easily run the container and mount `cvmfs` is available from [github.com/benw22022/el9-cvmfs-docker](https://github.com/benw22022/el9-cvmfs-docker?tab=readme-ov-file)
+
+To get started do:
+
+```bash
+git clone https://github.com/benw22022/el9-cvmfs-docker.git
+cd el9-cvmfs-docker/
+./run_container /path/to/FLArE
+```
+
+This will automatically pull and start the container and copy the `.bashrc` file which mounts `cvmfs` when the container starts.
+
+As mentioned, this software relies upon the `HEP_HPC` library. A precompiled version of this code is provided in the repository. To set this up run
+
+```bash
+# You only need to do this once
+cd FLArE
+tar -xvf HEP_HPC-el9.tar 
+```
+
+Then to set up the environment do
+
+```bash
+source FLArE/local_setup.sh
+```
+
 ## To compile the code
+
 * Create a new directory to contain the executables (assume the path is `/path/to/build`).
 * Assume the path to the source code is `/path/to/source`.
 * To compile, you need to go to the build directory `cd /path/to/build`.
