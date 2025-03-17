@@ -3,6 +3,7 @@
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
+#include <vector>
 
 #include "DetectorConstructionMaterial.hh"
 
@@ -21,6 +22,7 @@ class FASER2DetectorConstruction {
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
     G4LogicalVolume* GetTrackingStation(){ return fTrackingLogical;}
+    std::vector<G4LogicalVolume*> GetTrackingStations(){ return fTrackingStationsLogical;}
 
     // Construction methods
     void BuildSAMURAIDesign();
@@ -34,6 +36,7 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
     G4LogicalVolume* fTrackingLogical;
+    std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
     
     // SAMURAI design

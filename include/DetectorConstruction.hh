@@ -7,6 +7,7 @@
 #include <G4FieldManager.hh>
 #include <G4AssemblyVolume.hh>
 #include "fields/BabyMINDMagneticField.hh"
+#include <vector>
 
 class G4LogicalVolume;
 class DetectorConstructionMessenger;
@@ -71,7 +72,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
 
     // FASER2
     G4LogicalVolume* FASER2MagnetLogical;
-    G4LogicalVolume* FASER2TrackingLogical;
+    std::vector<G4LogicalVolume*> FASER2TrackingLogical;
 
     //FASER2nu
     G4LogicalVolume* FASERnu2EmulsionLogical;

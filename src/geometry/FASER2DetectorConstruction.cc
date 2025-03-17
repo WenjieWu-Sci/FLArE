@@ -38,7 +38,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     G4double gapToMagnet = fTrackingStationGap;
     G4double stationThickness = 2*fScinThickness;
     G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
-    G4double totLengthZ = fMagnetWindowZ+2*gapToMagnet+2*totThickness;
+    G4double totLengthZ = fMagnetWindowZ+2*gapToMagnet+2*totThickness+15;
     G4double totLengthX = fMagnetWindowX+2*fMagnetYokeThicknessX;
     G4double totLengthY = fMagnetWindowY+2*fMagnetYokeThicknessY;
 
@@ -64,14 +64,44 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     G4ThreeVector offset(0, 0, fMagnetWindowZ/2.+ gapToMagnet + totThickness/2.);
     G4ThreeVector preStationsCenter = magCenter - offset;
     G4ThreeVector postStationsCenter = magCenter + offset;
+
+    // placing decay volume
+    G4VSolid* DV_box = new G4Box("DV_box", GeometricalParameters::Get()->GetFASER2MagnetWindowX()/2, GeometricalParameters::Get()->GetFASER2MagnetWindowY()/2, 10./2.*m);
+    G4LogicalVolume* DV_log  = new G4LogicalVolume(DV_box, fMaterials->Material("Air"), "DV_log");
+    
+    G4ThreeVector T1(0, 0, -totThickness/2.+0.5*stationThickness+(fNTrackingStations-1)*(fTrackingStationGap+stationThickness));
+    G4ThreeVector DV_loc = preStationsCenter-G4ThreeVector(0,0, 10/2*m)-T1;
+    std::cout << "DV_loc = " << DV_loc << std::endl;
+    new G4PVPlacement(noRot, DV_loc, DV_log, "FASER2DecayVolPhysical", fFASER2Assembly, false, 0, true);
+    
+    G4VisAttributes* DV_logVisAtt = new G4VisAttributes(G4Colour(0.8,0.8,0.8,0.3));
+    DV_logVisAtt->SetForceWireframe(true);
+    DV_logVisAtt->SetForceSolid(true);
+    DV_log->SetVisAttributes(DV_logVisAtt);
   
     // placing tracking stations (before/after magnet)
+    std::cout << "Placing " << fNTrackingStations * 2 << " tracking layers" << std::endl;
     for (int i= 0; i<fNTrackingStations; ++i) { 
       G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
       G4ThreeVector Tp = postStationsCenter + T;
       G4ThreeVector Tm = preStationsCenter + T;
+
+      std::cout << "Placing tracker at " << Tp << std::endl;
+      std::cout << "Placing tracker at " << Tm << std::endl;
+
       fTrackingStation->MakeImprint(fFASER2Assembly, Tm, noRot, 0, false); //place before magnet
       fTrackingStation->MakeImprint(fFASER2Assembly, Tp, noRot, 0, false); //place after magnet
+
+      auto trkLayerSolid1 = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
+      auto trkLayerLogical1 = new G4LogicalVolume(trkLayerSolid1, fMaterials->Material("Polystyrene"), "trkLayerLogical");
+
+      fTrackingStationsLogical.push_back(trkLayerLogical1);
+
+      auto trkLayerSolid2 = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
+      auto trkLayerLogical2 = new G4LogicalVolume(trkLayerSolid2, fMaterials->Material("Polystyrene"), "trkLayerLogical");
+      
+      fTrackingStationsLogical.push_back(trkLayerLogical2);
+
     }
 
   } else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
@@ -161,7 +191,11 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   
   G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
   stationVis->SetVisibility(true);
-  fTrackingLogical->SetVisAttributes(true);
+  for (auto& station : fTrackingStationsLogical)
+  {
+    station->SetVisAttributes(stationVis);
+  }
+  
 }
 
 FASER2DetectorConstruction::~FASER2DetectorConstruction()
@@ -201,10 +235,12 @@ void FASER2DetectorConstruction::BuildTrackingStation()
 
   auto trkLayerSolid = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
   auto trkLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkLayerLogical");
-  fTrackingLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkScinLogical");
-  new G4PVReplica("trkScinPhysical", fTrackingLogical, trkLayerLogical, kYAxis, 1, fTrackingStationY); 
   
-  fTrackingStation = new G4AssemblyVolume(); //one assembly has 2 layers
+  G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+  stationVis->SetVisibility(true);
+  trkLayerLogical->SetVisAttributes(stationVis);
+
+  fTrackingStation = new G4AssemblyVolume();
   G4RotationMatrix rot(0, 0, 0);
   G4ThreeVector pos(0, 0, 0);
   fTrackingStation->AddPlacedVolume(trkLayerLogical,pos,&rot);

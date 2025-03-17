@@ -213,7 +213,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   if (m_addFASER2) {
     FASER2DetectorConstruction *magnetAssembler = new FASER2DetectorConstruction();
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
-    FASER2TrackingLogical = magnetAssembler->GetTrackingStation();
+    FASER2TrackingLogical = magnetAssembler->GetTrackingStations();
     G4LogicalVolume* FASER2Assembly = magnetAssembler->GetFASER2Assembly();
 
     // positioning
@@ -359,11 +359,14 @@ void DetectorConstruction::ConstructSDandField() {
   }
 
   if (m_addFASER2) {
-    LArBoxSD* TrkScinSD = new LArBoxSD("TrkScinSD");
-    FASER2TrackingLogical->SetSensitiveDetector(TrkScinSD);
-    sdManager->AddNewDetector(TrkScinSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "TrkScinSD/lar_box");
-    SDIdx++;
+    for (auto& station: FASER2TrackingLogical)
+    {
+      LArBoxSD* TrkScinSD = new LArBoxSD("FASER2TrackerSD"+ std::to_string(SDIdx));
+      station->SetSensitiveDetector(TrkScinSD);
+      sdManager->AddNewDetector(TrkScinSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2TrackerSD/lar_box");
+      SDIdx++;
+    }
 
     // FASER2 magnetic field
     G4ThreeVector fieldValueFASER2 = GeometricalParameters::Get()->GetFASER2MagnetField();
