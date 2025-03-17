@@ -54,7 +54,7 @@ G4bool HepMCPrimaryGeneratorAction::CheckVertexInsideWorld(const G4ThreeVector& 
 }
 
 
-void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent)
+void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent, G4ThreeVector vtx_offset)
 {
     // generate next event
     std::shared_ptr<HepMC3::GenEvent> HepMCEvent = GenerateHepMCEvent();
@@ -68,13 +68,18 @@ void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent)
 }
 
 
-void HepMCPrimaryGeneratorAction::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event)
+void HepMCPrimaryGeneratorAction::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event, G4ThreeVector vtx_offset)
 {
     for (const auto& vertex : hepmcevt->vertices()) {
 
         // check world boundary
         HepMC3::FourVector pos = vertex->position();
-        G4LorentzVector xvtx(pos.x(), pos.y(), pos.z(), pos.t());
+
+        G4double vtx_x_offset = vtx_offset.x()*mm;
+        G4double vtx_y_offset = vtx_offset.y()*mm;
+        G4double vtx_z_offset = vtx_offset.z()*mm;
+        G4LorentzVector xvtx(pos.x()+vtx_x_offset, pos.y()+vtx_y_offset, pos.z()+vtx_z_offset, pos.t());
+        
         if (! CheckVertexInsideWorld(xvtx.vect()*mm))
         { 
         std::cout << "WARNING: tried to generate vertex outside of world volume!" << std::endl;
@@ -83,9 +88,7 @@ void HepMCPrimaryGeneratorAction::HepMC2G4(const std::shared_ptr<HepMC3::GenEven
         }
 
         // create G4PrimaryVertex and associated G4PrimaryParticles
-        G4PrimaryVertex* g4vtx =
-        new G4PrimaryVertex(xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm,
-        xvtx.t()*mm/c_light);
+        G4PrimaryVertex* g4vtx = new G4PrimaryVertex(xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()*mm/c_light);
 
         // G4cout << "Placing vertex at (" <<  xvtx.x()*mm << ", " << xvtx.y()*mm << ", " << xvtx.z()*mm << ", " << xvtx.t()*mm/c_light << ")" << G4endl;
 

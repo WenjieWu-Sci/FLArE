@@ -1,6 +1,7 @@
 #ifndef PRIMARY_GENERATOR_ACTION_HH
 #define PRIMARY_GENERATOR_ACTION_HH 
 
+#include "G4ThreeVector.hh"
 #include <TLorentzVector.h>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
@@ -29,6 +30,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
     void setUseHepMC(G4bool val) { useHepMC = val; }
     void setHepMCInputFile(G4String val) { HepMCFileName = val; }
+    void setHepMCVtxOffset(G4ThreeVector val) { HepMCVtxOffset = val; }
+    
 
   private:
     PrimaryGeneratorMessenger* genMessenger;
@@ -57,6 +60,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     HepMCPrimaryGeneratorAction* fActionHepMC;
     G4bool useHepMC;
     G4String HepMCFileName;
+    G4ThreeVector HepMCVtxOffset;
 
 };
 
