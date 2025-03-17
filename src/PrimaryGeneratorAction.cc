@@ -92,7 +92,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
       std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
       std::cout << ") : HepMC Generator ===oooOOOooo===" << std::endl;
       fActionHepMC->LoadFile(HepMCFileName, false);
-      fActionHepMC->GeneratePrimaryVertex(anEvent);
+      fActionHepMC->GeneratePrimaryVertex(anEvent, HepMCVtxOffset);
   }  
   else {
     std::cout << std::endl;

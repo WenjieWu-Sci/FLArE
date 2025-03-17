@@ -2,7 +2,9 @@
 #define PrimaryGeneratorMessenger_h
 
 #include "G4UImessenger.hh"
+#include "G4ThreeVector.hh"
 #include "globals.hh"
+#include "G4UIcmdWith3Vector.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -33,6 +35,7 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIdirectory* HepMCGeneratorDir;
     G4UIcmdWithABool* USEHepMC;
     G4UIcmdWithAString* HepMCInputFile;
+    G4UIcmdWith3Vector* HepMCVtxOffset;
     
     G4UIdirectory* bkgGeneratorDir;
     G4UIcmdWithABool* USEBKG;
