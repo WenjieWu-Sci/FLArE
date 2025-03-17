@@ -9,6 +9,7 @@ class G4ParticleGun;
 class G4GeneralParticleSource;
 class PrimaryGeneratorMessenger;
 class GENIEPrimaryGeneratorAction;
+class HepMCPrimaryGeneratorAction;
 class BackgroundPrimaryGeneratorAction;
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
@@ -25,6 +26,9 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void setUseBackground(G4bool val) { useBackground = val; }
     void setBkgInputFile(G4String val) { bkgFileName = val; }
     void setBkgTimeWindow(G4double val) { bkgTimeWindow = val; }
+
+    void setUseHepMC(G4bool val) { useHepMC = val; }
+    void setHepMCInputFile(G4String val) { HepMCFileName = val; }
 
   private:
     PrimaryGeneratorMessenger* genMessenger;
@@ -49,6 +53,11 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4bool useBackground;
     G4String bkgFileName;
     G4double bkgTimeWindow;
+
+    HepMCPrimaryGeneratorAction* fActionHepMC;
+    G4bool useHepMC;
+    G4String HepMCFileName;
+
 };
 
 #endif

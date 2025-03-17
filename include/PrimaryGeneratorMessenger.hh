@@ -29,7 +29,11 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithAString* GHEPInputFile;
     G4UIcmdWithAnInteger* GHEPEvtStartIdx;
     G4UIcmdWithABool* USEGENIE;
-
+    
+    G4UIdirectory* HepMCGeneratorDir;
+    G4UIcmdWithABool* USEHepMC;
+    G4UIcmdWithAString* HepMCInputFile;
+    
     G4UIdirectory* bkgGeneratorDir;
     G4UIcmdWithABool* USEBKG;
     G4UIcmdWithAString* bkgInputFile;

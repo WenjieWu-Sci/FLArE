@@ -17,6 +17,9 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   GENIEGeneratorDir = new G4UIdirectory("/genie/");
   GENIEGeneratorDir->SetGuidance("genie input control");
 
+  HepMCGeneratorDir = new G4UIdirectory("/hepmc/");
+  HepMCGeneratorDir->SetGuidance("hepmc input control");
+
   USEGENIE = new G4UIcmdWithABool("/genie/useGenie", this);
   USEGENIE->SetGuidance("set generator to genie");
   USEGENIE->SetParameterName("useGenie", true);
@@ -30,7 +33,16 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   GHEPEvtStartIdx->SetGuidance("set the index of the start event in the .ghep file");
   GHEPEvtStartIdx->SetDefaultValue((G4int)0);
   GHEPEvtStartIdx->AvailableForStates(G4State_PreInit, G4State_Idle);
-  
+
+  USEHepMC = new G4UIcmdWithABool("/hepmc/useHepMC", this);
+  USEHepMC->SetGuidance("set generator to hepmc");
+  USEHepMC->SetParameterName("useHepMC", true);
+  USEHepMC->SetDefaultValue(false);
+
+  HepMCInputFile = new G4UIcmdWithAString("/hepmc/hepmcInput", this);
+  HepMCInputFile->SetGuidance("set input filename of the hepmc generator");
+  HepMCInputFile->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
+
   bkgGeneratorDir = new G4UIdirectory("/bkg/");
   bkgGeneratorDir->SetGuidance("background input control");
 
@@ -58,6 +70,10 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete GHEPEvtStartIdx;
   delete USEGENIE;
   delete GENIEGeneratorDir;
+
+  delete HepMCGeneratorDir;
+  delete USEHepMC;
+  delete HepMCInputFile;
   
   delete USEBKG;
   delete bkgInputFile;
@@ -72,6 +88,10 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   if (command == GHEPInputFile) PrimGenAction->setGenieInputFile(newValues);
   else if (command == GHEPEvtStartIdx) PrimGenAction->setGenieStartEvt(GHEPEvtStartIdx->GetNewIntValue(newValues));
   else if (command == USEGENIE) PrimGenAction->setUseGenie(USEGENIE->GetNewBoolValue(newValues));
+  
+  else if (command == USEHepMC) PrimGenAction->setUseHepMC(USEHepMC->GetNewBoolValue(newValues));
+  else if (command == HepMCInputFile) PrimGenAction->setHepMCInputFile(newValues);
+
   else if (command == bkgInputFile) PrimGenAction->setBkgInputFile(newValues);
   else if (command == bkgTimeWindow) PrimGenAction->setBkgTimeWindow(bkgTimeWindow->GetNewDoubleValue(newValues));
   else if (command == USEBKG) PrimGenAction->setUseBackground(USEBKG->GetNewBoolValue(newValues));
