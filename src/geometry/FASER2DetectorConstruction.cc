@@ -71,7 +71,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     
     G4ThreeVector T1(0, 0, -totThickness/2.+0.5*stationThickness+(fNTrackingStations-1)*(fTrackingStationGap+stationThickness));
     G4ThreeVector DV_loc = preStationsCenter-G4ThreeVector(0,0, 10/2*m)-T1;
-    std::cout << "DV_loc = " << DV_loc << std::endl;
+    std::cout << "Placing FASER2 Decay Volume at: " << DV_loc << std::endl;
     new G4PVPlacement(noRot, DV_loc, DV_log, "FASER2DecayVolPhysical", fFASER2Assembly, false, 0, true);
     
     G4VisAttributes* DV_logVisAtt = new G4VisAttributes(G4Colour(0.8,0.8,0.8,0.3));
