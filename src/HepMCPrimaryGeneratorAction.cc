@@ -8,6 +8,7 @@ HepMCPrimaryGeneratorAction::HepMCPrimaryGeneratorAction(G4GeneralParticleSource
 
 HepMCPrimaryGeneratorAction::~HepMCPrimaryGeneratorAction()
 {
+    delete asciiInput;
 }
 
 void HepMCPrimaryGeneratorAction::LoadFile(G4String filename, G4bool override)
