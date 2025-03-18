@@ -40,7 +40,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     G4double gapToMagnet = fTrackingStationGap;
     G4double stationThickness = 2*fScinThickness;
     G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
-    G4double totLengthZ = fMagnetWindowZ+2*gapToMagnet+2*totThickness+15;
+    G4double totLengthZ = fMagnetWindowZ+2*gapToMagnet+2*totThickness+20*m;
     G4double totLengthX = fMagnetWindowX+2*fMagnetYokeThicknessX;
     G4double totLengthY = fMagnetWindowY+2*fMagnetYokeThicknessY;
 
@@ -251,7 +251,6 @@ void FASER2DetectorConstruction::BuildTrackingStation()
   fTrackingStation = new G4AssemblyVolume();
   G4RotationMatrix rot(0, 0, 0);
   G4ThreeVector pos(0, 0, -fScinThickness/2.);
-  fTrackingStation->AddPlacedVolume(trkHorLayerLogical,pos,&rot);
   pos.setZ(fScinThickness/2.);
-  fTrackingStation->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
+  fTrackingStation->AddPlacedVolume(trkLayerLogical,pos,&rot);
 }

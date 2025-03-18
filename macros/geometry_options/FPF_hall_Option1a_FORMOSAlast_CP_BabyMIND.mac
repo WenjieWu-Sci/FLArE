@@ -37,8 +37,6 @@
 /det/faser/magnetGap 0.25 m
 /det/faser/trackingNumber 3
 /det/faser/trackingGap 0.1 m
-/det/faser/trackingNBarsX 7
-/det/faser/trackingNBarsY 7
 /det/faser/trackingScinThick 1.0 cm
 
 # Configuring FORMOSA

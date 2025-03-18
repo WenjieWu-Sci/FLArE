@@ -35,8 +35,6 @@
 /det/faser/magnetWinZ 4.0 m
 /det/faser/yokeThickX 1.5 m
 /det/faser/yokeThickY 2.0 m
-/det/faser/trackingNumber 6
+/det/faser/trackingNumber 3
 /det/faser/trackingGap 0.5 m
-/det/faser/trackingNBarsX 7
-/det/faser/trackingNBarsY 7
 /det/faser/trackingScinThick 1.0 cm

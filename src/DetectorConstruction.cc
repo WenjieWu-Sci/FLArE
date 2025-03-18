@@ -364,7 +364,7 @@ void DetectorConstruction::ConstructSDandField() {
       LArBoxSD* TrkScinSD = new LArBoxSD("FASER2TrackerSD"+ std::to_string(SDIdx));
       station->SetSensitiveDetector(TrkScinSD);
       sdManager->AddNewDetector(TrkScinSD);
-      GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2TrackerSD/lar_box");
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2TrackerSD"+ std::to_string(SDIdx)+"/lar_box");
       SDIdx++;
     }
 
