@@ -57,6 +57,16 @@ Background particles entering the FPF (muons, neutrons) are generated using the 
 Events are sampled via summary histograms available in `backgrounds\background_input.root`.
 An example macro can be found in `macros`: `backgrounds.mac`.
 
+### Long-lived particle events
+
+BSM long-lived particle (LLP) events made by event generators like [FORESEE](https://github.com/KlingFelix/FORESEE) output files in the HepMC format.
+An example dark photon HepMC file can be found here:
+
+`/afs/cern.ch/user/b/bewilson/work/public/hepmc/events_14TeV_m0.3548GeV_c1e-06_to_mu_mu_s1.hepmc`
+
+An example macro for running over this file can be found in `macros/dark_photon_hepmc.mac`.
+
+
 ## Macro commands
 ### Geometry
 |Command |Description | Default |
@@ -121,6 +131,9 @@ An example macro can be found in `macros`: `backgrounds.mac`.
 |/bkg/useBackground   | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
 |/bkg/backgroundInput | if `useBackground is true`, give which file to sample background events|
 |/bkg/backgroundWindow| if `useBackground is true`, set time window for background extraction|
+|/hepmc/useHepMC      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC|
+|/hepmc/hepmcInput    | if `useHepMC is true`, give which `.hepmc` file to read events from|
+|/hepmc/vtxOffset     | if `useHepMC is true`, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
 ### Analysis
 |Command |Description |
 |:--|:--|
