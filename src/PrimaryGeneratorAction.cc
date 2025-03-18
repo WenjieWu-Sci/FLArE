@@ -87,11 +87,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     std::cout << ") : Background Generator ===oooOOOooo===" << std::endl;
     fActionBackground->GeneratePrimaries(anEvent, bkgFileName, bkgTimeWindow);
   }
-  else if(useHepMC) {
+  else if(useHepMC || useHepMC2) {
+      int hepmc_num = (useHepMC2) ? 2 : 3;
       std::cout << std::endl;
       std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
-      std::cout << ") : HepMC Generator ===oooOOOooo===" << std::endl;
-      fActionHepMC->LoadFile(HepMCFileName, false);
+      std::cout << ") : HepMC"<< hepmc_num << " Generator ===oooOOOooo===" << std::endl;
+      fActionHepMC->LoadFile(HepMCFileName, false, useHepMC2);
       fActionHepMC->GeneratePrimaryVertex(anEvent, HepMCVtxOffset);
   }  
   else {

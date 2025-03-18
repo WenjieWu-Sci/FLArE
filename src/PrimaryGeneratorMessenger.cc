@@ -48,6 +48,11 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   HepMCVtxOffset->SetGuidance("set the offset of the primary vertex - useful when there is a mismatch in the geometry");
   HepMCVtxOffset->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
 
+  USEHepMC2 = new G4UIcmdWithABool("/hepmc/useHepMC2", this);
+  USEHepMC2->SetGuidance("set generator to hepmc2");
+  USEHepMC2->SetParameterName("useHepMC2", true);
+  USEHepMC2->SetDefaultValue(false);
+
   bkgGeneratorDir = new G4UIdirectory("/bkg/");
   bkgGeneratorDir->SetGuidance("background input control");
 
@@ -78,6 +83,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 
   delete HepMCGeneratorDir;
   delete USEHepMC;
+  delete USEHepMC2;
   delete HepMCInputFile;
   delete HepMCVtxOffset;
   
@@ -96,6 +102,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   else if (command == USEGENIE) PrimGenAction->setUseGenie(USEGENIE->GetNewBoolValue(newValues));
   
   else if (command == USEHepMC) PrimGenAction->setUseHepMC(USEHepMC->GetNewBoolValue(newValues));
+  else if (command == USEHepMC2) PrimGenAction->setUseHepMC2(USEHepMC2->GetNewBoolValue(newValues));
   else if (command == HepMCInputFile) PrimGenAction->setHepMCInputFile(newValues);
   else if (command == HepMCVtxOffset) PrimGenAction->setHepMCVtxOffset(HepMCVtxOffset->GetNew3VectorValue(newValues));
 

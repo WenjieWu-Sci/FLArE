@@ -36,6 +36,7 @@ class PrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithABool* USEHepMC;
     G4UIcmdWithAString* HepMCInputFile;
     G4UIcmdWith3Vector* HepMCVtxOffset;
+    G4UIcmdWithABool* USEHepMC2;
     
     G4UIdirectory* bkgGeneratorDir;
     G4UIcmdWithABool* USEBKG;

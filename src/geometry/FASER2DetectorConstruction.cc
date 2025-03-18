@@ -33,6 +33,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size + bending plane
     fTrackingStationY = fMagnetWindowY; // match magnet size
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
     fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
     G4double gapToMagnet = fTrackingStationGap;
@@ -116,6 +118,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = 2*fMagnetInnerR + 0.5*m ; //match magnet size + bending plane (for now, FIXME?)
     fTrackingStationY = 2*fMagnetInnerR; // match magnet size
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
     fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
     G4double stationThickness = 2*fScinThickness;
@@ -230,9 +234,13 @@ void FASER2DetectorConstruction::BuildCrystalPullingDesign()
 
 void FASER2DetectorConstruction::BuildTrackingStation()
 {
-  // Each tracking station is made of 1 layer of plastic 
-  // TODO: This is a rough approximation of a SciFi-like detector - can improve to full SciFi mat
+  // Each tracking station is made of 2 layers
+  // 1st layer: fNScinBarsY horizontal modules
+  // 2nd layer: fNScinBarsX vertical modules
+  G4double horizontalScinSize = fTrackingStationY / fNScinBarsY; // y size of horizontal scin
+  G4double verticalScinSize = fTrackingStationX / fNScinBarsX; // x size of vertical scin
 
+  // layer volume: same size, but first has horizontal bars, second one has vertical bars
   auto trkLayerSolid = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
   auto trkLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkLayerLogical");
   
@@ -242,6 +250,8 @@ void FASER2DetectorConstruction::BuildTrackingStation()
 
   fTrackingStation = new G4AssemblyVolume();
   G4RotationMatrix rot(0, 0, 0);
-  G4ThreeVector pos(0, 0, 0);
-  fTrackingStation->AddPlacedVolume(trkLayerLogical,pos,&rot);
+  G4ThreeVector pos(0, 0, -fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkHorLayerLogical,pos,&rot);
+  pos.setZ(fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
 }

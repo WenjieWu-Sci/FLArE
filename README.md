@@ -35,7 +35,7 @@ cd el9-cvmfs-docker/
 
 This will automatically pull and start the container and copy the `.bashrc` file which mounts `cvmfs` when the container starts.
 
-As mentioned, this software relies upon the `HEP_HPC` library. A precompiled version of this code which is compatible with the container is provided in the repository. To set this up run
+As mentioned, this software relies upon the `HEP_HPC` library. A precompiled version of this code is provided in the repository. To set this up run
 
 ```bash
 # You only need to do this once
@@ -98,6 +98,18 @@ Background particles entering the FPF (muons, neutrons) are generated using the 
 Events are sampled via summary histograms available in `backgrounds\background_input.root`.
 An example macro can be found in `macros`: `backgrounds.mac`.
 
+### Long-lived particle events
+
+BSM long-lived particle (LLP) events made by event generators like [FORESEE](https://github.com/KlingFelix/FORESEE) output files in the HepMC3 format.
+An example dark photon HepMC3 file can be found here:
+
+`/afs/cern.ch/user/b/bewilson/work/public/hepmc/events_14TeV_m0.3548GeV_c1e-06_to_mu_mu_s1.hepmc3`
+
+An example macro for running over this file can be found in `macros/dark_photon_hepmc.mac`.
+
+Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2 files set the option `/hepmc/useHepMC2 true` in your macro. An example macro can be found in `macros/dark_photon_hepmc2.mac`.
+
+
 ## Macro commands
 
 ### Geometry
@@ -154,7 +166,7 @@ An example macro can be found in `macros`: `backgrounds.mac`.
 |/det/faser/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
 |/det/faser/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
 |/det/faser/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
-|/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |` 0.5 m`|
+|/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |`0.5 m`|
 
 ### Event generators
 
@@ -166,7 +178,10 @@ An example macro can be found in `macros`: `backgrounds.mac`.
 |/bkg/useBackground   | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
 |/bkg/backgroundInput | if `useBackground is true`, give which file to sample background events|
 |/bkg/backgroundWindow| if `useBackground is true`, set time window for background extraction|
-
+|/hepmc/useHepMC      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC3|
+|/hepmc/useHepMC2     | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC2|
+|/hepmc/hepmcInput    | if `useHepMC is true`, give which `.hepmc` file to read events from|
+|/hepmc/vtxOffset     | if `useHepMC is true`, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
 ### Analysis
 
 |Command |Description |
@@ -188,5 +203,6 @@ There is [this tutorial](https://conferences.fnal.gov/g4tutorial/g4cd/Documentat
 
 ## Some initial results
 
-[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
+[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf)
+ 
 [cern indico 2](https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)

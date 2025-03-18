@@ -38,7 +38,9 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* fTrackingLogical;
     std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
-    
+    G4LogicalVolume* fHorTrackingScinBar;   
+    G4LogicalVolume* fVerTrackingScinBar;   
+
     // SAMURAI design
     G4double fMagnetWindowX;
     G4double fMagnetWindowY;
