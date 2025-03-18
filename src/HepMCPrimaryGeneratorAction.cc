@@ -64,7 +64,7 @@ void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent, G4Thre
         return;
     }
 
-    HepMC2G4(HepMCEvent, anEvent);
+    HepMC2G4(HepMCEvent, anEvent, vtx_offset);
 }
 
 
