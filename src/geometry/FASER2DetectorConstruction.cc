@@ -33,6 +33,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size + bending plane
     fTrackingStationY = fMagnetWindowY; // match magnet size
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
     fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
     G4double gapToMagnet = fTrackingStationGap;
@@ -86,6 +88,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
     fTrackingStationX = 2*fMagnetInnerR + 0.5*m ; //match magnet size + bending plane (for now, FIXME?)
     fTrackingStationY = 2*fMagnetInnerR; // match magnet size
+    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
+    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
     fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
     fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
     G4double stationThickness = 2*fScinThickness;
@@ -161,7 +165,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   
   G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
   stationVis->SetVisibility(true);
-  fTrackingLogical->SetVisAttributes(true);
+  fHorTrackingScinBar->SetVisAttributes(stationVis);  
+  fVerTrackingScinBar->SetVisAttributes(stationVis);  
 }
 
 FASER2DetectorConstruction::~FASER2DetectorConstruction()
@@ -196,16 +201,32 @@ void FASER2DetectorConstruction::BuildCrystalPullingDesign()
 
 void FASER2DetectorConstruction::BuildTrackingStation()
 {
-  // Each tracking station is made of 1 layer of plastic 
-  // TODO: This is a rough approximation of a SciFi-like detector - can improve to full SciFi mat
+  // Each tracking station is made of 2 layers
+  // 1st layer: fNScinBarsY horizontal modules
+  // 2nd layer: fNScinBarsX vertical modules
+  G4double horizontalScinSize = fTrackingStationY / fNScinBarsY; // y size of horizontal scin
+  G4double verticalScinSize = fTrackingStationX / fNScinBarsX; // x size of vertical scin
 
+  // layer volume: same size, but first has horizontal bars, second one has vertical bars
   auto trkLayerSolid = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
-  auto trkLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkLayerLogical");
-  fTrackingLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkScinLogical");
-  new G4PVReplica("trkScinPhysical", fTrackingLogical, trkLayerLogical, kYAxis, 1, fTrackingStationY); 
+  auto trkHorLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkHorLayerLogical"); 
+  auto trkVerLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkVerLayerLogical"); 
+  
+  // first layer is made of 2 horizontal pieces
+  auto trkHorScinSolid = new G4Box("trkHorScinSolid", fTrackingStationX/2., horizontalScinSize/2., fScinThickness/2.);
+  fHorTrackingScinBar = new G4LogicalVolume(trkHorScinSolid, fMaterials->Material("Polystyrene"), "trkHorScinLogical");
+  new G4PVReplica("trkHorScinPhysical", fHorTrackingScinBar,
+                  trkHorLayerLogical, kYAxis, fNScinBarsY, horizontalScinSize);
+  // secondo layer is made of 7 vertical pieces
+  auto trkVerScinSolid = new G4Box("trkHorScinSolid", verticalScinSize/2., fTrackingStationY/2., fScinThickness/2.);
+  fVerTrackingScinBar = new G4LogicalVolume(trkVerScinSolid, fMaterials->Material("Polystyrene"), "trkVerScinLogical");
+  new G4PVReplica("trkVerScinPhysical", fVerTrackingScinBar,
+                  trkVerLayerLogical, kXAxis, fNScinBarsX, verticalScinSize);
   
   fTrackingStation = new G4AssemblyVolume(); //one assembly has 2 layers
   G4RotationMatrix rot(0, 0, 0);
-  G4ThreeVector pos(0, 0, 0);
-  fTrackingStation->AddPlacedVolume(trkLayerLogical,pos,&rot);
+  G4ThreeVector pos(0, 0, -fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkHorLayerLogical,pos,&rot);
+  pos.setZ(fScinThickness/2.);
+  fTrackingStation->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
 }
