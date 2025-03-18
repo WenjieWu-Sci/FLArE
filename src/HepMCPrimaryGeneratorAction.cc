@@ -24,7 +24,7 @@ void HepMCPrimaryGeneratorAction::LoadFile(G4String filename, G4bool override, G
                      ? static_cast<HepMC3::Reader*>(new HepMC3::ReaderAsciiHepMC2(HepMCFileName)) 
                      : static_cast<HepMC3::Reader*>(new HepMC3::ReaderAscii(HepMCFileName));
 
-        isFileLoaded = false;
+        isFileLoaded = true;
     }
     else if(override)
     {
