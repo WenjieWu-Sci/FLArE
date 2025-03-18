@@ -11,6 +11,7 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "HepMC3/ReaderAscii.h"
+#include "HepMC3/ReaderAsciiHepMC2.h"
 #include <HepMC3/Print.h>
 #include "globals.hh"
 #include <TLorentzVector.h>
@@ -25,13 +26,13 @@ class HepMCPrimaryGeneratorAction {
         ~HepMCPrimaryGeneratorAction();
 
         void GeneratePrimaryVertex(G4Event* anEvent, G4ThreeVector vtx_offset = G4ThreeVector(0,0,0));
-        void LoadFile(G4String filename, G4bool override);
+        void LoadFile(G4String filename, G4bool override, G4bool useHepMC2);
 
     private:
         G4GeneralParticleSource* fGPS;
         
         G4String HepMCFileName{""};
-        HepMC3::ReaderAscii* asciiInput = nullptr;
+        HepMC3::Reader* asciiInput = nullptr;
         G4bool isFileLoaded{false};
         
         std::shared_ptr<HepMC3::GenEvent> GenerateHepMCEvent();

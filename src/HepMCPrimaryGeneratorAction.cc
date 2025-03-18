@@ -11,21 +11,28 @@ HepMCPrimaryGeneratorAction::~HepMCPrimaryGeneratorAction()
     delete asciiInput;
 }
 
-void HepMCPrimaryGeneratorAction::LoadFile(G4String filename, G4bool override)
+void HepMCPrimaryGeneratorAction::LoadFile(G4String filename, G4bool override, G4bool useHepMC2)
 {   
     // The override check is so that the file isn't reloaded when reading data in event loop
     // Can't load the data in the constructor since I **think** that is called before the messenger can parse the filename
-    //TODO: Would be nice if we could load specific events - no functionallity in HepMC to do this - could make use of `skip` method?
+    // TODO: Would be nice if we could load specific events - no functionallity in HepMC to do this - could make use of `skip` method?
+
     HepMCFileName = filename;
     if (!isFileLoaded)
     {   
-        asciiInput = new HepMC3::ReaderAscii(HepMCFileName);
+        asciiInput = (useHepMC2) 
+                     ? static_cast<HepMC3::Reader*>(new HepMC3::ReaderAsciiHepMC2(HepMCFileName)) 
+                     : static_cast<HepMC3::Reader*>(new HepMC3::ReaderAscii(HepMCFileName));
+
         isFileLoaded = false;
     }
     else if(override)
     {
         delete asciiInput;
-        asciiInput = new HepMC3::ReaderAscii(HepMCFileName);
+        asciiInput = (useHepMC2) 
+                     ? static_cast<HepMC3::Reader*>(new HepMC3::ReaderAsciiHepMC2(HepMCFileName)) 
+                     : static_cast<HepMC3::Reader*>(new HepMC3::ReaderAscii(HepMCFileName));
+
         std::cout << "HepMCPrimaryGeneratorAction::LoadFile   Overriding existing file" << std::endl;
     }
 }

@@ -29,6 +29,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void setBkgTimeWindow(G4double val) { bkgTimeWindow = val; }
 
     void setUseHepMC(G4bool val) { useHepMC = val; }
+    void setUseHepMC2(G4bool val) { useHepMC2 = val; }
     void setHepMCInputFile(G4String val) { HepMCFileName = val; }
     void setHepMCVtxOffset(G4ThreeVector val) { HepMCVtxOffset = val; }
     
@@ -59,6 +60,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
     HepMCPrimaryGeneratorAction* fActionHepMC;
     G4bool useHepMC;
+    G4bool useHepMC2;
     G4String HepMCFileName;
     G4ThreeVector HepMCVtxOffset;
 
