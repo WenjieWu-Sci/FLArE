@@ -1,4 +1,13 @@
 #include "HepMCPrimaryGeneratorAction.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4LogicalVolume.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4Box.hh"
+#include "G4VPhysicalVolume.hh"
+#include "G4LogicalVolume.hh"
+#include "G4VSolid.hh"
+#include "G4ThreeVector.hh"
 
 
 HepMCPrimaryGeneratorAction::HepMCPrimaryGeneratorAction(G4GeneralParticleSource* gps)
@@ -60,6 +69,40 @@ G4bool HepMCPrimaryGeneratorAction::CheckVertexInsideWorld(const G4ThreeVector& 
   else return true;
 }
 
+G4LogicalVolume* FindLogicalVolumeByName(const G4String& name) {
+    G4LogicalVolumeStore* lvStore = G4LogicalVolumeStore::GetInstance();
+    for (auto lv : *lvStore) {
+        if (lv->GetName() == name) {
+            return lv;
+        }
+    }
+    return nullptr; // Return null if no match is found
+}
+
+
+G4VPhysicalVolume* FindPhysicalVolumeByName(const G4String& name) {
+    G4PhysicalVolumeStore* pvStore = G4PhysicalVolumeStore::GetInstance(); // Get the global store
+    for (auto pv : *pvStore) {
+        if (pv->GetName() == name) { // Compare the name
+            return pv; // Return the matched physical volume
+        }
+    }
+    return nullptr; // Return nullptr if no match is found
+}
+
+
+G4bool CheckVertexInDecayVolume(const G4ThreeVector& pos)
+{   
+     G4Navigator* navigator = G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
+     G4VPhysicalVolume* physicalVolume = navigator->LocateGlobalPointAndSetup(pos);
+
+     if (physicalVolume && physicalVolume->GetName() == "FASER2DecayVolPhysical") {
+         return true;
+     } else {
+        std::cout  << "Vertex not in decay volume - it is in" << physicalVolume->GetName() << std::endl;
+        return false;
+     }
+}
 
 void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent, G4ThreeVector vtx_offset)
 {
@@ -75,6 +118,25 @@ void HepMCPrimaryGeneratorAction::GeneratePrimaryVertex(G4Event* anEvent, G4Thre
 }
 
 
+G4double GetStartOfDecayVolume()
+{
+    G4VPhysicalVolume* DVphysicalVolume = FindPhysicalVolumeByName("FASER2DecayVolPhysical");
+    G4VPhysicalVolume* F2physicalVolume = FindPhysicalVolumeByName("FASER2Physical");
+
+    G4LogicalVolume* DVlogicalVol = DVphysicalVolume->GetLogicalVolume();
+    G4VSolid* DVsolid = DVlogicalVol->GetSolid();
+
+    G4ThreeVector F2globalPosition = F2physicalVolume->GetTranslation();
+    G4cout << "F2globalPosition.z() = " << F2globalPosition.z() << G4endl;
+
+    G4Box* DVbox = dynamic_cast<G4Box*>(DVsolid);
+    G4double DVzHalfLength = DVbox->GetZHalfLength();
+    G4ThreeVector DVglobalPosition = DVphysicalVolume->GetTranslation();
+    G4double DVfrontFaceZ = DVglobalPosition.z() - DVzHalfLength + F2globalPosition.z();
+    
+    return DVfrontFaceZ;
+}
+
 void HepMCPrimaryGeneratorAction::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event, G4ThreeVector vtx_offset)
 {
     for (const auto& vertex : hepmcevt->vertices()) {
@@ -85,13 +147,33 @@ void HepMCPrimaryGeneratorAction::HepMC2G4(const std::shared_ptr<HepMC3::GenEven
         G4double vtx_x_offset = vtx_offset.x()*mm;
         G4double vtx_y_offset = vtx_offset.y()*mm;
         G4double vtx_z_offset = vtx_offset.z()*mm;
+
+        std::cout << "Applying offset to primary vertex of " << vtx_offset << std::endl;
         G4LorentzVector xvtx(pos.x()+vtx_x_offset, pos.y()+vtx_y_offset, pos.z()+vtx_z_offset, pos.t());
         
         if (! CheckVertexInsideWorld(xvtx.vect()*mm))
         { 
         std::cout << "WARNING: tried to generate vertex outside of world volume!" << std::endl;
-        std::cout << "WARNING: position was (" << pos.x() << ", "<<  pos.y() << ", " << pos.z() << ", " << pos.t() << ")" << std::endl;
+        std::cout << "WARNING: position was (" << xvtx.x() << ", "<<  xvtx.y() << ", " << xvtx.z() << ", " << xvtx.t() << ")" << std::endl;
         continue;
+        }
+        
+        if (! CheckVertexInDecayVolume(xvtx.vect()*mm))
+        { 
+        std::cout << "WARNING: tried to generate vertex outside of decay volume!" << std::endl;
+        std::cout << "WARNING: position was (" << xvtx.x() << ", "<<  xvtx.y() << ", " << xvtx.z() << ", " << xvtx.t() << ")" << std::endl;
+        std::cout << "WARNING: Will try and translate vertex into decay volume" << std::endl;
+        // continue;
+        G4double decay_vol_start = GetStartOfDecayVolume();
+        std::cout << "Decay volume starts at " << decay_vol_start << std::endl;
+        xvtx = G4LorentzVector(pos.x(), pos.y(), pos.z()-decay_vol_start, pos.t());
+        }
+
+        if (! CheckVertexInDecayVolume(xvtx.vect()*mm))
+        { 
+        std::cout << "WARNING: Failed to translate vertex into decay volume!" << std::endl;
+        std::cout << "WARNING: the new position was (" << xvtx.x() << ", "<<  xvtx.y() << ", " << xvtx.z() << ", " << xvtx.t() << ")" << std::endl;
+        // continue;
         }
 
         // create G4PrimaryVertex and associated G4PrimaryParticles

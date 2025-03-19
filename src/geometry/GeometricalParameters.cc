@@ -22,7 +22,8 @@ GeometricalParameters::GeometricalParameters()
   fInsulationThickness = 80 * cm;
   fMuonCatcherLength = 36*cm; //updates during construction
   fHadCalLength = 120*cm;     //updates during construction
-  fFLArEPos = G4ThreeVector(0., 0., 4300.*mm); 
+  fFLArEPos = G4ThreeVector(0., 0., 4300.*mm);
+  fFLArECentre = G4ThreeVector(0,0,0);
   
   // BabyMIND
   fUseBabyMIND = false; //default
@@ -46,6 +47,7 @@ GeometricalParameters::GeometricalParameters()
   fBabyMINDBlockToBlockSpacing = 30*mm;
   fBabyMINDBlockPadding = 100*mm;
   fBabyMINDBlockSequence = "|MMMMD||DMMMD||DMMMMD||MMDMMD||MMDMMD||MDMDMD||DMMMD|";
+  fBabyMINDCentre = G4ThreeVector(0,0,0);
 
   // FASER2 magnet
   fFASER2MagnetOption = magnetOption::SAMURAI;
@@ -54,6 +56,8 @@ GeometricalParameters::GeometricalParameters()
   fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
   fFASER2TotalSizeZ = 10.24*m;
+  fFASER2Centre = G4ThreeVector(0,0,0);
+
   // SAMURAI design
   fFASER2MagnetWindowX = 3.0*m;
   fFASER2MagnetWindowY = 1.0*m;
@@ -86,6 +90,7 @@ GeometricalParameters::GeometricalParameters()
   fVetoInterfaceSizeX = 80*cm;
   fVetoInterfaceSizeY = 80*cm;
   fFASERnu2Pos = G4ThreeVector(0., 0., 22023.*mm);
+  fFASERnu2Centre = G4ThreeVector(0,0,0);
 
   // FORMOSA
   fFORMOSATotalSizeZ = 5*m; //updates during construction
@@ -97,6 +102,7 @@ GeometricalParameters::GeometricalParameters()
   fNScintillatorModules = 4;
   fPMTSizeSpacing = 33*cm;
   fFORMOSAPos = G4ThreeVector(0., 0., 13870.*mm);
+  fFORMOSACentre = G4ThreeVector(0,0,0);
 }
 
 GeometricalParameters* GeometricalParameters::Get()

@@ -46,6 +46,9 @@ class GeometricalParameters  {
     G4ThreeVector GetFLArEPosition() { return fFLArEPos; }
     void SetFLArEPosition(G4ThreeVector val) { fFLArEPos = val; }
 
+    G4ThreeVector GetFLArECentre(){ return fFLArECentre; }
+    void SetFLArECentre(G4ThreeVector val){ fFLArECentre = val; }
+
     // BabyMIND
     G4double GetBabyMINDMagnetPlateThickness() { return fBabyMINDMagnetPlateThickness; }
     G4double GetBabyMINDMagnetPlateSizeX() { return fBabyMINDMagnetPlateSizeX; }
@@ -90,6 +93,9 @@ class GeometricalParameters  {
     void SetUseBabyMIND(G4bool val) { fUseBabyMIND = val; }
     void SetBabyMINDTotalSizeZ(G4double val) { fBabyMINDTotalSizeZ = val; }
 
+    G4ThreeVector GetBabyMINDCentre(){ return fBabyMINDCentre; }
+    void SetBabyMINDCentre(G4ThreeVector val){ fBabyMINDCentre = val; }
+
     // FASER2 Spectrometer Magnet
     enum magnetOption{ SAMURAI, CrystalPulling, unknown};
     magnetOption ConvertStringToMagnetOption(G4String val);
@@ -105,6 +111,10 @@ class GeometricalParameters  {
     G4double GetMagnetZPosition() { return fMagnetZPos; }
     void SetFASER2TotalSizeZ(G4double val) { fFASER2TotalSizeZ = val; }
     G4double GetFASER2TotalSizeZ() { return fFASER2TotalSizeZ; }
+
+    G4ThreeVector GetFASER2Centre(){ return fFASER2Centre; }
+    void SetFASER2Centre(G4ThreeVector val){ fFASER2Centre = val; }
+
     // SAMURAI design
     void SetFASER2MagnetWindowX(G4double val) { fFASER2MagnetWindowX = val; }
     G4double GetFASER2MagnetWindowX() { return fFASER2MagnetWindowX; }
@@ -169,6 +179,10 @@ class GeometricalParameters  {
     G4ThreeVector GetFASERnu2Position() { return fFASERnu2Pos; }
     void SetFASERnu2Position(G4ThreeVector val) { fFASERnu2Pos = val; }
     
+
+    G4ThreeVector GetFASERnu2Centre(){ return fFASERnu2Centre; }
+    void SetFASERnu2Centre(G4ThreeVector val){ fFASERnu2Centre = val; }
+
     // FORMOSA
     void SetFORMOSATotalSizeZ(G4double val) { fFORMOSATotalSizeZ = val; }
     G4double GetFORMOSATotalSizeZ() { return fFORMOSATotalSizeZ; }
@@ -190,6 +204,9 @@ class GeometricalParameters  {
 
     G4ThreeVector GetFORMOSAPosition() { return fFORMOSAPos; }
     void SetFORMOSAPosition(G4ThreeVector val) { fFORMOSAPos = val; }
+
+    G4ThreeVector GetFORMOSACentre(){ return fFORMOSACentre; }
+    void SetFORMOSACentre(G4ThreeVector val){ fFORMOSACentre = val; }
 
     // Sensitive detectors
     void AddSD2List(int idx, std::string val) { fSDNamelist.insert(std::make_pair(idx, val)); }
@@ -215,6 +232,7 @@ class GeometricalParameters  {
     G4double fHadCalLength;
     G4double fMuonCatcherLength;
     G4ThreeVector fFLArEPos;
+    G4ThreeVector fFLArECentre;
  
     // BabyMIND
     G4bool fUseBabyMIND;
@@ -238,6 +256,7 @@ class GeometricalParameters  {
     G4double fBabyMINDBlockToBlockSpacing;
     G4double fBabyMINDBlockPadding;
     G4String fBabyMINDBlockSequence;
+    G4ThreeVector fBabyMINDCentre;
 
     // FASER2 Spectrometer Magnet
     magnetOption fFASER2MagnetOption;
@@ -246,12 +265,15 @@ class GeometricalParameters  {
     G4double fTrackingStationTotalSizeZ;
     G4double fMagnetZPos;
     G4double fFASER2TotalSizeZ;
+    G4ThreeVector fFASER2Centre;
+
     // SAMURAI design
     G4double fFASER2MagnetWindowX;
     G4double fFASER2MagnetWindowY;
     G4double fFASER2MagnetWindowZ;
     G4double fFASER2MagnetYokeThickX;
     G4double fFASER2MagnetYokeThickY;
+
     // Crystal-Pulling design
     G4double fFASER2MagnetInnerR;
     G4double fFASER2MagnetOuterR;
@@ -259,6 +281,7 @@ class GeometricalParameters  {
     G4int fNFASER2Magnets;
     G4double fFASER2MagnetGap;
     G4double fFASER2MagnetSpacing;
+
     // Tracking stations
     G4int fNTrackingStations;
     G4int fNScintillatorBarsY;
@@ -281,6 +304,7 @@ class GeometricalParameters  {
     G4double fVetoInterfaceSizeX;
     G4double fVetoInterfaceSizeY;
     G4ThreeVector fFASERnu2Pos;
+    G4ThreeVector fFASERnu2Centre;
 
     // FORMOSA
     G4double fFORMOSATotalSizeZ;
@@ -293,6 +317,7 @@ class GeometricalParameters  {
     G4int fNScintillatorModules;
     G4double fPMTSizeSpacing;
     G4ThreeVector fFORMOSAPos;
+    G4ThreeVector fFORMOSACentre;
 
     // Sensitive detectors
     std::set<std::pair<int, std::string> > fSDNamelist;
