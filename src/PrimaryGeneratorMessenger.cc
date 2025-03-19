@@ -6,6 +6,7 @@
 #include "G4UIparameter.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWith3Vector.hh"
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 
@@ -16,6 +17,9 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
 {
   GENIEGeneratorDir = new G4UIdirectory("/genie/");
   GENIEGeneratorDir->SetGuidance("genie input control");
+
+  HepMCGeneratorDir = new G4UIdirectory("/hepmc/");
+  HepMCGeneratorDir->SetGuidance("hepmc input control");
 
   USEGENIE = new G4UIcmdWithABool("/genie/useGenie", this);
   USEGENIE->SetGuidance("set generator to genie");
@@ -30,7 +34,25 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   GHEPEvtStartIdx->SetGuidance("set the index of the start event in the .ghep file");
   GHEPEvtStartIdx->SetDefaultValue((G4int)0);
   GHEPEvtStartIdx->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  USEHepMC = new G4UIcmdWithABool("/hepmc/useHepMC", this);
+  USEHepMC->SetGuidance("set generator to hepmc");
+  USEHepMC->SetParameterName("useHepMC", true);
+  USEHepMC->SetDefaultValue(false);
+
+  HepMCInputFile = new G4UIcmdWithAString("/hepmc/hepmcInput", this);
+  HepMCInputFile->SetGuidance("set input filename of the hepmc generator");
+  HepMCInputFile->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
   
+  HepMCVtxOffset = new G4UIcmdWith3Vector("/hepmc/vtxOffset", this);
+  HepMCVtxOffset->SetGuidance("set the offset of the primary vertex - useful when there is a mismatch in the geometry");
+  HepMCVtxOffset->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
+
+  USEHepMC2 = new G4UIcmdWithABool("/hepmc/useHepMC2", this);
+  USEHepMC2->SetGuidance("set generator to hepmc2");
+  USEHepMC2->SetParameterName("useHepMC2", true);
+  USEHepMC2->SetDefaultValue(false);
+
   bkgGeneratorDir = new G4UIdirectory("/bkg/");
   bkgGeneratorDir->SetGuidance("background input control");
 
@@ -58,6 +80,12 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete GHEPEvtStartIdx;
   delete USEGENIE;
   delete GENIEGeneratorDir;
+
+  delete HepMCGeneratorDir;
+  delete USEHepMC;
+  delete USEHepMC2;
+  delete HepMCInputFile;
+  delete HepMCVtxOffset;
   
   delete USEBKG;
   delete bkgInputFile;
@@ -72,6 +100,12 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   if (command == GHEPInputFile) PrimGenAction->setGenieInputFile(newValues);
   else if (command == GHEPEvtStartIdx) PrimGenAction->setGenieStartEvt(GHEPEvtStartIdx->GetNewIntValue(newValues));
   else if (command == USEGENIE) PrimGenAction->setUseGenie(USEGENIE->GetNewBoolValue(newValues));
+  
+  else if (command == USEHepMC) PrimGenAction->setUseHepMC(USEHepMC->GetNewBoolValue(newValues));
+  else if (command == USEHepMC2) PrimGenAction->setUseHepMC2(USEHepMC2->GetNewBoolValue(newValues));
+  else if (command == HepMCInputFile) PrimGenAction->setHepMCInputFile(newValues);
+  else if (command == HepMCVtxOffset) PrimGenAction->setHepMCVtxOffset(HepMCVtxOffset->GetNew3VectorValue(newValues));
+
   else if (command == bkgInputFile) PrimGenAction->setBkgInputFile(newValues);
   else if (command == bkgTimeWindow) PrimGenAction->setBkgTimeWindow(bkgTimeWindow->GetNewDoubleValue(newValues));
   else if (command == USEBKG) PrimGenAction->setUseBackground(USEBKG->GetNewBoolValue(newValues));

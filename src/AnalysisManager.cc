@@ -202,7 +202,7 @@ void AnalysisManager::BeginOfRun() {
 void AnalysisManager::EndOfRun() {
   thefile->cd();
   evt->Write();
-  trk->Write();
+  if(m_saveTrack) trk->Write();
   thefile->Close();
   fH5file.close();
 }

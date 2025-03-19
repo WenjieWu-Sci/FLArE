@@ -1,6 +1,7 @@
 #ifndef PRIMARY_GENERATOR_ACTION_HH
 #define PRIMARY_GENERATOR_ACTION_HH 
 
+#include "G4ThreeVector.hh"
 #include <TLorentzVector.h>
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <globals.hh>
@@ -9,6 +10,7 @@ class G4ParticleGun;
 class G4GeneralParticleSource;
 class PrimaryGeneratorMessenger;
 class GENIEPrimaryGeneratorAction;
+class HepMCPrimaryGeneratorAction;
 class BackgroundPrimaryGeneratorAction;
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
@@ -25,6 +27,12 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void setUseBackground(G4bool val) { useBackground = val; }
     void setBkgInputFile(G4String val) { bkgFileName = val; }
     void setBkgTimeWindow(G4double val) { bkgTimeWindow = val; }
+
+    void setUseHepMC(G4bool val) { useHepMC = val; }
+    void setUseHepMC2(G4bool val) { useHepMC2 = val; }
+    void setHepMCInputFile(G4String val) { HepMCFileName = val; }
+    void setHepMCVtxOffset(G4ThreeVector val) { HepMCVtxOffset = val; }
+    
 
   private:
     PrimaryGeneratorMessenger* genMessenger;
@@ -49,6 +57,13 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4bool useBackground;
     G4String bkgFileName;
     G4double bkgTimeWindow;
+
+    HepMCPrimaryGeneratorAction* fActionHepMC;
+    G4bool useHepMC;
+    G4bool useHepMC2;
+    G4String HepMCFileName;
+    G4ThreeVector HepMCVtxOffset;
+
 };
 
 #endif

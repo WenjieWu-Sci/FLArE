@@ -1,0 +1,20 @@
+# define detector material before run initialization
+/control/execute macros/geometry_options/FASER2_only.mac
+
+/run/initialize
+
+# define hepmc input options
+/hepmc/useHepMC2 true
+/hepmc/hepmcInput /afs/cern.ch/user/b/bewilson/work/public/hepmc/events_14TeV_m0.3548GeV_c1e-06_to_mu_mu_s1.hepmc2
+/hepmc/vtxOffset 0 0 -12050
+
+# define output options
+/histo/save3DEvd false
+/histo/save2DEvd false
+/histo/saveHit true
+/histo/addDiffusion false
+/histo/circleFit true
+/histo/fileName test_dark_photon_hepmc.root
+
+# shoot 5 particles
+/run/beamOn 5

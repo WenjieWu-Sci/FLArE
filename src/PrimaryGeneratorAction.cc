@@ -5,6 +5,7 @@
 #include "PrimaryGeneratorAction.hh"
 #include "GENIEPrimaryGeneratorAction.hh"
 #include "BackgroundPrimaryGeneratorAction.hh"
+#include "HepMCPrimaryGeneratorAction.hh"
 #include "PrimaryParticleInformation.hh"
 #include "geometry/GeometricalParameters.hh"
 
@@ -44,11 +45,13 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() {
   fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
 
   useGenie = false;
+  useHepMC = false;
   useBackground = false;
   bkgTimeWindow = 187.5*us; //default: max drift time
 
   fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
   fActionBackground = new BackgroundPrimaryGeneratorAction(fGPS);
+  fActionHepMC = new HepMCPrimaryGeneratorAction(fGPS);
 
   // create a messenger for this class
   genMessenger = new PrimaryGeneratorMessenger(this);
@@ -58,6 +61,7 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() {
   delete fGPS;
   delete fActionGenie;
   delete fActionBackground;
+  delete fActionHepMC;
   delete genMessenger;
 }
 
@@ -82,7 +86,16 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
     std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
     std::cout << ") : Background Generator ===oooOOOooo===" << std::endl;
     fActionBackground->GeneratePrimaries(anEvent, bkgFileName, bkgTimeWindow);
-  } else {
+  }
+  else if(useHepMC || useHepMC2) {
+      int hepmc_num = (useHepMC2) ? 2 : 3;
+      std::cout << std::endl;
+      std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
+      std::cout << ") : HepMC"<< hepmc_num << " Generator ===oooOOOooo===" << std::endl;
+      fActionHepMC->LoadFile(HepMCFileName, false, useHepMC2);
+      fActionHepMC->GeneratePrimaryVertex(anEvent, HepMCVtxOffset);
+  }  
+  else {
     std::cout << std::endl;
     std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
     std::cout << "): General Particle Source ===oooOOOooo===" << std::endl;

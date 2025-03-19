@@ -24,6 +24,12 @@ include(${Geant4_USE_FILE})
 message(STATUS "Set Geant4 : ${Geant4_USE_FILE}")
 
 #----------------------------------------------------------------------------
+# Find HepMC3 (required package)
+#
+find_package(HepMC3 REQUIRED)
+include_directories(${HEPMC3_INCLUDE_DIR})
+
+#----------------------------------------------------------------------------
 # Find ROOT (required package)
 #
 find_package(ROOT REQUIRED COMPONENTS Geom EG RIO) 
@@ -106,6 +112,7 @@ target_link_libraries(FLArE
   ${Geant4_LIBRARIES} 
   ${HDF5_LIBRARIES}
   ${HEP_HPC_LIBRARIES}
+  ${HEPMC3_LIBRARIES} ${HEPMC3_FIO_LIBRARIES} ${HEPMC3_LIB}
   FPFClasses
   )
 
