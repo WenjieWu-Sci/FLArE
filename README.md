@@ -49,8 +49,8 @@ Then to set up the environment do
 source FLArE/local_setup.sh
 ```
 
-## To compile the code
 
+## To compile the code
 * Create a new directory to contain the executables (assume the path is `/path/to/build`).
 * Assume the path to the source code is `/path/to/source`.
 * To compile, you need to go to the build directory `cd /path/to/build`.
@@ -97,6 +97,18 @@ Example macros can be found in `macros`: `numu_genie.mac`, `nue_genie.mac`, `nut
 Background particles entering the FPF (muons, neutrons) are generated using the fluxes produced by the CERN-FLUKA team simulations.
 Events are sampled via summary histograms available in `backgrounds\background_input.root`.
 An example macro can be found in `macros`: `backgrounds.mac`.
+
+### Long-lived particle events
+
+BSM long-lived particle (LLP) events made by event generators like [FORESEE](https://github.com/KlingFelix/FORESEE) output files in the HepMC3 format.
+An example dark photon HepMC3 file can be found here:
+
+`/afs/cern.ch/user/b/bewilson/work/public/hepmc/events_14TeV_m0.3548GeV_c1e-06_to_mu_mu_s1.hepmc3`
+
+An example macro for running over this file can be found in `macros/dark_photon_hepmc.mac`.
+
+Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2 files set the option `/hepmc/useHepMC2 true` in your macro. An example macro can be found in `macros/dark_photon_hepmc2.mac`.
+
 
 ## Macro commands
 
@@ -166,6 +178,10 @@ An example macro can be found in `macros`: `backgrounds.mac`.
 |/bkg/useBackground   | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
 |/bkg/backgroundInput | if `useBackground is true`, give which file to sample background events|
 |/bkg/backgroundWindow| if `useBackground is true`, set time window for background extraction|
+|/hepmc/useHepMC      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC3|
+|/hepmc/useHepMC2     | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC2|
+|/hepmc/hepmcInput    | if `useHepMC is true`, give which `.hepmc` file to read events from|
+|/hepmc/vtxOffset     | if `useHepMC is true`, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
 
 ### Analysis
 
