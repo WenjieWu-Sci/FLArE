@@ -15,6 +15,7 @@ class GENIEPrimaryGeneratorAction {
     ~GENIEPrimaryGeneratorAction();
 
   public:
+    
     void GeneratePrimaries(G4Event* anEvent, G4String filename, G4int startIdx, G4int nuVtxOpt);
     void ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector p4);
     
@@ -37,6 +38,7 @@ class GENIEPrimaryGeneratorAction {
     G4GeneralParticleSource* fGPS;
 
     G4String gstFileName;
+    G4int eventCounter;
     G4int gstEvtStartIdx;
     TFile* gst_file;
     TTree* gst_tree;

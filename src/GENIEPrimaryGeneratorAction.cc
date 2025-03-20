@@ -14,6 +14,8 @@
 GENIEPrimaryGeneratorAction::GENIEPrimaryGeneratorAction(G4GeneralParticleSource* gps)
   : fGPS(gps)
 {
+  // set event counter to 0
+  eventCounter = 0;
 }
 
 GENIEPrimaryGeneratorAction::~GENIEPrimaryGeneratorAction()
@@ -71,11 +73,12 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   gstFileName    = filename;
   gstEvtStartIdx = startIdx;
 
-  int evtID = anEvent->GetEventID();
-  std::cout << "oooOOOooo Event # " << evtID << " oooOOOooo" <<std::endl;
+  std::cout << "oooOOOooo Event # " << eventCounter << " oooOOOooo" <<std::endl;
   G4cout << "GeneratePrimaries from file " << gstFileName
     << ", evtID starts from "<< gstEvtStartIdx
-    << ", now at " << gstEvtStartIdx+evtID<<G4endl;
+    << ", now at " << gstEvtStartIdx+eventCounter<<G4endl;
+
+  anEvent->SetEventID(gstEvtStartIdx+eventCounter);
 
   gst_file = new TFile(gstFileName, "read");
   if (!gst_file->IsOpen()) {
@@ -138,25 +141,25 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
   
   gst_tree->SetBranchAddress("W",&W); // invariant hadronic mass (GeV)
 
-  if (gstEvtStartIdx + evtID >= nev) {
+  if (gstEvtStartIdx + eventCounter >= nev) {
     std::cout<<"** event index beyond range !! **"<<std::endl;
   }
   
   // fetch a single entry from GENIE input file
-  gst_tree->GetEntry(gstEvtStartIdx + evtID); 
+  gst_tree->GetEntry(gstEvtStartIdx + eventCounter); 
 
   // compute/repackage what is not directly available from the tree
   // position is randomly extracted in the detector fiducial volume
   // or set set to the center according to config parameter
  
-  neuIdx = gstEvtStartIdx + evtID;
+  neuIdx = gstEvtStartIdx + eventCounter;
   neuP4.SetPxPyPzE(pxv,pyv,pzv,Ev);
   fslP4.SetPxPyPzE(pxl,pyl,pzl,El);
   
   int_type = DecodeInteractionType(cc,nc,em);
   scattering_type = DecodeScatteringType(qel,res,dis,coh,dfr,imd,imdanh,mec,nuel,singlek,amnugamma);
 
-  G4Random::setTheSeed(gstEvtStartIdx+evtID+1);
+  G4Random::setTheSeed(gstEvtStartIdx+eventCounter+1);
   switch(nuVtxOpt) {
     case 0:
       neuX4.SetX(0.*m);
@@ -186,6 +189,7 @@ void GENIEPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent,
     ShootParticle( anEvent, pdgf[ipar], p );
   }
 
+  eventCounter++;
   gst_file->Close();
 }
 
