@@ -119,7 +119,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4cout << "Length of FLArE     : " << lengthFLArE << G4endl;
     G4cout << "Center of FLArE TPC : " << FLArEPos+hallOffset << G4endl; // w.r.t the global coordinate
-    GeometricalParameters::Get()->SetFLArECentre(FLArEPos+hallOffset);
   
     //-----------------------------------
     // FLArE HadCal/MuonCatcher or BabyMIND
@@ -142,7 +141,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       
       G4cout << "Length of BabyMIND : " << babyMINDLengthZ << G4endl;
       G4cout << "Center of BabyMIND : " << babyMINDPos+hallOffset << G4endl; // w.r.t the global coordinate
-      GeometricalParameters::Get()->SetBabyMINDCentre(babyMINDPos+hallOffset);
     
     }
     else{  //legacy HadCal/MuonCatcher
@@ -188,7 +186,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4cout<<"Length of FORMOSA : "<<lengthFORMOSA<<G4endl;
     G4cout<<"Center of FORMOSA : "<<FORMOSAPos+hallOffset<<G4endl; // w.r.t the global coordinate
-    GeometricalParameters::Get()->SetFORMOSACentre(FORMOSAPos+hallOffset); 
   }
                          
   //-----------------------------------
@@ -208,7 +205,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
     G4cout<<"Length of FASERnu2 : "<<lengthFASERnu2<<G4endl;
     G4cout<<"Center of FASERnu2 : "<<FASERnu2Pos+hallOffset<<G4endl; // w.r.t the global coordinate
-    GeometricalParameters::Get()->SetFASERnu2Centre(FASERnu2Pos+hallOffset); 
   }
 
   //-----------------------------------
@@ -230,7 +226,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     //detectorGapLength = 1.2*m;
     G4cout<<"Length of FASER2 Spectrometer : "<<lengthFASER2Assembly<<G4endl;
     G4cout<<"Center of FASER2 Spectrometer : "<<FASER2Pos+hallOffset<<G4endl; // w.r.t the global coordinate
-    GeometricalParameters::Get()->SetFASER2Centre(FASER2Pos+hallOffset);
   }
   
   //-------------------------------------------------------------------
@@ -369,7 +364,6 @@ void DetectorConstruction::ConstructSDandField() {
       LArBoxSD* TrkScinSD = new LArBoxSD("FASER2TrackerSD"+ std::to_string(SDIdx));
       station->SetSensitiveDetector(TrkScinSD);
       sdManager->AddNewDetector(TrkScinSD);
-      std::cout << "DetectorConstruction::ConstructSDandField -- Making Sensitive detector FASER2TrackerSD"+ std::to_string(SDIdx) << std::endl;
       GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2TrackerSD"+ std::to_string(SDIdx)+"/lar_box");
       SDIdx++;
     }
