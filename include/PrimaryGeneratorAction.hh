@@ -32,6 +32,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     void setUseHepMC2(G4bool val) { useHepMC2 = val; }
     void setHepMCInputFile(G4String val) { HepMCFileName = val; }
     void setHepMCVtxOffset(G4ThreeVector val) { HepMCVtxOffset = val; }
+    void setHepMCPlaceInDecayVolume(G4bool val){ HepMCPlaceInDecayVolume = val; }
     
 
   private:
@@ -62,7 +63,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     G4bool useHepMC;
     G4bool useHepMC2;
     G4String HepMCFileName;
-    G4ThreeVector HepMCVtxOffset;
+    G4ThreeVector HepMCVtxOffset{0,0,0};
+    G4bool HepMCPlaceInDecayVolume{false};
 
 };
 

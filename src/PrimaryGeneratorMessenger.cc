@@ -48,6 +48,10 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* act
   HepMCVtxOffset->SetGuidance("set the offset of the primary vertex - useful when there is a mismatch in the geometry");
   HepMCVtxOffset->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
 
+  HepMCPlaceInDecayVolume = new G4UIcmdWithABool("/hepmc/placeInDecayVolume", this);
+  HepMCPlaceInDecayVolume->SetGuidance("will try and translate vertex into FASER2 decay volume. Note: Assumes that vertices in HepMC start from (0,0,0) - set /hepmc/vtxOffset if not. Also assumes that decay volume lengths match.");
+  HepMCPlaceInDecayVolume->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
+
   USEHepMC2 = new G4UIcmdWithABool("/hepmc/useHepMC2", this);
   USEHepMC2->SetGuidance("set generator to hepmc2");
   USEHepMC2->SetParameterName("useHepMC2", true);
@@ -86,6 +90,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete USEHepMC2;
   delete HepMCInputFile;
   delete HepMCVtxOffset;
+  delete HepMCPlaceInDecayVolume;
   
   delete USEBKG;
   delete bkgInputFile;
@@ -105,7 +110,8 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
   else if (command == USEHepMC2) PrimGenAction->setUseHepMC2(USEHepMC2->GetNewBoolValue(newValues));
   else if (command == HepMCInputFile) PrimGenAction->setHepMCInputFile(newValues);
   else if (command == HepMCVtxOffset) PrimGenAction->setHepMCVtxOffset(HepMCVtxOffset->GetNew3VectorValue(newValues));
-
+  else if (command == HepMCPlaceInDecayVolume) PrimGenAction->setHepMCPlaceInDecayVolume(HepMCPlaceInDecayVolume->GetNewBoolValue(newValues));
+  
   else if (command == bkgInputFile) PrimGenAction->setBkgInputFile(newValues);
   else if (command == bkgTimeWindow) PrimGenAction->setBkgTimeWindow(bkgTimeWindow->GetNewDoubleValue(newValues));
   else if (command == USEBKG) PrimGenAction->setUseBackground(USEBKG->GetNewBoolValue(newValues));

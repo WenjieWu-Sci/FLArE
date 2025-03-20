@@ -25,7 +25,7 @@ class HepMCPrimaryGeneratorAction {
         HepMCPrimaryGeneratorAction(G4GeneralParticleSource* gps);
         ~HepMCPrimaryGeneratorAction();
 
-        void GeneratePrimaryVertex(G4Event* anEvent, G4ThreeVector vtx_offset = G4ThreeVector(0,0,0));
+        void GeneratePrimaryVertex(G4Event* anEvent, G4ThreeVector vtx_offset = G4ThreeVector(0,0,0), G4bool place_in_decay_volume = false);
         void LoadFile(G4String filename, G4bool override, G4bool useHepMC2);
 
     private:
@@ -37,7 +37,7 @@ class HepMCPrimaryGeneratorAction {
         
         std::shared_ptr<HepMC3::GenEvent> GenerateHepMCEvent();
         G4bool CheckVertexInsideWorld (const G4ThreeVector& pos) const;
-        void HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event, G4ThreeVector vtx_offset = G4ThreeVector(0,0,0));
+        void HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event, G4ThreeVector vtx_offset = G4ThreeVector(0,0,0), G4bool place_in_decay_volume = false);
         
 };
 
