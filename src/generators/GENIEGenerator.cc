@@ -179,7 +179,7 @@ void GENIEGenerator::GeneratePrimaries(G4Event* anEvent)
   G4ParticleDefinition* particleDefinition;
   if ( FindParticleDefinition(m_fslPDG, particleDefinition) ){
 
-    G4PrimaryParticle* plepton = new G4PrimaryParticle(particleDefinition, m_fslP4.X(), m_fslP4.Y(), m_fslP4.Z(), m_fslP4.E()); //in GeV
+    G4PrimaryParticle* plepton = new G4PrimaryParticle(particleDefinition, m_fslP4.X()*GeV, m_fslP4.Y()*GeV, m_fslP4.Z()*GeV, m_fslP4.E()*GeV); //in GeV
     /* G4cout << "Lepton PDG " << m_fslPDG << " mass " << particleDefinition->GetPDGMass()*MeV << G4endl;
     G4cout << "p4  " << m_fslP4.X() << " " << m_fslP4.Y() << " " <<  m_fslP4.Z() << " " <<  m_fslP4.E() << G4endl;
     G4cout << "kinE " << ( m_fslP4.E()*GeV - particleDefinition->GetPDGMass()*MeV)  << G4endl; */
@@ -192,7 +192,7 @@ void GENIEGenerator::GeneratePrimaries(G4Event* anEvent)
 
     TLorentzVector p( m_pxf[ipar], m_pyf[ipar], m_pzf[ipar], m_Ef[ipar] );
     if ( !FindParticleDefinition( m_pdgf[ipar], particleDefinition) ) continue; //skip bad pdgs
-    G4PrimaryParticle* prim = new G4PrimaryParticle(particleDefinition, p.X(), p.Y(), p.Z(), p.E()); //in GeV
+    G4PrimaryParticle* prim = new G4PrimaryParticle(particleDefinition, p.X()*GeV, p.Y()*GeV, p.Z()*GeV, p.E()*GeV); //in GeV
     /* G4cout << "Particle PDG " << m_pdgf[ipar] << " mass " << particleDefinition->GetPDGMass()*MeV << G4endl;
     G4cout << "p4  " << p.X() << " " << p.Y() << " " << p.Z() << " " << p.E() << G4endl;
     G4cout << "kinE " << (p.E()*GeV - particleDefinition->GetPDGMass()*MeV)  << G4endl; */
