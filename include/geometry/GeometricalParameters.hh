@@ -105,6 +105,12 @@ class GeometricalParameters  {
     G4double GetMagnetZPosition() { return fMagnetZPos; }
     void SetFASER2TotalSizeZ(G4double val) { fFASER2TotalSizeZ = val; }
     G4double GetFASER2TotalSizeZ() { return fFASER2TotalSizeZ; }
+    void SetfFASER2DecayVolumeLength (G4double val) { fFASER2DecayVolumeLength = val;}
+    G4double GetfFASER2DecayVolumeLength() { return fFASER2DecayVolumeLength; }
+    void SetFASER2TrackerX(G4double val) { fFASER2TrackerX = val; }
+    G4double GetFASER2TrackerX() { return fFASER2TrackerX; }
+    void SetFASER2TrackerY(G4double val) { fFASER2TrackerY = val; }
+    G4double GetFASER2TrackerY() { return fFASER2TrackerY; }
     // SAMURAI design
     void SetFASER2MagnetWindowX(G4double val) { fFASER2MagnetWindowX = val; }
     G4double GetFASER2MagnetWindowX() { return fFASER2MagnetWindowX; }
@@ -246,6 +252,8 @@ class GeometricalParameters  {
     G4double fTrackingStationTotalSizeZ;
     G4double fMagnetZPos;
     G4double fFASER2TotalSizeZ;
+    G4double fFASER2DecayVolumeLength;
+    
     // SAMURAI design
     G4double fFASER2MagnetWindowX;
     G4double fFASER2MagnetWindowY;
@@ -261,11 +269,14 @@ class GeometricalParameters  {
     G4double fFASER2MagnetSpacing;
     // Tracking stations
     G4int fNTrackingStations;
+    G4double fFASER2TrackerX;
+    G4double fFASER2TrackerY;
     G4int fNScintillatorBarsY;
     G4int fNScintillatorBarsX;
     G4double fScintillatorThickness;
     G4double fTrackingStationGap;
     G4ThreeVector fFASER2Pos;
+
 
     // FASERnu2 Emulsion detector
     G4double fFASERnu2TotalSizeZ;

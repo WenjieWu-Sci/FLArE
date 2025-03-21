@@ -53,13 +53,14 @@ GeometricalParameters::GeometricalParameters()
   fMagnetTotalSizeZ = 4*m; //updates during construction
   fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
-  fFASER2TotalSizeZ = 10.24*m;
+  fFASER2TotalSizeZ = 25*m;//10.24*m;
+  fFASER2DecayVolumeLength = 10*m;
   // SAMURAI design
   fFASER2MagnetWindowX = 3.0*m;
   fFASER2MagnetWindowY = 1.0*m;
   fFASER2MagnetWindowZ = 4.0*m;
   fFASER2MagnetYokeThickX = 1.5*m;
-  fFASER2MagnetYokeThickY = 2.0*m;
+  fFASER2MagnetYokeThickY = 0.5*m;
   // CrystalPulling design
   fFASER2MagnetLengthZ = 1.25*m;
   fFASER2MagnetInnerR = 0.8*m;
@@ -68,12 +69,14 @@ GeometricalParameters::GeometricalParameters()
   fFASER2MagnetGap = 0.25*m;
   fFASER2MagnetSpacing = 0.76*m; //updates during construction
   // Tracking stations
-  fNTrackingStations = 6;
+  fNTrackingStations = 3;
   fNScintillatorBarsY = 3;
   fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
   fFASER2Pos = G4ThreeVector(0., 0., 42636.*mm);
+  fFASER2TrackerX = 3*m;
+  fFASER2TrackerY = 1*m;  
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction

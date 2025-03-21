@@ -39,7 +39,12 @@ class FASER2DetectorConstruction {
     std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
     G4LogicalVolume* fHorTrackingScinBar;   
-    G4LogicalVolume* fVerTrackingScinBar;   
+    G4LogicalVolume* fVerTrackingScinBar;
+    G4LogicalVolume* fEMCalLogical;
+    G4LogicalVolume* fHadCalLogical;
+    G4LogicalVolume* fIronWallLogical;
+
+    G4double fDecayVolumeLength;
 
     // SAMURAI design
     G4double fMagnetWindowX;
@@ -63,6 +68,15 @@ class FASER2DetectorConstruction {
     G4int fNScinBarsY;
     G4int fNScinBarsX;
     G4double fTrackingStationGap;
+    G4double fUpstreamTrackingStationGap;
+    G4double fDownstreamTrackingStationGap;
+    G4int fNUpstreamTrackers{3};
+    G4int fNDownstreamTrackers{3};
+
+    // Calorimeter guess??
+    G4double fEMCaloThickness;
+    G4double fHadCaloThickness;
+    G4double fIronWallThickness;
 };
 
 #endif
