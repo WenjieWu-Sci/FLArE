@@ -64,7 +64,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   }
 
   G4cout << G4endl;
-  G4cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID() << G4endl;
+  G4cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
 
   // produce an event with current generator
   fGenerator->GeneratePrimaries(anEvent);
