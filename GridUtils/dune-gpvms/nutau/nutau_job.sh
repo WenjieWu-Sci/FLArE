@@ -29,9 +29,9 @@ cat << EOF >> temp.mac
 /random/setSeeds ${seed1} ${seed2}
 /run/initialize
 
-/genie/useGenie true
-/genie/genieInput nutau_bai_ar40_e2000.ghep.root
-/genie/genieIStart ${istart}
+/gen/select genie true
+/gen/genie/genieInput nutau_bai_ar40_e2000.ghep.root
+/gen/genie/genieIStart ${istart}
 
 /histo/addDiffusion false
 /histo/saveHit false

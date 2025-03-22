@@ -1,9 +1,11 @@
 # define detector material before run initialization
 /det/material LAr
+/gen/select gun
 
 /run/initialize
 #/control/execute macros/vis.mac
 
+/gen/select gun
 /gps/verbose 0
 /gps/direction 0 0 1
 

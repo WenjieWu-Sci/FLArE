@@ -4,6 +4,7 @@
 /run/initialize
 /random/setSeeds 324199 420475
 
+/gen/select gun
 /gps/verbose 0
 /gps/direction 0 0 1
 /gps/pos/type Point

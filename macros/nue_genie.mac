@@ -5,9 +5,9 @@
 /random/setSeeds 324199 420475
 
 # define genie input options
-/genie/useGenie true
-/genie/genieInput /eos/user/m/mvicenzi/genie/nue_kling_ar40_e5000.gst.root
-/genie/genieIStart 5
+/gen/select genie
+/gen/genie/genieInput /eos/user/m/mvicenzi/genie/nue_kling_ar40_e5000.gst.root
+/gen/genie/genieIStart 5
 
 # define output options
 /histo/save3DEvd false

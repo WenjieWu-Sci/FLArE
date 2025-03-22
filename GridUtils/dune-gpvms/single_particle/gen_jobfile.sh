@@ -23,6 +23,7 @@ cat << EOF >> ${filename}
 
 /random/setSeeds ${seed}
 
+/gen/select gun
 /gps/pos/type Point
 /gps/pos/centre 0 0 -2.5 m
 /gps/direction 0 0 1

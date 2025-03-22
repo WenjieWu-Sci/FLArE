@@ -77,9 +77,9 @@ function generate_macros {
 /random/setSeeds ${seed1} ${seed2}
 /run/initialize
 
-/genie/useGenie true
-/genie/genieInput ${gst}
-/genie/genieIStart ${istart}
+/gen/select genie
+/gen/genie/genieInput ${gst}
+/gen/genie/genieIStart ${istart}
 
 /histo/save3DEvd false
 /histo/save2DEvd false
