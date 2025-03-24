@@ -7,7 +7,7 @@
 /gen/select hepmc
 /gen/hepmc/hepmcInput /afs/cern.ch/user/b/bewilson/work/public/hepmc/events_14TeV_m0.3548GeV_c1e-06_to_mu_mu_s1.hepmc3
 /gen/hepmc/vtxOffset 0 0 1500 mm
-/hepmc/placeInDecayVolume true
+/gen/hepmc/placeInDecayVolume true
 
 # define output options
 /histo/save3DEvd false
