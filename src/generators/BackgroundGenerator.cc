@@ -1,28 +1,74 @@
-#include "BackgroundPrimaryGeneratorAction.hh"
-#include "PrimaryGeneratorAction.hh"
+#include "generators/GeneratorBase.hh"
+#include "generators/BackgroundGenerator.hh"
+#include "generators/BackgroundGeneratorMessenger.hh"
+
 #include "geometry/GeometricalParameters.hh"
 
-#include <G4GeneralParticleSource.hh>
-#include <G4ParticleTable.hh>
-#include <G4IonTable.hh>
-#include <G4SystemOfUnits.hh>
-#include <G4Poisson.hh>
-#include <Randomize.hh>
+#include "G4GeneralParticleSource.hh"
+#include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Poisson.hh"
+#include "Randomize.hh"
 
-#include <TLorentzVector.h>
-#include <TMath.h>
-#include <TTree.h>
-#include <TH3D.h>
-#include <TH2D.h>
+#include "TLorentzVector.h"
+#include "TMath.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TH3D.h"
+#include "TH2D.h"
 
-BackgroundPrimaryGeneratorAction::BackgroundPrimaryGeneratorAction(G4GeneralParticleSource* gps)
-  : fGPS(gps)
-{}
+BackgroundGenerator::BackgroundGenerator()
+{
+  fGeneratorName = "background";
+  fMessenger = new BackgroundGeneratorMessenger(this);
+  fGPS = new G4GeneralParticleSource();
 
-BackgroundPrimaryGeneratorAction::~BackgroundPrimaryGeneratorAction()
-{}
+  fBkgFile = nullptr;
+  fhxyE = nullptr;
+  fhdir = nullptr;
+  fBkgTimeWindow = TPC_driftTime_s*s;
+}
 
-void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector x4, TLorentzVector p4)
+BackgroundGenerator::~BackgroundGenerator()
+{
+  delete fhxyE;
+  delete fhdir;
+  if(fBkgFile) fBkgFile->Close();
+  delete fMessenger;
+}
+
+void BackgroundGenerator::LoadData()
+{
+  // open the file 
+  fBkgFile = new TFile(fBkgFilename, "read");
+  if (!fBkgFile->IsOpen() || fBkgFile->IsZombie()) {
+    G4String err = "Cannot open background file : " + fBkgFilename;
+    G4Exception("BackgroundGenerator", "FileError", FatalErrorInArgument, err.c_str());
+  }
+  
+  // find the source histograms
+  // for each background species (mu+, mu-, n)
+  for(auto const name : fSpeciesList ){
+    
+    G4String hxyE_path = name + "/hxyE_" + name;
+    G4String hdir_path = name + "/hdir_" + name;
+
+    // get the input histograms
+    // 3D histo in (x, y, E): normalized, to be used for the main extraction
+    // 3D histo in (xdircos, ydircos, E): one energy is extracted, 
+    fhxyE = (TH3D*)fBkgFile->Get(hxyE_path.c_str());
+    fhdir = (TH3D*)fBkgFile->Get(hdir_path.c_str());
+
+    if(!fhxyE || !fhdir) {
+      G4String err = "Histograms " + hxyE_path + " or " + hdir_path + " unavailable in " + fBkgFilename;
+      G4Exception("BackgroundGenerator", "FileError", FatalErrorInArgument, err.c_str());
+    }
+  }
+}
+
+
+void BackgroundGenerator::ShootParticle(G4Event* anEvent, G4int pdg, TLorentzVector x4, TLorentzVector p4) const
 {
   // prepare a particle with the extracted starting position and momentum
   // once ready, shoot it with the gun!
@@ -44,20 +90,20 @@ void BackgroundPrimaryGeneratorAction::ShootParticle(G4Event* anEvent, G4int pdg
   fGPS->GeneratePrimaryVertex(anEvent); // ...and shoot!
 }
 
-int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticles(G4double time_window)
+int BackgroundGenerator::ExtractBackgroundParticles() const
 {
   // the (x,y,E) is normalized to the instantaneous luminosity
   // it represents the number of particles / GeV / cm2 / s
   // get the total particles by summing up all bins
-  double summed_bins = hxyE->Integral(); // in GeV-1 cm-2 s-1
-  double Ebinsize = hxyE->GetZaxis()->GetBinWidth(1); // GeV
-  double xbinsize = hxyE->GetXaxis()->GetBinWidth(1); // cm
-  double ybinsize = hxyE->GetXaxis()->GetBinWidth(1); // cm
+  double summed_bins = fhxyE->Integral(); // in GeV-1 cm-2 s-1
+  double Ebinsize = fhxyE->GetZaxis()->GetBinWidth(1); // GeV
+  double xbinsize = fhxyE->GetXaxis()->GetBinWidth(1); // cm
+  double ybinsize = fhxyE->GetXaxis()->GetBinWidth(1); // cm
   summed_bins *= Ebinsize * xbinsize * ybinsize; // in s-1
 
   // now convert from s-1 to the requested time window
   // this way we get the expected background particles in the time window
-  double windows_per_sec = 1./(time_window/s); // number of windows in a second
+  double windows_per_sec = 1./(fBkgTimeWindow/s); // number of windows in a second
   int lambda = summed_bins/windows_per_sec; 
 
   // now this value is the expectation of a Poisson distribution (or Gaussian)
@@ -69,55 +115,40 @@ int BackgroundPrimaryGeneratorAction::ExtractBackgroundParticles(G4double time_w
   return Nparticles;
 }
 
-void BackgroundPrimaryGeneratorAction::SampleDirectionCosines(double& xdircos, double& ydircos, double E)
+void BackgroundGenerator::SampleDirectionCosines(double& xdircos, double& ydircos, double E) const
 {
   // first, extract the 2D profile at energy E
-  int energyBin = hdir->GetZaxis()->FindBin(E);
+  int energyBin = fhdir->GetZaxis()->FindBin(E);
 
   // limit the 3D histogram only on that energy bin then take the profile
   // reset the limits afterwards to restore it back
-  hdir->GetZaxis()->SetRange(energyBin, energyBin);
-  TH2D* h2Ddir = (TH2D*)hdir->Project3D("xy");
-  hdir->GetZaxis()->SetRange(0, 0);
+  fhdir->GetZaxis()->SetRange(energyBin, energyBin);
+  TH2D* h2Ddir = (TH2D*)fhdir->Project3D("xy");
+  fhdir->GetZaxis()->SetRange(0, 0);
 
   // let's normalize the new 2D histogram, then sample
   h2Ddir->Scale(1.0 / h2Ddir->Integral());
   h2Ddir->GetRandom2(xdircos, ydircos);
 }
 
-void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4String filename, G4double time_window)
+void BackgroundGenerator::GeneratePrimaries(G4Event* anEvent)
 {
-  bkgFileName = filename;
+
+  // complete line from PrimaryGeneratorAction...
+  G4cout << ") : Background Generator ===oooOOOooo===" << G4endl;
+
   int evtID = anEvent->GetEventID();
   G4cout << "oooOOOooo Event # " << evtID << " oooOOOooo" << G4endl;
-  G4cout << "GeneratePrimaries from source " << bkgFileName << G4endl;
-
-  // open the file and find the source histograms
-  // for each background species (mu+, mu-, n)
-  bkgFile = new TFile(bkgFileName, "read");
-  if (!bkgFile->IsOpen() || bkgFile->IsZombie()) {
-    G4cout << "Cannot open file : " << bkgFileName << G4endl;
-    exit(1);
-  }
+  G4cout << "GeneratePrimaries from source " << fBkgFilename << G4endl;
 
   // for each background species available...
-  for(auto const name : speciesList) {
+  for(auto const name : fSpeciesList) {
     
-    std::string hxyE_path = name + "/hxyE_" + name;
-    std::string hdir_path = name + "/hdir_" + name;
-
-    // get the input histograms
-    // 3D histo in (x, y, E): normalized, to be used for the main extraction
-    // 3D histo in (xdircos, ydircos, E): one energy is extracted, 
-
-    hxyE = (TH3D*)bkgFile->Get(hxyE_path.c_str());
-    hdir = (TH3D*)bkgFile->Get(hdir_path.c_str());
-
     // get total number of particles to shoot
-    // TODO: currently launching the equivalente of the requested time window
+    // TODO: currently launching the equivalent of the requested time window
     // This should be probably rephrased in terms of luminosity
-    G4cout << "Requested window for background extraction: " << time_window/us << " us" << G4endl;
-    int nparticles = ExtractBackgroundParticles(time_window);
+    G4cout << "Requested time window for background extraction: " << fBkgTimeWindow/us << " us" << G4endl;
+    int nparticles = ExtractBackgroundParticles();
     G4cout << "********" << G4endl;
     G4cout << "*** Shooting " << nparticles << " background " << name << "!" << G4endl;
     
@@ -134,9 +165,9 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       // TODO: you should actually be using a 5D histo for full correlations?
      
       double z = -1.*GeometricalParameters::Get()->GetHallHeadDistance(); //entry wall z in mm
-      double t = 0.; // TODO: how to imprint the bunch-crossing timing structure?
+      double t = 0.; // TODO: imprint the bunch-crossing timing structure?
       double x, y, E;
-      hxyE->GetRandom3(x, y, E); //pos in cm, E in GeV
+      fhxyE->GetRandom3(x, y, E); //pos in cm, E in GeV
 
       double xdircos, ydircos;
       SampleDirectionCosines(xdircos, ydircos, E); 
@@ -151,13 +182,11 @@ void BackgroundPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent, G4Str
       double p = TMath::Sqrt( totE*totE - mass*mass );
       TLorentzVector p4( xdircos*p, ydircos*p, zdircos*p, totE);
   
-      // now we shoot all the final state particles into the Geant4 event
+      // you may fire when ready now 
       ShootParticle( anEvent, pdg, x4, p4);
     }
-  
+
     G4cout << "*** " << name << " background done!" << G4endl;
   }
-
-  bkgFile->Close();
 }
 

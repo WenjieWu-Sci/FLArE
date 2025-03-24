@@ -172,16 +172,16 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 
 |Command |Description |
 |:--|:--|
-|/genie/useGenie      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from GENIE|
-|/genie/genieInput    | if `useGenie is true`, give which `.gst.root` file to read GENIE events|
-|/genie/genieIStart   | if `useGenie is true`, give the start position of the file to read GENIE events|
-|/bkg/useBackground   | option for PrimaryGeneratorMessanger, set `true` to use FPF background spills|
-|/bkg/backgroundInput | if `useBackground is true`, give which file to sample background events|
-|/bkg/backgroundWindow| if `useBackground is true`, set time window for background extraction|
-|/hepmc/useHepMC      | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC3|
-|/hepmc/useHepMC2     | option for PrimaryGeneratorMessanger, set `true` to read neutrino interactions from HepMC2|
-|/hepmc/hepmcInput    | if `useHepMC is true`, give which `.hepmc` file to read events from|
-|/hepmc/vtxOffset     | if `useHepMC is true`, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
+|/gen/select              | option to select the generator, choices are `gun`,`genie`,`hepmc`,`background`|
+|/gen/genie/genieInput    | if `genie` is selected, give which `.gst.root` file to read GENIE events|
+|/gen/genie/genieIStart   | if `genie` is selected, give the start position of the file to read GENIE events|
+|/gen/genie/randomVtx     | if `genie` is selected, randomize vertex position in the fiducial volume|
+|/gen/bkg/backgroundInput | if `background` is selected, give which file to sample background events|
+|/gen/bkg/backgroundWindow| iif `background` is selected, set time window for background extraction|
+|/gen/hepmc/useHepMC2     | if `hepmc` is selected, set `true` to expect HepMC2 file format (instead of HepMC3)|
+|/gen/hepmc/hepmcInput    | if `hepmc` is selected, give which `.hepmc` file to read events from|
+|/gen/hepmc/vtxOffset     | if `hepmc` is selected, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
+
 ### Analysis
 
 |Command |Description |
