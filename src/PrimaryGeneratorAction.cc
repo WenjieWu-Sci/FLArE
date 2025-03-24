@@ -1,121 +1,106 @@
-#include <ostream>
-#include <time.h>
-
 #include "PrimaryGeneratorMessenger.hh"
 #include "PrimaryGeneratorAction.hh"
-#include "GENIEPrimaryGeneratorAction.hh"
-#include "BackgroundPrimaryGeneratorAction.hh"
-#include "HepMCPrimaryGeneratorAction.hh"
-#include "PrimaryParticleInformation.hh"
+
+#include "generators/GeneratorBase.hh"
+#include "generators/GENIEGenerator.hh"
+#include "generators/BackgroundGenerator.hh"
+#include "generators/HepMCGenerator.hh"
+#include "generators/GPSGenerator.hh"
+
 #include "geometry/GeometricalParameters.hh"
 
-#include <G4ParticleTable.hh>
-#include <G4Event.hh>
-#include <G4SystemOfUnits.hh>
-#include <G4ParticleGun.hh>
-#include <Randomize.hh>
-#include <G4GeneralParticleSource.hh>
+#include "PrimaryParticleInformation.hh"
 
-PrimaryGeneratorAction::PrimaryGeneratorAction() {
-  fGPS = new G4GeneralParticleSource();
-  
-  // default setting of primary particle.
-  // can be override in GeneratePrimaries or in macros.
-  G4ParticleDefinition* myParticle;
-  myParticle = G4ParticleTable::GetParticleTable()->FindParticle("e-");
-  fGPS->SetParticleDefinition(myParticle);
-  fGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(5*GeV);  // kinetic energy
-  fGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(G4ThreeVector(0,0,1));
-  G4long seeds[2];
-  time_t systime = time(NULL);
-  seeds[0] = (G4long) systime;
-  seeds[1] = (G4long) (systime*G4UniformRand());
-  G4Random::setTheSeeds(seeds);
-  G4Random::showEngineStatus();
-  G4double x0 = G4UniformRand();
-  G4double y0 = G4UniformRand();
-  G4double z0 = G4UniformRand();
-  x0 = GeometricalParameters::Get()->GetFLArEPosition().x() +
-       (x0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().x();
-  y0 = GeometricalParameters::Get()->GetFLArEPosition().y() +
-       (y0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().y();
-  z0 = GeometricalParameters::Get()->GetFLArEPosition().z() +
-       (z0-0.5)*GeometricalParameters::Get()->GetFLArEFidVolSize().z();;
-  fGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
-  fGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(G4ThreeVector(x0, y0, z0));
+#include "G4Event.hh"
+#include "G4Exception.hh"
 
-  useGenie = false;
-  useHepMC = false;
-  useBackground = false;
-  bkgTimeWindow = 187.5*us; //default: max drift time
 
-  fActionGenie = new GENIEPrimaryGeneratorAction(fGPS);
-  fActionBackground = new BackgroundPrimaryGeneratorAction(fGPS);
-  fActionHepMC = new HepMCPrimaryGeneratorAction(fGPS);
-
+PrimaryGeneratorAction::PrimaryGeneratorAction() 
+{  
   // create a messenger for this class
-  genMessenger = new PrimaryGeneratorMessenger(this);
+  fGenMessenger = new PrimaryGeneratorMessenger(this);
+
+  // start with default generator
+  fGenerator = new GPSGenerator();  
+  fInitialized = false;
+
 }
 
-PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-  delete fGPS;
-  delete fActionGenie;
-  delete fActionBackground;
-  delete fActionHepMC;
-  delete genMessenger;
+PrimaryGeneratorAction::~PrimaryGeneratorAction() 
+{
+  delete fGenerator;
+  delete fGenMessenger;
 }
 
-void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent) {
- 
-  if (useGenie) {
-    std::cout << std::endl;
-    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
-    std::cout << ") : GENIE ===oooOOOooo===" << std::endl;
-    fActionGenie->GeneratePrimaries(anEvent, gstFileName, gstEvtStartIdx, 1);
-    neuidx          = fActionGenie->NeuIdx();
-    neupdg          = fActionGenie->NeuPDG();
-    neup4           = fActionGenie->NeuP4();
-    neux4           = fActionGenie->NeuX4();
-    int_type        = fActionGenie->InteractionTypeId();
-    scattering_type = fActionGenie->ScatteringTypeId();
-    w               = fActionGenie->GetW();
-    fslpdg          = fActionGenie->FSLPDG();
-    fslp4           = fActionGenie->FSLP4();
-  } else if(useBackground) {
-    std::cout << std::endl;
-    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
-    std::cout << ") : Background Generator ===oooOOOooo===" << std::endl;
-    fActionBackground->GeneratePrimaries(anEvent, bkgFileName, bkgTimeWindow);
+void PrimaryGeneratorAction::SetGenerator(G4String name)
+{
+  G4StrUtil::to_lower(name);
+
+  if( name == "genie" )
+    fGenerator = new GENIEGenerator();
+  else if( name == "background" )
+    fGenerator = new BackgroundGenerator();
+  else if( name == "hepmc" )
+    fGenerator = new HepMCGenerator();
+  else if ( name == "gun" )
+    fGenerator = new GPSGenerator();
+  else{
+    G4String err = "Unknown generator option " + name;
+    G4Exception("PrimaryGeneratorAction",
+                "UnknownOption",
+                FatalErrorInArgument,
+                err.c_str());
+  } 
+}
+
+
+void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
+{ 
+  // load generator data at first event
+  // this function opens files, reads trees, etc (if required) 
+  if(!fInitialized){
+    fGenerator->LoadData();
+    fInitialized = true;
   }
-  else if(useHepMC || useHepMC2) {
-      int hepmc_num = (useHepMC2) ? 2 : 3;
-      std::cout << std::endl;
-      std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
-      std::cout << ") : HepMC"<< hepmc_num << " Generator ===oooOOOooo===" << std::endl;
-      fActionHepMC->LoadFile(HepMCFileName, false, useHepMC2);
-      fActionHepMC->GeneratePrimaryVertex(anEvent, HepMCVtxOffset);
-  }  
-  else {
-    std::cout << std::endl;
-    std::cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
-    std::cout << "): General Particle Source ===oooOOOooo===" << std::endl;
-    fGPS->GeneratePrimaryVertex(anEvent);
-  }
+
+  G4cout << G4endl;
+  G4cout << "===oooOOOooo=== Event Generator (# " << anEvent->GetEventID();
+
+  // produce an event with current generator
+  fGenerator->GeneratePrimaries(anEvent);
+
+  // save additional truth information alongside primary particles
+  // this makes it available for the output tree (e.g: neutrino info for genie)
+  
+  // TODO: make it more generic for other generators? 
+  bool isGenie = (fGenerator->GetGeneratorName() == "genie");
+  // downcast: if it fails, we won't use it anyway...
+  GENIEGenerator *genieGen = dynamic_cast<GENIEGenerator*>(fGenerator);
+  G4int neuidx = (isGenie) ? genieGen->GetNeuIdx() : -1;
+  G4int neupdg = (isGenie) ? genieGen->GetNeuPDG() : -1;
+  TLorentzVector neup4 = (isGenie) ? genieGen->GetNeuP4() : TLorentzVector();
+  TLorentzVector neux4 = (isGenie) ? genieGen->GetNeuX4() : TLorentzVector();
+  G4int int_type = (isGenie) ? genieGen->GetInteractionTypeId() : -1;
+  G4int scattering_type = (isGenie) ? genieGen->GetScatteringTypeId() : -1;
+  G4double w = (isGenie) ? genieGen->GetW() : -1;
+  G4int fslpdg = (isGenie) ? genieGen->GetFSLPDG() : -1;
+  TLorentzVector fslp4 = (isGenie) ? genieGen->GetFSLP4() : TLorentzVector();
 
   // loop over the vertices, and then over primary particles,
-  // and for each primary particle create an info object, in 
-  // which to store MC truth information
+  // and for each primary particle create an info object
   G4int count_particles = 0;
   for (G4int ivtx = 0; ivtx < anEvent->GetNumberOfPrimaryVertex(); ++ivtx) {
     for (G4int ipp = 0; ipp < anEvent->GetPrimaryVertex(ivtx)->GetNumberOfParticle(); ++ipp) {
-      G4PrimaryParticle* primary_particle = 
-        anEvent->GetPrimaryVertex(ivtx)->GetPrimary(ipp);
+      
+      G4PrimaryParticle* primary_particle = anEvent->GetPrimaryVertex(ivtx)->GetPrimary(ipp);
+      
       if (primary_particle) {
         primary_particle->SetUserInformation(new PrimaryParticleInformation(
               count_particles, primary_particle->GetPDGcode(), primary_particle->GetMass(),
               primary_particle->GetMomentum(), anEvent->GetPrimaryVertex(ivtx)->GetPosition(),
               neuidx, neupdg, neup4, neux4, int_type, scattering_type, w,
               fslpdg, fslp4));
+
         count_particles++;
       }
     }

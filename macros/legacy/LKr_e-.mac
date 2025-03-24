@@ -4,6 +4,7 @@
 /run/initialize
 #/control/execute macros/vis.mac
 
+/gen/select gun
 /gps/verbose 0
 /gps/direction 0 0 1
 
