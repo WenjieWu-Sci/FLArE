@@ -38,7 +38,7 @@ void HepMCGenerator::LoadData()
               ? static_cast<HepMC3::Reader*>(new HepMC3::ReaderAsciiHepMC2(fHepMCFilename)) 
               : static_cast<HepMC3::Reader*>(new HepMC3::ReaderAscii(fHepMCFilename));
 
-  if( !fAsciiInput ){
+  if( fAsciiInput->failed() ){
     G4String err = "Cannot open HepMC file : " + fHepMCFilename;
     G4Exception("HepMCGenerator", "FileError", FatalErrorInArgument, err.c_str());
   }
