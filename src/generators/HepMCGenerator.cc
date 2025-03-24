@@ -12,6 +12,21 @@
 #include "G4TransportationManager.hh"
 #include "G4Navigator.hh"
 #include "G4RunManager.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4Box.hh"
+
+// #include "HepMCPrimaryGeneratorAction.hh"
+// #include "G4LogicalVolumeStore.hh"
+// #include "G4LogicalVolume.hh"
+// #include "G4PhysicalVolumeStore.hh"
+// #include "G4VPhysicalVolume.hh"
+// #include "G4Box.hh"
+// #include "G4VPhysicalVolume.hh"
+// #include "G4LogicalVolume.hh"
+// #include "G4VSolid.hh"
+// #include "G4ThreeVector.hh"
+// #include "geometry/GeometricalParameters.hh"
+
 
 HepMCGenerator::HepMCGenerator()
 {
@@ -157,7 +172,7 @@ void HepMCGenerator::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, 
     //! Note: for this to work two assumptions are made
     //! 1. The vertices within the HepMC file start from (0,0,0). If this is not true then /hepmc/vtxOffset <x y z> MUST be set in the steering macro
     //! 2. The vertices in the HepMC file correspond to the the vertices in the 
-    if (placeInDecayVolume)
+    if (fPlaceInDecayVolume)
     { 
       G4double decay_vol_start = GetStartOfDecayVolume();
       // std::cout << "Decay volume starts at " << decay_vol_start << std::endl;

@@ -25,7 +25,7 @@ class HepMCGenerator : public GeneratorBase
     void SetHepMCFilename(G4String val) { fHepMCFilename = val; }
     void SetUseHepMC2(G4bool val) { fUseHepMC2 = val; }
     void SetHepMCVertexOffset(G4ThreeVector val) { fVtxOffset = val; }
-    void SetPlaceInDecayVolume(G4 bool val) { fPlaceInDecayVolume = val; }    
+    void SetPlaceInDecayVolume(G4bool val) { fPlaceInDecayVolume = val; }    
 
   private:
 
