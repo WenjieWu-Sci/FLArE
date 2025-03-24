@@ -29,6 +29,7 @@ class HepMCGeneratorMessenger: public G4UImessenger
     G4UIcmdWithAString* fHepMCInputFileCmd;
     G4UIcmdWith3VectorAndUnit* fHepMCVertexOffsetCmd;
     G4UIcmdWithABool* fUseHepMC2Cmd;
+    G4UIcmdWithABool* fHepMCPlaceInDecayVolume;
 
 };
 

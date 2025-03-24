@@ -31,6 +31,10 @@ HepMCGeneratorMessenger::HepMCGeneratorMessenger(HepMCGenerator* action)
   fUseHepMC2Cmd->SetGuidance("set generator to hepmc2");
   fUseHepMC2Cmd->SetParameterName("useHepMC2", true);
   fUseHepMC2Cmd->SetDefaultValue(false);
+
+  fHepMCPlaceInDecayVolume = new G4UIcmdWithABool("/hepmc/placeInDecayVolume", this);
+  fHepMCPlaceInDecayVolume->SetGuidance("will try and translate vertex into FASER2 decay volume. Note: Assumes that vertices in HepMC start from (0,0,0) - set /hepmc/vtxOffset if not. Also assumes that decay volume lengths match.");
+  fHepMCPlaceInDecayVolume->AvailableForStates(G4State_PreInit, G4State_Init, G4State_Idle);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -41,6 +45,7 @@ HepMCGeneratorMessenger::~HepMCGeneratorMessenger()
   delete fHepMCVertexOffsetCmd;
   delete fUseHepMC2Cmd;
   delete fHepMCGeneratorDir;
+  delete fHepMCPlaceInDecayVolume;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -50,6 +55,7 @@ void HepMCGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValu
   if (command == fHepMCInputFileCmd) fHepMCAction->SetHepMCFilename(newValues);
   else if (command == fHepMCVertexOffsetCmd) fHepMCAction->SetHepMCVertexOffset(fHepMCVertexOffsetCmd->GetNew3VectorValue(newValues));
   else if (command == fUseHepMC2Cmd) fHepMCAction->SetUseHepMC2(fUseHepMC2Cmd->GetNewBoolValue(newValues));
+  else if (command == fHepMCPlaceInDecayVolume) fHepMCAction->SetPlaceInDecayVolume(fHepMCPlaceInDecayVolume->GetNewBoolValue(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

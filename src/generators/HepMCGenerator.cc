@@ -38,7 +38,7 @@ void HepMCGenerator::LoadData()
               ? static_cast<HepMC3::Reader*>(new HepMC3::ReaderAsciiHepMC2(fHepMCFilename)) 
               : static_cast<HepMC3::Reader*>(new HepMC3::ReaderAscii(fHepMCFilename));
 
-  if( !fAsciiInput ){
+  if( fAsciiInput->failed() ){
     G4String err = "Cannot open HepMC file : " + fHepMCFilename;
     G4Exception("HepMCGenerator", "FileError", FatalErrorInArgument, err.c_str());
   }
@@ -67,6 +67,17 @@ G4bool HepMCGenerator::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
+static G4VPhysicalVolume* FindPhysicalVolumeByName(const G4String& name) {
+  G4PhysicalVolumeStore* pvStore = G4PhysicalVolumeStore::GetInstance();
+  for (auto pv : *pvStore) {
+      if (pv->GetName() == name) { 
+          return pv; 
+      }
+  }
+  return nullptr; // Return nullptr if no match is found
+}
+
+
 void HepMCGenerator::GeneratePrimaries(G4Event* anEvent)
 {
 
@@ -85,6 +96,39 @@ void HepMCGenerator::GeneratePrimaries(G4Event* anEvent)
   }
 
   HepMC2G4(HepMCEvent, anEvent);
+}
+
+
+static G4double GetStartOfDecayVolume()
+{
+    G4VPhysicalVolume* DVphysicalVolume = FindPhysicalVolumeByName("FASER2DecayVolPhysical");
+    if (!DVphysicalVolume)
+    {
+        std::cout << "ERROR: Tried to retrive the FASER2 decay volume but it does not exist!" << std::endl;
+        return 0;
+    }
+    G4ThreeVector DVPosition = DVphysicalVolume->GetTranslation();
+
+    // std::cout << "DVPosition = " << DVPosition << std::endl;
+
+    G4VPhysicalVolume* F2physicalVolume = FindPhysicalVolumeByName("FASER2Physical");
+    G4ThreeVector F2Position = F2physicalVolume->GetTranslation();
+
+    // std::cout << "F2Position = " << F2Position << std::endl;
+
+    G4VPhysicalVolume* HallphysicalVolume = FindPhysicalVolumeByName("hallPV");
+    G4ThreeVector HallPosition = HallphysicalVolume->GetTranslation();
+
+    // std::cout << "HallPosition = " << HallPosition << std::endl;
+
+    G4LogicalVolume* DVlogicalVol = DVphysicalVolume->GetLogicalVolume();
+    G4VSolid* DVsolid = DVlogicalVol->GetSolid();
+    G4Box* DVbox = dynamic_cast<G4Box*>(DVsolid);
+    G4double DVzHalfLength = DVbox->GetZHalfLength();
+
+    G4ThreeVector DVglobalPosition = HallPosition  + F2Position + DVPosition;
+
+    return DVglobalPosition.z() - DVzHalfLength;
 }
 
 
@@ -108,6 +152,18 @@ void HepMCGenerator::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, 
       G4cout << "WARNING: position was (" << pos.x() << ", "<<  pos.y() << ", " << pos.z() << ", " << pos.t() << ")" << G4endl;
       continue;
     }
+
+    // If requested; work out where the decay volume starts and use that to offset the vertex so that it falls inside it
+    //! Note: for this to work two assumptions are made
+    //! 1. The vertices within the HepMC file start from (0,0,0). If this is not true then /hepmc/vtxOffset <x y z> MUST be set in the steering macro
+    //! 2. The vertices in the HepMC file correspond to the the vertices in the 
+    if (placeInDecayVolume)
+    { 
+      G4double decay_vol_start = GetStartOfDecayVolume();
+      // std::cout << "Decay volume starts at " << decay_vol_start << std::endl;
+      xvtx = G4LorentzVector(pos.x(), pos.y(), decay_vol_start+pos.z()+vtx_z_offset, pos.t());
+    }
+
 
     // create G4PrimaryVertex and associated G4PrimaryParticles
     G4PrimaryVertex* g4vtx = new G4PrimaryVertex(xvtx.x(), xvtx.y(), xvtx.z(), xvtx.t());
