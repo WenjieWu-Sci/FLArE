@@ -30,7 +30,7 @@
 /det/addFASER2 true
 /det/faser/addFASER2Pos 0 0 34141 mm
 /det/faser/magnetGeom CrystalPulling
-/det/faser/magnetField 0.6. tesla
+/det/faser/magnetField 0.6 tesla
 /det/faser/magnetInnerR 0.8 m
 /det/faser/magnetOuterR 1.2 m
 /det/faser/magnetLengthZ 1.25 m
@@ -38,8 +38,6 @@
 /det/faser/magnetGap 0.25 m
 /det/faser/trackingNumber 3
 /det/faser/trackingGap 0.1 m
-/det/faser/trackingNBarsX 7
-/det/faser/trackingNBarsY 7
 /det/faser/trackingScinThick 1.0 cm
 
 # Configuring FORMOSA
