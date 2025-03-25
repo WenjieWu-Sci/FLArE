@@ -569,16 +569,9 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
 void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName) 
 {
   // Get and cast hit collection with LArBoxHits
-  // LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
+  LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
 
-  // std::cout << "hitCollection->size() = " << hitCollection->GetSize() << std::endl;
-  auto sdManager = G4SDManager::GetSDMpointer();
-  G4int collId = sdManager->GetCollectionID(sdName);
-  auto hitCollection = hcofEvent->GetHC(collId);
-  if (!hitCollection){
-      G4cout << ">>>     ERROR didn't find " << sdName << G4endl;
-      return;
-  }
+  std::cout << "hitCollection->size() = " << hitCollection->GetSize() << std::endl;
 
   if (hitCollection->GetSize() == 0) return;
 
@@ -586,10 +579,8 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
     
     std::cout << "hitCollection->size()" << hitCollection->GetSize() << std::endl;
 
-    for (unsigned int i = 0; i < hitCollection->GetSize(); ++i) 
-    {
-      auto hit = static_cast<LArBoxHit *>(hitCollection->GetHit(i));
-      // std::cout << "HERE" << std::endl;
+    for (auto hit: *hitCollection->GetVector()) {
+      std::cout << "HERE" << std::endl;
       nHits++;
 
       double pre_x  = hit->GetPreStepPosition().x();
@@ -607,7 +598,7 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       trkZFSL.push_back(post_z);
       trkPFSL.push_back(p_perp);
       
-      // std::cout << "Hit(" << post_x << ", " << post_y << ", " << post_z << ")" << std::endl; 
+      std::cout << "Hit(" << post_x << ", " << post_y << ", " << post_z << ")" << std::endl; 
       
 
       // if (m_saveHit) {
