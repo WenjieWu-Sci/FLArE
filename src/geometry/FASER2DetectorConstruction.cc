@@ -80,6 +80,12 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   auto containerSolid = new G4Box("FASER2Solid", *totLengthX/2., *totLengthY/2., totLengthZ/2.);
   fFASER2Assembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FASER2Logical");
 
+  G4VisAttributes* F2_logVisAtt = new G4VisAttributes(G4Colour::Grey());
+  F2_logVisAtt->SetForceWireframe(true);
+  F2_logVisAtt->SetForceSolid(false);
+  F2_logVisAtt->SetVisibility(true);
+  fFASER2Assembly->SetVisAttributes(F2_logVisAtt);
+
   //* ------------ Place components in order that they appear ------------ *// 
   
   G4double componentPosition = -totLengthZ/2; //* We'll increment this variable as we move through the detector to place things
@@ -116,12 +122,6 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   fDecayVolumeLogical  = new G4LogicalVolume(decayVolBox, fMaterials->Material("Air"), "FASER2DecayVolLogical");
   
   new G4PVPlacement(noRot, G4ThreeVector(0,0, componentPosition), fDecayVolumeLogical, "FASER2DecayVolPhysical", fFASER2Assembly, false, 0, true);
-  
-  G4VisAttributes* F2_logVisAtt = new G4VisAttributes(G4Colour::Red());
-  F2_logVisAtt->SetForceWireframe(true);
-  F2_logVisAtt->SetForceSolid(false);
-  F2_logVisAtt->SetVisibility(true);
-  fFASER2Assembly->SetVisAttributes(F2_logVisAtt);
   
   G4VisAttributes* DV_logVisAtt = new G4VisAttributes(G4Colour(0.8,0.8,0.8,0.3));
   DV_logVisAtt->SetForceWireframe(true);
