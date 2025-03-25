@@ -386,7 +386,6 @@ void AnalysisManager::EndOfEvent(const G4Event* event) {
   // loop over all sensitive detectors to get all the hit collections
   // fill the truth tree for primary particles
   for (auto sdname : SDNamelist) {
-    std::cout << "FillPrimaryTruthTree(" << sdname.first << ", " << sdname.second << ")" << std::endl;
     FillPrimaryTruthTree(sdname.first, sdname.second);
   }
   // update number of primary particles after FillPrimaryTruthTree
@@ -570,17 +569,8 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
 {
   // Get and cast hit collection with LArBoxHits
   LArBoxHitsCollection* hitCollection = dynamic_cast<LArBoxHitsCollection*>(hcofEvent->GetHC(sdId));
-
-  std::cout << "hitCollection->size() = " << hitCollection->GetSize() << std::endl;
-
-  if (hitCollection->GetSize() == 0) return;
-
-  if (hitCollection && hitCollection->GetSize() != 0) {
-    
-    std::cout << "hitCollection->size()" << hitCollection->GetSize() << std::endl;
-
+  if (hitCollection) {
     for (auto hit: *hitCollection->GetVector()) {
-      std::cout << "HERE" << std::endl;
       nHits++;
 
       double pre_x  = hit->GetPreStepPosition().x();
@@ -589,139 +579,127 @@ void AnalysisManager::FillPrimaryTruthTree(G4int sdId, std::string sdName)
       double post_x = hit->GetPostStepPosition().x();
       double post_y = hit->GetPostStepPosition().y();
       double post_z = hit->GetPostStepPosition().z();
-      double px = hit->GetInitMomentum().x();
-      double pz = hit->GetInitMomentum().z();
-      double p_perp = TMath::Sqrt(px*px+pz*pz);
+      
+      if (m_saveHit) {
+        if (nHits<=40000000) {
+          HitTID[nHits-1] = hit->GetTID();
+          HitPID[nHits-1] = hit->GetPID();
+          HitPDG[nHits-1] = hit->GetParticle();
+          HitTrackStatus[nHits-1]  = hit->GetTrackStatus();
+          HitPrePositionX[nHits-1] = pre_x;
+          HitPrePositionY[nHits-1] = pre_y;
+          HitPrePositionZ[nHits-1] = pre_z;
+          HitPosPositionX[nHits-1] = post_x;
+          HitPosPositionY[nHits-1] = post_y;
+          HitPosPositionZ[nHits-1] = post_z;
+          HitEdep[nHits-1] = hit->GetEdep();
+        }
+      }
 
-      trkXFSL.push_back(post_x);
-      trkYFSL.push_back(post_y);
-      trkZFSL.push_back(post_z);
-      trkPFSL.push_back(p_perp);
-      
-      std::cout << "Hit(" << post_x << ", " << post_y << ", " << post_z << ")" << std::endl; 
-      
+      // energy deposition in different volumes of the detector
+      if (sdName == "lArBoxSD/lar_box") 
+        edepInLAr += hit->GetEdep();
+      else if (sdName == "HadCalXSD/lar_box") 
+        edepInHadCalX += hit->GetEdep();
+      else if (sdName == "HadCalYSD/lar_box") 
+        edepInHadCalY += hit->GetEdep();
+      else if (sdName == "MuonFinderXSD/lar_box") 
+        edepInMuonFinderX += hit->GetEdep();
+      else if (sdName == "MuonFinderYSD/lar_box") 
+        edepInMuonFinderY += hit->GetEdep();
+      else if (sdName == "HadAbsorbSD/lar_box") 
+        edepInHadAborb += hit->GetEdep();
+      else if (sdName == "MuonFinderAbsorbSD/lar_box") 
+        edepInMuonFinderAbsorb += hit->GetEdep();
 
-      // if (m_saveHit) {
-      //   if (nHits<=40000000) {
-      //     HitTID[nHits-1] = hit->GetTID();
-      //     HitPID[nHits-1] = hit->GetPID();
-      //     HitPDG[nHits-1] = hit->GetParticle();
-      //     HitTrackStatus[nHits-1]  = hit->GetTrackStatus();
-      //     HitPrePositionX[nHits-1] = pre_x;
-      //     HitPrePositionY[nHits-1] = pre_y;
-      //     HitPrePositionZ[nHits-1] = pre_z;
-      //     HitPosPositionX[nHits-1] = post_x;
-      //     HitPosPositionY[nHits-1] = post_y;
-      //     HitPosPositionZ[nHits-1] = post_z;
-      //     HitEdep[nHits-1] = hit->GetEdep();
-      //   }
-      // }
-      
-      // // energy deposition in different volumes of the detector
-      // if (sdName == "lArBoxSD/lar_box") 
-      //   edepInLAr += hit->GetEdep();
-      // else if (sdName == "HadCalXSD/lar_box") 
-      //   edepInHadCalX += hit->GetEdep();
-      // else if (sdName == "HadCalYSD/lar_box") 
-      //   edepInHadCalY += hit->GetEdep();
-      // else if (sdName == "MuonFinderXSD/lar_box") 
-      //   edepInMuonFinderX += hit->GetEdep();
-      // else if (sdName == "MuonFinderYSD/lar_box") 
-      //   edepInMuonFinderY += hit->GetEdep();
-      // else if (sdName == "HadAbsorbSD/lar_box") 
-      //   edepInHadAborb += hit->GetEdep();
-      // else if (sdName == "MuonFinderAbsorbSD/lar_box") 
-      //   edepInMuonFinderAbsorb += hit->GetEdep();
-
-      // // save FSL (only muons!) hits for circle fitting
-      // // check that particle is a primary muon
-      
-      // double px = hit->GetInitMomentum().x();
-      // double pz = hit->GetInitMomentum().z();
-      // double p_perp = TMath::Sqrt(px*px+pz*pz);
-      // // save hits in FLArE hadCather+muonFinder
-      // if( (sdName == "HadCalXSD/lar_box") || (sdName == "HadCalYSD/lar_box") ||
-      //     (sdName == "MuonFinderXSD/lar_box") || (sdName == "MuonFinderYSD/lar_box") ||
-      //     (sdName == "HadAbsorbSD/lar_box") || (sdName == "MuonFinderAbsorbSD/lar_box") ||
-      //     (sdName == "BabyMINDHorBarSD/lar_box") || (sdName == "BabyMINDVerBarSD/lar_box")){
-      //   hitXFSL.push_back(post_x);
-      //   hitYFSL.push_back(post_y);
-      //   hitZFSL.push_back(post_z);
-      //   hitPFSL.push_back(p_perp);
-      // }
-      // else if (sdName == "FASER2TrackerSD/lar_box"){
-      //   std::cout << "Pushing back hits in FASER2 Tracker" << std::endl;
-      //   trkXFSL.push_back(post_x);
-      //   trkYFSL.push_back(post_y);
-      //   trkZFSL.push_back(post_z);
-      //   trkPFSL.push_back(p_perp);
-      // }
-      
+      // save FSL (only muons!) hits for circle fitting
+      // check that particle is a primary muon
+      if( TMath::Abs(hit->GetParticle())==13 && hit->GetPID() == 0 ){
+        double px = hit->GetInitMomentum().x();
+        double pz = hit->GetInitMomentum().z();
+        double p_perp = TMath::Sqrt(px*px+pz*pz);
+        // save hits in FLArE hadCather+muonFinder
+        if( (sdName == "HadCalXSD/lar_box") || (sdName == "HadCalYSD/lar_box") ||
+            (sdName == "MuonFinderXSD/lar_box") || (sdName == "MuonFinderYSD/lar_box") ||
+            (sdName == "HadAbsorbSD/lar_box") || (sdName == "MuonFinderAbsorbSD/lar_box") ||
+            (sdName == "BabyMINDHorBarSD/lar_box") || (sdName == "BabyMINDVerBarSD/lar_box")){
+          hitXFSL.push_back(post_x);
+          hitYFSL.push_back(post_y);
+          hitZFSL.push_back(post_z);
+          hitPFSL.push_back(p_perp);
+        }
+        else if ((sdName == "TrkHorScinSD/lar_box") || (sdName == "TrkVerScinSD/lar_box")){
+          trkXFSL.push_back(post_x);
+          trkYFSL.push_back(post_y);
+          trkZFSL.push_back(post_z);
+          trkPFSL.push_back(p_perp);
+        }
+      }
 
       //allTracksPTPair.insert(std::make_pair(hit->GetPID(), hit->GetTID()));
 
       // stable final state particles in GENIE, primary particles in Geant4
-    //   if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
-    //     if ( std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end() ) { 
-    //       // the following line excludes final state lepton tau from the primary particle list
-    //       //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
-    //       countPrimaryParticle++;
-	  // primaryIDs.push_back(hit->GetTID());
-    //       primaries.push_back(FPFParticle(hit->GetParticle(), 
-    //             hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 1, hit->GetParticleMass(),
-    //             hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
-    //             hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
-    //             GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
-    //               hit->GetInitMomentum().z(), hit->GetParticleMass())));
-    //     }
-    //   }
-    //   // in case of the fsl decay, the decay products are counted as primary particles
-    //   // * tau- decay (dominant)
-    //   // * mu- decay
-    //   //if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
-    //   if (hit->GetIsTrackFromPrimaryLepton()) {
-    //     tracksFromFSLSecondary.insert(hit->GetTID());
-    //     if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
-    //       countPrimaryParticle++;
-	  // primaryIDs.push_back(hit->GetTID());
-    //       primaries.push_back(FPFParticle(hit->GetParticle(), 
-    //             hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 2, hit->GetParticleMass(),
-    //             hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
-    //             hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
-    //             GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
-    //               hit->GetInitMomentum().z(), hit->GetParticleMass())));
-    //     }
-    //   }
-    //   // in case of pizero in the list of primary track
-    //   // its decay products are also counted as primary particles, mostly 2 gammas
-    //   if (hit->GetIsTrackFromPrimaryPizero()) {
-    //     tracksFromFSPizeroSecondary.insert(hit->GetTID());
-    //     if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
-    //       countPrimaryParticle++;
-	  // primaryIDs.push_back(hit->GetTID());
-    //       primaries.push_back(FPFParticle(hit->GetParticle(), 
-    //             hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 3, hit->GetParticleMass(),
-    //             hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
-    //             hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
-    //             GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
-    //               hit->GetInitMomentum().z(), hit->GetParticleMass())));
-    //     }
-    //   }
-    //   // in case of tau decay pizero
-    //   // decay products of this pizero are also counted as primary particles, mostly 2 gammas
-    //   if (hit->GetIsTrackFromFSLPizero()) {
-    //     tracksFromFSLDecayPizeroSecondary.insert(hit->GetTID());
-    //     if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
-    //       countPrimaryParticle++;
-	  // primaryIDs.push_back(hit->GetTID());
-    //       primaries.push_back(FPFParticle(hit->GetParticle(), 
-    //             hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 4, hit->GetParticleMass(),
-    //             hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
-    //             hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
-    //             GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
-    //               hit->GetInitMomentum().z(), hit->GetParticleMass())));
-    //     }
-    //   }
+      if (hit->GetCreatorProcess()=="PrimaryParticle") { // i.e. PID==0
+        if ( std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end() ) { 
+          // the following line excludes final state lepton tau from the primary particle list
+          //if (abs(nuPDG)==16 && abs(nuFSLPDG)==15 && abs(hit->GetParticle()==15)) continue;
+          countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
+          primaries.push_back(FPFParticle(hit->GetParticle(), 
+                hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 1, hit->GetParticleMass(),
+                hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
+                hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
+        }
+      }
+      // in case of the fsl decay, the decay products are counted as primary particles
+      // * tau- decay (dominant)
+      // * mu- decay
+      //if (hit->GetPID()==1 && hit->GetCreatorProcess()=="Decay") {
+      if (hit->GetIsTrackFromPrimaryLepton()) {
+        tracksFromFSLSecondary.insert(hit->GetTID());
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
+          countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
+          primaries.push_back(FPFParticle(hit->GetParticle(), 
+                hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 2, hit->GetParticleMass(),
+                hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
+                hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
+        }
+      }
+      // in case of pizero in the list of primary track
+      // its decay products are also counted as primary particles, mostly 2 gammas
+      if (hit->GetIsTrackFromPrimaryPizero()) {
+        tracksFromFSPizeroSecondary.insert(hit->GetTID());
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
+          countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
+          primaries.push_back(FPFParticle(hit->GetParticle(), 
+                hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 3, hit->GetParticleMass(),
+                hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
+                hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
+        }
+      }
+      // in case of tau decay pizero
+      // decay products of this pizero are also counted as primary particles, mostly 2 gammas
+      if (hit->GetIsTrackFromFSLPizero()) {
+        tracksFromFSLDecayPizeroSecondary.insert(hit->GetTID());
+        if (std::find(primaryIDs.begin(), primaryIDs.end(), hit->GetTID()) == primaryIDs.end()) {
+          countPrimaryParticle++;
+	  primaryIDs.push_back(hit->GetTID());
+          primaries.push_back(FPFParticle(hit->GetParticle(), 
+                hit->GetPID(), hit->GetTID(), countPrimaryParticle-1, 4, hit->GetParticleMass(),
+                hit->GetTrackVertex().x(), hit->GetTrackVertex().y(), hit->GetTrackVertex().z(), 0, 
+                hit->GetInitMomentum().x(), hit->GetInitMomentum().y(), hit->GetInitMomentum().z(), 
+                GetTotalEnergy(hit->GetInitMomentum().x(), hit->GetInitMomentum().y(),
+                  hit->GetInitMomentum().z(), hit->GetParticleMass())));
+        }
+      }
     } // end of hit loop
   }
 }
