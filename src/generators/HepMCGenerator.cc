@@ -15,18 +15,6 @@
 #include "G4PhysicalVolumeStore.hh"
 #include "G4Box.hh"
 
-// #include "HepMCPrimaryGeneratorAction.hh"
-// #include "G4LogicalVolumeStore.hh"
-// #include "G4LogicalVolume.hh"
-// #include "G4PhysicalVolumeStore.hh"
-// #include "G4VPhysicalVolume.hh"
-// #include "G4Box.hh"
-// #include "G4VPhysicalVolume.hh"
-// #include "G4LogicalVolume.hh"
-// #include "G4VSolid.hh"
-// #include "G4ThreeVector.hh"
-// #include "geometry/GeometricalParameters.hh"
-
 
 HepMCGenerator::HepMCGenerator()
 {

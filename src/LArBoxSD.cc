@@ -21,7 +21,7 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   // https://apc.u-paris.fr/~franco/g4doxy/html/G4TrackStatus_8hh.html#734825af9cdc612606614fdce0545157
   // http://geant4.in2p3.fr/2005/Workshop/ShortCourse/session1/M.Asai.pdf
   G4int TrackStatus = aTrack->GetTrackStatus();
-  // G4cout<<"debug (track status): "<<TrackStatus<<G4endl;
+  //G4cout<<"debug (track status): "<<TrackStatus<<G4endl;
 
   G4ThreeVector TrackVertex = aTrack->GetVertexPosition();
   G4double TrackLength      = aTrack->GetTrackLength();
@@ -64,8 +64,6 @@ G4bool LArBoxSD::ProcessHits(G4Step* aStep, G4TouchableHistory* R0hist) {
   G4ThreeVector pos  = 0.5*(PreStepPosition + PostStepPosition);
   G4String PosVolume = PostStep->GetPhysicalVolume()->GetName();
   G4int StepStatus   = PostStep->GetStepStatus();
-
-  // std::cout << "LArBoxSD::ProcessHits -- EDep = " << edep << std::endl;
 
   FLArETrackInformation* aTrackInfo = (FLArETrackInformation*)(aTrack->GetUserInformation());
   G4int trackIsFromPrimaryPizero = 0;
