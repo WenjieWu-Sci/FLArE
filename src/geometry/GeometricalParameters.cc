@@ -70,13 +70,21 @@ GeometricalParameters::GeometricalParameters()
   fFASER2MagnetSpacing = 0.76*m; //updates during construction
   // Tracking stations
   fNTrackingStations = 3;
-  fNScintillatorBarsY = 3;
-  fNScintillatorBarsX = 7;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
   fFASER2Pos = G4ThreeVector(0., 0., 42636.*mm);
   fFASER2TrackerX = 3*m;
   fFASER2TrackerY = 1*m;  
+  fFASER2UpstreamTrackingStationGap = 0.5*m;
+  fFASER2DownstreamTrackingStationGap = 4*m;
+  fFASER2NUpstreamTrackers = 3;
+  fFASER2NDownstreamTrackers = 3;
+  fFASER2EMCaloThickness = 1*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2HadCaloThickness = 2*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2IronWallThickness = 3*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoLengthX = 4*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoLengthY = 3*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoShieldThickness = 2.5*cm; //! These values are placeholders and require dedicated optmisation studies!
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction

@@ -22,6 +22,8 @@ class FASER2DetectorConstruction {
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
     G4LogicalVolume* GetTrackingStation(){ return fTrackingLogical;}
+    G4LogicalVolume* GetVetoStations(){ return fVetoScinLogical;}
+    G4LogicalVolume* GetMuonStations(){ return fMuonDetLogical;}
     std::vector<G4LogicalVolume*> GetTrackingStations(){ return fTrackingStationsLogical;}
 
     // Construction methods
@@ -36,6 +38,9 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
     G4LogicalVolume* fTrackingLogical;
+    G4LogicalVolume* fVetoScinLogical;
+    G4LogicalVolume* fVetoShieldLogical;
+    G4LogicalVolume* fDecayVolumeLogical;
     std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
     G4LogicalVolume* fHorTrackingScinBar;   
@@ -43,7 +48,14 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* fEMCalLogical;
     G4LogicalVolume* fHadCalLogical;
     G4LogicalVolume* fIronWallLogical;
+    G4LogicalVolume* fMuonDetLogical;
 
+    // Veto
+    G4double fVetoLengthX;
+    G4double fVetoLengthY;
+    G4double fVetoShieldThickness;
+
+    // Decay volume
     G4double fDecayVolumeLength;
 
     // SAMURAI design
@@ -70,8 +82,8 @@ class FASER2DetectorConstruction {
     G4double fTrackingStationGap;
     G4double fUpstreamTrackingStationGap;
     G4double fDownstreamTrackingStationGap;
-    G4int fNUpstreamTrackers{3};
-    G4int fNDownstreamTrackers{3};
+    G4int fNUpstreamTrackers;
+    G4int fNDownstreamTrackers;
 
     // Calorimeter guess??
     G4double fEMCaloThickness;

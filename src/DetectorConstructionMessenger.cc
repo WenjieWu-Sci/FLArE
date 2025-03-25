@@ -209,8 +209,6 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     faserMagnetNumberCmd = new G4UIcmdWithAnInteger("/det/faser/magnetNumber", this);
     // Tracking stations
     faserTrackingNumberCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNumber", this);
-    faserTrackingNBarsYCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsY", this);
-    faserTrackingNBarsXCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsX", this);
     faserTrackingScinThickCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingScinThick", this);
     faserTrackingScinThickCmd->SetUnitCategory("Length");
     faserTrackingScinThickCmd->SetUnitCandidates("cm m mm");
@@ -274,8 +272,6 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete faserMagnetGapCmd;
   delete faserMagnetNumberCmd;
   delete faserTrackingNumberCmd;
-  delete faserTrackingNBarsYCmd;
-  delete faserTrackingNBarsXCmd;
   delete faserTrackingScinThickCmd;
   delete faserTrackingGapCmd;
 
@@ -392,10 +388,6 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
   //faser2 tracking stations
   else if (command == faserTrackingNumberCmd) 
     GeometricalParameters::Get()->SetNTrackingStations(faserTrackingNumberCmd->GetNewIntValue(newValues));
-  else if (command == faserTrackingNBarsYCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsY(faserTrackingNBarsYCmd->GetNewIntValue(newValues));
-  else if (command == faserTrackingNBarsXCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsX(faserTrackingNBarsXCmd->GetNewIntValue(newValues));
   else if (command == faserTrackingScinThickCmd) 
     GeometricalParameters::Get()->SetScintillatorThickness(faserTrackingScinThickCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserTrackingGapCmd) 

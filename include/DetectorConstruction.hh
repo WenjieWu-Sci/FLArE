@@ -73,6 +73,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
     // FASER2
     G4LogicalVolume* FASER2MagnetLogical;
     std::vector<G4LogicalVolume*> FASER2TrackingLogical;
+    G4LogicalVolume* FASER2VetoLogical;
+    G4LogicalVolume* FASER2MuonLogical;
 
     //FASER2nu
     G4LogicalVolume* FASERnu2EmulsionLogical;

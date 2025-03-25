@@ -101,8 +101,7 @@ class DetectorConstructionMessenger: public G4UImessenger {
     G4UIcmdWithAnInteger* faserMagnetNumberCmd;
     // Tracking stations
     G4UIcmdWithAnInteger* faserTrackingNumberCmd;
-    G4UIcmdWithAnInteger* faserTrackingNBarsYCmd;
-    G4UIcmdWithAnInteger* faserTrackingNBarsXCmd;
+
     G4UIcmdWithADoubleAndUnit* faserTrackingScinThickCmd;
     G4UIcmdWithADoubleAndUnit* faserTrackingGapCmd;
 };
