@@ -376,12 +376,11 @@ void DetectorConstruction::ConstructSDandField() {
     GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2VetoSD/lar_box");
     SDIdx++;
 
-    LArBoxSD* FASER2MuonDetSD = new LArBoxSD("FASER2VetoSD");
+    LArBoxSD* FASER2MuonDetSD = new LArBoxSD("FASER2MuonSD");
     FASER2MuonLogical->SetSensitiveDetector(FASER2MuonDetSD);
     sdManager->AddNewDetector(FASER2MuonDetSD);
     GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2MuonSD/lar_box");
     SDIdx++;
-
 
     // FASER2 magnetic field
     G4ThreeVector fieldValueFASER2 = GeometricalParameters::Get()->GetFASER2MagnetField();
