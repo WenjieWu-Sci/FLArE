@@ -163,8 +163,6 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 |/det/faser/magnetLengthZ     | option for CrystalPulling magnet size along Z axis                                   |`1.25 m`|
 |/det/faser/magnetGap         | option for gap length (along Z) between CrystalPullin magnets                        |`0.5 m`|
 |/det/faser/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
-|/det/faser/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
-|/det/faser/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
 |/det/faser/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
 |/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |`0.5 m`|
 
