@@ -179,6 +179,7 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 |/gen/hepmc/useHepMC2     | if `hepmc` is selected, set `true` to expect HepMC2 file format (instead of HepMC3)|
 |/gen/hepmc/hepmcInput    | if `hepmc` is selected, give which `.hepmc` file to read events from|
 |/gen/hepmc/vtxOffset     | if `hepmc` is selected, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
+|/gen/hepmc/placeInDecayVolume | if `hepmc` is selected, will automatically translate vertex into the FASER2 decay volume. Assumes that the vertices start from (0,0,0). If this is not the case then `/gen/hepmc/vtxOffset` must also be set.|
 
 ### Analysis
 
