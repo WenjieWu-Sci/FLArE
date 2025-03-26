@@ -106,7 +106,7 @@ class GeometricalParameters  {
     void SetFASER2TotalSizeZ(G4double val) { fFASER2TotalSizeZ = val; }
     G4double GetFASER2TotalSizeZ() { return fFASER2TotalSizeZ; }
     void SetfFASER2DecayVolumeLength (G4double val) { fFASER2DecayVolumeLength = val;}
-    G4double GetfFASER2DecayVolumeLength() { return fFASER2DecayVolumeLength; }
+    G4double GetFASER2DecayVolumeLength() { return fFASER2DecayVolumeLength; }
     void SetFASER2TrackerX(G4double val) { fFASER2TrackerX = val; }
     G4double GetFASER2TrackerX() { return fFASER2TrackerX; }
     void SetFASER2TrackerY(G4double val) { fFASER2TrackerY = val; }

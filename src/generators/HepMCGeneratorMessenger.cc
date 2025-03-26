@@ -56,7 +56,7 @@ void HepMCGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newValu
   if (command == fHepMCInputFileCmd) fHepMCAction->SetHepMCFilename(newValues);
   else if (command == fHepMCVertexOffsetCmd) fHepMCAction->SetHepMCVertexOffset(fHepMCVertexOffsetCmd->GetNew3VectorValue(newValues));
   else if (command == fUseHepMC2Cmd) fHepMCAction->SetUseHepMC2(fUseHepMC2Cmd->GetNewBoolValue(newValues));
-  else if (command == fHepMCPlaceInDecayVolumeCmd) fHepMCAction->SetPlaceInDecayVolume(fHepMCPlaceInDecayVolume->GetNewBoolValue(newValues));
+  else if (command == fHepMCPlaceInDecayVolumeCmd) fHepMCAction->SetPlaceInDecayVolume(fHepMCPlaceInDecayVolumeCmd->GetNewBoolValue(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
