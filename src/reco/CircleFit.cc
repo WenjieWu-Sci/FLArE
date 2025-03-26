@@ -200,7 +200,7 @@ namespace circularfitter {
     }else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
       
       double zcenter = GeometricalParameters::Get()->GetMagnetZPosition();
-      double size = GeometricalParameters::Get()->GetFASER2MagnetLengthZ();
+      double size = GeometricalParameters::Get()->GetFASER2MagnetWindowZ();
       double spacing = GeometricalParameters::Get()->GetFASER2MagnetSpacing();
       nmag = GeometricalParameters::Get()->GetNFASER2Magnets();
       for(int i=0; i<nmag; i++){

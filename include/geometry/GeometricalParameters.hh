@@ -127,8 +127,6 @@ class GeometricalParameters  {
     G4double GetFASER2MagnetInnerR() { return fFASER2MagnetInnerR; }
     void SetFASER2MagnetOuterR(G4double val) { fFASER2MagnetOuterR = val; }
     G4double GetFASER2MagnetOuterR() { return fFASER2MagnetOuterR; }
-    void SetFASER2MagnetLengthZ(G4double val) { fFASER2MagnetLengthZ = val; }
-    G4double GetFASER2MagnetLengthZ() { return fFASER2MagnetLengthZ; }
     void SetNFASER2Magnets(G4int val) { fNFASER2Magnets = val; }
     G4int GetNFASER2Magnets() { return fNFASER2Magnets; }
     void SetFASER2MagnetGap(G4double val) { fFASER2MagnetGap = val; }
@@ -279,7 +277,6 @@ class GeometricalParameters  {
     // Crystal-Pulling design
     G4double fFASER2MagnetInnerR;
     G4double fFASER2MagnetOuterR;
-    G4double fFASER2MagnetLengthZ;
     G4int fNFASER2Magnets;
     G4double fFASER2MagnetGap;
     G4double fFASER2MagnetSpacing;

@@ -24,11 +24,10 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
 
   fMagnetWindowX = GeometricalParameters::Get()->GetFASER2MagnetWindowX();
   fMagnetWindowY = GeometricalParameters::Get()->GetFASER2MagnetWindowY();
+  fMagnetWindowZ = GeometricalParameters::Get()->GetFASER2MagnetWindowZ();
   fMagnetYokeThicknessX = GeometricalParameters::Get()->GetFASER2MagnetYokeThickX();
   fMagnetYokeThicknessY = GeometricalParameters::Get()->GetFASER2MagnetYokeThickY();
 
-  //? I think it is potentially a bit confusing that we have two magnet Z length variables - I think one would suffice - but I've tried to maintain consistency here for the time being
-  fMagnetLengthZ = (opt == GeometricalParameters::magnetOption::SAMURAI) ? GeometricalParameters::Get()->GetFASER2MagnetWindowZ() : GeometricalParameters::Get()->GetFASER2MagnetLengthZ();
   fMagnetInnerR = GeometricalParameters::Get()->GetFASER2MagnetInnerR();
   fMagnetOuterR = GeometricalParameters::Get()->GetFASER2MagnetOuterR();
   fNMagnets = (opt == GeometricalParameters::magnetOption::SAMURAI) ? 1 : GeometricalParameters::Get()->GetNFASER2Magnets();
@@ -60,7 +59,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   //* We want to avoid any overlaps as this can be problematic for GENIE when it reads the GDML file
   G4double vetoLength = 2*fScinThickness + fVetoShieldThickness;
   G4double upstreamTrackerLength = fNUpstreamTrackers*fScinThickness + (fNUpstreamTrackers - 1)*fTrackingStationGap + fUpstreamTrackingStationGap;
-  G4double magnetLength = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*fMagnetGap;
+  G4double magnetLength = fNMagnets*fMagnetWindowZ + (fNMagnets-1)*fMagnetGap;
   G4double downstreamTrackerLength = fNDownstreamTrackers*fScinThickness + (fNDownstreamTrackers - 1)*fTrackingStationGap + fDownstreamTrackingStationGap;
   G4double caloLength = fTrackingStationGap+fEMCaloThickness+fHadCaloThickness+fIronWallThickness;
   G4double muonLength = fScinThickness+fTrackingStationGap+0.5*m;
@@ -154,7 +153,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   componentPosition += fScinThickness/2 + fUpstreamTrackingStationGap;
   if( opt == GeometricalParameters::magnetOption::SAMURAI ){
     
-    componentPosition += fMagnetLengthZ/2;
+    componentPosition += fMagnetWindowZ/2;
     G4cout << "Building SAMURAI spectrometer magnet" << G4endl;
     BuildSAMURAIDesign(); //sets logical volumes
     
@@ -167,14 +166,14 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     G4cout << "Building CrystalPulling spectrometer magnet" << G4endl;
     BuildCrystalPullingDesign();
     
-    componentPosition += fMagnetLengthZ/2;
+    componentPosition += fMagnetWindowZ/2;
     for(int i=0; i<fNMagnets; i++)
     {  
         G4ThreeVector magPos = G4ThreeVector(0.,0.,componentPosition);
         new G4PVPlacement(noRot, magPos, fMagnetWindow, "FASER2MagnetWindowPhysical", fFASER2Assembly, false, i, false);
         new G4PVPlacement(noRot, magPos, fMagnetYoke, "FASER2MagnetYokePhysical", fFASER2Assembly, false, i, false);
         if (i != fNMagnets-1){
-          componentPosition += fMagnetGap + fMagnetLengthZ;
+          componentPosition += fMagnetGap + fMagnetWindowZ;
         }
     }
   } 
@@ -193,7 +192,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   fMagnetYoke->SetVisAttributes(magnetVis);
 
   //* Place upstream tracking stations
-  componentPosition += fMagnetLengthZ/2 + fDownstreamTrackingStationGap;
+  componentPosition += fMagnetWindowZ/2 + fDownstreamTrackingStationGap;
   for (int i= 0; i<fNDownstreamTrackers; ++i) { 
 
     std::string name = "F2DownstreamTrackerLayer_" + std::to_string(i+1);
@@ -265,8 +264,8 @@ FASER2DetectorConstruction::~FASER2DetectorConstruction()
 
 void FASER2DetectorConstruction::BuildSAMURAIDesign()
 {
-  auto magnetYokeBlock = new G4Box("MagnetYokeBlock", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fMagnetLengthZ/2.);
-  auto magnetWindowSolid = new G4Box("MagnetYokeWindow", fMagnetWindowX/2., fMagnetWindowY/2., fMagnetLengthZ/2.);
+  auto magnetYokeBlock = new G4Box("MagnetYokeBlock", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fMagnetWindowZ/2.);
+  auto magnetWindowSolid = new G4Box("MagnetYokeWindow", fMagnetWindowX/2., fMagnetWindowY/2., fMagnetWindowZ/2.);
   auto magnetYokeSolid = new G4SubtractionSolid("MagnetYoke",
 				magnetYokeBlock, // block - window = hollow block
 				magnetWindowSolid, 
@@ -279,8 +278,8 @@ void FASER2DetectorConstruction::BuildSAMURAIDesign()
 
 void FASER2DetectorConstruction::BuildCrystalPullingDesign()
 {
-  auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
-  auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
+  auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetWindowZ/2.,0.,CLHEP::twopi);
+  auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetWindowZ/2.,0.,CLHEP::twopi);
 
   fMagnetYoke = new G4LogicalVolume(magnetYokeSolid, fMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
   fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical");

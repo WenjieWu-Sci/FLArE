@@ -200,9 +200,6 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     faserMagnetOuterRCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetOuterR", this);
     faserMagnetOuterRCmd->SetUnitCategory("Length");
     faserMagnetOuterRCmd->SetUnitCandidates("cm m mm");
-    faserMagnetLengthZCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetLengthZ", this);
-    faserMagnetLengthZCmd->SetUnitCategory("Length");
-    faserMagnetLengthZCmd->SetUnitCandidates("cm m mm");
     faserMagnetGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetGap", this);
     faserMagnetGapCmd->SetUnitCategory("Length");
     faserMagnetGapCmd->SetUnitCandidates("cm m mm");
@@ -268,7 +265,6 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete faserYokeThickYCmd;
   delete faserMagnetInnerRCmd;
   delete faserMagnetOuterRCmd;
-  delete faserMagnetLengthZCmd;
   delete faserMagnetGapCmd;
   delete faserMagnetNumberCmd;
   delete faserTrackingNumberCmd;
@@ -379,8 +375,6 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
     GeometricalParameters::Get()->SetFASER2MagnetInnerR(faserMagnetInnerRCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetOuterRCmd) 
     GeometricalParameters::Get()->SetFASER2MagnetOuterR(faserMagnetOuterRCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == faserMagnetLengthZCmd) 
-    GeometricalParameters::Get()->SetFASER2MagnetLengthZ(faserMagnetLengthZCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetGapCmd) 
     GeometricalParameters::Get()->SetFASER2MagnetGap(faserMagnetGapCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetNumberCmd) 

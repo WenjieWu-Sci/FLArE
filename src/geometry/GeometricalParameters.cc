@@ -62,7 +62,6 @@ GeometricalParameters::GeometricalParameters()
   fFASER2MagnetYokeThickX = 1.5*m;
   fFASER2MagnetYokeThickY = 0.5*m;
   // CrystalPulling design
-  fFASER2MagnetLengthZ = 1.25*m;
   fFASER2MagnetInnerR = 0.8*m;
   fFASER2MagnetOuterR = 1.2*m;
   fNFASER2Magnets = 3;
