@@ -1,6 +1,7 @@
 #include "generators/GeneratorBase.hh"
 #include "generators/HepMCGenerator.hh"
 #include "generators/HepMCGeneratorMessenger.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include "HepMC3/ReaderAscii.h"
 #include "HepMC3/ReaderAsciiHepMC2.h"
@@ -102,36 +103,19 @@ void HepMCGenerator::GeneratePrimaries(G4Event* anEvent)
 }
 
 
-static G4double GetStartOfDecayVolume()
-{
-    G4VPhysicalVolume* DVphysicalVolume = FindPhysicalVolumeByName("FASER2DecayVolPhysical");
-    if (!DVphysicalVolume)
-    {
-        std::cout << "ERROR: Tried to retrive the FASER2 decay volume but it does not exist!" << std::endl;
-        return 0;
-    }
-    G4ThreeVector DVPosition = DVphysicalVolume->GetTranslation();
+G4double HepMCGenerator::GetStartOfDecayVolume()
+{   
+    G4double hallZOffset = GeometricalParameters::Get()->GetHallHeadDistance();
+    G4double FASER2ZOffset = GeometricalParameters::Get()->GetFASER2Position().z();
+    G4double FASER2ZLength = GeometricalParameters::Get()->GetFASER2TotalSizeZ();
+    G4double decayVolumeLength = GeometricalParameters::Get()->GetFASER2DecayVolumeLength();
+    G4double ScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
+    G4double VetoShieldThickness = GeometricalParameters::Get()->GetFASER2VetoShieldThickness();
+    G4double vetoLength = 2*ScinThickness + VetoShieldThickness;
 
-    // std::cout << "DVPosition = " << DVPosition << std::endl;
+    G4double decayVolStartZ = hallZOffset  + FASER2ZOffset - FASER2ZLength/2 + vetoLength;
 
-    G4VPhysicalVolume* F2physicalVolume = FindPhysicalVolumeByName("FASER2Physical");
-    G4ThreeVector F2Position = F2physicalVolume->GetTranslation();
-
-    // std::cout << "F2Position = " << F2Position << std::endl;
-
-    G4VPhysicalVolume* HallphysicalVolume = FindPhysicalVolumeByName("hallPV");
-    G4ThreeVector HallPosition = HallphysicalVolume->GetTranslation();
-
-    // std::cout << "HallPosition = " << HallPosition << std::endl;
-
-    G4LogicalVolume* DVlogicalVol = DVphysicalVolume->GetLogicalVolume();
-    G4VSolid* DVsolid = DVlogicalVol->GetSolid();
-    G4Box* DVbox = dynamic_cast<G4Box*>(DVsolid);
-    G4double DVzHalfLength = DVbox->GetZHalfLength();
-
-    G4ThreeVector DVglobalPosition = HallPosition  + F2Position + DVPosition;
-
-    return DVglobalPosition.z() - DVzHalfLength;
+    return decayVolStartZ;
 }
 
 

@@ -34,7 +34,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   fNMagnets = (opt == GeometricalParameters::magnetOption::SAMURAI) ? 1 : GeometricalParameters::Get()->GetNFASER2Magnets();
   fMagnetGap = GeometricalParameters::Get()->GetFASER2MagnetGap();
 
-  fDecayVolumeLength = GeometricalParameters::Get()->GetfFASER2DecayVolumeLength();
+  fDecayVolumeLength = GeometricalParameters::Get()->GetFASER2DecayVolumeLength();
   
   fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
   fTrackingStationX = GeometricalParameters::Get()->GetFASER2TrackerX();

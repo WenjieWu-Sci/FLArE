@@ -34,12 +34,12 @@ class HepMCGenerator : public GeneratorBase
     G4bool fPlaceInDecayVolume;
     G4ThreeVector fVtxOffset;
     HepMC3::Reader* fAsciiInput;
-    
         
     // specific internal functions
     std::shared_ptr<HepMC3::GenEvent> GenerateHepMCEvent();
     G4bool CheckVertexInsideWorld (const G4ThreeVector& pos) const;
     void HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event);
+    G4double GetStartOfDecayVolume();
         
 };
 
