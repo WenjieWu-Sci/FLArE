@@ -43,8 +43,6 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* fDecayVolumeLogical;
     std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
-    G4LogicalVolume* fHorTrackingScinBar;   
-    G4LogicalVolume* fVerTrackingScinBar;
     G4LogicalVolume* fEMCalLogical;
     G4LogicalVolume* fHadCalLogical;
     G4LogicalVolume* fIronWallLogical;
@@ -77,8 +75,6 @@ class FASER2DetectorConstruction {
     G4double fTrackingStationX;
     G4double fTrackingStationY;
     G4double fScinThickness;
-    G4int fNScinBarsY;
-    G4int fNScinBarsX;
     G4double fTrackingStationGap;
     G4double fUpstreamTrackingStationGap;
     G4double fDownstreamTrackingStationGap;
