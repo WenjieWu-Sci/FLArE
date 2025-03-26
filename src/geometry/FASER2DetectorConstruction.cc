@@ -72,6 +72,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   auto totLengthX = std::max_element(lengths.begin(), lengths.end());
   auto totLengthY = std::max_element(heights.begin(), heights.end());
 
+  // Set the total size of the FASER2 detector in the GeometricalParameters so that it can be accessed elsewhere
+  GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetLength);
   GeometricalParameters::Get()->SetFASER2TotalSizeZ(totLengthZ);
   G4RotationMatrix *noRot = new G4RotationMatrix();
   
