@@ -142,7 +142,7 @@ void HepMCGenerator::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, 
 
     // If requested; work out where the decay volume starts and use that to offset the vertex so that it falls inside it
     //! Note: for this to work two assumptions are made
-    //! 1. The vertices within the HepMC file start from (0,0,0). If this is not true then /hepmc/vtxOffset <x y z> MUST be set in the steering macro
+    //! 1. The vertices within the HepMC file start from (0,0,0). If this is not true then /gen/hepmc/vtxOffset <x y z> MUST be set in the steering macro
     //! 2. The assumed decay volume length in FORESEE is the same as in this simulation
     if (fPlaceInDecayVolume)
     { 
