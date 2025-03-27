@@ -53,7 +53,7 @@ GeometricalParameters::GeometricalParameters()
   fMagnetTotalSizeZ = 4*m; //updates during construction
   fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
-  fFASER2TotalSizeZ = 25*m;//10.24*m;
+  fFASER2TotalSizeZ = 25*m; //updates during construction
   fFASER2DecayVolumeLength = 10*m;
   // SAMURAI design
   fFASER2MagnetWindowX = 3.0*m;
@@ -76,8 +76,7 @@ GeometricalParameters::GeometricalParameters()
   fFASER2TrackerY = 1*m;  
   fFASER2UpstreamTrackingStationGap = 0.5*m;
   fFASER2DownstreamTrackingStationGap = 4*m;
-  fFASER2NUpstreamTrackers = 3;
-  fFASER2NDownstreamTrackers = 3;
+
   fFASER2EMCaloThickness = 1*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2HadCaloThickness = 2*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2IronWallThickness = 3*m; //! These values are placeholders and require dedicated optmisation studies!

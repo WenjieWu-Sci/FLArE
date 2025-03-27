@@ -44,8 +44,6 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   //TODO Implement these in the DetectorConstructionMessenger
   fUpstreamTrackingStationGap = GeometricalParameters::Get()->GetFASER2UpstreamTrackingStationGap();
   fDownstreamTrackingStationGap = GeometricalParameters::Get()->GetFASER2DownstreamTrackingStationGap();
-  fNUpstreamTrackers = GeometricalParameters::Get()->GetFASER2NUpstreamTrackers();
-  fNDownstreamTrackers = GeometricalParameters::Get()->GetFASER2NDownstreamTrackers();
 
   fEMCaloThickness = GeometricalParameters::Get()->GetFASER2EMCaloThickness();
   fHadCaloThickness = GeometricalParameters::Get()->GetFASER2HadCaloThickness();
@@ -57,10 +55,12 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
 
   //* Work out the maximum extent of the whole of the FASER2 detector so we can make the physical volume
   //* We want to avoid any overlaps as this can be problematic for GENIE when it reads the GDML file
+  G4double hallZOffset = GeometricalParameters::Get()->GetHallHeadDistance();
+  G4double FASER2ZOffset = GeometricalParameters::Get()->GetFASER2Position().z();
   G4double vetoLength = 2*fScinThickness + fVetoShieldThickness;
-  G4double upstreamTrackerLength = fNUpstreamTrackers*fScinThickness + (fNUpstreamTrackers - 1)*fTrackingStationGap + fUpstreamTrackingStationGap;
+  G4double upstreamTrackerLength = fNTrackingStations*fScinThickness + (fNTrackingStations - 1)*fTrackingStationGap + fUpstreamTrackingStationGap;
   G4double magnetLength = fNMagnets*fMagnetWindowZ + (fNMagnets-1)*fMagnetGap;
-  G4double downstreamTrackerLength = fNDownstreamTrackers*fScinThickness + (fNDownstreamTrackers - 1)*fTrackingStationGap + fDownstreamTrackingStationGap;
+  G4double downstreamTrackerLength = fNTrackingStations*fScinThickness + (fNTrackingStations - 1)*fTrackingStationGap + fDownstreamTrackingStationGap;
   G4double caloLength = fTrackingStationGap+fEMCaloThickness+fHadCaloThickness+fIronWallThickness;
   G4double muonLength = fScinThickness+fTrackingStationGap+0.5*m;
   
@@ -75,6 +75,8 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   // Set the total size of the FASER2 detector in the GeometricalParameters so that it can be accessed elsewhere
   GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetLength);
   GeometricalParameters::Get()->SetFASER2TotalSizeZ(totLengthZ);
+  GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(upstreamTrackerLength);
+  GeometricalParameters::Get()-SetMagnetZPosition(hallZOffset + FASER2ZOffset - totLengthZ/2 + vetoLength + fDecayVolumeLength + upstreamTrackerLength + magnetLength/2);
   G4RotationMatrix *noRot = new G4RotationMatrix();
   
   //* Create the FASER2 volume - all components go in here
@@ -108,7 +110,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   
   //* Place upstream tracking stations
   componentPosition += fDecayVolumeLength/2 + fScinThickness/2.;
-  for (int i= 0; i<fNUpstreamTrackers; ++i) { 
+  for (int i= 0; i<fNTrackingStations; ++i) { 
 
     std::string name = "F2UpstreamTrackerLayer_" + std::to_string(i+1);
     auto trkLayerSolid = new G4Box(name+"Box", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
@@ -116,7 +118,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
     auto trkLayerPhysical = new G4PVPlacement(0, G4ThreeVector(0,0,componentPosition), trkLayerLogical, name+"Phys", fFASER2Assembly, false, 0);
     fTrackingStationsLogical.push_back(trkLayerLogical);
     
-    if (i != fNUpstreamTrackers-1)
+    if (i != fNTrackingStations-1)
     {
       componentPosition += fScinThickness + fTrackingStationGap;
     }
@@ -156,7 +158,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
 
   //* Place upstream tracking stations
   componentPosition += fMagnetWindowZ/2 + fDownstreamTrackingStationGap;
-  for (int i= 0; i<fNDownstreamTrackers; ++i) { 
+  for (int i= 0; i<fNTrackingStations; ++i) { 
 
     std::string name = "F2DownstreamTrackerLayer_" + std::to_string(i+1);
     auto trkLayerSolid = new G4Box(name+"Box", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
@@ -193,6 +195,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
 
   //* Set visualisation attributes for all components
   SetVisualisation();
+
 }
 
 FASER2DetectorConstruction::~FASER2DetectorConstruction()

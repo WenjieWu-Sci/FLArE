@@ -142,8 +142,6 @@ class GeometricalParameters  {
     G4double GetTrackingStationGap() { return fTrackingStationGap; }  
     G4double GetFASER2UpstreamTrackingStationGap() { return fFASER2UpstreamTrackingStationGap; }
     G4double GetFASER2DownstreamTrackingStationGap() { return fFASER2DownstreamTrackingStationGap; }
-    G4double GetFASER2NUpstreamTrackers() { return fFASER2NUpstreamTrackers; }
-    G4double GetFASER2NDownstreamTrackers() { return fFASER2NDownstreamTrackers; }
     G4double GetFASER2EMCaloThickness() { return fFASER2EMCaloThickness; }
     G4double GetFASER2HadCaloThickness() { return fFASER2HadCaloThickness; }
     G4double GetFASER2IronWallThickness() { return fFASER2IronWallThickness; }
@@ -152,8 +150,6 @@ class GeometricalParameters  {
     G4double GetFASER2VetoShieldThickness() { return fFASER2VetoShieldThickness; }
     void SetFASER2UpstreamTrackingStationGap(G4double val) { fFASER2UpstreamTrackingStationGap = val; }
     void SetFASER2DownstreamTrackingStationGap(G4double val) { fFASER2DownstreamTrackingStationGap = val; }
-    void SetFASER2NUpstreamTrackers(G4double val) { fFASER2NUpstreamTrackers = val; }
-    void SetFASER2NDownstreamTrackers(G4double val) { fFASER2NDownstreamTrackers = val; }
     void SetFASER2EMCaloThickness(G4double val) { fFASER2EMCaloThickness = val; }
     void SetFASER2HadCaloThickness(G4double val) { fFASER2HadCaloThickness = val; }
     void SetFASER2IronWallThickness(G4double val) { fFASER2IronWallThickness = val; }
@@ -284,15 +280,11 @@ class GeometricalParameters  {
     G4int fNTrackingStations;
     G4double fFASER2TrackerX;
     G4double fFASER2TrackerY;
-    G4int fNScintillatorBarsY;
-    G4int fNScintillatorBarsX;
     G4double fScintillatorThickness;
     G4double fTrackingStationGap;
     G4ThreeVector fFASER2Pos;
     G4double fFASER2UpstreamTrackingStationGap;
     G4double fFASER2DownstreamTrackingStationGap;
-    G4double fFASER2NUpstreamTrackers;
-    G4double fFASER2NDownstreamTrackers;
     G4double fFASER2EMCaloThickness;
     G4double fFASER2HadCaloThickness;
     G4double fFASER2IronWallThickness;

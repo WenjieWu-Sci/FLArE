@@ -79,8 +79,6 @@ class FASER2DetectorConstruction {
     G4double fTrackingStationGap;
     G4double fUpstreamTrackingStationGap;
     G4double fDownstreamTrackingStationGap;
-    G4int fNUpstreamTrackers;
-    G4int fNDownstreamTrackers;
 
     // Calorimeter guess??
     G4double fEMCaloThickness;
