@@ -76,7 +76,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetLength);
   GeometricalParameters::Get()->SetFASER2TotalSizeZ(totLengthZ);
   GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(upstreamTrackerLength);
-  GeometricalParameters::Get()-SetMagnetZPosition(hallZOffset + FASER2ZOffset - totLengthZ/2 + vetoLength + fDecayVolumeLength + upstreamTrackerLength + magnetLength/2);
+  GeometricalParameters::Get()->SetMagnetZPosition(hallZOffset + FASER2ZOffset - totLengthZ/2 + vetoLength + fDecayVolumeLength + upstreamTrackerLength + magnetLength/2);
   G4RotationMatrix *noRot = new G4RotationMatrix();
   
   //* Create the FASER2 volume - all components go in here
