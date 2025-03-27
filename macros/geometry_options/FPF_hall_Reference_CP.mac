@@ -29,9 +29,8 @@
 # Configuring FASER2
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
-# + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 40661 mm
+/det/faser/addFASER2Pos 0 0 41698.5 mm
 /det/faser/magnetGeom CrystalPulling
 /det/faser/magnetField 0.6 tesla
 /det/faser/magnetInnerR 0.8 m

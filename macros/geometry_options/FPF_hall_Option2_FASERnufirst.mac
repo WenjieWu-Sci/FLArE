@@ -25,9 +25,8 @@
 # Configuring FASER2
 # assuming 1.2m gap from FLArE
 # (which include veto stations)
-# + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 36116 mm
+/det/faser/addFASER2Pos 0 0 35053 mm
 /det/faser/magnetGeom SAMURAI
 /det/faser/magnetField 1. tesla
 /det/faser/magnetWinX 3.0 m
@@ -42,4 +41,4 @@
 # Configuring FORMOSA
 # assuming in the middle of decay tunnel
 /det/addFORMOSA true
-/det/formosa/addFORMOSAPos 0 -2500 25996 mm
+/det/formosa/addFORMOSAPos 0 -2500 27059 mm
