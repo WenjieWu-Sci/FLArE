@@ -26,13 +26,14 @@ class FASER2DetectorConstruction {
     G4LogicalVolume* GetMuonStations(){ return fMuonDetLogical;}
     std::vector<G4LogicalVolume*> GetTrackingStations(){ return fTrackingStationsLogical;}
 
+  private:
+    
     // Construction methods
     void BuildSAMURAIDesign();
     void BuildCrystalPullingDesign();
-    void BuildTrackingStation();
+    void SetVisualisation();
 
-  private:
-
+    // Logical volumes and material
     G4LogicalVolume* fFASER2Assembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
