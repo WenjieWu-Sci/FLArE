@@ -1,6 +1,7 @@
 #include "generators/GeneratorBase.hh"
 #include "generators/HepMCGenerator.hh"
 #include "generators/HepMCGeneratorMessenger.hh"
+#include "geometry/GeometricalParameters.hh"
 
 #include "HepMC3/ReaderAscii.h"
 #include "HepMC3/ReaderAsciiHepMC2.h"
@@ -12,6 +13,9 @@
 #include "G4TransportationManager.hh"
 #include "G4Navigator.hh"
 #include "G4RunManager.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4Box.hh"
+
 
 HepMCGenerator::HepMCGenerator()
 {
@@ -67,6 +71,17 @@ G4bool HepMCGenerator::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
+static G4VPhysicalVolume* FindPhysicalVolumeByName(const G4String& name) {
+  G4PhysicalVolumeStore* pvStore = G4PhysicalVolumeStore::GetInstance();
+  for (auto pv : *pvStore) {
+      if (pv->GetName() == name) { 
+          return pv; 
+      }
+  }
+  return nullptr; // Return nullptr if no match is found
+}
+
+
 void HepMCGenerator::GeneratePrimaries(G4Event* anEvent)
 {
 
@@ -85,6 +100,22 @@ void HepMCGenerator::GeneratePrimaries(G4Event* anEvent)
   }
 
   HepMC2G4(HepMCEvent, anEvent);
+}
+
+
+G4double HepMCGenerator::GetStartOfDecayVolume()
+{   
+    G4double hallZOffset = GeometricalParameters::Get()->GetHallHeadDistance();
+    G4double FASER2ZOffset = GeometricalParameters::Get()->GetFASER2Position().z();
+    G4double FASER2ZLength = GeometricalParameters::Get()->GetFASER2TotalSizeZ();
+    G4double decayVolumeLength = GeometricalParameters::Get()->GetFASER2DecayVolumeLength();
+    G4double ScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
+    G4double VetoShieldThickness = GeometricalParameters::Get()->GetFASER2VetoShieldThickness();
+    G4double vetoLength = 2*ScinThickness + VetoShieldThickness;
+
+    G4double decayVolStartZ = hallZOffset  + FASER2ZOffset - FASER2ZLength/2 + vetoLength;
+
+    return decayVolStartZ;
 }
 
 
@@ -108,6 +139,18 @@ void HepMCGenerator::HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, 
       G4cout << "WARNING: position was (" << pos.x() << ", "<<  pos.y() << ", " << pos.z() << ", " << pos.t() << ")" << G4endl;
       continue;
     }
+
+    // If requested; work out where the decay volume starts and use that to offset the vertex so that it falls inside it
+    //! Note: for this to work two assumptions are made
+    //! 1. The vertices within the HepMC file start from (0,0,0). If this is not true then /gen/hepmc/vtxOffset <x y z> MUST be set in the steering macro
+    //! 2. The assumed decay volume length in FORESEE is the same as in this simulation
+    if (fPlaceInDecayVolume)
+    { 
+      G4double decay_vol_start = GetStartOfDecayVolume();
+      // std::cout << "Decay volume starts at " << decay_vol_start << std::endl;
+      xvtx = G4LorentzVector(pos.x(), pos.y(), decay_vol_start+pos.z()+vtx_z_offset, pos.t());
+    }
+
 
     // create G4PrimaryVertex and associated G4PrimaryParticles
     G4PrimaryVertex* g4vtx = new G4PrimaryVertex(xvtx.x(), xvtx.y(), xvtx.z(), xvtx.t());

@@ -35,7 +35,7 @@ cd el9-cvmfs-docker/
 
 This will automatically pull and start the container and copy the `.bashrc` file which mounts `cvmfs` when the container starts.
 
-As mentioned, this software relies upon the `HEP_HPC` library. A precompiled version of this code which is compatible with the container is provided in the repository. To set this up run
+As mentioned, this software relies upon the `HEP_HPC` library. A precompiled version of this code is provided in the repository. To set this up run
 
 ```bash
 # You only need to do this once
@@ -49,8 +49,8 @@ Then to set up the environment do
 source FLArE/local_setup.sh
 ```
 
-
 ## To compile the code
+
 * Create a new directory to contain the executables (assume the path is `/path/to/build`).
 * Assume the path to the source code is `/path/to/source`.
 * To compile, you need to go to the build directory `cd /path/to/build`.
@@ -109,7 +109,6 @@ An example macro for running over this file can be found in `macros/dark_photon_
 
 Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2 files set the option `/hepmc/useHepMC2 true` in your macro. An example macro can be found in `macros/dark_photon_hepmc2.mac`.
 
-
 ## Macro commands
 
 ### Geometry
@@ -163,10 +162,9 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 |/det/faser/magnetLengthZ     | option for CrystalPulling magnet size along Z axis                                   |`1.25 m`|
 |/det/faser/magnetGap         | option for gap length (along Z) between CrystalPullin magnets                        |`0.5 m`|
 |/det/faser/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
-|/det/faser/trackingNBarsX    | option for number of vertical scintillator bars (segmentation along X axis)          |`7`|  
-|/det/faser/trackingNBarsY    | option for number of horizontal scintillator bars (segmentation along Y axis)        |`3`|
 |/det/faser/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
-|/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |` 0.5 m`|
+|/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |`0.5 m`|
+|/det/faser/fillCaloAndWall| option to fill FASER2 iron wall and calorimeter placeholder volumes with metal if true. Otherwise, fill with air to save having to compute the additional material interactions. |`true`|
 
 ### Event generators
 
@@ -181,6 +179,7 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 |/gen/hepmc/useHepMC2     | if `hepmc` is selected, set `true` to expect HepMC2 file format (instead of HepMC3)|
 |/gen/hepmc/hepmcInput    | if `hepmc` is selected, give which `.hepmc` file to read events from|
 |/gen/hepmc/vtxOffset     | if `hepmc` is selected, give an x, y, z offset to each vertex. Useful if you need to align events from another generator (i.e. FORESEE) with this G4 simulation.|
+|/gen/hepmc/placeInDecayVolume | if `hepmc` is selected, will automatically translate vertex into the FASER2 decay volume. Assumes that the vertices start from (0,0,0). If this is not the case then `/gen/hepmc/vtxOffset` must also be set.|
 
 ### Analysis
 
@@ -203,5 +202,6 @@ There is [this tutorial](https://conferences.fnal.gov/g4tutorial/g4cd/Documentat
 
 ## Some initial results
 
-[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf) 
+[cern indico 1](https://indico.cern.ch/event/1095064/contributions/4621162/attachments/2349156/4006611/20211118%40FLArEDetectorSimulation.pdf)
+ 
 [cern indico 2](https://indico.cern.ch/event/1250086/#3-status-update-on-flare-simul)

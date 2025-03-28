@@ -200,23 +200,21 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     faserMagnetOuterRCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetOuterR", this);
     faserMagnetOuterRCmd->SetUnitCategory("Length");
     faserMagnetOuterRCmd->SetUnitCandidates("cm m mm");
-    faserMagnetLengthZCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetLengthZ", this);
-    faserMagnetLengthZCmd->SetUnitCategory("Length");
-    faserMagnetLengthZCmd->SetUnitCandidates("cm m mm");
     faserMagnetGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/magnetGap", this);
     faserMagnetGapCmd->SetUnitCategory("Length");
     faserMagnetGapCmd->SetUnitCandidates("cm m mm");
     faserMagnetNumberCmd = new G4UIcmdWithAnInteger("/det/faser/magnetNumber", this);
     // Tracking stations
     faserTrackingNumberCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNumber", this);
-    faserTrackingNBarsYCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsY", this);
-    faserTrackingNBarsXCmd = new G4UIcmdWithAnInteger("/det/faser/trackingNBarsX", this);
     faserTrackingScinThickCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingScinThick", this);
     faserTrackingScinThickCmd->SetUnitCategory("Length");
     faserTrackingScinThickCmd->SetUnitCandidates("cm m mm");
     faserTrackingGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingGap", this);
     faserTrackingGapCmd->SetUnitCategory("Length");
     faserTrackingGapCmd->SetUnitCandidates("cm m mm");
+    faserFillCaloAndWallCmd = new G4UIcmdWithABool("/det/faser/fillCaloAndWall", this);
+    faserFillCaloAndWallCmd->SetParameterName("Fill FASER2 'calorimeters' and Iron wall with material", true);
+    faserFillCaloAndWallCmd->SetDefaultValue(false);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -270,14 +268,12 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete faserYokeThickYCmd;
   delete faserMagnetInnerRCmd;
   delete faserMagnetOuterRCmd;
-  delete faserMagnetLengthZCmd;
   delete faserMagnetGapCmd;
   delete faserMagnetNumberCmd;
   delete faserTrackingNumberCmd;
-  delete faserTrackingNBarsYCmd;
-  delete faserTrackingNBarsXCmd;
   delete faserTrackingScinThickCmd;
   delete faserTrackingGapCmd;
+  delete faserFillCaloAndWallCmd;
 
   delete detDir;
   delete flareDir;
@@ -383,8 +379,6 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
     GeometricalParameters::Get()->SetFASER2MagnetInnerR(faserMagnetInnerRCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetOuterRCmd) 
     GeometricalParameters::Get()->SetFASER2MagnetOuterR(faserMagnetOuterRCmd->ConvertToDimensionedDouble(newValues));
-  else if (command == faserMagnetLengthZCmd) 
-    GeometricalParameters::Get()->SetFASER2MagnetLengthZ(faserMagnetLengthZCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetGapCmd) 
     GeometricalParameters::Get()->SetFASER2MagnetGap(faserMagnetGapCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserMagnetNumberCmd) 
@@ -392,14 +386,12 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
   //faser2 tracking stations
   else if (command == faserTrackingNumberCmd) 
     GeometricalParameters::Get()->SetNTrackingStations(faserTrackingNumberCmd->GetNewIntValue(newValues));
-  else if (command == faserTrackingNBarsYCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsY(faserTrackingNBarsYCmd->GetNewIntValue(newValues));
-  else if (command == faserTrackingNBarsXCmd) 
-    GeometricalParameters::Get()->SetNScintillatorBarsX(faserTrackingNBarsXCmd->GetNewIntValue(newValues));
   else if (command == faserTrackingScinThickCmd) 
     GeometricalParameters::Get()->SetScintillatorThickness(faserTrackingScinThickCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserTrackingGapCmd) 
     GeometricalParameters::Get()->SetTrackingStationGap(faserTrackingGapCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserFillCaloAndWallCmd)
+    GeometricalParameters::Get()->SetFillCaloAndWallVolumes(faserFillCaloAndWallCmd->GetNewBoolValue(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

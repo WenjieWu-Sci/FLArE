@@ -27,21 +27,19 @@
 # (which include veto stations)
 # + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 34141 mm
+/det/faser/addFASER2Pos 0 0 35216 mm
 /det/faser/magnetGeom CrystalPulling
-/det/faser/magnetField 0.6. tesla
+/det/faser/magnetField 0.6 tesla
 /det/faser/magnetInnerR 0.8 m
 /det/faser/magnetOuterR 1.2 m
-/det/faser/magnetLengthZ 1.25 m
+/det/faser/magnetWinZ 1.25 m
 /det/faser/magnetNumber 3
 /det/faser/magnetGap 0.25 m
 /det/faser/trackingNumber 3
-/det/faser/trackingGap 0.1 m
-/det/faser/trackingNBarsX 7
-/det/faser/trackingNBarsY 7
+/det/faser/trackingGap 0.5 m
 /det/faser/trackingScinThick 1.0 cm
 
 # Configuring FORMOSA
 # assuming in the middle of decay tunnel
 /det/addFORMOSA true
-/det/formosa/addFORMOSAPos 0 -2500 25996 mm
+/det/formosa/addFORMOSAPos 0 -2500 26156 mm

@@ -21,152 +21,182 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
 
   // choose magnet option
   GeometricalParameters::magnetOption opt = GeometricalParameters::Get()->GetFASER2MagnetOption(); 
+
+  fMagnetWindowX = GeometricalParameters::Get()->GetFASER2MagnetWindowX();
+  fMagnetWindowY = GeometricalParameters::Get()->GetFASER2MagnetWindowY();
+  fMagnetWindowZ = GeometricalParameters::Get()->GetFASER2MagnetWindowZ();
+  fMagnetYokeThicknessX = GeometricalParameters::Get()->GetFASER2MagnetYokeThickX();
+  fMagnetYokeThicknessY = GeometricalParameters::Get()->GetFASER2MagnetYokeThickY();
+
+  fMagnetInnerR = GeometricalParameters::Get()->GetFASER2MagnetInnerR();
+  fMagnetOuterR = GeometricalParameters::Get()->GetFASER2MagnetOuterR();
+  fNMagnets = (opt == GeometricalParameters::magnetOption::SAMURAI) ? 1 : GeometricalParameters::Get()->GetNFASER2Magnets();
+  fMagnetGap = GeometricalParameters::Get()->GetFASER2MagnetGap();
+
+  fDecayVolumeLength = GeometricalParameters::Get()->GetFASER2DecayVolumeLength();
+  
+  fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
+  fTrackingStationX = GeometricalParameters::Get()->GetFASER2TrackerX();
+  fTrackingStationY = GeometricalParameters::Get()->GetFASER2TrackerY();
+  fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
+  fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
+  
+  //TODO Implement these in the DetectorConstructionMessenger
+  fUpstreamTrackingStationGap = GeometricalParameters::Get()->GetFASER2UpstreamTrackingStationGap();
+  fDownstreamTrackingStationGap = GeometricalParameters::Get()->GetFASER2DownstreamTrackingStationGap();
+
+  fEMCaloThickness = GeometricalParameters::Get()->GetFASER2EMCaloThickness();
+  fHadCaloThickness = GeometricalParameters::Get()->GetFASER2HadCaloThickness();
+  fIronWallThickness = GeometricalParameters::Get()->GetFASER2IronWallThickness();
+  G4bool fillCaloAndWallVolumes = GeometricalParameters::Get()->GetFillCaloAndWallVolumes();
+
+  fVetoLengthX = GeometricalParameters::Get()->GetFASER2VetoLengthX();
+  fVetoLengthY = GeometricalParameters::Get()->GetFASER2VetoLengthY();
+  fVetoShieldThickness = GeometricalParameters::Get()->GetFASER2VetoShieldThickness();
+
+  //* Work out the maximum extent of the whole of the FASER2 detector so we can make the physical volume
+  //* We want to avoid any overlaps as this can be problematic for GENIE when it reads the GDML file
+  G4double hallZOffset = GeometricalParameters::Get()->GetHallHeadDistance();
+  G4double FASER2ZOffset = GeometricalParameters::Get()->GetFASER2Position().z();
+  G4double vetoLength = 2*fScinThickness + fVetoShieldThickness;
+  G4double upstreamTrackerLength = fNTrackingStations*fScinThickness + (fNTrackingStations - 1)*fTrackingStationGap + fUpstreamTrackingStationGap;
+  G4double magnetLength = fNMagnets*fMagnetWindowZ + (fNMagnets-1)*fMagnetGap;
+  G4double downstreamTrackerLength = fNTrackingStations*fScinThickness + (fNTrackingStations - 1)*fTrackingStationGap + fDownstreamTrackingStationGap;
+  G4double caloLength = fTrackingStationGap+fEMCaloThickness+fHadCaloThickness+fIronWallThickness;
+  G4double muonLength = fScinThickness+fTrackingStationGap+0.5*m;
+  
+  G4double totLengthZ =  vetoLength + fDecayVolumeLength +  upstreamTrackerLength + magnetLength + downstreamTrackerLength + caloLength + muonLength;
+  
+  std::vector<G4double> lengths{fMagnetWindowX+2*fMagnetYokeThicknessX, fVetoLengthX, fMagnetOuterR};
+  std::vector<G4double> heights{fMagnetWindowY+2*fMagnetYokeThicknessY, fVetoLengthY, fMagnetOuterR};
+  
+  auto totLengthX = std::max_element(lengths.begin(), lengths.end());
+  auto totLengthY = std::max_element(heights.begin(), heights.end());
+
+  // Set the total size of the FASER2 detector in the GeometricalParameters so that it can be accessed elsewhere
+  GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetLength);
+  GeometricalParameters::Get()->SetFASER2TotalSizeZ(totLengthZ);
+  GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(upstreamTrackerLength);
+  GeometricalParameters::Get()->SetMagnetZPosition(hallZOffset + FASER2ZOffset - totLengthZ/2 + vetoLength + fDecayVolumeLength + upstreamTrackerLength + magnetLength/2);
+  G4RotationMatrix *noRot = new G4RotationMatrix();
+  
+  //* Create the FASER2 volume - all components go in here
+  auto containerSolid = new G4Box("FASER2Solid", *totLengthX/2., *totLengthY/2., totLengthZ/2.);
+  fFASER2Assembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FASER2Logical");
+
+  //* ------------ Place components in order that they appear ------------ *// 
+  
+  G4double componentPosition = -totLengthZ/2; //* We'll increment this variable as we move through the detector to place things
+  
+  //* Place veto stations
+  componentPosition += fScinThickness/2;
+  G4VSolid* vetoScinBox = new G4Box("vetoScinBox", fVetoLengthX/2, fVetoLengthY/2, fScinThickness/2);
+  fVetoScinLogical = new G4LogicalVolume(vetoScinBox, fMaterials->Material("Polystyrene"), "VetoScinLogical");  
+  new G4PVPlacement(noRot, G4ThreeVector(0,0, componentPosition), fVetoScinLogical, "Veto1ScinPhysical", fFASER2Assembly, false, 0, true);
+
+  componentPosition += fScinThickness/2 + fVetoShieldThickness/2;
+  G4VSolid* vetoShieldBox = new G4Box("vetoShieldBox", fVetoLengthX/2, fVetoLengthY/2, fVetoShieldThickness/2);
+  fVetoShieldLogical = new G4LogicalVolume(vetoShieldBox, fMaterials->Material("Lead"), "VetoShieldLogical");
+  new G4PVPlacement(noRot, G4ThreeVector(0,0, componentPosition), fVetoShieldLogical, "VetoShieldPhysical", fFASER2Assembly, false, 0, true);
+
+  componentPosition += fVetoShieldThickness/2 + fScinThickness/2;
+  new G4PVPlacement(noRot, G4ThreeVector(0,0, componentPosition), fVetoScinLogical, "Veto2ScinPhysical", fFASER2Assembly, false, 0, true);
+
+  //* Place decay volume
+  componentPosition += fScinThickness/2 + fDecayVolumeLength/2; //* We'll increment this variable as we move through the detector to place things
+  G4VSolid* decayVolBox = new G4Box("decayVolBox", GeometricalParameters::Get()->GetFASER2MagnetWindowX()/2, GeometricalParameters::Get()->GetFASER2MagnetWindowY()/2, fDecayVolumeLength/2);
+  fDecayVolumeLogical  = new G4LogicalVolume(decayVolBox, fMaterials->Material("Air"), "FASER2DecayVolLogical");
+  
+  new G4PVPlacement(noRot, G4ThreeVector(0,0, componentPosition), fDecayVolumeLogical, "FASER2DecayVolPhysical", fFASER2Assembly, false, 0, true);
+  
+  //* Place upstream tracking stations
+  componentPosition += fDecayVolumeLength/2 + fScinThickness/2.;
+  for (int i= 0; i<fNTrackingStations; ++i) { 
+
+    std::string name = "F2UpstreamTrackerLayer_" + std::to_string(i+1);
+    auto trkLayerSolid = new G4Box(name+"Box", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
+    auto trkLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), name+"Logical");
+    auto trkLayerPhysical = new G4PVPlacement(0, G4ThreeVector(0,0,componentPosition), trkLayerLogical, name+"Phys", fFASER2Assembly, false, 0);
+    fTrackingStationsLogical.push_back(trkLayerLogical);
+    
+    if (i != fNTrackingStations-1)
+    {
+      componentPosition += fScinThickness + fTrackingStationGap;
+    }
+  }
+
+  //* Place magnet(s)
+  componentPosition += fScinThickness/2 + fUpstreamTrackingStationGap;
   if( opt == GeometricalParameters::magnetOption::SAMURAI ){
     
+    componentPosition += fMagnetWindowZ/2;
     G4cout << "Building SAMURAI spectrometer magnet" << G4endl;
-    fMagnetWindowX = GeometricalParameters::Get()->GetFASER2MagnetWindowX();
-    fMagnetWindowY = GeometricalParameters::Get()->GetFASER2MagnetWindowY();
-    fMagnetWindowZ = GeometricalParameters::Get()->GetFASER2MagnetWindowZ();
-    fMagnetYokeThicknessX = GeometricalParameters::Get()->GetFASER2MagnetYokeThickX();
-    fMagnetYokeThicknessY = GeometricalParameters::Get()->GetFASER2MagnetYokeThickY();
-   
-    fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
-    fTrackingStationX = fMagnetWindowX + 0.5*m; //match magnet size + bending plane
-    fTrackingStationY = fMagnetWindowY; // match magnet size
-    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
-    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
-    fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
-    fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
-    G4double gapToMagnet = fTrackingStationGap;
-    G4double stationThickness = 2*fScinThickness;
-    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap;
-    G4double totLengthZ = fMagnetWindowZ+2*gapToMagnet+2*totThickness;
-    G4double totLengthX = fMagnetWindowX+2*fMagnetYokeThicknessX;
-    G4double totLengthY = fMagnetWindowY+2*fMagnetYokeThicknessY;
-
-    GeometricalParameters::Get()->SetMagnetTotalSizeZ(fMagnetWindowZ);
-    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness);
-    GeometricalParameters::Get()->SetFASER2TotalSizeZ(totLengthZ);
-
     BuildSAMURAIDesign(); //sets logical volumes
-    BuildTrackingStation(); //sets assembly volume
     
-    auto containerSolid = new G4Box("FASER2Solid", totLengthX/2., totLengthY/2., totLengthZ/2.);
-    fFASER2Assembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FASER2Logical");
-
-    // center of the assembly is the center of the magnet window
-    G4ThreeVector magCenter(0.,0.,0.);
-    G4RotationMatrix *noRot = new G4RotationMatrix();
-
     // placing magnet + yoke
-    new G4PVPlacement(noRot, magCenter, fMagnetWindow, "FASER2MagnetWindowPhysical", fFASER2Assembly, false, 0, false);
-    new G4PVPlacement(noRot, magCenter, fMagnetYoke, "FASER2MagnetYokePhysical", fFASER2Assembly, false, 0, false);
-
-    // middle position of pre-magnet and post-magnet tracking stations
-    G4ThreeVector offset(0, 0, fMagnetWindowZ/2.+ gapToMagnet + totThickness/2.);
-    G4ThreeVector preStationsCenter = magCenter - offset;
-    G4ThreeVector postStationsCenter = magCenter + offset;
-  
-    // placing tracking stations (before/after magnet)
-    for (int i= 0; i<fNTrackingStations; ++i) { 
-      G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
-      G4ThreeVector Tp = postStationsCenter + T;
-      G4ThreeVector Tm = preStationsCenter + T;
-      fTrackingStation->MakeImprint(fFASER2Assembly, Tm, noRot, 0, false); //place before magnet
-      fTrackingStation->MakeImprint(fFASER2Assembly, Tp, noRot, 0, false); //place after magnet
-    }
-
-  } else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
- 
+    new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fMagnetWindow, "FASER2MagnetWindowPhysical", fFASER2Assembly, false, 0, false);
+    new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fMagnetYoke, "FASER2MagnetYokePhysical", fFASER2Assembly, false, 0, false);
+  }
+  else if ( opt == GeometricalParameters::magnetOption::CrystalPulling ){
+    
     G4cout << "Building CrystalPulling spectrometer magnet" << G4endl;
-    fMagnetLengthZ = GeometricalParameters::Get()->GetFASER2MagnetLengthZ();
-    fMagnetInnerR = GeometricalParameters::Get()->GetFASER2MagnetInnerR();
-    fMagnetOuterR = GeometricalParameters::Get()->GetFASER2MagnetOuterR();
-    fNMagnets = GeometricalParameters::Get()->GetNFASER2Magnets();
-    fMagnetGap = GeometricalParameters::Get()->GetFASER2MagnetGap();
+    BuildCrystalPullingDesign();
     
-    fNTrackingStations = GeometricalParameters::Get()->GetNTrackingStations();
-    fTrackingStationX = 2*fMagnetInnerR + 0.5*m ; //match magnet size + bending plane (for now, FIXME?)
-    fTrackingStationY = 2*fMagnetInnerR; // match magnet size
-    fNScinBarsY = GeometricalParameters::Get()->GetNScintillatorBarsY();
-    fNScinBarsX = GeometricalParameters::Get()->GetNScintillatorBarsX();
-    fScinThickness = GeometricalParameters::Get()->GetScintillatorThickness();
-    fTrackingStationGap = GeometricalParameters::Get()->GetTrackingStationGap();
-    G4double stationThickness = 2*fScinThickness;
-
-    // length of a tracking station set (tracking stations + gaps between them)
-    G4double totThickness = fNTrackingStations*stationThickness + (fNTrackingStations-1)*fTrackingStationGap; 
-    GeometricalParameters::Get()->SetTrackingStationTotalSizeZ(totThickness);
-    
-    // length of magnet assembly (includes all magnets and tracking stations sets between them + gaps);
-    // it differs from the total length for the two external tracking stations sets
-    G4double magnetsLengthZ = fNMagnets*fMagnetLengthZ + (fNMagnets-1)*(2*fMagnetGap+totThickness);
-    GeometricalParameters::Get()->SetMagnetTotalSizeZ(magnetsLengthZ);
-     
-    // total length (all magnets, all tracking stations sets, all gaps)
-    G4double totalLengthZ = 2*(totThickness+fMagnetGap) + magnetsLengthZ;
-    G4double totalLengthY = 2*fMagnetOuterR;
-    G4double totalLengthX = 2*fMagnetOuterR;
-    GeometricalParameters::Get()->SetFASER2TotalSizeZ(totalLengthZ);    
-
-    BuildCrystalPullingDesign(); //sets logical volumes
-    BuildTrackingStation();
-    
-    auto containerSolid = new G4Box("FASER2Solid", totalLengthX/2., totalLengthY/2., totalLengthZ/2.);
-    fFASER2Assembly = new G4LogicalVolume(containerSolid, fMaterials->Material("Air"), "FASER2Logical");
-
-    // center of the assembly is the center of middle magnet window
-    // if fNMagnets is even, it falls in the gap between the two middle magnets
-    G4ThreeVector magCenter(0.,0.,0.);
-    G4RotationMatrix *noRot = new G4RotationMatrix();
-   
-    // each magnet comes with a set of N tracking stations just before it
-    // the gap between each magnet is then given by magnetSpacing
-    G4double magnetSpacing = 2*fMagnetGap + totThickness;
-    GeometricalParameters::Get()->SetFASER2MagnetSpacing(magnetSpacing);    
-
-    for(int i=0; i<fNMagnets; i++){
-      G4double offset = (i-0.5*(fNMagnets-1))*(magnetSpacing+fMagnetLengthZ);
-      G4ThreeVector magPos = magCenter + G4ThreeVector(0.,0.,offset);
-      new G4PVPlacement(noRot, magPos, fMagnetWindow, "FASER2MagnetWindowPhysical", fFASER2Assembly, false, i, false);
-      new G4PVPlacement(noRot, magPos, fMagnetYoke, "FASER2MagnetYokePhysical", fFASER2Assembly, false, i, false);
-
-      // placing tracking stations (before each magnet)
-      G4double trackingStationOffset = -fMagnetGap-0.5*fMagnetLengthZ;
-      for (int j= 0; j<fNTrackingStations; ++j) { 
-        G4ThreeVector T(0., 0., trackingStationOffset-j*fTrackingStationGap-0.5*(i+1)*stationThickness);
-        G4ThreeVector Tpos = magPos + T; 
-        fTrackingStation->MakeImprint(fFASER2Assembly, Tpos, noRot, i, false); 
-      }
+    componentPosition += fMagnetWindowZ/2;
+    for(int i=0; i<fNMagnets; i++)
+    {  
+        G4ThreeVector magPos = G4ThreeVector(0.,0.,componentPosition);
+        new G4PVPlacement(noRot, magPos, fMagnetWindow, "FASER2MagnetWindowPhysical", fFASER2Assembly, false, i, false);
+        new G4PVPlacement(noRot, magPos, fMagnetYoke, "FASER2MagnetYokePhysical", fFASER2Assembly, false, i, false);
+        if (i != fNMagnets-1){
+          componentPosition += fMagnetGap + fMagnetWindowZ;
+        }
     }
-    
-    // placing last set of tracking stations (after last magnet)
-    G4ThreeVector offset(0, 0, magnetsLengthZ/2.+ fMagnetGap + totThickness/2.);
-    G4ThreeVector postStationsCenter = magCenter + offset;
-
-    for (int i= 0; i<fNTrackingStations; ++i) { 
-      G4ThreeVector T(0, 0, -totThickness/2.+0.5*stationThickness+i*(fTrackingStationGap+stationThickness));
-      G4ThreeVector Tp = postStationsCenter + T;
-      fTrackingStation->MakeImprint(fFASER2Assembly, Tp, noRot, fNMagnets, false);
-    }
-   
-  } else {
+  } 
+  else {
     G4cout << "ERROR: unknown FASER2 spectrometer magnet option!" << G4endl;  
   }
 
-  // visibility
-  G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
-  nullVis->SetVisibility(false);
-  fMagnetWindow->SetVisAttributes(nullVis);
+  //* Place upstream tracking stations
+  componentPosition += fMagnetWindowZ/2 + fDownstreamTrackingStationGap;
+  for (int i= 0; i<fNTrackingStations; ++i) { 
 
-  G4VisAttributes* magnetVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
-  magnetVis->SetVisibility(true);
-  fMagnetYoke->SetVisAttributes(magnetVis);
+    std::string name = "F2DownstreamTrackerLayer_" + std::to_string(i+1);
+    auto trkLayerSolid = new G4Box(name+"Box", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
+    auto trkLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), name+"Logical");
+    auto trkLayerPhysical = new G4PVPlacement(0, G4ThreeVector(0,0,componentPosition), trkLayerLogical, name+"Phys", fFASER2Assembly, false, 0);
+    fTrackingStationsLogical.push_back(trkLayerLogical);
+
+    componentPosition += fScinThickness + fTrackingStationGap;
+  }
   
-  G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
-  stationVis->SetVisibility(true);
-  fHorTrackingScinBar->SetVisAttributes(stationVis);  
-  fVerTrackingScinBar->SetVisAttributes(stationVis);  
+  //* Place 'calorimeters' and iron wall
+  //TODO: Calorimeter volumes are just dummy placeholder boxes - detailed simulation studies required!
+  auto ECalBox = new G4Box("ECalBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fEMCaloThickness/2.);
+  auto HCalBox = new G4Box("HCalBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fHadCaloThickness/2.);
+  auto IronWallBox = new G4Box("HCalBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fIronWallThickness/2.);
+
+  fEMCalLogical = new G4LogicalVolume(ECalBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Copper"): fMaterials->Material("Air"), "FASER2ECAlLogical");
+  fHadCalLogical = new G4LogicalVolume(HCalBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Iron"): fMaterials->Material("Air"), "FASER2HCAlLogical");
+  fIronWallLogical = new G4LogicalVolume(IronWallBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Iron"): fMaterials->Material("Air"), "FASER2IronWallLogical");
+  
+  componentPosition += fEMCaloThickness/2;
+  new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fEMCalLogical, "FASER2ECalPhysical", fFASER2Assembly, false, 0, false);
+  componentPosition += fEMCaloThickness/2 + fHadCaloThickness/2;
+  new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fHadCalLogical, "FASER2HCalPhysical", fFASER2Assembly, false, 0, false);
+  componentPosition += fHadCaloThickness/2 + fIronWallThickness/2;
+  new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fIronWallLogical, "FASERIronWallPhysical", fFASER2Assembly, false, 0, false);
+  componentPosition += fIronWallThickness/2;
+
+  //* Add muon detector
+  componentPosition += fTrackingStationGap + fScinThickness/2;
+  auto muonDetSolid = new G4Box("muonTrkLayerBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fScinThickness/2.);
+  fMuonDetLogical = new G4LogicalVolume(muonDetSolid, fMaterials->Material("Polystyrene"), "muonTrkLayerLogical");
+  auto muonDetPhysical = new G4PVPlacement(0, G4ThreeVector(0,0,componentPosition), fMuonDetLogical, "muonTrkLayerPhys", fFASER2Assembly, false, 0);
+
+  //* Set visualisation attributes for all components
+  SetVisualisation();
+
 }
 
 FASER2DetectorConstruction::~FASER2DetectorConstruction()
@@ -192,41 +222,82 @@ void FASER2DetectorConstruction::BuildSAMURAIDesign()
 
 void FASER2DetectorConstruction::BuildCrystalPullingDesign()
 {
-  auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
-  auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetLengthZ/2.,0.,CLHEP::twopi);
+  auto magnetWindowSolid = new G4Tubs("MagnetWindow",0.,fMagnetInnerR,fMagnetWindowZ/2.,0.,CLHEP::twopi);
+  auto magnetYokeSolid = new G4Tubs("MagnetYoke",fMagnetInnerR,fMagnetOuterR,fMagnetWindowZ/2.,0.,CLHEP::twopi);
 
   fMagnetYoke = new G4LogicalVolume(magnetYokeSolid, fMaterials->Material("Iron"), "FASER2MagnetYokeLogical");
   fMagnetWindow = new G4LogicalVolume(magnetWindowSolid, fMaterials->Material("Air"), "FASER2MagnetWindowLogical");
 }
 
-void FASER2DetectorConstruction::BuildTrackingStation()
-{
-  // Each tracking station is made of 2 layers
-  // 1st layer: fNScinBarsY horizontal modules
-  // 2nd layer: fNScinBarsX vertical modules
-  G4double horizontalScinSize = fTrackingStationY / fNScinBarsY; // y size of horizontal scin
-  G4double verticalScinSize = fTrackingStationX / fNScinBarsX; // x size of vertical scin
 
-  // layer volume: same size, but first has horizontal bars, second one has vertical bars
-  auto trkLayerSolid = new G4Box("trkLayerBox", fTrackingStationX/2, fTrackingStationY/2., fScinThickness/2.);
-  auto trkHorLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkHorLayerLogical"); 
-  auto trkVerLayerLogical = new G4LogicalVolume(trkLayerSolid, fMaterials->Material("Polystyrene"), "trkVerLayerLogical"); 
+void FASER2DetectorConstruction::SetVisualisation()
+{
+  //? Moved all the detector visualisation settings to this function - perhaps in future we could set these with a messenger class or config file?
+  //* Detector bounding box
+  G4VisAttributes* F2_logVisAtt = new G4VisAttributes(G4Colour::Grey());
+  F2_logVisAtt->SetForceWireframe(true);
+  F2_logVisAtt->SetForceSolid(false);
+  F2_logVisAtt->SetVisibility(true);
+  fFASER2Assembly->SetVisAttributes(F2_logVisAtt);
+
+  //* Veto station
+  G4VisAttributes* vetoScin_logVisAtt = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+  vetoScin_logVisAtt->SetForceWireframe(true);
+  vetoScin_logVisAtt->SetForceSolid(false);
+  vetoScin_logVisAtt->SetVisibility(true);
+  fVetoScinLogical->SetVisAttributes(vetoScin_logVisAtt);
+
+  G4VisAttributes* vetoShield_logVisAtt = new G4VisAttributes(G4Colour::Grey());
+  vetoShield_logVisAtt->SetForceWireframe(true);
+  vetoShield_logVisAtt->SetForceSolid(true);
+  vetoShield_logVisAtt->SetVisibility(true);
+  fVetoShieldLogical->SetVisAttributes(vetoShield_logVisAtt);
+
+  //* Decay volume
+  G4VisAttributes* DV_logVisAtt = new G4VisAttributes(G4Colour(0.8,0.8,0.8,0.3));
+  DV_logVisAtt->SetForceWireframe(true);
+  DV_logVisAtt->SetForceSolid(true);
+  fDecayVolumeLogical->SetVisAttributes(DV_logVisAtt);
+
+  //* Tracking stations
+  for (auto trkLayerLogical : fTrackingStationsLogical)
+  {
+    G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+    stationVis->SetVisibility(true);
+    trkLayerLogical->SetVisAttributes(stationVis);
+  }
+
+  //* Magnets
+  G4VisAttributes* nullVis = new G4VisAttributes(G4Colour(167./255, 168./255, 189./255));
+  nullVis->SetVisibility(false);
+  fMagnetWindow->SetVisAttributes(nullVis);
+
+  G4VisAttributes* magnetVis = new G4VisAttributes(G4Colour(234./255, 173./255, 26./255, 0.8));
+  magnetVis->SetVisibility(true);
+  magnetVis->SetForceSolid(true);
+  fMagnetYoke->SetVisAttributes(magnetVis);
+
+  //* 'Calorimeters' & iron wall
+  G4VisAttributes* ECalVis = new G4VisAttributes(G4Colour::Red());
+  ECalVis->SetVisibility(true);
+  // ECalVis->SetForceSolid(true);
+  ECalVis->SetForceWireframe(true);
+  fEMCalLogical->SetVisAttributes(ECalVis);
   
-  // first layer is made of 2 horizontal pieces
-  auto trkHorScinSolid = new G4Box("trkHorScinSolid", fTrackingStationX/2., horizontalScinSize/2., fScinThickness/2.);
-  fHorTrackingScinBar = new G4LogicalVolume(trkHorScinSolid, fMaterials->Material("Polystyrene"), "trkHorScinLogical");
-  new G4PVReplica("trkHorScinPhysical", fHorTrackingScinBar,
-                  trkHorLayerLogical, kYAxis, fNScinBarsY, horizontalScinSize);
-  // secondo layer is made of 7 vertical pieces
-  auto trkVerScinSolid = new G4Box("trkHorScinSolid", verticalScinSize/2., fTrackingStationY/2., fScinThickness/2.);
-  fVerTrackingScinBar = new G4LogicalVolume(trkVerScinSolid, fMaterials->Material("Polystyrene"), "trkVerScinLogical");
-  new G4PVReplica("trkVerScinPhysical", fVerTrackingScinBar,
-                  trkVerLayerLogical, kXAxis, fNScinBarsX, verticalScinSize);
-  
-  fTrackingStation = new G4AssemblyVolume(); //one assembly has 2 layers
-  G4RotationMatrix rot(0, 0, 0);
-  G4ThreeVector pos(0, 0, -fScinThickness/2.);
-  fTrackingStation->AddPlacedVolume(trkHorLayerLogical,pos,&rot);
-  pos.setZ(fScinThickness/2.);
-  fTrackingStation->AddPlacedVolume(trkVerLayerLogical,pos,&rot);
-}
+  G4VisAttributes* HCalVis = new G4VisAttributes(G4Colour::Brown());
+  HCalVis->SetVisibility(true);
+  // HCalVis->SetForceSolid(true);
+  HCalVis->SetForceWireframe(true);
+  fHadCalLogical->SetVisAttributes(HCalVis);
+
+  G4VisAttributes* IronWallVis = new G4VisAttributes(G4Colour::Grey());
+  IronWallVis->SetVisibility(true);
+  // IronWallVis->SetForceSolid(true);
+  IronWallVis->SetForceWireframe(true);
+  fIronWallLogical->SetVisAttributes(IronWallVis);
+
+  //* Muon detector
+  G4VisAttributes* stationVis = new G4VisAttributes(G4Colour(34./255, 148./255, 83./255, 0.8));
+  stationVis->SetVisibility(true);
+  fMuonDetLogical->SetVisAttributes(stationVis);
+} 

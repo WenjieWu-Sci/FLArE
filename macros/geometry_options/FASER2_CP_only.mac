@@ -1,14 +1,11 @@
-# This file defines the standard configuration for the FPF reference hall
+# This file defines a simplified configuration for the FPF reference hall
 # The geometry contains:
-# - FLArE (TPC + HadCather + MuonFinder)
-# - FORMOSA
-# - FASERnu2
 # - FASER2 (SAMURAI magnet)
 
-/det/fileGdml FPF_hall_Reference.gdml
+/det/fileGdml FASER2_only.gdml
 
 # Configuring FLArE
-/det/addFLArE true
+/det/addFLArE false
 /det/flare/addFLArEPos 0 0 4300 mm
 /det/flare/material LAr
 /det/flare/module 3x7
@@ -17,26 +14,28 @@
 
 # Configuring FORMOSA
 # assuming 1.2m gap from FLArE
-/det/addFORMOSA true
+/det/addFORMOSA false
 /det/formosa/addFORMOSAPos 0 0 13870 mm
 
 # Configuring FASERnu2
 # assuming 1.2m gap from FORMOSA
-/det/addFASERnu2 true
+/det/addFASERnu2 false
 /det/fasernu/addFASERnu2Pos 0 0 22023 mm
 
 # Configuring FASER2
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
+# + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 41611 mm
-/det/faser/magnetGeom SAMURAI
-/det/faser/magnetField 1. tesla
-/det/faser/magnetWinX 3.0 m
-/det/faser/magnetWinY 1.0 m
-/det/faser/magnetWinZ 4.0 m
-/det/faser/yokeThickX 1.5 m
-/det/faser/yokeThickY 1.0 m
+/det/faser/addFASER2Pos 0 0 36031 mm
+/det/faser/magnetGeom CrystalPulling
+/det/faser/magnetField 0.6 tesla
+/det/faser/magnetInnerR 0.8 m
+/det/faser/magnetOuterR 1.2 m
+/det/faser/magnetWinZ 1.25 m
+/det/faser/magnetNumber 3
+/det/faser/magnetGap 0.25 m
 /det/faser/trackingNumber 3
 /det/faser/trackingGap 0.5 m
 /det/faser/trackingScinThick 1.0 cm
+

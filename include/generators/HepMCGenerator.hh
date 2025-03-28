@@ -25,11 +25,13 @@ class HepMCGenerator : public GeneratorBase
     void SetHepMCFilename(G4String val) { fHepMCFilename = val; }
     void SetUseHepMC2(G4bool val) { fUseHepMC2 = val; }
     void SetHepMCVertexOffset(G4ThreeVector val) { fVtxOffset = val; }
+    void SetPlaceInDecayVolume(G4bool val) { fPlaceInDecayVolume = val; }    
 
   private:
 
     G4String fHepMCFilename;
     G4bool fUseHepMC2;
+    G4bool fPlaceInDecayVolume;
     G4ThreeVector fVtxOffset;
     HepMC3::Reader* fAsciiInput;
         
@@ -37,6 +39,7 @@ class HepMCGenerator : public GeneratorBase
     std::shared_ptr<HepMC3::GenEvent> GenerateHepMCEvent();
     G4bool CheckVertexInsideWorld (const G4ThreeVector& pos) const;
     void HepMC2G4(const std::shared_ptr<HepMC3::GenEvent> hepmcevt, G4Event* g4event);
+    G4double GetStartOfDecayVolume();
         
 };
 

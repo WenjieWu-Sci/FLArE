@@ -24,23 +24,20 @@
 # Configuring FASER2
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
-# + 10m decay tunnel
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 36116 mm
+/det/faser/addFASER2Pos 0 0 35091 mm
 /det/faser/magnetGeom SAMURAI
 /det/faser/magnetField 1. tesla
 /det/faser/magnetWinX 3.0 m
 /det/faser/magnetWinY 1.0 m
 /det/faser/magnetWinZ 4.0 m
 /det/faser/yokeThickX 1.5 m
-/det/faser/yokeThickY 2.0 m
-/det/faser/trackingNumber 6
+/det/faser/yokeThickY 1.0 m
+/det/faser/trackingNumber 3
 /det/faser/trackingGap 0.5 m
-/det/faser/trackingNBarsX 7
-/det/faser/trackingNBarsY 7
 /det/faser/trackingScinThick 1.0 cm
 
 # Configuring FORMOSA
 # assuming in the middle of decay tunnel
 /det/addFORMOSA true
-/det/formosa/addFORMOSAPos 0 -2500 25996 mm
+/det/formosa/addFORMOSAPos 0 -2500 26156 mm

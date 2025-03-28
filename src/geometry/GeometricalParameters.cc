@@ -53,27 +53,37 @@ GeometricalParameters::GeometricalParameters()
   fMagnetTotalSizeZ = 4*m; //updates during construction
   fTrackingStationTotalSizeZ = 2.62*m; //updates during construction
   fMagnetZPos = 40*m; //updates during construction
-  fFASER2TotalSizeZ = 10.24*m;
+  fFASER2TotalSizeZ = 25*m; //updates during construction
+  fFASER2DecayVolumeLength = 10*m;
   // SAMURAI design
   fFASER2MagnetWindowX = 3.0*m;
   fFASER2MagnetWindowY = 1.0*m;
   fFASER2MagnetWindowZ = 4.0*m;
   fFASER2MagnetYokeThickX = 1.5*m;
-  fFASER2MagnetYokeThickY = 2.0*m;
+  fFASER2MagnetYokeThickY = 0.5*m;
   // CrystalPulling design
-  fFASER2MagnetLengthZ = 1.25*m;
   fFASER2MagnetInnerR = 0.8*m;
   fFASER2MagnetOuterR = 1.2*m;
   fNFASER2Magnets = 3;
   fFASER2MagnetGap = 0.25*m;
   fFASER2MagnetSpacing = 0.76*m; //updates during construction
   // Tracking stations
-  fNTrackingStations = 6;
-  fNScintillatorBarsY = 3;
-  fNScintillatorBarsX = 7;
+  fNTrackingStations = 3;
   fScintillatorThickness = 1*cm;
   fTrackingStationGap = 0.5*m;
   fFASER2Pos = G4ThreeVector(0., 0., 42636.*mm);
+  fFASER2TrackerX = 3*m;
+  fFASER2TrackerY = 1*m;  
+  fFASER2UpstreamTrackingStationGap = 0.5*m;
+  fFASER2DownstreamTrackingStationGap = 4*m;
+
+  fFASER2FillCaloAndWall = true; //! Simulating the additional interactions in Copper/Iron is time consuming and often not needed 
+  fFASER2EMCaloThickness = 1*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2HadCaloThickness = 2*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2IronWallThickness = 3*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoLengthX = 4*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoLengthY = 3*m; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoShieldThickness = 10*cm; //! These values are placeholders and require dedicated optmisation studies!
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction

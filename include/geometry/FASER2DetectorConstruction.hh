@@ -3,6 +3,7 @@
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
+#include <vector>
 
 #include "DetectorConstructionMaterial.hh"
 
@@ -20,23 +21,41 @@ class FASER2DetectorConstruction {
   
     // Returns logical volumes
     G4LogicalVolume* GetMagneticVolume(){ return fMagnetWindow;}
-    G4LogicalVolume* GetHorTrackingScinBar(){ return fHorTrackingScinBar;}
-    G4LogicalVolume* GetVerTrackingScinBar(){ return fVerTrackingScinBar;}
+    G4LogicalVolume* GetTrackingStation(){ return fTrackingLogical;}
+    G4LogicalVolume* GetVetoStations(){ return fVetoScinLogical;}
+    G4LogicalVolume* GetMuonStations(){ return fMuonDetLogical;}
+    std::vector<G4LogicalVolume*> GetTrackingStations(){ return fTrackingStationsLogical;}
 
+  private:
+    
     // Construction methods
     void BuildSAMURAIDesign();
     void BuildCrystalPullingDesign();
-    void BuildTrackingStation();
+    void SetVisualisation();
 
-  private:
-
+    // Logical volumes and material
     G4LogicalVolume* fFASER2Assembly;
     DetectorConstructionMaterial* fMaterials;
     G4LogicalVolume* fMagnetYoke;
     G4LogicalVolume* fMagnetWindow;
+    G4LogicalVolume* fTrackingLogical;
+    G4LogicalVolume* fVetoScinLogical;
+    G4LogicalVolume* fVetoShieldLogical;
+    G4LogicalVolume* fDecayVolumeLogical;
+    std::vector<G4LogicalVolume*> fTrackingStationsLogical;
     G4AssemblyVolume* fTrackingStation;
-    G4LogicalVolume* fHorTrackingScinBar;   
-    G4LogicalVolume* fVerTrackingScinBar;   
+    G4LogicalVolume* fEMCalLogical;
+    G4LogicalVolume* fHadCalLogical;
+    G4LogicalVolume* fIronWallLogical;
+    G4LogicalVolume* fMuonDetLogical;
+
+    // Veto
+    G4double fVetoLengthX;
+    G4double fVetoLengthY;
+    G4double fVetoShieldThickness;
+
+    // Decay volume
+    G4double fDecayVolumeLength;
 
     // SAMURAI design
     G4double fMagnetWindowX;
@@ -57,9 +76,14 @@ class FASER2DetectorConstruction {
     G4double fTrackingStationX;
     G4double fTrackingStationY;
     G4double fScinThickness;
-    G4int fNScinBarsY;
-    G4int fNScinBarsX;
     G4double fTrackingStationGap;
+    G4double fUpstreamTrackingStationGap;
+    G4double fDownstreamTrackingStationGap;
+
+    // Calorimeter guess??
+    G4double fEMCaloThickness;
+    G4double fHadCaloThickness;
+    G4double fIronWallThickness;
 };
 
 #endif

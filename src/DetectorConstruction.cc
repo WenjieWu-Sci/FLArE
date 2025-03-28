@@ -213,8 +213,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   if (m_addFASER2) {
     FASER2DetectorConstruction *magnetAssembler = new FASER2DetectorConstruction();
     FASER2MagnetLogical = magnetAssembler->GetMagneticVolume(); //need to assign B field
-    TrackingVerScinBarLogical = magnetAssembler->GetVerTrackingScinBar(); //need to assign SD
-    TrackingHorScinBarLogical = magnetAssembler->GetHorTrackingScinBar(); //need to assign SD
+    FASER2TrackingLogical = magnetAssembler->GetTrackingStations();
+    FASER2VetoLogical = magnetAssembler->GetVetoStations();
+    FASER2MuonLogical = magnetAssembler->GetMuonStations();
     G4LogicalVolume* FASER2Assembly = magnetAssembler->GetFASER2Assembly();
 
     // positioning
@@ -360,16 +361,25 @@ void DetectorConstruction::ConstructSDandField() {
   }
 
   if (m_addFASER2) {
-    LArBoxSD* TrkHorScinSD = new LArBoxSD("TrkHorScinSD");
-    TrackingHorScinBarLogical->SetSensitiveDetector(TrkHorScinSD);
-    sdManager->AddNewDetector(TrkHorScinSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "TrkHorScinSD/lar_box");
+    for (auto& station: FASER2TrackingLogical)
+    {
+      LArBoxSD* TrkScinSD = new LArBoxSD("FASER2TrackerSD"+ std::to_string(SDIdx));
+      station->SetSensitiveDetector(TrkScinSD);
+      sdManager->AddNewDetector(TrkScinSD);
+      GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2TrackerSD"+ std::to_string(SDIdx)+"/lar_box");
+      SDIdx++;
+    }
+
+    LArBoxSD* FASER2VetoSD = new LArBoxSD("FASER2VetoSD");
+    FASER2VetoLogical->SetSensitiveDetector(FASER2VetoSD);
+    sdManager->AddNewDetector(FASER2VetoSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2VetoSD/lar_box");
     SDIdx++;
 
-    LArBoxSD* TrkVerScinSD = new LArBoxSD("TrkVerScinSD");
-    TrackingVerScinBarLogical->SetSensitiveDetector(TrkVerScinSD);
-    sdManager->AddNewDetector(TrkVerScinSD);
-    GeometricalParameters::Get()->AddSD2List(SDIdx, "TrkVerScinSD/lar_box");
+    LArBoxSD* FASER2MuonDetSD = new LArBoxSD("FASER2MuonSD");
+    FASER2MuonLogical->SetSensitiveDetector(FASER2MuonDetSD);
+    sdManager->AddNewDetector(FASER2MuonDetSD);
+    GeometricalParameters::Get()->AddSD2List(SDIdx, "FASER2MuonSD/lar_box");
     SDIdx++;
 
     // FASER2 magnetic field
