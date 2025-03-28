@@ -157,6 +157,9 @@ class GeometricalParameters  {
     void SetFASER2VetoLengthY(G4double val) { fFASER2VetoLengthY = val; }
     void SetFASER2VetoShieldThickness(G4double val) { fFASER2VetoShieldThickness = val; }
     
+    void SetFillCaloAndWallVolumes(G4bool val) {fFASER2FillCaloAndWall = val;}
+    G4bool GetFillCaloAndWallVolumes() {return fFASER2FillCaloAndWall;}
+
     G4ThreeVector GetFASER2Position() { return fFASER2Pos; }
     void SetFASER2Position(G4ThreeVector val) { fFASER2Pos = val; }
 
@@ -291,6 +294,8 @@ class GeometricalParameters  {
     G4double fFASER2VetoLengthX;
     G4double fFASER2VetoLengthY;
     G4double fFASER2VetoShieldThickness;
+    
+    G4bool fFASER2FillCaloAndWall; // if true then fill volumes with material, otherwise use air to save CPU
 
 
     // FASERnu2 Emulsion detector

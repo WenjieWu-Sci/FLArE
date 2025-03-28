@@ -212,6 +212,9 @@ DetectorConstructionMessenger::DetectorConstructionMessenger(DetectorConstructio
     faserTrackingGapCmd = new G4UIcmdWithADoubleAndUnit("/det/faser/trackingGap", this);
     faserTrackingGapCmd->SetUnitCategory("Length");
     faserTrackingGapCmd->SetUnitCandidates("cm m mm");
+    faserFillCaloAndWallCmd = new G4UIcmdWithABool("/det/faser/fillCaloAndWall", this);
+    faserFillCaloAndWallCmd->SetParameterName("Fill FASER2 'calorimeters' and Iron wall with material", true);
+    faserFillCaloAndWallCmd->SetDefaultValue(false);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -270,6 +273,7 @@ DetectorConstructionMessenger::~DetectorConstructionMessenger() {
   delete faserTrackingNumberCmd;
   delete faserTrackingScinThickCmd;
   delete faserTrackingGapCmd;
+  delete faserFillCaloAndWallCmd;
 
   delete detDir;
   delete flareDir;
@@ -386,6 +390,8 @@ void DetectorConstructionMessenger::SetNewValue(G4UIcommand* command, G4String n
     GeometricalParameters::Get()->SetScintillatorThickness(faserTrackingScinThickCmd->ConvertToDimensionedDouble(newValues));
   else if (command == faserTrackingGapCmd) 
     GeometricalParameters::Get()->SetTrackingStationGap(faserTrackingGapCmd->ConvertToDimensionedDouble(newValues));
+  else if (command == faserFillCaloAndWallCmd)
+    GeometricalParameters::Get()->SetFillCaloAndWallVolumes(faserFillCaloAndWallCmd->GetNewBoolValue(newValues));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

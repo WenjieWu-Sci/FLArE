@@ -109,7 +109,6 @@ An example macro for running over this file can be found in `macros/dark_photon_
 
 Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2 files set the option `/hepmc/useHepMC2 true` in your macro. An example macro can be found in `macros/dark_photon_hepmc2.mac`.
 
-
 ## Macro commands
 
 ### Geometry
@@ -165,6 +164,7 @@ Older versions of FORESEE output events in the HepMC2 format. To run over HepMC2
 |/det/faser/trackingNumber    | option for number of FASER2 tracking stations in each assembly                       |`6`|
 |/det/faser/trackingScinThick | option for scintillator bar thickness (along Z) in tracking layers                   |`1.0 cm`|
 |/det/faser/trackingGap       | option for gap length (along Z) between tracking stations, and gap to magnet         |`0.5 m`|
+|/det/faser/fillCaloAndWall| option to fill FASER2 iron wall and calorimeter placeholder volumes with metal if true. Otherwise, fill with air to save having to compute the additional material interactions. |`true`|
 
 ### Event generators
 

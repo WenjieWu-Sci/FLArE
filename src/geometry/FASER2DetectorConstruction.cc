@@ -48,6 +48,7 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   fEMCaloThickness = GeometricalParameters::Get()->GetFASER2EMCaloThickness();
   fHadCaloThickness = GeometricalParameters::Get()->GetFASER2HadCaloThickness();
   fIronWallThickness = GeometricalParameters::Get()->GetFASER2IronWallThickness();
+  G4bool fillCaloAndWallVolumes = GeometricalParameters::Get()->GetFillCaloAndWallVolumes();
 
   fVetoLengthX = GeometricalParameters::Get()->GetFASER2VetoLengthX();
   fVetoLengthY = GeometricalParameters::Get()->GetFASER2VetoLengthY();
@@ -175,9 +176,9 @@ FASER2DetectorConstruction::FASER2DetectorConstruction()
   auto HCalBox = new G4Box("HCalBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fHadCaloThickness/2.);
   auto IronWallBox = new G4Box("HCalBox", fMagnetWindowX/2.+fMagnetYokeThicknessX, fMagnetWindowY/2.+fMagnetYokeThicknessY, fIronWallThickness/2.);
 
-  fEMCalLogical = new G4LogicalVolume(ECalBox, fMaterials->Material("Copper"), "FASER2ECAlLogical");
-  fHadCalLogical = new G4LogicalVolume(HCalBox, fMaterials->Material("Iron"), "FASER2HCAlLogical");
-  fIronWallLogical = new G4LogicalVolume(IronWallBox, fMaterials->Material("Iron"), "FASER2IronWallLogical");
+  fEMCalLogical = new G4LogicalVolume(ECalBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Copper"): fMaterials->Material("Air"), "FASER2ECAlLogical");
+  fHadCalLogical = new G4LogicalVolume(HCalBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Iron"): fMaterials->Material("Air"), "FASER2HCAlLogical");
+  fIronWallLogical = new G4LogicalVolume(IronWallBox, (fillCaloAndWallVolumes) ? fMaterials->Material("Iron"): fMaterials->Material("Air"), "FASER2IronWallLogical");
   
   componentPosition += fEMCaloThickness/2;
   new G4PVPlacement(noRot, G4ThreeVector(0,0,componentPosition), fEMCalLogical, "FASER2ECalPhysical", fFASER2Assembly, false, 0, false);
