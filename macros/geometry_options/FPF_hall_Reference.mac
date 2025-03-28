@@ -29,7 +29,7 @@
 # assuming 1.2m gap from FASERnu2
 # (which include veto stations)
 /det/addFASER2 true
-/det/faser/addFASER2Pos 0 0 41573.5 mm
+/det/faser/addFASER2Pos 0 0 41611 mm
 /det/faser/magnetGeom SAMURAI
 /det/faser/magnetField 1. tesla
 /det/faser/magnetWinX 3.0 m

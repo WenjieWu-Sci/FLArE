@@ -77,12 +77,13 @@ GeometricalParameters::GeometricalParameters()
   fFASER2UpstreamTrackingStationGap = 0.5*m;
   fFASER2DownstreamTrackingStationGap = 4*m;
 
+  fFASER2FillCaloAndWall = true; //! Simulating the additional interactions in Copper/Iron is time consuming and often not needed 
   fFASER2EMCaloThickness = 1*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2HadCaloThickness = 2*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2IronWallThickness = 3*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2VetoLengthX = 4*m; //! These values are placeholders and require dedicated optmisation studies!
   fFASER2VetoLengthY = 3*m; //! These values are placeholders and require dedicated optmisation studies!
-  fFASER2VetoShieldThickness = 2.5*cm; //! These values are placeholders and require dedicated optmisation studies!
+  fFASER2VetoShieldThickness = 10*cm; //! These values are placeholders and require dedicated optmisation studies!
 
   // FASERnu2 emulsion detector
   fFASERnu2TotalSizeZ = 8.5*m; //updates during construction
