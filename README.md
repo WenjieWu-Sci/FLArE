@@ -1,5 +1,7 @@
 # FLArE
 
+ ## <span style="color:red"> This repository has moved! Please go to [FPFSoftware/FPFSim](https://github.com/FPFSoftware/FPFSim) </span>
+
 Simulation code for R&D of the FLArE detector
 ![nutau evt display](./flare_nutau_evd.jpg)
 
