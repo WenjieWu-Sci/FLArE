@@ -34,9 +34,12 @@ class BackgroundGenerator : public GeneratorBase
     G4String fBkgFilename;
     G4double fBkgTimeWindow;
     TFile* fBkgFile;
-    TH3D *fhxyE;
-    TH3D *fhdir;
 
+    std::map<std::string, TH3D*> fhxyElist;
+    std::map<std::string, TH3D*> fhdirlist;
+    TH3D* fhxyE;
+    TH3D* fhdir;
+ 
     std::vector<std::string> fSpeciesList = { "mu_plus","mu_minus","neut" };
     G4double LHC_orbitPeriod_s = 88.924e-6; // orbit is 88.924 us
     G4double TPC_driftTime_s = 187.5e-6; // 187.5 us for 30cm drift
