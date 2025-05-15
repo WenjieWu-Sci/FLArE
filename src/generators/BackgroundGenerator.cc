@@ -57,10 +57,10 @@ void BackgroundGenerator::LoadData()
     // get the input histograms
     // 3D histo in (x, y, E): normalized, to be used for the main extraction
     // 3D histo in (xdircos, ydircos, E): one energy is extracted, 
-    fhxyE = (TH3D*)fBkgFile->Get(hxyE_path.c_str());
-    fhdir = (TH3D*)fBkgFile->Get(hdir_path.c_str());
+    fhxyElist[name] = (TH3D*)fBkgFile->Get(hxyE_path.c_str());
+    fhdirlist[name] = (TH3D*)fBkgFile->Get(hdir_path.c_str());
 
-    if(!fhxyE || !fhdir) {
+    if(!fhxyElist[name] || !fhdirlist[name]) {
       G4String err = "Histograms " + hxyE_path + " or " + hdir_path + " unavailable in " + fBkgFilename;
       G4Exception("BackgroundGenerator", "FileError", FatalErrorInArgument, err.c_str());
     }
@@ -144,6 +144,10 @@ void BackgroundGenerator::GeneratePrimaries(G4Event* anEvent)
   // for each background species available...
   for(auto const name : fSpeciesList) {
     
+    // select the right histograms
+    fhxyE = fhxyElist[name];
+    fhdir = fhdirlist[name];
+
     // get total number of particles to shoot
     // TODO: currently launching the equivalent of the requested time window
     // This should be probably rephrased in terms of luminosity
